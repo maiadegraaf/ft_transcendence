@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./docker
+      dockerfile: ./backend.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    # networks:
+    #   - backend
+    # depends_on:
+    #   - db
+  # db:
+  #   image: postgres
+  #   volumes:
+  #     - ${SG_PATH}:/db_data/var/lib/postgresql/data
+  #   environment:
+  #     POSTGRES_PASSWORD: password
+  # web:
+  #   image: node:lts
+  #   build: .
+  #   # working_dir: $(SG_PATH):/app/
+
+# volumes:
+#   db_data:
+#     name: db_data
+#     driver_opts:
+#       type: none
+#       device: ${SG_PATH}
+#       o: bind
+
+
+# networks:
+#   backend:
