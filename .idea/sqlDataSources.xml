@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="98dfee62-40b2-4d6e-a96e-4ae31807c39f" name="ft_transcendence Mapping">
+      <data-sources db="82f6316b-ba77-4d2b-b423-ccb4f025be90" ddl="f8002f5b-505a-44ad-b9ae-627a8258b111" />
+      <scope>
+        <node kind="database" negative="1">
+          <node kind="schema" negative="1" />
+        </node>
+      </scope>
+    </mapping>
+  </component>
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="f8002f5b-505a-44ad-b9ae-627a8258b111" />
+          <option name="name" value="ft_transcendence" />
+          <option name="urls">
+            <array>
+              <option value="file://$USER_HOME$/Downloads/ft_transcendence.sql" />
+            </array>
+          </option>
+        </State>
+        <State>
+          <option name="id" value="82f6316b-ba77-4d2b-b423-ccb4f025be90" />
+          <option name="name" value="DDL data source" />
+          <option name="urls">
+            <array />
+          </option>
+        </State>
+      </list>
+    </option>
+  </component>
+</project>
