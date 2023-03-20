@@ -16,7 +16,10 @@ export default {
           }})
 			.then((response) => {this.lists = response.data})
 			.catch(error => console.log(error))
-	}
+	},
+  components: {
+    Pong
+  }
 }
 </script>
 
@@ -24,7 +27,7 @@ export default {
   <div>
     <header></header>
     <main>
-      {{lists}}
+<!--      {{lists}}-->
       <Pong />
     </main>
   </div>
