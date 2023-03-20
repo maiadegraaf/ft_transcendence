@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import io from "socket.io-client";
 export default {
     name: 'pongGame',

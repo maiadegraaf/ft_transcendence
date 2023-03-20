@@ -3,6 +3,8 @@ import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Auth from '../views/Authenticated.vue'
 
+
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
