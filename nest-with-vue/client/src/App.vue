@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Pong from './components/Pong.vue'
+import Pong from '../../../src/frontend/src/components/Pong.vue'
 
 export default {
   name: 'App',
