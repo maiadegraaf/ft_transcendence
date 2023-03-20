@@ -23,7 +23,7 @@ export default {
   <div>
     <header></header>
     <main>
-      {{this.lists.usual_full_name}}
+      {{this.lists}}
     </main>
   </div>
 </template>
