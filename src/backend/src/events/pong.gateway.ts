@@ -8,6 +8,8 @@ import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 const winning_condition = 10;
+const max_y = 490;
+const min_y = 10;
 
 enum Direction {
   Up = -1,
@@ -36,11 +38,11 @@ interface Player {
   score: number;
 }
 
-@WebSocketGateway({
+@WebSocketGateway( {
   cors: { origin: '*' },
 })
-export class EventsGateway {
-  private logger: Logger = new Logger('EventsGateway');
+export class PongGateway {
+  private logger: Logger = new Logger('PongGateway');
   private gamestate: GameState = GameState.Start;
   private winner = '';
   private ball: Ball = {
@@ -72,7 +74,7 @@ export class EventsGateway {
     //     ? this.player1
     //     : this.player2;
     if (this.gamestate == GameState.Playing) {
-      this.player1.new_y += data * 50;
+      this.player1.new_y += data * 100;
     }
   }
 
@@ -110,6 +112,17 @@ export class EventsGateway {
     this.player2.y = 250;
   }
 
+  check_out_of_bounds(player): typeof player {
+    if (player.y > max_y) {
+      player.y = max_y;
+      player.new_y = max_y;
+    } else if (player.y < min_y) {
+      player.y = min_y;
+      player.new_y = min_y;
+    }
+    return player;
+  }
+
   tick(): void {
     if (this.gamestate !== GameState.Playing) {
       return;
@@ -134,6 +147,7 @@ export class EventsGateway {
           this.player2.y += 4;
         }
       }
+      this.player2 = this.check_out_of_bounds(this.player2);
     }
 
     if (this.player1.new_y != this.player1.y) {
@@ -142,6 +156,7 @@ export class EventsGateway {
       } else {
         this.player1.y += 5;
       }
+      this.player1 = this.check_out_of_bounds(this.player1);
     }
 
     if (this.ball.y <= 0 || this.ball.y >= 580) {

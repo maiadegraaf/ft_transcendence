@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Auth from '../views/Authenticated.vue'
 import viewfour from '../views/404.vue'
+import PongGame from '../views/PongGame.vue'
 
 
 
@@ -28,6 +29,11 @@ const router = createRouter({
       path: '/:catchAll(.*)',
       name: '404Name',
       component: viewfour
+    },
+    {
+      path: '/Pong',
+      name: 'Pong',
+      component: PongGame
     }
   ]
 })
