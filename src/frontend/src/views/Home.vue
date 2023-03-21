@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
 import axios from 'axios'
+import Pong from '../components/Pong.vue'
 
 export default {
   name: "User",
@@ -15,7 +16,10 @@ export default {
           }})
 			.then((response) => {this.lists = response.data})
 			.catch(error => console.log(error))
-	}
+	},
+  components: {
+    Pong
+  }
 }
 </script>
 
@@ -23,7 +27,8 @@ export default {
   <div>
     <header></header>
     <main>
-      {{this.lists}}
+<!--      {{lists}}-->
+      <Pong />
     </main>
   </div>
 </template>
