@@ -9,9 +9,6 @@ export default {
         App,
     },
 };
-// @ts-ignore
-const app = createApp(App)
 
-// use router
-app.use(router)
-app.mount('#app')
+const app = createApp(App)
+app.use(router).mount('#app')
