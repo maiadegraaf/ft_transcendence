@@ -1,24 +1,36 @@
 version: "3.9"
 services:
-  backend:
-    container_name: backend
-    build:
-      context: ./docker
-      dockerfile: ./backend.Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/app
+  # backend:
+    # container_name: backend
+    # build:
+    #   context: ./docker
+    #   dockerfile: ./backend.Dockerfile
+    # ports:
+    #   - "3000:3000"
+    # volumes:
+    #   - ./backend:/app
     # networks:
     #   - backend
     # depends_on:
     #   - db
-  # db:
-  #   image: postgres
-  #   volumes:
-  #     - ${SG_PATH}:/db_data/var/lib/postgresql/data
-  #   environment:
-  #     POSTGRES_PASSWORD: password
+  postgres:
+    image: postgres:latest
+    env_file:
+      - ./docker/postgres.env
+    restart: unless-stopped
+    ports:
+     - 5432:5432
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    env_file:
+      - ./docker/pgadmin.env
+    volumes:
+      - ./docker/pgadmin_servers.json:/pgadmin4/servers.json
+    ports:
+      - 5050:80
+    depends_on:
+      - postgres
   # web:
   #   image: node:lts
   #   build: .
