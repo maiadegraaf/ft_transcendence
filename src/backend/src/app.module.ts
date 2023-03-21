@@ -8,9 +8,9 @@ import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
-    DatabaseModule
+    DatabaseModule,
     ServeStaticModule.forRoot({ // New
-      rootPath: join(__dirname, '../..', 'frontend/dist'), // New
+      rootPath: join(__dirname, '../..', '../frontend/dist'), // New
     }),
   ],
   controllers: [AppController],
