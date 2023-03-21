@@ -18,6 +18,7 @@
         <button @click="start">Play Again</button>
       </div>
     </div>
+    <p class="text-center"> Use the up and down keys to control the paddle </p>
   </div>
 </template>
 
@@ -49,7 +50,6 @@ export default {
   mounted() {
     //connect to the servers websocket
     const socket: Socket = io("http://localhost:8080");
-    // this.socket = io("http://localhost:3000");
 
     //listen for the state updates from the server
     socket.on("state", (state) => {
