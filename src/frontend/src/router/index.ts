@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Auth from '../views/Authenticated.vue'
+import viewfour from '../views/404.vue'
 
 
 
@@ -11,17 +12,22 @@ const router = createRouter({
     {
       path: '/Home',
       name: 'Home',
-      component: () => Home
+      component: Home
     },
     {
       path: '/Authenticated',
       name: 'Authenticated',
-      component: () => Auth
+      component: Auth
     },
     {
       path: '/',
       name: 'Login',
-      component: () => Login
+      component: Login
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: '404Name',
+      component: viewfour
     }
   ]
 })
