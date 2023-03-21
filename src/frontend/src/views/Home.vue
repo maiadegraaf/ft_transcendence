@@ -27,7 +27,7 @@ export default {
   <div>
     <header></header>
     <main>
-<!--      {{lists}}-->
+      {{lists}}
       <Pong />
     </main>
   </div>
