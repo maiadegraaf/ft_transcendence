@@ -121,6 +121,9 @@ export class EventsGateway {
 
     this.ball.x += this.ball.dx * 5;
     this.ball.y += this.ball.dy * 5;
+    if (this.ball.x >= 400) {
+      this.player2.y = this.ball.y;
+    }
 
     if (this.ball.y <= 0 || this.ball.y >= 580) {
       this.ball.dy *= -1;
