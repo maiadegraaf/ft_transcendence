@@ -32,6 +32,7 @@ interface Ball {
 interface Player {
   x: number;
   y: number;
+  new_y: number;
   score: number;
 }
 
@@ -51,11 +52,13 @@ export class EventsGateway {
   private player1: Player = {
     x: 20,
     y: 250,
+    new_y: 250,
     score: 0,
   };
   private player2: Player = {
     x: 760,
     y: 250,
+    new_y: 250,
     score: 0,
   };
 
@@ -69,7 +72,7 @@ export class EventsGateway {
     //     ? this.player1
     //     : this.player2;
     if (this.gamestate == GameState.Playing) {
-      this.player1.y += data * 50;
+      this.player1.new_y += data * 50;
     }
   }
 
@@ -121,8 +124,24 @@ export class EventsGateway {
 
     this.ball.x += this.ball.dx * 5;
     this.ball.y += this.ball.dy * 5;
+
     if (this.ball.x >= 400) {
-      this.player2.y = this.ball.y;
+      this.player2.new_y = this.ball.y - 20;
+      if (this.player2.y != this.player2.new_y) {
+        if (this.player2.y > this.player2.new_y) {
+          this.player2.y += -4;
+        } else {
+          this.player2.y += 4;
+        }
+      }
+    }
+
+    if (this.player1.new_y != this.player1.y) {
+      if (this.player1.new_y < this.player1.y) {
+        this.player1.y += -5;
+      } else {
+        this.player1.y += 5;
+      }
     }
 
     if (this.ball.y <= 0 || this.ball.y >= 580) {
@@ -140,7 +159,7 @@ export class EventsGateway {
 
     // check for collision with player 2
     if (
-      this.ball.x >= 760 &&
+      this.ball.x >= 740 &&
       this.ball.y >= this.player2.y &&
       this.ball.y <= this.player2.y + 100
     ) {
