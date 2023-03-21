@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ServeStaticModule} from '@nestjs/serve-static'; // New
 import { join } from 'path'; // New
-import { EventsGateway } from './events/events.gateway';
+import { PongGateway } from './events/pong.gateway';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -14,6 +14,6 @@ import { DatabaseModule } from './database/database.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, EventsGateway],
+  providers: [AppService, PongGateway],
 })
 export class AppModule {}
