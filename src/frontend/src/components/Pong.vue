@@ -48,7 +48,7 @@ export default {
   },
   mounted() {
     //connect to the servers websocket
-    const socket: Socket = io("http://localhost:3000");
+    const socket: Socket = io("http://localhost:8080");
     // this.socket = io("http://localhost:3000");
 
     //listen for the state updates from the server
@@ -85,7 +85,7 @@ export default {
       this.started = true;
       this.gameOver = false;
       this.winner = "";
-      const socket: Socket = io("http://localhost:3000");
+      const socket: Socket = io("http://localhost:8080");
       socket.emit("start");
     },
   },
