@@ -79,11 +79,11 @@ export default {
     },
   },
   // The created hook of the Vue instance.
-  created(): void {
+  created: function (): void {
     // Initializes the Socket.IO client and stores it in the Vue instance.
     this.socket = io('http://localhost:8080');
     // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
-    this.socket.on('msgToClient', (message: { name: string; text: string}) => {
+    this.socket.on('msgToClient', (message: { name: string; text: string }) => {
       this.receivedMessage(message);
     });
   },
