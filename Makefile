@@ -7,6 +7,10 @@ SG_PATH := $(addprefix /sgoingfre/, $(USER)/)
 
 all: up
 
+dev:
+	npm run build --prefix ./src/frontend
+	npm run start:dev --prefix ./src/backend
+
 up:
 	docker-compose -f src/docker-compose.yml up --build
 
