@@ -38,7 +38,7 @@ interface Player {
   score: number;
 }
 
-@WebSocketGateway( {
+@WebSocketGateway({
   cors: { origin: '*' },
 })
 export class PongGateway {
