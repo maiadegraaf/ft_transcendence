@@ -40,7 +40,6 @@ export default {
     messages: { 
 		name: string;
 		text: string;
-		// id: number
 	}[];
     socket: any;
   } {

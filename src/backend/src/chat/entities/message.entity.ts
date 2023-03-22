@@ -10,7 +10,7 @@ import {
 import { Channel } from './channel.entity';
 
 @Entity()
-export class Msg {
+export class Message {
   @PrimaryGeneratedColumn()
   id: number;
 
