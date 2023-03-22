@@ -45,22 +45,24 @@ export class PongGateway {
   private logger: Logger = new Logger('PongGateway');
   private gamestate: GameState = GameState.Start;
   private winner = '';
+  private width = 800;
+  private height = 600;
   private ball: Ball = {
-    x: 400,
-    y: 300,
+    x: this.width / 2,
+    y: this.height / 2,
     dx: Direction.Left,
     dy: Direction.Up,
   };
   private player1: Player = {
     x: 20,
-    y: 250,
-    new_y: 250,
+    y: this.height / 2 - 50,
+    new_y: this.height / 2 - 50,
     score: 0,
   };
   private player2: Player = {
-    x: 760,
-    y: 250,
-    new_y: 250,
+    x: this.width - 20,
+    y: this.height / 2 - 50,
+    new_y: this.height / 2 - 50,
     score: 0,
   };
 
@@ -85,8 +87,15 @@ export class PongGateway {
     }
   }
 
+  @SubscribeMessage('size')
+  handleSize(@MessageBody() data: any): void {
+    this.width = data.w;
+    this.height = data.h;
+    console.log(this.width, ' , ', this.height);
+  }
+
   @SubscribeMessage('start')
-  handleStart(@MessageBody() data: any): void {
+  handleStart(): void {
     this.gamestate = GameState.Playing;
   }
 
@@ -108,17 +117,18 @@ export class PongGateway {
     });
     this.player1.score = 0;
     this.player2.score = 0;
-    this.player1.y = 250;
-    this.player2.y = 250;
+    this.player1.y = this.height / 2 - 50;
+    this.player2.y = this.height / 2 - 50;
   }
 
   check_out_of_bounds(player): typeof player {
-    if (player.y > max_y) {
-      player.y = max_y;
-      player.new_y = max_y;
-    } else if (player.y < min_y) {
-      player.y = min_y;
-      player.new_y = min_y;
+    if (player.y > this.height - 110) {
+      player.y = this.height - 110;
+      player.new_y = this.height - 110;
+    } else if (player.y < 10) {
+      player.y = 10;
+      player.new_y = 10;
+      console.log(player.y);
     }
     return player;
   }
@@ -138,7 +148,7 @@ export class PongGateway {
     this.ball.x += this.ball.dx * 5;
     this.ball.y += this.ball.dy * 5;
 
-    if (this.ball.x >= 400) {
+    if (this.ball.x >= this.width / 2) {
       this.player2.new_y = this.ball.y - 20;
       if (this.player2.y != this.player2.new_y) {
         if (this.player2.y > this.player2.new_y) {
@@ -159,7 +169,7 @@ export class PongGateway {
       this.player1 = this.check_out_of_bounds(this.player1);
     }
 
-    if (this.ball.y <= 0 || this.ball.y >= 580) {
+    if (this.ball.y <= 0 || this.ball.y >= this.height - 20) {
       this.ball.dy *= -1;
     }
 
@@ -174,7 +184,7 @@ export class PongGateway {
 
     // check for collision with player 2
     if (
-      this.ball.x >= 740 &&
+      this.ball.x >= this.width - 60 &&
       this.ball.y >= this.player2.y &&
       this.ball.y <= this.player2.y + 100
     ) {
@@ -182,18 +192,18 @@ export class PongGateway {
     }
 
     // check for scoring
-    if (this.ball.x <= 39) {
+    if (this.ball.x <= 35) {
       this.player2.score++;
-      this.ball.x = 400;
-      this.ball.y = 300;
+      this.ball.x = this.width / 2;
+      this.ball.y = this.height / 2;
       this.ball.dx = Direction.Left;
       this.ball.dy = Direction.Up;
     }
 
-    if (this.ball.x >= 761) {
+    if (this.ball.x >= this.width - 38) {
       this.player1.score++;
-      this.ball.x = 400;
-      this.ball.y = 300;
+      this.ball.x = this.width / 2;
+      this.ball.y = this.height / 2;
       this.ball.dx = Direction.Right;
       this.ball.dy = Direction.Down;
     }
