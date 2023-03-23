@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import Login from '../components/Login.vue'
+import Login from '../views/Login.vue'
 import Auth from '../views/Authenticated.vue'
-import Chat from '../components/Chat.vue'
+import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
+import axios from "axios";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,11 +25,11 @@ const router = createRouter({
       name: 'Login',
       component: Login
     },
-	{
-		path: '/Chat',
-		name: 'Chat',
-		component: Chat
-	},
+    {
+      path: '/Chat',
+      name: 'Chat',
+      component: Chat
+    },
     {
       path: '/:catchAll(.*)',
       name: '404Name',
@@ -41,5 +42,29 @@ const router = createRouter({
     }
   ]
 })
+
+
+// router.beforeEach((to, from, next) => {
+//   axios.get('https://api.intra.42.fr/v2/me', {
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem('token')}`
+//         }
+//       })
+//       .then((response) => {
+//         console.log(response.status)
+//         if (response.status == 200 && to.path == '/')
+//           next('/Home')
+//         if (response.status == 200)
+//           next()
+//       })
+//       .catch((error) => {
+//         console.log(error)
+//         if (to.path != '/')
+//           next('/')
+//         else
+//           next()
+//       })
+// });
+
 
 export default router
