@@ -14,12 +14,12 @@ module.exports = {
       backgroundColor: {
         default: 'amaranth-purple',
       },
+      boxShadow: {
+        'vista-blue' : '0 0 10px 2px rgba(93, 144, 233)',
+      }
       // backgroundImage: {
       //   'arcade-carpet' : "url('./src/imgs/bg-image.jpg')",
       // }
-      dropShadow: {
-        '2xl': '0 25px 50px -12px rgba(133, 155, 194, 1)',
-      }
     },
   },
   plugins: [],

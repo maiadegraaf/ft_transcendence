@@ -23,12 +23,12 @@
 <!--</template>-->
 
 <template>
-  <div v-if="!started" class="flex flex-col items-center justify-center h-screen bg-dark-purple text-white">
-    <h1 class="text-5xl mb-8 text-buff font-bold text-shadow-lg">PONG</h1>
+  <div v-if="!started" class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple text-white">
+    <h1 class="text-8xl mb-8 font-bold text-buff drop-shadow-lg shadow-vista-blue-500/50">PONG</h1>
     <button @click="start" class="px-8 py-4 bg-vista-blue hover:bg-yinmn-blue text-dark-purple text-2xl font-bold rounded-lg cursor-pointer">Start Game</button>
   </div>
-  <div v-else>
-    <div class="relative mx-auto w-10/12 aspect-video border-double border-4 border-buff bg-dark-purple" ref="pongGame">
+  <div v-else class="mx-auto w-[800px]">
+    <div class="relative w-full aspect-video border-double border-4 border-buff bg-dark-purple" ref="pongGame">
       <div class="absolute left-5 w-5 h-24 bg-white" :style="{top: player1.y + 'px'}"></div>
       <div class="absolute right-5 w-5 h-24 bg-white" :style="{top: player2.y + 'px'}"></div>
       <div class="absolute w-5 h-5 bg-white rounded-full" :style="{top: ball.y + 'px', left: ball.x + 'px'}"></div>
@@ -43,10 +43,18 @@
         <button @click="start" class="px-8 py-4 bg-vista-blue hover:bg-yinmn-blue text-dark-purple text-2xl font-bold rounded-lg cursor-pointer">Play Again</button>
       </div>
     </div>
-    <p class="mx-auto w-full text-center top-2 text-white text-lg"> Use the up and down keys to control the paddle </p>
+    <div class="mx-auto flex w-2/3 m-2 items-center">
+      <div class="flex-auto w-1/3">
+        <img src="../assets/images/up-down_keys.png" alt="Use the up and down keys to control the paddle" class="mx-auto my-4"/>
+      </div>
+      <div class="text-center">
+        <p class="mx-auto w-full text-white text-lg"> Use the up and down keys to control the paddle </p>
+      </div>
+    </div>
   </div>
 </template>
 
+<!---->
 
 <script lang="ts">
 import io from "socket.io-client";
@@ -111,16 +119,6 @@ export default {
           break;
       }
     });
-    window.addEventListener('resize', this.resize);
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.resize);
-  },
-  updated() {
-    this.$nextTick(() => {
-      this.gameSize.h = this.$refs.pongGame.clientHeight;
-      this.gameSize.w = this.$refs.pongGame.clientWidth;
-    });
   },
   methods: {
     start() {
@@ -132,12 +130,6 @@ export default {
       console.log(this.gameSize);
       socket.emit("size", this.gameSize);
     },
-    resize() {
-      this.gameSize.h = this.$refs.pongGame.clientHeight;
-      this.gameSize.w = this.$refs.pongGame.clientWidth;
-      const socket: Socket = io("http://localhost:8080");
-      socket.emit("size", this.gameSize);
-    }
   },
   watch: {
     gamestate() {
