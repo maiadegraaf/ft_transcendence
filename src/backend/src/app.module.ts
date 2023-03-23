@@ -1,22 +1,23 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ServeStaticModule} from '@nestjs/serve-static'; // New
+import { ServeStaticModule } from '@nestjs/serve-static'; // New
 import { join } from 'path'; // New
-import { EventsGateway } from './events/events.gateway';
 import { ChatModule } from './chat/chat.module';
-import { PongGateway } from './events/pong.gateway';
+import { PongModule } from './pong/pong.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     DatabaseModule,
-	ChatModule,
-    ServeStaticModule.forRoot({ // New
+    ChatModule,
+    PongModule,
+    ServeStaticModule.forRoot({
+      // New
       rootPath: join(__dirname, '../..', '../frontend/dist'), // New
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, PongGateway],
+  providers: [AppService],
 })
 export class AppModule {}

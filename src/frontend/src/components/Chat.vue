@@ -101,6 +101,6 @@ export default {
 #app {
   margin-top: 2rem;
   margin: auto;
-  width: 40%;
+  /*width: 40%;*/
 }
 </style>
