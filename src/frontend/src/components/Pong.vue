@@ -25,7 +25,31 @@
 <template>
   <div v-if="!started" class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple text-white">
     <h1 class="text-8xl mb-8 font-bold text-buff drop-shadow-lg shadow-vista-blue-500/50">PONG</h1>
-    <button @click="start" class="px-8 py-4 bg-vista-blue hover:bg-yinmn-blue text-dark-purple text-2xl font-bold rounded-lg cursor-pointer">Start Game</button>
+    <label for="practice-mode" class="m-4 flex items-center">
+      <span class="mr-2 text-2xl font-bold text-buff">Practice Mode:</span>
+      <select id="practice-mode" v-model="practiceMode" class="px-4 py-2 text-2xl font-bold text-yinmn-blue focus:text-vista-blue rounded-lg border border-vista-blue border-solid  focus:outline-none bg-vista-blue focus:outline-none focus:bg-yinmn-blue focus:outline-none focus:border-vista-blue">
+        <option value="true">ON</option>
+        <option value="false">OFF</option>
+      </select>
+    </label>
+    <div v-if="practiceMode" class="flex flex-col items-center">
+      <label for="winningScore" class="mb-4 flex items-center">
+        <span class="mr-2 text-2xl font-bold text-buff">Winning Score:</span>
+        <input value="10" type="number" id="winningScore" v-model.number="winningScore" min="1" class="w-16 px-2 py-1 text-2xl font-bold rounded-lg border border-solid border-amaranth-purple bg-buff text-amaranth-purple focus:text-buff focus:bg-amaranth-purple focus:outline-none focus:border-amaranth-purple">
+      </label>
+      <label for="difficulty" class="mb-4 flex items-center">
+        <span class="mr-2 text-2xl font-bold text-buff">Difficulty:</span>
+        <select id="difficulty" v-model="difficulty" class="w-32 px-4 py-2 text-2xl font-bold text-amaranth-purple focus:text-buff rounded-lg border border-amaranth-purple border-solid  focus:outline-none bg-buff focus:outline-none focus:bg-amaranth-purple focus:outline-none focus:border-amaranth-purple">
+          <option value="easy">Easy</option>
+          <option value="normal">Normal</option>
+          <option value="hard">Hard</option>
+          <option value="impossible">Impossible</option>
+        </select>
+      </label>
+    </div>
+    <button @click="start" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
+      Start Game
+    </button>
   </div>
   <div v-else class="mx-auto w-[800px]">
     <div class="relative w-full aspect-video border-double border-4 border-buff bg-dark-purple" ref="pongGame">
@@ -40,7 +64,9 @@
       <div v-if="gameOver" class="absolute top-0 left-0 w-full h-full bg-dark-purple text-white flex flex-col items-center justify-center">
         <h1 class="text-5xl text-buff font-bold text-shadow-lg mb-8">Game Over</h1>
         <h3 class="text-3xl text-buff font-bold text-shadow-lg mb-8">{{ winner }} Wins!</h3>
-        <button @click="start" class="px-8 py-4 bg-vista-blue hover:bg-yinmn-blue text-dark-purple text-2xl font-bold rounded-lg cursor-pointer">Play Again</button>
+        <button @click="reset" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
+          Play Again
+        </button>
       </div>
     </div>
     <div class="mx-auto flex w-2/3 m-2 items-center">
@@ -69,6 +95,9 @@ export default {
       gameOver: false,
       winner: '',
       gamestate: '',
+      practiceMode: false,
+      winningScore: 10,
+      difficulty: 'easy',
       ball: {
         x: 400,
         y: 300,
@@ -84,6 +113,10 @@ export default {
       gameSize: {
         h: 0,
         w: 0,
+      },
+      practiceSettings: {
+        score: 10,
+        difficulty: 'easy',
       }
     }
   },
@@ -126,10 +159,21 @@ export default {
       this.gameOver = false;
       this.winner = "";
       const socket: Socket = io("http://localhost:8080");
+      if (this.practiceMode)
+      {
+        this.practiceSettings.difficulty = this.difficulty;
+        this.practiceSettings.score = this.winningScore;
+        socket.emit("start practice", this.practiceSettings);
+        return ;
+      }
       socket.emit("start");
-      console.log(this.gameSize);
-      socket.emit("size", this.gameSize);
     },
+    reset() {
+      this.started = false;
+      this.gameOver = false;
+      this.practiceMode = false;
+      this.winner = "";
+    }
   },
   watch: {
     gamestate() {
@@ -137,7 +181,6 @@ export default {
         this.gameOver = true;
       }
     },
-
   }
 }
 </script>

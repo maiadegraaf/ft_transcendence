@@ -39,7 +39,7 @@ interface Player {
   score: number;
 }
 
-@WebSocketGateway( {
+@WebSocketGateway({
   cors: { origin: '*' },
 })
 export class PongGateway {
@@ -84,14 +84,34 @@ export class PongGateway {
 
   @SubscribeMessage('move2')
   handleMove2(@MessageBody() data: Direction, client: Socket): void {
-    if (this.gamestate == GameState.Playing) {
-      this.player2.y += data * 50;
+    if (this.gamestate == GameState.Playing && this.practiceMode == false) {
+      this.player2.new_y += data * 100;
     }
   }
 
   @SubscribeMessage('start')
-  handleStart(@MessageBody() data: any ): void {
+  handleStart(@MessageBody() data: any): void {
     this.gamestate = GameState.Playing;
+  }
+
+  @SubscribeMessage('start practice')
+  handleStartPractice(@MessageBody() data: any): void {
+    this.gamestate = GameState.Playing;
+    this.practiceMode = true;
+    this.winning_condition = data.score;
+    switch (data.difficulty) {
+      case 'easy':
+        this.player2speed = 2;
+        break;
+      case 'normal':
+        this.player2speed = 3;
+        break;
+      case 'hard':
+        this.player2speed = 4.5;
+        break;
+      case 'impossible':
+        this.player2speed = 5;
+    }
   }
 
   end(winner): void {
@@ -146,7 +166,7 @@ export class PongGateway {
     this.ball.x += this.ball.dx * 5;
     this.ball.y += this.ball.dy * 5;
 
-    if (this.ball.x >= width / 2) {
+    if (this.ball.x >= width / 2 && this.practiceMode == true) {
       this.player2.new_y = this.ball.y - 20;
       if (this.player2.y != this.player2.new_y) {
         if (this.player2.y > this.player2.new_y) {
@@ -160,6 +180,9 @@ export class PongGateway {
 
     if (this.player1.y != this.player1.new_y) {
       this.player1 = this.smooth_movement(this.player1);
+    }
+    if (this.player2.y != this.player2.new_y && this.practiceMode == false) {
+      this.player2 = this.smooth_movement(this.player2);
     }
 
     if (this.ball.y <= 0 || this.ball.y >= max_y - 10) {
