@@ -4,7 +4,7 @@
       <div class="ml-10 flex items-baseline space-x-4">
         <router-link
             class="uppercase font-semibold tracking-wider text-blush hover:text-amaranth-purple px-3 py-2 drop-shadow-2xl"
-            to="/"
+            to="/Home"
         >
           Home
         </router-link>
