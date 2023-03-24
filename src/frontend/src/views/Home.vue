@@ -37,7 +37,8 @@ export default {
   name: 'User',
   data() {
     return {
-      lists: {}
+      lists: {},
+      content: {}
     }
   },
   async created() {
@@ -51,9 +52,8 @@ export default {
 
       console.log(response.data);
       const { usual_full_name, login, email } = response.data;
-      const content = { usual_full_name, login, email };
-      const postResponse = await axios.post('http://localhost:3000/users', content);
-      // console.log(postResponse.data);
+      this.content = { usual_full_name, login, email };
+      const postResponse = await axios.post('http://localhost:8080/users', this.content);
     } catch (error) {
       console.error(error);
     }
@@ -69,7 +69,7 @@ export default {
     <Nav />
     <header></header>
     <main>
-      {{ lists }}
+      {{ content }}
     </main>
   </div>
 </template>
