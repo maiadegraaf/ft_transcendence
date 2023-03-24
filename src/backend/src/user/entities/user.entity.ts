@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Avatar } from "./avatar.entity";
+// import { Avatar } from "./avatar.entity";
 
 @Entity()
 export class User {
@@ -12,15 +12,18 @@ export class User {
     @Column()
     username: string;
 
-    @OneToOne(() => Avatar)
-    @JoinColumn()
-    avatar: Avatar;
+    @Column()
+    full_name: string;
 
-    @ManyToMany(() => User)
-    @JoinTable()
-    blocked: User[];
+    // @OneToOne(() => Avatar)
+    // @JoinColumn()
+    // avatar: Avatar;
 
-    @ManyToMany(() => User)
-    @JoinTable()
-    friends: User[];
+    // @ManyToMany(() => User)
+    // @JoinTable()
+    // blocked: User[];
+
+    // @ManyToMany(() => User)
+    // @JoinTable()
+    // friends: User[];
 }
