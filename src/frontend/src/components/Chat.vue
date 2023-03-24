@@ -50,10 +50,11 @@ export default {
     title: string;
     name: string;
     text: string;
+    id: number;
     messages: {
       name: string;
       text: string;
-      // id: number
+      id: number;
     }[];
     socket: any;
   } {
@@ -62,6 +63,7 @@ export default {
       title: 'Nestjs Websockets Chat',
       name: '',
       text: '',
+      id: 1,
       messages: [],
       socket: null,
     };
@@ -70,11 +72,16 @@ export default {
   methods: {
     // Sends a message to the server.
     sendMessage(): void {
+      // if (this.validateInput()) {
+//
       // Validates the input before sending the message.
       if (this.validateInput()) {
+        if (this.name == 'Bert') this.id = 2;
+        else this.id = 1;
         const message = {
           name: this.name,
           text: this.text,
+          id: this.id,
         };
         // Emits a 'msgToServer' event with the message.
         this.socket.emit('msgToServer', message);
@@ -83,7 +90,7 @@ export default {
       }
     },
     // Receives a message from the server.
-    receivedMessage(message: { name: string; text: string}): void {
+    receivedMessage(message: { name: string; text: string; id: number}): void {
       // Adds the message to the messages array.
       this.messages.push(message);
     },
@@ -97,14 +104,9 @@ export default {
     // Initializes the Socket.IO client and stores it in the Vue instance.
     this.socket = io('http://localhost:8080');
     // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
-    this.socket.on('msgToClient', (message: { name: string; text: string}) => {
+    this.socket.on('msgToClient', (message: { name: string; text: string; id: number}) => {
       this.receivedMessage(message);
     });
   },
 };
 </script>
-
-<style>
-
-
-</style>
