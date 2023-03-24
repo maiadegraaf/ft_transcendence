@@ -35,7 +35,7 @@
     <div v-if="practiceMode" class="flex flex-col items-center">
       <label for="winningScore" class="mb-4 flex items-center">
         <span class="mr-2 text-2xl font-bold text-buff">Winning Score:</span>
-        <input value="10" type="number" id="winningScore" v-model.number="winningScore" min="1" class="w-16 px-2 py-1 text-2xl font-bold rounded-lg border border-solid border-amaranth-purple bg-buff text-amaranth-purple focus:text-buff focus:bg-amaranth-purple focus:outline-none focus:border-amaranth-purple">
+        <input type="number" id="winningScore" v-model.number="winningScore" min="1" class="w-16 px-2 py-1 text-2xl font-bold rounded-lg border border-solid border-amaranth-purple bg-buff text-amaranth-purple focus:text-buff focus:bg-amaranth-purple focus:outline-none focus:border-amaranth-purple">
       </label>
       <label for="difficulty" class="mb-4 flex items-center">
         <span class="mr-2 text-2xl font-bold text-buff">Difficulty:</span>

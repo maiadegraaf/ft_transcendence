@@ -7,6 +7,9 @@
       href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-39cfad1d6f73c8c527bed1273cb6689ff7a806f4fae38fc551c6c2f3aa6cfa44&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=code"
       >Login with 42</a
     >
+    <a class="text-l mt-14 p-2 uppercase font-semibold hover:border-amaranth-purple  hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl">User 1</a>
+    <a class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple  hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl">User 2</a>
+    <a class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple  hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl">User 3</a>
   </div>
 </template>
 
