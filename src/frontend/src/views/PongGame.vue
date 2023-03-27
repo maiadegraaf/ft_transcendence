@@ -1,21 +1,21 @@
 <template>
   <body>
-  <h1>test</h1>
+    <Nav />
     <Pong />
   </body>
 </template>
 
 <script lang="ts">
 import Pong from '../components/Pong.vue'
+import Nav from '@/components/Nav.vue'
 
 export default {
-  name: "PongGame",
+  name: 'PongGame',
   components: {
+    Nav,
     Pong
   }
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
