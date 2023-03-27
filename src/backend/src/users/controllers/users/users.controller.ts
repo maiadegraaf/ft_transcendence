@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 
@@ -6,7 +6,20 @@ import { UsersService } from 'src/users/services/users/users.service';
 export class UsersController {
     constructor(private usersService: UsersService){}
     @Get()
-    getUsers(){}
+    async findAllUsers(){
+        const users = await this.usersService.findAllUsers();
+        return users;
+    }
+    // @Get()
+    // getUsers(){
+    //     return this.usersService.findUsers();
+    // }
+
+    @Get(':id')
+    async findUserByID(@Param('id') id: number){
+        const users = await this.usersService.findUserByID(id);
+        return users;
+    }
 
     @Post()
     createUser(@Body() CreateUserDto: CreateUserDto) {

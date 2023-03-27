@@ -7,10 +7,11 @@ export class User {
     id: number;
 
     @Column()
-    username: string;
+    login: string;
 
+    // @Column( {nullable: true })
     @Column()
-    password: string;
+    email: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
     createdAt: Date;

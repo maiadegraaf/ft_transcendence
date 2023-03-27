@@ -1,4 +1,4 @@
 export type CreateUserParams = {
-    username: string,
+    login: string,
     email: string,
 }
