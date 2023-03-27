@@ -1,14 +1,14 @@
 import { createApp } from 'vue'
-import App from "./App.vue"
+import App from './App.vue'
 import router from './router'
 import './assets/index.css'
 
 export default {
-    name: "app",
-    components: {
-        App,
-    },
-};
+  name: 'app',
+  components: {
+    App
+  }
+}
 
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
