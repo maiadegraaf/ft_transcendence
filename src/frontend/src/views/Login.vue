@@ -1,15 +1,35 @@
 <template>
   <div class="flex flex-col h-screen justify-center items-center">
-    <h1 class="text-center text-4xl uppercase font-semibold tracking-wider text-blush drop-shadow-2xl">Welcome to Ping-Pong Master</h1>
-    <p class="text-center uppercase font-semibold opacity-60 tracking-wider text-blush  drop-shadow-2xl">To start playing, login with 42</p>
+    <h1
+      class="text-center text-4xl uppercase font-semibold tracking-wider text-blush drop-shadow-2xl"
+    >
+      Welcome to Ping-Pong Master
+    </h1>
+    <p
+      class="text-center uppercase font-semibold opacity-60 tracking-wider text-blush drop-shadow-2xl"
+    >
+      To start playing, login with 42
+    </p>
     <a
-      class="text-center text-3xl mt-14 p-2 border rounded-md uppercase border-blush font-semibold hover:border-amaranth-purple  hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+      class="text-center text-3xl mt-14 p-2 border rounded-md uppercase border-blush font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
       href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-39cfad1d6f73c8c527bed1273cb6689ff7a806f4fae38fc551c6c2f3aa6cfa44&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=code"
       >Login with 42</a
     >
-    <a class="text-l mt-14 p-2 uppercase font-semibold hover:border-amaranth-purple  hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl">User 1</a>
-    <a class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple  hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl">User 2</a>
-    <a class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple  hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl">User 3</a>
+    <button
+        @click="fake_user(1)"
+      class="text-l mt-14 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+      >User 1</button
+    >
+    <button
+        @click="fake_user(2)"
+      class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+      >User 2</button
+    >
+    <button
+        @click="fake_user(3)"
+      class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+      >User 3</button
+    >
   </div>
 </template>
 
@@ -33,9 +53,25 @@ export default {
       .post('https://api.intra.42.fr/oauth/token', this.formdata)
       .then((response) => {
         localStorage.setItem('token', response.data.access_token)
+        axios
+            .get('https://api.intra.42.fr/v2/me', {
+              headers: {
+                Authorization: `Bearer ${response.data.access_token}`
+              }
+            })
+            .then((response_auth) => {
+              this.$storage.setStorageSync('user_id', response_auth.data.id)
+            })
         this.$router.push('/Home')
       })
       .catch((error) => console.log(error))
+
+  },
+  methods: {
+    fake_user(i: number) {
+      this.$storage.setStorageSync('user_id', i)
+      this.$router.push('/Home')
+    }
   }
 }
 </script>

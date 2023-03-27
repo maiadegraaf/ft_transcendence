@@ -3,6 +3,5 @@
 @tailwind utilities;
 
 html {
-    @apply text-white  bg-dark-purple font-mono;
+  @apply text-white  bg-dark-purple font-mono;
 }
-

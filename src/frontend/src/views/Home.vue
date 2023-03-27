@@ -6,7 +6,8 @@ export default {
   name: 'User',
   data() {
     return {
-      content: {}
+      content: {},
+      storage: {}
     }
   },
   async created() {
@@ -15,21 +16,21 @@ export default {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
-      });
+      })
 
-      console.log(response.data);
-      const { login, email, usual_full_name } = response.data;
-      this.content = { login, email, usual_full_name };
+      console.log(response.data)
+      const { login, email, usual_full_name } = response.data
+      this.content = { login, email, usual_full_name }
       // const postResponse = await axios.post('http://localhost:8080/api/users', this.content);
-      await axios.post('http://localhost:8080/api/users', this.content);
+      await axios.post('http://localhost:8080/api/users', this.content)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   },
   components: {
     Nav
   }
-};
+}
 </script>
 
 <template>
@@ -38,6 +39,7 @@ export default {
     <header></header>
     <main>
       {{ content }}
+      {{ this.$storage.getStorageSync('user_id') }}
     </main>
   </div>
 </template>

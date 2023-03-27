@@ -11,20 +11,20 @@
 </template>
 
 <script>
-import QrcodeStream from 'vue3-qrcode-reader';
-import OtpInput from 'vue-otp-input';
+import QrcodeStream from 'vue3-qrcode-reader'
+import OtpInput from 'vue-otp-input'
 
 export default {
   components: {
     QrcodeStream,
-    OtpInput,
+    OtpInput
   },
   data() {
     return {
       show2FAForm: true,
       secret: null,
-      otp: '',
-    };
+      otp: ''
+    }
   },
   methods: {
     async onQRCodeScan(data) {
@@ -32,33 +32,33 @@ export default {
         const response = await fetch('/auth/2fa/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data }),
-        });
-        const { secret } = await response.json();
-        this.secret = secret;
+          body: JSON.stringify({ data })
+        })
+        const { secret } = await response.json()
+        this.secret = secret
       } catch (err) {
-        console.error(err);
+        console.error(err)
       }
     },
     onOTPInput(value) {
-      this.otp = value;
+      this.otp = value
     },
     async verifyOTP() {
       try {
         const response = await fetch('/auth/2fa/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ otp: this.otp }),
-        });
+          body: JSON.stringify({ otp: this.otp })
+        })
         if (response.ok) {
           // redirect to dashboard
         } else {
-          console.log('Invalid OTP');
+          console.log('Invalid OTP')
         }
       } catch (err) {
-        console.error(err);
+        console.error(err)
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>

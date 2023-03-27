@@ -24,7 +24,9 @@
     "vue": "^3.2.47",
     "vue-otp-input": "^1.0.0",
     "vue-router": "^4.1.6",
-    "vue3-qrcode-reader": "^0.0.1"
+    "vue-session": "^1.0.0",
+    "vue3-qrcode-reader": "^0.0.1",
+    "vue3-storage": "^0.1.11"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",

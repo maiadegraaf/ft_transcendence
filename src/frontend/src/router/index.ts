@@ -5,7 +5,7 @@ import Auth from '../views/Authenticated.vue'
 import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
-import axios from "axios";
+import axios from 'axios'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -43,7 +43,6 @@ const router = createRouter({
   ]
 })
 
-
 // router.beforeEach((to, from, next) => {
 //   axios.get('https://api.intra.42.fr/v2/me', {
 //         headers: {
@@ -65,6 +64,5 @@ const router = createRouter({
 //           next()
 //       })
 // });
-
 
 export default router
