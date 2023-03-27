@@ -22,14 +22,16 @@ export default {
     mounted() {
     },
     created() {
-        this.socket.on('redirect', (route) => {
+        const socket = io('http://localhost:8080');
+        socket.on('redirect', (route) => {
             window.location.href = route;
         });
     },
     methods: {
         login() {
-            this.socket.emit('login', { username: this.username });
-            console.log('login');
+          const socket = io('http://localhost:8080');
+          socket.emit('login', { username: this.username });
+            console.log(socket + ' login: ' + this.username);
         },
     },
 };

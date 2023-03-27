@@ -149,6 +149,7 @@ export default {
       this.gameOver = false;
       this.winner = "";
       const socket: Socket = io("http://localhost:8080");
+      console.log("Starting game...");
       if (this.practiceMode)
       {
         this.practiceSettings.difficulty = this.difficulty;
