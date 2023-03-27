@@ -1,37 +1,9 @@
-<!--<template>-->
-<!--  <div v-if="!started" class="start-screen">-->
-<!--    <h1>PONG</h1>-->
-<!--    <button @click="start">Start Game</button>-->
-<!--  </div>-->
-<!--  <div v-else>-->
-<!--    <div class="pongGame">-->
-<!--      <div class="player player1" :style="{top: player1.y + 'px'}"></div>-->
-<!--      <div class="player player2" :style="{top: player2.y + 'px'}"></div>-->
-<!--      <div class="ball" :style="{top: ball.y + 'px', left: ball.x + 'px'}"></div>-->
-<!--      <div class="score">-->
-<!--        <span>{{ player1.score }}</span>-->
-<!--        <span>{{ player2.score }}</span>-->
-<!--      </div>-->
-<!--      <div v-if="gameOver" class="end-screen">-->
-<!--        <h1>Game Over</h1>-->
-<!--        <h3>{{ winner }} Wins!</h3>-->
-<!--        <button @click="start">Play Again</button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <p class="text-center"> Use the up and down keys to control the paddle </p>-->
-<!--  </div>-->
-<!--</template>-->
-
 <template>
   <div v-if="!started" class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple text-white">
     <h1 class="text-8xl mb-8 font-bold text-buff drop-shadow-lg shadow-vista-blue-500/50">PONG</h1>
-    <label for="practice-mode" class="m-4 flex items-center">
-      <span class="mr-2 text-2xl font-bold text-buff">Practice Mode:</span>
-      <select id="practice-mode" v-model="practiceMode" class="px-4 py-2 text-2xl font-bold text-yinmn-blue focus:text-vista-blue rounded-lg border border-vista-blue border-solid  focus:outline-none bg-vista-blue focus:outline-none focus:bg-yinmn-blue focus:outline-none focus:border-vista-blue">
-        <option value="true">ON</option>
-        <option value="false">OFF</option>
-      </select>
-    </label>
+    <button v-if="!waiting" @click="setPracticeMode" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
+      Start a Practice Game
+    </button>
     <div v-if="practiceMode" class="flex flex-col items-center">
       <label for="winningScore" class="mb-4 flex items-center">
         <span class="mr-2 text-2xl font-bold text-buff">Winning Score:</span>
@@ -46,10 +18,21 @@
           <option value="impossible">Impossible</option>
         </select>
       </label>
+      <button @click="start" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
+          Start Game
+      </button>
     </div>
-    <button @click="start" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
-      Start Game
-    </button>
+      <div v-else>
+        <button v-if="!waiting" @click="joinMatch" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
+          Join Match
+        </button>
+        <div v-if="waiting">
+            <p>Waiting for opponent...</p>
+            <button @click="leaveList" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
+              Leave Waitlist
+            </button>
+        </div>
+      </div>
   </div>
   <div v-else class="mx-auto w-[800px]">
     <div class="relative w-full aspect-video border-double border-4 border-buff bg-dark-purple" ref="pongGame">
@@ -95,6 +78,7 @@ export default {
       gameOver: false,
       winner: '',
       gamestate: '',
+      waiting: false,
       practiceMode: false,
       winningScore: 10,
       difficulty: 'easy',
@@ -136,6 +120,12 @@ export default {
       }
     });
 
+    socket.on("opponentFound", () => {
+      console.log("Opponent found");
+      this.waiting = false;
+      this.started = true;
+    });
+
     window.addEventListener('keydown', (event) => {
       switch (event.keyCode) {
         case 38: // up arrow key
@@ -173,6 +163,20 @@ export default {
       this.gameOver = false;
       this.practiceMode = false;
       this.winner = "";
+    },
+    setPracticeMode() {
+        this.practiceMode = true;
+    },
+    joinMatch() {
+      console.log("Joining match...")
+      this.waiting = true;
+      const socket: Socket = io("http://localhost:8080");
+      socket.emit("joinWaitlist");
+    },
+    leaveList() {
+      this.waiting = false;
+      const socket: Socket = io("http://localhost:8080");
+      socket.emit("leaveWaitlist");
     }
   },
   watch: {
@@ -184,114 +188,3 @@ export default {
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<!--<style scoped>-->
-<!--* {-->
-<!--  font-family: Courier New, monospace;-->
-<!--}-->
-
-<!--.pongGame {-->
-<!--  position: relative;-->
-<!--  width: 800px;-->
-<!--  height: 600px;-->
-<!--  background-color: #000;-->
-<!--  margin: 0 auto;-->
-<!--  border: 1px solid #fff;-->
-<!--}-->
-<!--.player {-->
-<!--  position: absolute;-->
-<!--  width: 20px;-->
-<!--  height: 100px;-->
-<!--  background-color: #fff;-->
-<!--}-->
-
-<!--.player1 {-->
-<!--  left: 20px;-->
-<!--}-->
-
-<!--.player2 {-->
-<!--  right: 20px;-->
-<!--}-->
-
-<!--.ball {-->
-<!--  position: absolute;-->
-<!--  width: 20px;-->
-<!--  height: 20px;-->
-<!--  background-color: #fff;-->
-<!--  border-radius: 50%;-->
-<!--}-->
-
-<!--.score {-->
-<!--  position: absolute;-->
-<!--  top: 20px;-->
-<!--  left: 50%;-->
-<!--  transform: translateX(-50%);-->
-<!--  font-size: 2em;-->
-<!--  color: #fff;-->
-<!--}-->
-
-<!--.score span {-->
-<!--  display: inline-block;-->
-<!--  width: 50px;-->
-<!--  text-align: center;-->
-<!--}-->
-
-<!--.start-screen {-->
-<!--  display: flex;-->
-<!--  flex-direction: column;-->
-<!--  align-items: center;-->
-<!--  justify-content: center;-->
-<!--  height: 100vh;-->
-<!--  background-color: black;-->
-<!--  color: white;-->
-<!--}-->
-
-<!--.start-screen h1 {-->
-<!--  font-size: 5rem;-->
-<!--  margin-bottom: 3rem;-->
-<!--  text-shadow: 2px 2px 4px purple;-->
-<!--}-->
-
-<!--.start-screen button {-->
-<!--  font-size: 2rem;-->
-<!--  padding: 1rem 2rem;-->
-<!--  border: none;-->
-<!--  background-color: white;-->
-<!--  color: black;-->
-<!--  cursor: pointer;-->
-<!--}-->
-
-<!--.end-screen {-->
-<!--  position: absolute;-->
-<!--  top: 0;-->
-<!--  left: 0;-->
-<!--  width: 100%;-->
-<!--  height: 100%;-->
-<!--  background-color: black;-->
-<!--  color: white;-->
-<!--  display: flex;-->
-<!--  flex-direction: column;-->
-<!--  align-items: center;-->
-<!--  justify-content: center;-->
-<!--}-->
-
-<!--.end-screen h1 {-->
-<!--  font-size: 5rem;-->
-<!--  text-shadow: 2px 2px 4px purple;-->
-<!--}-->
-
-<!--.end-screen h3 {-->
-<!--  font-size: 3rem;-->
-<!--  text-shadow: 2px 2px 4px purple;-->
-<!--}-->
-
-<!--.end-screen button {-->
-<!--  font-size: 2rem;-->
-<!--  padding: 1rem 2rem;-->
-<!--  border: none;-->
-<!--  background-color: white;-->
-<!--  color: black;-->
-<!--  cursor: pointer;-->
-<!--}-->
-<!--</style>-->

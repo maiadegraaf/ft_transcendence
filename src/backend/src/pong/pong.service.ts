@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import { User } from 'src/user/entities/user.entity';
+import { Match } from 'src/pong/entities/match.entity';
 
 const height = 450;
 const width = 800;
@@ -28,6 +30,8 @@ interface Ball {
 }
 
 interface Player {
+  socket: Socket;
+  user: User;
   x: number;
   y: number;
   new_y: number;
@@ -42,6 +46,8 @@ export class PongService {
   private player2speed = 4;
   private practiceMode = false;
   private winning_condition = 10;
+  private match: Match = null;
+  private waitlist: Socket[] = [];
   private ball: Ball = {
     x: width / 2,
     y: height / 2,
@@ -49,12 +55,16 @@ export class PongService {
     dy: Direction.Up,
   };
   private player1: Player = {
+    socket: null,
+    user: null,
     x: 20,
     y: height / 2 - 50,
     new_y: height / 2 - 50,
     score: 0,
   };
   private player2: Player = {
+    socket: null,
+    user: null,
     x: width - 20,
     y: height / 2 - 50,
     new_y: height / 2 - 50,
@@ -65,7 +75,23 @@ export class PongService {
 
   handleConnection(client: Socket): void {
     this.logger.log(`Client connected: ${client.id}`);
-    client.emit('gamestate', this.gamestate);
+  }
+
+  handleJoinWaitlist(client: Socket): void {
+    if (this.waitlist.length >= 1) {
+      this.player1.socket = this.waitlist.shift();
+      this.player2.socket = client;
+      this.player1.user = this.player1.socket.data.user;
+      this.player2.user = this.player2.socket.data.user;
+      this.player1.socket.emit('opponentFound', this.player2.user);
+      this.player2.socket.emit('opponentFound', this.player1.user);
+    } else {
+      this.waitlist.push(client);
+    }
+  }
+
+  handleLeaveWaitlist(client: Socket): void {
+    this.waitlist = this.waitlist.filter((socket) => socket.id != client.id);
   }
 
   handleStart(): void {
@@ -92,27 +118,39 @@ export class PongService {
   }
 
   handleMove(data: Direction, client: Socket): void {
-    if (this.gamestate == GameState.Playing) {
+    if (this.gamestate == GameState.Playing && client == this.player1.socket) {
       this.player1.new_y += data * 100;
-    }
-  }
-
-  handleMove2(data: Direction, client: Socket): void {
-    if (this.gamestate == GameState.Playing && this.practiceMode == false) {
+    } else if (
+      this.gamestate == GameState.Playing &&
+      client == this.player2.socket
+    ) {
       this.player2.new_y += data * 100;
     }
   }
 
-  end(client: Socket, winner: string): void {
+  emitToBothPlayers(event: string, data: any, client: Socket): void {
+    if (this.practiceMode) {
+      client.emit(event, data);
+      return;
+    }
+    this.player1.socket.emit(event, data);
+    this.player2.socket.emit(event, data);
+  }
+
+  end(winner: string, client: Socket): void {
     this.gamestate = GameState.End;
     this.winner = winner;
-    client.emit('state', {
-      ball: this.ball,
-      player1: this.player1,
-      player2: this.player2,
-      gamestate: this.gamestate,
-      winner: this.winner,
-    });
+    this.emitToBothPlayers(
+      'state',
+      {
+        ball: this.ball,
+        player1: this.player1,
+        player2: this.player2,
+        gamestate: this.gamestate,
+        winner: this.winner,
+      },
+      client,
+    );
     this.player1.score = 0;
     this.player2.score = 0;
     this.player1.y = height / 2 - 50;
@@ -145,10 +183,10 @@ export class PongService {
       return;
     }
     if (this.player1.score >= this.winning_condition) {
-      this.end(client, 'Player 1');
+      this.end('Player 1', client);
       return;
     } else if (this.player2.score >= this.winning_condition) {
-      this.end(client, 'Player 2');
+      this.end('Player 2', client);
       return;
     }
 
@@ -213,12 +251,16 @@ export class PongService {
       this.ball.dy = Direction.Down;
     }
 
-    client.emit('state', {
-      ball: this.ball,
-      player1: this.player1,
-      player2: this.player2,
-      gamestate: this.gamestate,
-      winner: this.winner,
-    });
+    this.emitToBothPlayers(
+      'state',
+      {
+        ball: this.ball,
+        player1: this.player1,
+        player2: this.player2,
+        gamestate: this.gamestate,
+        winner: this.winner,
+      },
+      client,
+    );
   }
 }

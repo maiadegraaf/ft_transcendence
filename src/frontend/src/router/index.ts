@@ -5,7 +5,9 @@ import Auth from '../views/Authenticated.vue'
 import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
+import TmpLogin from '../views/TmpLogin.vue'
 import axios from "axios";
+import { requireAuth } from '../Auth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -38,7 +40,13 @@ const router = createRouter({
     {
       path: '/Pong',
       name: 'Pong',
-      component: PongGame
+      component: PongGame,
+      beforeEnter: requireAuth
+    },
+    {
+      path: '/TmpLogin',
+      name: 'TmpLogin',
+      component: TmpLogin
     }
   ]
 })

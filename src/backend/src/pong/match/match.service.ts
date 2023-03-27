@@ -16,7 +16,7 @@ export class MatchService {
     this.waitlist = this.waitlist.filter((u) => u.id !== user.id);
   }
 
-  private tryToCreateMatch() {
+  private tryToCreateMatch(): Match {
     if (this.waitlist.length >= 2) {
       const player1 = this.waitlist.shift();
       const player2 = this.waitlist.shift();
@@ -26,7 +26,9 @@ export class MatchService {
       match.score1 = 0;
       match.score2 = 0;
       this.matches.push(match);
+      return match;
     }
+    return null;
   }
 
   getMatches(): Match[] {
@@ -35,5 +37,10 @@ export class MatchService {
 
   getMatchById(id: number): Match {
     return this.matches.find((m) => m.id === id);
+  }
+
+  updateMatch(match: Match) {
+    const index = this.matches.findIndex((m) => m.id === match.id);
+    this.matches[index] = match;
   }
 }

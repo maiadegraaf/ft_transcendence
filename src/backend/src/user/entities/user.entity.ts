@@ -1,26 +1,37 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Avatar } from "./avatar.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+// import { Avatar } from "./avatar.entity";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: Date;
+  // @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  // createdAt: Date;
 
-    @Column()
-    username: string;
+  @Column()
+  username: string;
 
-    @OneToOne(() => Avatar)
-    @JoinColumn()
-    avatar: Avatar;
+  @Column()
+  password: string;
 
-    @ManyToMany(() => User)
-    @JoinTable()
-    blocked: User[];
-
-    @ManyToMany(() => User)
-    @JoinTable()
-    friends: User[];
+  // @OneToOne(() => Avatar)
+  // @JoinColumn()
+  // avatar: Avatar;
+  //
+  // @ManyToMany(() => User)
+  // @JoinTable()
+  // blocked: User[];
+  //
+  // @ManyToMany(() => User)
+  // @JoinTable()
+  // friends: User[];
 }
