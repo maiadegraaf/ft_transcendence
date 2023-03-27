@@ -101,15 +101,18 @@ export default {
       practiceSettings: {
         score: 10,
         difficulty: 'easy',
+      },
+      socket: io("http://localhost:8080"),
+      info: {
+        matchId: '',
+        d: 0,
       }
     }
   },
   mounted() {
-    //connect to the servers websocket
-    const socket: Socket = io("http://localhost:8080");
 
     //listen for the state updates from the server
-    socket.on("state", (state) => {
+    this.socket.on("state", (state: { ball: any; player1: any; player2: any; gamestate: any; winner: any; }) => {
       this.ball = state.ball;
       this.player1 = state.player1;
       this.player2 = state.player2;
@@ -120,8 +123,9 @@ export default {
       }
     });
 
-    socket.on("opponentFound", () => {
+    this.socket.on("opponentFound", (matchId: number) => {
       console.log("Opponent found");
+      this.info.matchId = matchId;
       this.waiting = false;
       this.started = true;
     });
@@ -129,18 +133,13 @@ export default {
     window.addEventListener('keydown', (event) => {
       switch (event.keyCode) {
         case 38: // up arrow key
-          socket.emit("move", -1);
+          this.info.d = -1;
           break;
         case 40: // down arrow key
-          socket.emit("move", 1);
-          break;
-        case 87: // w key
-          socket.emit("move2", -1);
-          break;
-        case 83: // s key
-          socket.emit("move2", 1);
+          this.info.d = 1;
           break;
       }
+      this.socket.emit("move", this.info)
     });
   },
   methods: {
@@ -148,15 +147,14 @@ export default {
       this.started = true;
       this.gameOver = false;
       this.winner = "";
-      const socket: Socket = io("http://localhost:8080");
       if (this.practiceMode)
       {
         this.practiceSettings.difficulty = this.difficulty;
         this.practiceSettings.score = this.winningScore;
-        socket.emit("start practice", this.practiceSettings);
+        this.socket.emit("start practice", this.practiceSettings);
         return ;
       }
-      socket.emit("start");
+      this.socket.emit("start");
     },
     reset() {
       this.started = false;
@@ -170,13 +168,11 @@ export default {
     joinMatch() {
       console.log("Joining match...")
       this.waiting = true;
-      const socket: Socket = io("http://localhost:8080");
-      socket.emit("joinWaitlist");
+      this.socket.emit("joinMatchmaking");
     },
     leaveList() {
       this.waiting = false;
-      const socket: Socket = io("http://localhost:8080");
-      socket.emit("leaveWaitlist");
+      this.socket.emit("leaveMatchmaking");
     }
   },
   watch: {

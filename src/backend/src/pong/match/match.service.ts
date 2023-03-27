@@ -1,46 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { Match } from 'src/pong/entities/match.entity';
 import { User } from 'src/user/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Matchmaking } from 'src/pong/matchmaking/matchmaking.entity';
 
 @Injectable()
 export class MatchService {
-  private waitlist: User[] = [];
-  private matches: Match[] = [];
+    constructor(
+        @InjectRepository(Match)
+        private readonly matchRepository: Repository<Match>,
+    ) {}
 
-  addToWaitlist(user: User) {
-    this.waitlist.push(user);
-    this.tryToCreateMatch();
-  }
-
-  removeFromWaitlist(user: User) {
-    this.waitlist = this.waitlist.filter((u) => u.id !== user.id);
-  }
-
-  private tryToCreateMatch(): Match {
-    if (this.waitlist.length >= 2) {
-      const player1 = this.waitlist.shift();
-      const player2 = this.waitlist.shift();
-      const match = new Match();
-      match.player1 = player1;
-      match.player2 = player2;
-      match.score1 = 0;
-      match.score2 = 0;
-      this.matches.push(match);
-      return match;
+    async createMatch(
+        player1: Matchmaking,
+        player2: Matchmaking,
+    ): Promise<Match> {
+        const match = new Match();
+        match.player1 = player1;
+        match.player2 = player2;
+        match.score1 = 0;
+        match.score2 = 0;
+        return this.matchRepository.save(match);
     }
-    return null;
-  }
 
-  getMatches(): Match[] {
-    return this.matches;
-  }
+    async getMatchById(id: number): Promise<Match> {
+        return this.matchRepository.findOne({ where: { id } });
+    }
 
-  getMatchById(id: number): Match {
-    return this.matches.find((m) => m.id === id);
-  }
+    async getMatches(): Promise<Match[]> {
+        return this.matchRepository.find();
+    }
 
-  updateMatch(match: Match) {
-    const index = this.matches.findIndex((m) => m.id === match.id);
-    this.matches[index] = match;
-  }
+    async getMatchesByPlayer(player: User): Promise<Match[]> {
+        return this.matchRepository.find({
+            where: [{ player1: player }, { player2: player }],
+        });
+    }
+
+    async addMatch(match: Match) {
+        await this.matchRepository.save(match);
+    }
 }
