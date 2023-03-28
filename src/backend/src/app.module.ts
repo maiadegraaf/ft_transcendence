@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { User } from './typeorm/entities/User';
-import { UserModule } from './users/users.module'
+import { UserModule } from './users/users.module';
 // import { ChatModule } from './chat/chat.module';
 // import { PongModule } from './pong/pong.module';
 
