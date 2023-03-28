@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Message } from './message.entity';
-import { User } from '../../user/entities/user.entity';
+import { User } from '../../users/entities/users.entity';
 
 // @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
