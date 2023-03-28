@@ -30,6 +30,21 @@
       class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
       >User 3</button
     >
+    <button
+        @click="fake_user(4)"
+        class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+    >User 4</button
+    >
+    <button
+        @click="fake_user(5)"
+        class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+    >User 5</button
+    >
+    <button
+        @click="fake_user(6)"
+        class="text-l mt-2 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+    >User 6</button
+    >
   </div>
 </template>
 

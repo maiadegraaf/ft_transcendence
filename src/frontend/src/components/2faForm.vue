@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import QrcodeStream from 'vue3-qrcode-reader'
 import OtpInput from 'vue-otp-input'
 

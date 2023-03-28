@@ -6,8 +6,7 @@ export default {
   name: 'User',
   data() {
     return {
-      content: {},
-      storage: {}
+      content: {}
     }
   },
   async created() {
@@ -39,7 +38,6 @@ export default {
     <header></header>
     <main>
       {{ content }}
-      {{ this.$storage.getStorageSync('user_id') }}
     </main>
   </div>
 </template>
