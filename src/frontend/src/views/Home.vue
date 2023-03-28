@@ -6,25 +6,30 @@ export default {
   name: 'User',
   data() {
     return {
-      lists: []
+      content: {}
     }
   },
-  created() {
-    axios
-      .get('https://api.intra.42.fr/v2/me', {
+  async created() {
+    try {
+      const response = await axios.get('https://api.intra.42.fr/v2/me', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
-      })
-      .then((response) => {
-        this.lists = response.data
-      })
-      .catch((error) => console.log(error))
+      });
+
+      console.log(response.data);
+      const { login, email, usual_full_name } = response.data;
+      this.content = { login, email, usual_full_name };
+      // const postResponse = await axios.post('http://localhost:8080/api/users', this.content);
+      await axios.post('http://localhost:8080/api/users', this.content);
+    } catch (error) {
+      console.error(error);
+    }
   },
   components: {
     Nav
   }
-}
+};
 </script>
 
 <template>
@@ -32,7 +37,7 @@ export default {
     <Nav />
     <header></header>
     <main>
-      {{ lists }}
+      {{ content }}
     </main>
   </div>
 </template>
