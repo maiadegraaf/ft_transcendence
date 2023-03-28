@@ -15,7 +15,7 @@ RUN npm install -g @nestjs/cli
 WORKDIR /app
 
 # Expose the port that the server will listen on
-EXPOSE 3000
+EXPOSE 8080
 
 # Start the server
 ENTRYPOINT [ "npm", "run", "start"]
