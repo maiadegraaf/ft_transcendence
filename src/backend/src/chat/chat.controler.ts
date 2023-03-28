@@ -3,9 +3,7 @@ import { Channel } from './entities/channel.entity';
 import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
-import { User } from "../user/entities/user.entity";
-
-
+import { User } from '../user/entities/user.entity';
 // import { AppService } from './app.service';
 
 @Controller('chat')
@@ -16,22 +14,27 @@ export class ChatController {
     private readonly messageService: MessageService,
   ) {}
 
+  // // Get /api/chat/channel/id
   // @Get('channel/:id')
-  // getChannel(@Param(':id') id: number): Promise<Channel> {
+  // getChannel(@Param('id') id: number): Promise<Channel> {
   //   return this.channelService.getChannel(id);
   // }
 
   // Get /api/chat/id
   @Get('/:id')
-  getChannelMessages(@Param('id') id: number): Promise<Message[]> {
+  getChannelMessages(@Param('id') id: number): Promise<any> {
     return this.messageService.getMessagesByChannelID(id);
   }
 
-  // @Post('dm')
-  // postNewChannel(options: {
-  //   user1: number,
-  //   user2: number
-  // }): void {
-  //   this.channelService.createChannel();
-  // }
+  // Post /api/chat/newDm
+  @Post('newDm')
+  postNewChannel(): Promise<Channel> {
+    return this.channelService.createChannel();
+  }
+
+  // Post /api/chat/newGroup
+  @Post('newGroup')
+  addUserToChannel(param: { chanelId: number; userId: number }): Promise<any> {
+    return this.channelService.addUserToChannel(param.chanelId, param.userId);
+  }
 }

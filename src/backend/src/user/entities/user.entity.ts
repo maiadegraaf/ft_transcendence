@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Avatar } from './avatar.entity';
+import { Channel } from '../../chat/entities/channel.entity';
 
 @Entity()
 export class User {
@@ -31,4 +32,8 @@ export class User {
   @ManyToMany(() => User)
   @JoinTable()
   friends: User[];
+
+  @ManyToMany(() => Channel)
+  @JoinTable()
+  channels: Channel[];
 }

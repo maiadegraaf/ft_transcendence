@@ -12,6 +12,7 @@ export class MessageService {
     private readonly messageRepository: Repository<Message>,
   ) {}
 
+  // add the channel id to this
   async createMessage(
     payload: { name: string; text: string },
     // userId: User,

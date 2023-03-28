@@ -25,10 +25,7 @@ export class ChatGateway
   private logger: Logger = new Logger('ChatGateway');
 
   @SubscribeMessage('msgToServer')
-  handleMessage(
-    client: Socket,
-    payload: { name: string; text: string },
-  ): void {
+  handleMessage(client: Socket, payload: { name: string; text: string }): void {
     this.server.emit('msgToClient', payload);
     console.log(payload);
     this.messageService.createMessage(payload);
