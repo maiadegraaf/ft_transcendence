@@ -19,9 +19,13 @@ export class MessageService {
     // channel: Channel,
   ): Promise<Message> {
     const message = new Message();
-    // message.sender = userId;
+    // message.sender = payload.id;
     message.text = payload.text;
     // message.channel = channel;
     return this.messageRepository.save(message);
+  }
+
+  async getMessagesByChannelID(id: number): Promise<Message[]> {
+    return this.messageRepository.find({ where: { id } });
   }
 }

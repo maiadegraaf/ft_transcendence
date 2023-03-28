@@ -4,7 +4,6 @@ import { Match } from 'src/pong/entities/match.entity';
 import { Avatar } from 'src/user/entities/avatar.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Message } from '../chat/entities/message.entity';
-import { DmChannel } from '../chat/entities/dmChannel.entity';
 import { Channel } from '../chat/entities/channel.entity';
 
 @Module({
@@ -16,7 +15,7 @@ import { Channel } from '../chat/entities/channel.entity';
       username: 'pongmaster',
       password: 'ping_pong42',
       database: 'transcendence',
-      entities: [User, Avatar, Match, Message, DmChannel, Channel],
+      entities: [User, Avatar, Match, Message, Channel],
       synchronize: true,
     }),
   ],

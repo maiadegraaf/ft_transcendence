@@ -11,7 +11,7 @@ export default {
   },
   created() {
     axios
-      .get('https://api.intra.42.fr/v2/me', {
+        .get('https://api.intra.42.fr/v2/me', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
