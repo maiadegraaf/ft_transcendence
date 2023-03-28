@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
-import { Match } from 'src/pong/entities/match.entity';
+import { Match } from 'src/pong/match/match.entity';
 import { Matchmaking } from './matchmaking/matchmaking.entity';
 import { MatchmakingService } from './matchmaking/matchmaking.service';
 import { MatchService } from './match/match.service';
+import { PlayerService } from './player/player.service';
+import { Player } from './player/player.entity';
 
 const height = 450;
 const width = 800;
@@ -32,8 +34,8 @@ interface Ball {
     dy: Direction;
 }
 
-interface Player {
-    user: Matchmaking;
+interface PlayerInterface {
+    user: Player;
     socket: Socket;
     x: number;
     y: number;
@@ -56,7 +58,7 @@ export class PongService {
         dx: Direction.Left,
         dy: Direction.Up,
     };
-    private player1: Player = {
+    private player1: PlayerInterface = {
         socket: null,
         user: null,
         x: 20,
@@ -64,7 +66,7 @@ export class PongService {
         new_y: height / 2 - 50,
         score: 0,
     };
-    private player2: Player = {
+    private player2: PlayerInterface = {
         socket: null,
         user: null,
         x: width - 20,
@@ -77,19 +79,40 @@ export class PongService {
         private readonly server: Server,
         private matchmakingService: MatchmakingService,
         private matchesService: MatchService,
+        private playerService: PlayerService,
     ) {}
 
-    handleConnection(client: Socket): void {
+    async handleConnection(client: Socket): Promise<void> {
         this.logger.log(`Client connected: ${client.id}`);
+        const user = new User();
+        await this.playerService.createPlayer(user, client.id);
+        console.log('player created for ' + client.id);
+    }
+
+    handleDisconnect(client: Socket): void {
+        this.logger.log(`Client disconnected: ${client.id}`);
+        if (this.matchmakingService.getMatchmakingBySocket(client.id)) {
+            this.handleLeaveMatchmaking(client);
+            console.log('player removed from matchmaking for ' + client.id);
+        }
+        this.playerService.removePlayerBySocket(client.id);
+        console.log('player removed for ' + client.id);
+    }
+
+    emitOpponentFound(
+        client: Socket,
+        opponentSocketId: string,
+        matchId: number,
+    ): void {
+        client.emit('opponentFound', matchId);
+        client.to(opponentSocketId).emit('opponentFound', this.match.id);
     }
 
     async handleJoinMatchmaking(client: Socket): Promise<void> {
         console.log(client.id + ' joined the waitlist');
-        const newPlayer = new Matchmaking();
-        newPlayer.socketId = client.id;
-        // newPlayer.player = client.data.user;
-        await this.matchmakingService.push(newPlayer);
-        this.matchmakingService.print();
+        const newPlayer = await this.playerService.getPlayerBySocket(client.id);
+        await this.matchmakingService.addPlayer(newPlayer);
+        await this.matchmakingService.print();
         const length = await this.matchmakingService.length();
         if (length > 1) {
             this.player2.user = await this.matchmakingService.pop();
@@ -98,27 +121,30 @@ export class PongService {
                 this.player1.user,
                 this.player2.user,
             );
+            if (!this.player1.user){
+                throw new Error('player1 is null');
+            }
+            // console.log('player1: ' + this.player1.user.socketId);
+            // console.log('player2: ' + this.player2.user.socketId);
             if (client.id == this.player1.user.socketId) {
-                console.log('player1: ' + this.player1.user.socketId);
-                client.emit('opponentFound', this.match.id);
-                console.log('player2: ' + this.player2.user.socketId);
-                client
-                    .to(this.player2.user.socketId)
-                    .emit('opponentFound', this.match.id);
+                this.emitOpponentFound(
+                    client,
+                    this.player2.user.socketId,
+                    this.match.id,
+                );
             } else {
-                console.log('player2: ' + this.player2.user.socketId);
-                client.emit('opponentFound', this.match.id);
-                console.log('player1: ' + this.player1.user.socketId);
-                client
-                    .to(this.player1.user.socketId)
-                    .emit('opponentFound', this.match.id);
+                this.emitOpponentFound(
+                    client,
+                    this.player1.user.socketId,
+                    this.match.id,
+                );
             }
             this.gamestate = GameState.Playing;
         }
     }
 
-    handleLeaveMatchmaking(client: Socket): void {
-        this.matchmakingService.remove(client.id);
+    async handleLeaveMatchmaking(client: Socket): Promise<void> {
+        await this.matchmakingService.removeBySocket(client.id);
     }
 
     handleStart(): void {
@@ -146,6 +172,7 @@ export class PongService {
     }
 
     handleMove(data: Direction, client: Socket): void {
+        if (!client) return;
         console.log('SOCKET: ' + client.id + ' move: ' + data);
         if (this.practiceMode) {
             this.player1.new_y += data * 100;

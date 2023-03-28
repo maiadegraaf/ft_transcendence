@@ -6,7 +6,9 @@ import { join } from 'path'; // New
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import { DatabaseModule } from './database/database.module';
-import { MatchmakingModule } from "./pong/matchmaking/matchmaking.module";
+import { MatchmakingModule } from './pong/matchmaking/matchmaking.module';
+import { MatchModule } from './pong/match/match.module';
+import { PlayerModule } from './pong/player/player.module';
 
 @Module({
     imports: [
@@ -14,6 +16,8 @@ import { MatchmakingModule } from "./pong/matchmaking/matchmaking.module";
         ChatModule,
         PongModule,
         MatchmakingModule,
+        MatchModule,
+        PlayerModule,
         ServeStaticModule.forRoot({
             // New
             rootPath: join(__dirname, '../..', '../frontend/dist'), // New

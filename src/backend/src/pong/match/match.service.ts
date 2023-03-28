@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Match } from 'src/pong/entities/match.entity';
+import { Match } from 'src/pong/match/match.entity';
 import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Matchmaking } from 'src/pong/matchmaking/matchmaking.entity';
+import { Player } from 'src/pong/player/player.entity';
 
 @Injectable()
 export class MatchService {
@@ -13,15 +13,27 @@ export class MatchService {
     ) {}
 
     async createMatch(
-        player1: Matchmaking,
-        player2: Matchmaking,
+        player1: Player,
+        player2: Player,
     ): Promise<Match> {
         const match = new Match();
         match.player1 = player1;
         match.player2 = player2;
         match.score1 = 0;
         match.score2 = 0;
-        return this.matchRepository.save(match);
+        try {
+            const savedMatch = await this.matchRepository
+                .createQueryBuilder()
+                .insert()
+                .into(Match)
+                .values(match)
+                .execute();
+            return savedMatch.generatedMaps[0] as Match;
+        } catch (e) {
+            console.log(e);
+            throw new Error('Could not create match');
+        }
+        // return this.matchRepository.save(match);
     }
 
     async getMatchById(id: number): Promise<Match> {

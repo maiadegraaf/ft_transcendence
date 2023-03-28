@@ -1,5 +1,4 @@
-import { User } from 'src/user/entities/user.entity';
-import { Matchmaking } from 'src/pong/matchmaking/matchmaking.entity';
+import { Player } from 'src/pong/player/player.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -7,11 +6,11 @@ export class Match {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User)
-    player1: Matchmaking;
+    @ManyToOne(() => Player)
+    player1: Player;
 
-    @ManyToOne(() => User)
-    player2: Matchmaking;
+    @ManyToOne(() => Player)
+    player2: Player;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

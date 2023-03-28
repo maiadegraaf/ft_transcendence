@@ -7,7 +7,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { PongService } from '../pong.service';
 import { MatchService } from '../match/match.service';
-import { Match } from '../entities/match.entity';
+import { Match } from '../match/match.entity';
 
 enum Direction {
     Up = -1,
@@ -30,7 +30,7 @@ export class PongGateway {
     }
 
     handleDisconnect(client: Socket): void {
-        this.pongService.handleLeaveMatchmaking(client);
+        this.pongService.handleDisconnect(client);
     }
 
     @SubscribeMessage('joinMatchmaking')
