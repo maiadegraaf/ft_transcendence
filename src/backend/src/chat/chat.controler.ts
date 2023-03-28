@@ -14,27 +14,27 @@ export class ChatController {
     private readonly messageService: MessageService,
   ) {}
 
-  // // Get /api/chat/channel/id
-  // @Get('channel/:id')
-  // getChannel(@Param('id') id: number): Promise<Channel> {
-  //   return this.channelService.getChannel(id);
-  // }
-
   // Get /api/chat/id
   @Get('/:id')
   getChannelMessages(@Param('id') id: number): Promise<any> {
     return this.messageService.getMessagesByChannelID(id);
   }
 
-  // Post /api/chat/newDm
-  @Post('newDm')
-  postNewChannel(): Promise<Channel> {
-    return this.channelService.createChannel();
+  // Post /api/chat/dm
+  @Post('dm')
+  postNewChannel(param: { user1: number; user2: number }): Promise<Channel> {
+    return this.channelService.newDmChannel(param.user1, param.user2);
   }
 
-  // Post /api/chat/newGroup
-  @Post('newGroup')
-  addUserToChannel(param: { chanelId: number; userId: number }): Promise<any> {
+  // // Post /api/chat/group
+  // @Post('group')
+  // postNewGroupChannel(param: { adminUser: number }): Promise<Channel> {
+  //   return this.channelService.newGroupChannel(param.adminUser);
+  // }
+
+  // Post /api/chat/group/userAdd
+  @Post('group/userAdd')
+  postUserToChannel(param: { chanelId: number; userId: number }): Promise<any> {
     return this.channelService.addUserToChannel(param.chanelId, param.userId);
   }
 }

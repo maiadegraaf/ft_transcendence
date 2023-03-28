@@ -7,3 +7,8 @@ export type UpdateUserParams = {
   login: string;
   email: string;
 };
+
+export enum ChannelEnum {
+  DM,
+  Group,
+}

@@ -4,10 +4,13 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Message } from './message.entity';
 import { User } from '../../users/entities/users.entity';
+import { ChannelEnum } from '../../utils/types';
+import { GroupProfile } from './groupProfile.entity';
 
 // @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
@@ -22,9 +25,15 @@ export class Channel {
   @ManyToMany(() => User, (usr) => usr.id)
   users: User[];
 
-  @Column()
-  dmChannel: boolean;
+  @OneToOne(() => GroupProfile, (profile) => profile.channel)
+  profile: GroupProfile;
+  //
+  // @Column()
+  // type: ChannelEnum;
+  //
+  // @Column()
+  // dmChannel: ChannelEnum;
 
-  @Column()
-  name: string;
+  // @Column()
+  // name: string;
 }
