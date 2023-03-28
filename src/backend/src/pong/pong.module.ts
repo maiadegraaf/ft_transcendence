@@ -14,6 +14,7 @@ import { Match } from './match/match.entity';
 import { PlayerModule } from './player/player.module';
 import { Player } from './player/player.entity';
 import { PlayerService } from './player/player.service';
+import { MatchInstanceModule } from './match-instance/match-instance.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { PlayerService } from './player/player.service';
         TypeOrmModule.forFeature([Match]),
         PlayerModule,
         TypeOrmModule.forFeature([Player]),
+        MatchInstanceModule,
     ],
     controllers: [PongController],
     providers: [

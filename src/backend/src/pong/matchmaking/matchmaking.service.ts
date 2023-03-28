@@ -3,6 +3,7 @@ import { Matchmaking } from './matchmaking.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from '../player/player.entity';
 import { Not, Repository } from 'typeorm';
+import {Match} from "../match/match.entity";
 
 @Injectable()
 export class MatchmakingService {
@@ -17,12 +18,15 @@ export class MatchmakingService {
             matchmaking = new Matchmaking();
         }
         matchmaking.player = player;
-        console.log(matchmaking);
         return await this.matchmakingRepository.save(matchmaking);
     }
 
     async getMatchmaking(): Promise<Matchmaking[]> {
-        return this.matchmakingRepository.find();
+        return this.matchmakingRepository.find({
+            relations: {
+                player: true,
+            },
+        });
     }
 
     async getMatchmakingById(id: number): Promise<Matchmaking> {
@@ -64,14 +68,13 @@ export class MatchmakingService {
     async pop(): Promise<Player> {
         const matchmaking = await this.matchmakingRepository.findOne({
             where: { id: Not(0) },
+            relations: {
+                player: true,
+            },
         });
-        console.log('pop');
-        await this.print();
         if (!matchmaking) return null;
         await this.matchmakingRepository.remove(matchmaking);
         const player = matchmaking.player;
-        console.log(matchmaking + ' removed');
-        console.log(player + ' returned');
         return player;
     }
 
@@ -84,7 +87,16 @@ export class MatchmakingService {
     }
 
     async print() {
-        const matchmaking = await this.getMatchmaking();
-        console.log(matchmaking);
+        for (const matchmaking of await this.getMatchmaking()) {
+            console.log(
+                matchmaking
+        //              + ' ' +
+        //             matchmaking.player.id +
+        //             ' ' +
+        //             matchmaking.player.socketId,
+            );
+        }
+        // const matchmaking = await this.getMatchmaking();
+        // console.log(matchmaking);
     }
 }

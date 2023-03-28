@@ -1,4 +1,5 @@
 import {
+    ConnectedSocket,
     MessageBody,
     SubscribeMessage,
     WebSocketGateway,
@@ -16,6 +17,11 @@ enum Direction {
     Right = 1,
 }
 
+interface Info {
+    d: Direction;
+    matchId: number;
+}
+
 @WebSocketGateway({
     cors: { origin: '*' },
 })
@@ -25,26 +31,29 @@ export class PongGateway {
     private match: Match = null;
     @WebSocketServer() server: Server;
 
-    handleConnection(client: Socket): void {
+    handleConnection(@ConnectedSocket() client: Socket): void {
         this.pongService.handleConnection(client);
     }
 
-    handleDisconnect(client: Socket): void {
+    handleDisconnect(@ConnectedSocket() client: Socket): void {
         this.pongService.handleDisconnect(client);
     }
 
     @SubscribeMessage('joinMatchmaking')
-    handleJoinMatchmaking(client: Socket): void {
+    handleJoinMatchmaking(@ConnectedSocket() client: Socket): void {
         this.pongService.handleJoinMatchmaking(client);
     }
 
     @SubscribeMessage('leaveMatchmaking')
-    handleLeaveMatchmaking(client: Socket): void {
+    handleLeaveMatchmaking(@ConnectedSocket() client: Socket): void {
         this.pongService.handleLeaveMatchmaking(client);
     }
 
     @SubscribeMessage('move')
-    handleMove(@MessageBody() data: Direction, client: Socket): void {
+    handleMove(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: Info,
+    ): void {
         this.pongService.handleMove(data, client);
     }
 
@@ -54,11 +63,14 @@ export class PongGateway {
     }
 
     @SubscribeMessage('start practice')
-    handleStartPractice(client: Socket, @MessageBody() data: any): void {
+    handleStartPractice(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any,
+    ): void {
         this.pongService.handlePracticeMode(client, data);
     }
 
-    afterInit(client: Socket): void {
+    afterInit(@ConnectedSocket() client: Socket): void {
         setInterval(() => this.pongService.tick(client), 1000 / 60);
     }
 }

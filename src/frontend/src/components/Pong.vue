@@ -102,14 +102,18 @@ export default {
         score: 10,
         difficulty: 'easy',
       },
-      socket: io("http://localhost:8080"),
+      // socket: io("http://localhost:8080"),
       info: {
         matchId: '',
         d: 0,
       }
     }
   },
+  created() {
+    // this.socket = io("http://localhost:8080");
+  },
   mounted() {
+    this.socket = io("http://localhost:8080");
 
     //listen for the state updates from the server
     this.socket.on("state", (state: { ball: any; player1: any; player2: any; gamestate: any; winner: any; }) => {
@@ -131,7 +135,12 @@ export default {
     });
 
     window.addEventListener('keydown', (event) => {
-      if (!this.started) return;
+      console.log ("Key pressed");
+      if (!this.started) {
+        console.log("Game not started");
+        return ;
+      }
+      console.log("Game started");
       switch (event.keyCode) {
         case 38: // up arrow key
           this.info.d = -1;
@@ -140,6 +149,11 @@ export default {
           this.info.d = 1;
           break;
       }
+      if (!this.socket) {
+        console.log("Socket not connected");
+        return ;
+      }
+      console.log("Sending move to socket " + this.socket.id)
       this.socket.emit("move", this.info)
     });
   },
