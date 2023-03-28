@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Match } from 'src/pong/match/match.entity';
 import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {Not, Repository} from 'typeorm';
 import { Player } from 'src/pong/player/player.entity';
 
 @Injectable()
@@ -19,6 +19,8 @@ export class MatchService {
         const match = new Match();
         match.player1 = player1;
         match.player2 = player2;
+        console.log('match.player1: ', match.player1);
+        console.log('match.player2: ', match.player2);
         match.score1 = 0;
         match.score2 = 0;
         try {
@@ -38,6 +40,26 @@ export class MatchService {
 
     async getMatchById(id: number): Promise<Match> {
         return this.matchRepository.findOne({ where: { id } });
+    }
+
+    async returnPlayer1(match: Match): Promise<Player> {
+        const tmp = await this.matchRepository.findOne({
+            where: { id: match.id },
+            relations: {
+                player1: true,
+            },
+        });
+        return tmp.player1;
+    }
+
+    async returnPlayer2(match: Match): Promise<Player> {
+        const tmp = await this.matchRepository.findOne({
+            where: { id: match.id },
+            relations: {
+                player2: true,
+            },
+        });
+        return tmp.player2;
     }
 
     async getMatches(): Promise<Match[]> {

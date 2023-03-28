@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import { Match } from 'src/pong/match/match.entity';
 import { MatchInstance } from './match-instance/match-instance.service';
@@ -52,34 +51,34 @@ interface PlayerInterface {
 export class PongService {
     private logger: Logger = new Logger('PongGateway');
     private instances: { [key: number]: MatchInstance } = {};
-    private gamestate: GameState = GameState.Start;
-    private winner = '';
+    // private gamestate: GameState = GameState.Start;
+    // private winner = '';
     private player2speed = 4;
     private practiceMode = false;
-    private winning_condition = 10;
-    private match: Match = null;
-    private ball: Ball = {
-        x: width / 2,
-        y: height / 2,
-        dx: Direction.Left,
-        dy: Direction.Up,
-    };
-    private player1: PlayerInterface = {
-        socket: null,
-        user: null,
-        x: 20,
-        y: height / 2 - 50,
-        new_y: height / 2 - 50,
-        score: 0,
-    };
-    private player2: PlayerInterface = {
-        socket: null,
-        user: null,
-        x: width - 20,
-        y: height / 2 - 50,
-        new_y: height / 2 - 50,
-        score: 0,
-    };
+    // private winning_condition = 10;
+    // private match: Match = null;
+    // private ball: Ball = {
+    //     x: width / 2,
+    //     y: height / 2,
+    //     dx: Direction.Left,
+    //     dy: Direction.Up,
+    // };
+    // private player1: PlayerInterface = {
+    //     socket: null,
+    //     user: null,
+    //     x: 20,
+    //     y: height / 2 - 50,
+    //     new_y: height / 2 - 50,
+    //     score: 0,
+    // };
+    // private player2: PlayerInterface = {
+    //     socket: null,
+    //     user: null,
+    //     x: width - 20,
+    //     y: height / 2 - 50,
+    //     new_y: height / 2 - 50,
+    //     score: 0,
+    // };
 
     constructor(
         private readonly server: Server,
@@ -115,7 +114,7 @@ export class PongService {
         matchId: number,
     ): void {
         client.emit('opponentFound', matchId);
-        client.to(opponentSocketId).emit('opponentFound', this.match.id);
+        client.to(opponentSocketId).emit('opponentFound', matchId);
     }
 
     async handleJoinMatchmaking(client: Socket): Promise<void> {
@@ -129,29 +128,22 @@ export class PongService {
         );
         const length = await this.matchmakingService.length();
         if (length > 1) {
-            this.player2.user = await this.matchmakingService.pop();
-            this.player1.user = await this.matchmakingService.pop();
-            this.match = await this.matchesService.createMatch(
-                this.player1.user,
-                this.player2.user,
+            const player1 = await this.matchmakingService.pop();
+            const player2 = await this.matchmakingService.pop();
+            let match = new Match();
+            match = await this.matchesService.createMatch(player1, player2);
+            this.logger.log(
+                'player1 socket: ' + player1.socketId + ' id: ' + player1.id,
             );
-            this.logger.log('player1: ' + this.player1.user.socketId);
-            this.logger.log('player2: ' + this.player2.user.socketId);
-            const instance = new MatchInstance(this.server, this.match);
-            if (client.id == this.player1.user.socketId) {
-                this.emitOpponentFound(
-                    client,
-                    this.player2.user.socketId,
-                    this.match.id,
-                );
+            this.logger.log(
+                'player2 socket: ' + player2.socketId + ' id: ' + player2.id,
+            );
+            this.instances[match.id] = new MatchInstance(this.server, match);
+            if (client.id == player1.socketId) {
+                this.emitOpponentFound(client, player2.socketId, match.id);
             } else {
-                this.emitOpponentFound(
-                    client,
-                    this.player1.user.socketId,
-                    this.match.id,
-                );
+                this.emitOpponentFound(client, player1.socketId, match.id);
             }
-            this.gamestate = GameState.Playing;
         }
     }
 
@@ -159,25 +151,35 @@ export class PongService {
         await this.matchmakingService.removeBySocket(client.id);
     }
 
-    handlePracticeMode(client: Socket, data: any): void {
-        this.gamestate = GameState.Playing;
-        this.practiceMode = true;
-        this.winning_condition = data.score;
-        this.player1.socket = client;
-        switch (data.difficulty) {
-            case 'easy':
-                this.player2speed = 2;
-                break;
-            case 'normal':
-                this.player2speed = 3;
-                break;
-            case 'hard':
-                this.player2speed = 4.5;
-                break;
-            case 'impossible':
-                this.player2speed = 5;
+    tick(client: Socket): void {
+        for (const matchId in this.instances) {
+            this.instances[matchId].tick(client);
         }
     }
+
+    handleMove(client: Socket, data: Info): void {
+        this.instances[data.matchId].handleMove(client, data);
+    }
+
+    // handlePracticeMode(client: Socket, data: any): void {
+    //     this.gamestate = GameState.Playing;
+    //     this.practiceMode = true;
+    //     this.winning_condition = data.score;
+    //     this.player1.socket = client;
+    //     switch (data.difficulty) {
+    //         case 'easy':
+    //             this.player2speed = 2;
+    //             break;
+    //         case 'normal':
+    //             this.player2speed = 3;
+    //             break;
+    //         case 'hard':
+    //             this.player2speed = 4.5;
+    //             break;
+    //         case 'impossible':
+    //             this.player2speed = 5;
+    //     }
+    // }
 
     // handleMove(data: Info, client: Socket): void {
     //     if (!client) {

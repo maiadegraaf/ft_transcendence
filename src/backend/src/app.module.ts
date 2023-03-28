@@ -9,6 +9,7 @@ import { DatabaseModule } from './database/database.module';
 import { MatchmakingModule } from './pong/matchmaking/matchmaking.module';
 import { MatchModule } from './pong/match/match.module';
 import { PlayerModule } from './pong/player/player.module';
+import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { PlayerModule } from './pong/player/player.module';
         MatchmakingModule,
         MatchModule,
         PlayerModule,
+        MatchInstanceModule,
         ServeStaticModule.forRoot({
             // New
             rootPath: join(__dirname, '../..', '../frontend/dist'), // New

@@ -54,21 +54,21 @@ export class PongGateway {
         @ConnectedSocket() client: Socket,
         @MessageBody() data: Info,
     ): void {
-        this.pongService.handleMove(data, client);
+        this.pongService.handleMove(client, data);
     }
 
-    @SubscribeMessage('start')
-    handleStart(): void {
-        this.pongService.handleStart();
-    }
+    // @SubscribeMessage('start')
+    // handleStart(): void {
+    //     this.pongService.handleStart();
+    // }
 
-    @SubscribeMessage('start practice')
-    handleStartPractice(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any,
-    ): void {
-        this.pongService.handlePracticeMode(client, data);
-    }
+    // @SubscribeMessage('start practice')
+    // handleStartPractice(
+    //     @ConnectedSocket() client: Socket,
+    //     @MessageBody() data: any,
+    // ): void {
+    //     this.pongService.handlePracticeMode(client, data);
+    // }
 
     afterInit(@ConnectedSocket() client: Socket): void {
         setInterval(() => this.pongService.tick(client), 1000 / 60);

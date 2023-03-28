@@ -3,7 +3,7 @@ import { Matchmaking } from './matchmaking.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from '../player/player.entity';
 import { Not, Repository } from 'typeorm';
-import {Match} from "../match/match.entity";
+import { Match } from '../match/match.entity';
 
 @Injectable()
 export class MatchmakingService {
@@ -89,11 +89,11 @@ export class MatchmakingService {
     async print() {
         for (const matchmaking of await this.getMatchmaking()) {
             console.log(
-                matchmaking
-        //              + ' ' +
-        //             matchmaking.player.id +
-        //             ' ' +
-        //             matchmaking.player.socketId,
+                matchmaking,
+                //              + ' ' +
+                //             matchmaking.player.id +
+                //             ' ' +
+                //             matchmaking.player.socketId,
             );
         }
         // const matchmaking = await this.getMatchmaking();

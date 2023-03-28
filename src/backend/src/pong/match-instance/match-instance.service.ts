@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Player } from '../player/player.entity';
 import { Server, Socket } from 'socket.io';
 import { Match } from '../match/match.entity';
-import { MatchmakingService } from '../matchmaking/matchmaking.service';
-import { MatchService } from '../match/match.service';
-import { PlayerService } from '../player/player.service';
+// import { MatchmakingService } from '../matchmaking/matchmaking.service';
+// import { MatchService } from '../match/match.service';
+// import { PlayerService } from '../player/player.service';
 
 const height = 450;
 const width = 800;
@@ -84,7 +84,7 @@ export class MatchInstance {
         this.gamestate = GameState.Playing;
     }
 
-    handleMove(data: Info, client: Socket): void {
+    handleMove(client: Socket, data: Info): void {
         if (!client) {
             console.log('no client');
             return;

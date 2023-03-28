@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MatchmakingController } from './matchmaking.controller';
 import { MatchmakingService } from './matchmaking.service';
 import { Matchmaking } from './matchmaking.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,7 +11,7 @@ import { Player } from '../player/player.entity';
         PlayerModule,
         TypeOrmModule.forFeature([Player]),
     ],
-    controllers: [MatchmakingController],
+    controllers: [],
     providers: [MatchmakingService],
 })
 export class MatchmakingModule {}
