@@ -25,10 +25,25 @@ export class ChatGateway
   private logger: Logger = new Logger('ChatGateway');
 
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, payload: { name: string; text: string }): void {
-    this.server.emit('msgToClient', payload);
+  handleMessage(
+    client: Socket,
+    payload: { userId: number; text: string; channelId: number },
+  ): void {
+    this.server.to('room' + payload.channelId).emit('msgToClient', payload);
     console.log(payload);
     this.messageService.createMessage(payload);
+  }
+
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(
+    client: Socket,
+    payload: { userId: number; channelId: number },
+  ): void {
+    client.join('room' + payload.channelId);
+    this.server.emit('msgToClient', {
+      name: 'server',
+      text: `${payload.userId} has joined the room`,
+    });
   }
 
   afterInit(server: Server) {

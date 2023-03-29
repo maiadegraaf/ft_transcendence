@@ -26,7 +26,15 @@ export class ChannelService {
     const channel = new Channel();
     return await this.channelRepository.save(channel);
   }
-
+  async getChannelById(id: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne({
+      where: { id },
+    });
+    if (!channel) {
+      throw new NotFoundException('Channel with ID ${id} not found');
+    }
+    return channel;
+  }
   async addUserToChannel(channelId: number, userId: number): Promise<any> {
     const channel = await this.channelRepository.findOne({
       where: { id: channelId },
@@ -37,11 +45,13 @@ export class ChannelService {
     }
     const user = await this.userService.findUserByID(userId);
     channel.users.push(user);
-    user.channels.push(channel);
-    if (!(await this.userService.saveUser(user))) {
-      throw new InternalServerErrorException('channel cannot be saved in user');
-    }
-    return await this.channelRepository.save(channel);
+    await this.channelRepository.save(channel);
+    // await this.userService.addChannelToUser(userId, channelId);
+    // user.channels.push(channel);
+    // if (!(await this.userService.saveUser(user))) {
+    //   throw new InternalServerErrorException('channel cannot be saved in user');
+    // }
+    return channel;
   }
 
   async newDmChannel(user1: number, user2: number): Promise<any> {

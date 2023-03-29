@@ -42,6 +42,16 @@ export class UsersService {
     return this.userRepository.delete({ id });
   }
 
+  // async addChannelToUser(userId: number, channelId: number): Promise<any> {
+  //   const user = await this.findUserByID(userId);
+  //   const channel = await this.channelRepository.findOne({
+  //     where: { id: channelId },
+  //     relations: ['users'],
+  //   });
+  //
+  //
+  // }
+
   async saveUser(user: User): Promise<any> {
     return this.userRepository.save(user);
   }
