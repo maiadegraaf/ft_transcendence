@@ -8,19 +8,12 @@ import { ChatController } from './chat.controler';
 import { ChannelService } from './services/channel.service';
 import { GroupProfile } from './entities/groupProfile.entity';
 import { GroupProfileService } from './services/groupProfile.service';
-// import { UserModule } from '../users/users.module';
-import { User } from '../users/entities/users.entity';
-import { UsersService } from '../users/services/users/users.service';
+import {UsersService} from "../users/services/users/users.service";
+import {User} from "../users/entities/users.entity";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User])],
   controllers: [ChatController],
-  providers: [
-    ChatGateway,
-    MessageService,
-    ChannelService,
-    GroupProfileService,
-    UsersService,
-  ],
+  providers: [ChatGateway, MessageService, ChannelService, GroupProfileService, UsersService],
 })
 export class ChatModule {}
