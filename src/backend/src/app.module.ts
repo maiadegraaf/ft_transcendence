@@ -6,6 +6,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { User } from './typeorm/entities/User';
 import { UserModule } from './users/users.module'
+// import { Profile } from './typeorm/entities/Profile';
+// import { Post } from './typeorm/entities/Post';
+
 // import { ChatModule } from './chat/chat.module';
 // import { PongModule } from './pong/pong.module';
 
@@ -18,6 +21,7 @@ import { UserModule } from './users/users.module'
       username: 'pongmaster',
       password: 'ping_pong42',
       database: 'transcendence',
+      // entities: [User, Profile, Post],
       entities: [User],
       synchronize: true,
     }),
