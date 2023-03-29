@@ -70,7 +70,7 @@ export class PongGateway {
     //     this.pongService.handlePracticeMode(client, data);
     // }
 
-    afterInit(@ConnectedSocket() client: Socket): void {
-        setInterval(() => this.pongService.tick(client), 1000 / 60);
+    afterInit(): void {
+        setInterval(() => this.pongService.tick(), 1000 / 60);
     }
 }

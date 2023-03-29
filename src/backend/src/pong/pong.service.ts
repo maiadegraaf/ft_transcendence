@@ -96,7 +96,11 @@ export class PongService {
 
     handleDisconnect(client: Socket): void {
         this.logger.log(`Client disconnected: ${client.id}`);
-        if (this.matchmakingService.getMatchmakingBySocket(client.id)) {
+        const instance = this.getInstanceByPlayerSocket(client.id);
+        if (instance) {
+            instance.handlePlayerDisconnect(client);
+            delete this.instances[instance.returnMatchId()];
+        } else if (this.matchmakingService.getMatchmakingBySocket(client.id)) {
             this.handleLeaveMatchmaking(client);
             if (!this.matchmakingService.getMatchmakingBySocket(client.id)) {
                 console.log('player removed from matchmaking for ' + client.id);
@@ -122,10 +126,10 @@ export class PongService {
         const newPlayer = await this.playerService.getPlayerBySocket(client.id);
         await this.matchmakingService.addPlayer(newPlayer);
         // console.log(newPlayer + ' added to matchmaking');
-        this.logger.log(
-            'This is the current matchmaking list: ' +
-                (await this.matchmakingService.print()),
-        );
+        // this.logger.log(
+        //     'This is the current matchmaking list: ' +
+        //         (await this.matchmakingService.print()),
+        // );
         const length = await this.matchmakingService.length();
         if (length > 1) {
             const player1 = await this.matchmakingService.pop();
@@ -138,27 +142,49 @@ export class PongService {
             this.logger.log(
                 'player2 socket: ' + player2.socketId + ' id: ' + player2.id,
             );
-            this.instances[match.id] = new MatchInstance(this.server, match);
+            this.instances[match.id] = new MatchInstance(
+                this.server,
+                match,
+                this.matchesService,
+            );
             if (client.id == player1.socketId) {
                 this.emitOpponentFound(client, player2.socketId, match.id);
             } else {
                 this.emitOpponentFound(client, player1.socketId, match.id);
             }
+            await this.instances[match.id].start();
+            console.log('match started: ' + match.id);
         }
     }
 
     async handleLeaveMatchmaking(client: Socket): Promise<void> {
+        this.logger.log(client.id + ' left the waitlist');
         await this.matchmakingService.removeBySocket(client.id);
     }
 
-    tick(client: Socket): void {
+    tick(): void {
         for (const matchId in this.instances) {
-            this.instances[matchId].tick(client);
+            this.instances[matchId].tick();
         }
     }
 
     handleMove(client: Socket, data: Info): void {
+        if (!data.matchId) {
+            return;
+        }
         this.instances[data.matchId].handleMove(client, data);
+    }
+
+    getInstanceByPlayerSocket(socketId: string): MatchInstance {
+        for (const matchId in this.instances) {
+            if (
+                this.instances[matchId].returnPlayerSocket(1) == socketId ||
+                this.instances[matchId].returnPlayerSocket(2) == socketId
+            ) {
+                return this.instances[matchId];
+            }
+        }
+        return null;
     }
 
     // handlePracticeMode(client: Socket, data: any): void {

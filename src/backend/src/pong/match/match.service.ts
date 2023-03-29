@@ -75,4 +75,21 @@ export class MatchService {
     async addMatch(match: Match) {
         await this.matchRepository.save(match);
     }
+
+    async print(match: Match) {
+        const tmp = await this.matchRepository.findOne({
+            where: { id: match.id },
+            relations: {
+                player1: true,
+                player2: true,
+            },
+        });
+        console.log('Current Match: ', tmp);
+    }
+
+    async updateScore(match: Match, score1: number, score2: number) {
+        match.score1 = score1;
+        match.score2 = score2;
+        await this.matchRepository.save(match);
+    }
 }

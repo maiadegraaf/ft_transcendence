@@ -2,9 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Player } from '../player/player.entity';
 import { Server, Socket } from 'socket.io';
 import { Match } from '../match/match.entity';
-// import { MatchmakingService } from '../matchmaking/matchmaking.service';
-// import { MatchService } from '../match/match.service';
-// import { PlayerService } from '../player/player.service';
+import { MatchService } from '../match/match.service';
 
 const height = 450;
 const width = 800;
@@ -38,7 +36,6 @@ interface Ball {
 
 interface PlayerInterface {
     user: Player;
-    socket: Socket;
     x: number;
     y: number;
     new_y: number;
@@ -60,7 +57,6 @@ export class MatchInstance {
         dy: Direction.Up,
     };
     private player1: PlayerInterface = {
-        socket: null,
         user: null,
         x: 20,
         y: height / 2 - 50,
@@ -68,7 +64,6 @@ export class MatchInstance {
         score: 0,
     };
     private player2: PlayerInterface = {
-        socket: null,
         user: null,
         x: width - 20,
         y: height / 2 - 50,
@@ -76,12 +71,45 @@ export class MatchInstance {
         score: 0,
     };
 
-    constructor(server: Server, match: Match) {
+    constructor(
+        server: Server,
+        match: Match,
+        private matchServices: MatchService,
+    ) {
         this.server = server;
         this.match = match;
-        this.player1.user = match.player1;
-        this.player2.user = match.player2;
+    }
+
+    async start(): Promise<void> {
+        console.log('from match-instance: start');
         this.gamestate = GameState.Playing;
+        this.player1.user = await this.matchServices.returnPlayer1(this.match);
+        this.player2.user = await this.matchServices.returnPlayer2(this.match);
+        await this.matchServices.print(this.match);
+        console.log(this.player1);
+        console.log(this.player2);
+    }
+
+    handlePlayerDisconnect(client: Socket): void {
+        if (client.id == this.player1.user.socketId) {
+            this.player2.score = 10;
+            this.end('Player 2');
+        } else if (client.id == this.player2.user.socketId) {
+            this.player1.score = 10;
+            this.end('Player 1');
+        }
+    }
+
+    returnPlayerSocket(player: number) {
+        if (player == 1) {
+            return this.player1.user.socketId;
+        } else if (player == 2) {
+            return this.player2.user.socketId;
+        }
+    }
+
+    returnMatchId() {
+        return this.match.id;
     }
 
     handleMove(client: Socket, data: Info): void {
@@ -89,7 +117,6 @@ export class MatchInstance {
             console.log('no client');
             return;
         }
-        console.log('SOCKET: ' + client.id + ' move: ' + data);
         if (
             this.gamestate == GameState.Playing &&
             client.id == this.player1.user.socketId
@@ -103,24 +130,29 @@ export class MatchInstance {
         }
     }
 
-    emitToBothPlayers(event: string, data: any, client: Socket): void {
-        client.to(this.player1.user.socketId).emit(event, data);
-        client.to(this.player2.user.socketId).emit(event, data);
+    emitToBothPlayers(event: string, data: any): void {
+        if (!this.player1.user || !this.player2.user) {
+            console.log('no socket id');
+            return;
+        }
+        this.server.to(this.player1.user.socketId).emit(event, data);
+        this.server.to(this.player2.user.socketId).emit(event, data);
     }
 
-    end(winner: string, client: Socket): void {
+    end(winner: string): void {
         this.gamestate = GameState.End;
         this.winner = winner;
-        this.emitToBothPlayers(
-            'state',
-            {
-                ball: this.ball,
-                player1: this.player1,
-                player2: this.player2,
-                gamestate: this.gamestate,
-                winner: this.winner,
-            },
-            client,
+        this.emitToBothPlayers('state', {
+            ball: this.ball,
+            player1: this.player1,
+            player2: this.player2,
+            gamestate: this.gamestate,
+            winner: this.winner,
+        });
+        this.matchServices.updateScore(
+            this.match,
+            this.player1.score,
+            this.player2.score,
         );
         this.player1.score = 0;
         this.player2.score = 0;
@@ -149,15 +181,15 @@ export class MatchInstance {
         return player;
     }
 
-    tick(client: Socket): void {
+    tick(): void {
         if (this.gamestate !== GameState.Playing) {
             return;
         }
         if (this.player1.score >= this.winning_condition) {
-            this.end('Player 1', client);
+            this.end('Player 1');
             return;
         } else if (this.player2.score >= this.winning_condition) {
-            this.end('Player 2', client);
+            this.end('Player 2');
             return;
         }
 
@@ -210,16 +242,12 @@ export class MatchInstance {
             this.ball.dy = Direction.Down;
         }
 
-        this.emitToBothPlayers(
-            'state',
-            {
-                ball: this.ball,
-                player1: this.player1,
-                player2: this.player2,
-                gamestate: this.gamestate,
-                winner: this.winner,
-            },
-            client,
-        );
+        this.emitToBothPlayers('state', {
+            ball: this.ball,
+            player1: this.player1,
+            player2: this.player2,
+            gamestate: this.gamestate,
+            winner: this.winner,
+        });
     }
 }
