@@ -4,11 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { User } from './user/user.entity';
+import { UserModule } from './user/user.module'
 import { User } from './typeorm/entities/User';
 import { UserModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 // import { Profile } from './typeorm/entities/Profile';
 // import { Post } from './typeorm/entities/Post';
+
 // import { ChatModule } from './chat/chat.module';
 // import { PongModule } from './pong/pong.module';
 
@@ -36,4 +39,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

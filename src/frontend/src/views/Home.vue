@@ -15,16 +15,19 @@ export default {
           .get('https://localhost:8080/api/users/{{id}}')
           .then((response) => {
 
-          })
-
+      console.log(response.data);
+      const { id, login, email } = response.data;
+      this.content = { id, login, email};
+      // const postResponse = await axios.post('http://localhost:8080/api/user', this.content);
+      await axios.post('http://localhost:8080/api/user', this.content);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   },
   components: {
     Nav
   }
-}
+};
 </script>
 
 <template>
