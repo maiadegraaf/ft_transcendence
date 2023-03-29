@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { Message } from './message.entity';
 import { User } from '../../users/entities/users.entity';
-import { ChannelEnum } from '../../utils/types';
 import { GroupProfile } from './groupProfile.entity';
 
 @Entity()

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from '../entities/message.entity';
@@ -22,19 +22,23 @@ export class MessageService {
     userId: number;
     channelId: number;
   }): Promise<Message> {
-    const message = new Message();
-    const sender = await this.userService.findUserByID(payload.userId);
-    if (!sender) {
-      throw new InternalServerErrorException('could not find user');
-    }
-    message.sender = sender;
-    const channel = await this.channelService.getChannelById(payload.channelId);
-    if (!channel) {
-      throw new InternalServerErrorException('could not find user');
-    }
-    message.channel = channel;
-    message.text = payload.text;
-    return this.messageRepository.save(message);
+    try {
+      const message = new Message();
+      const sender = await this.userService.findUserByID(payload.userId);
+      if (!sender) {
+        throw new HttpException('could not find user', HttpStatus.FORBIDDEN);
+      }
+      message.sender = sender;
+      const channel = await this.channelService.getChannelById(
+        payload.channelId,
+      );
+      if (!channel) {
+        throw new HttpException('could not find user', HttpStatus.FORBIDDEN);
+      }
+      message.channel = channel;
+      message.text = payload.text;
+      return this.messageRepository.save(message);
+    } catch {}
   }
 
   async getMessagesByChannelID(id: number): Promise<Message[]> {

@@ -4,7 +4,7 @@ import { FortyTwoStrategy } from './auth.strategy';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/services/users/users.service';
-import { User } from '../typeorm/entities/User';
+import { User } from '../users/entities/users.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
