@@ -4,6 +4,7 @@ import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
 import { User } from '../users/entities/users.entity';
+import { promises } from 'dns';
 // import { AppService } from './app.service';
 
 @Controller('chat')
@@ -20,17 +21,25 @@ export class ChatController {
     return this.messageService.getMessagesByChannelID(id);
   }
 
+  @Get('/:id/channel')
+  getUserChannels(@Param(':id') id: number): Promise<any> {
+    return this.channelService.getChannelsByUserId(id);
+  }
+
   // Post /api/chat/dm
   @Post('dm')
-  postNewChannel(param: { user1: number; user2: number }): Promise<Channel> {
+  postNewChannel(param: { user1: number; user2: number }): Promise<any> {
     return this.channelService.newDmChannel(param.user1, param.user2);
   }
 
-  // // Post /api/chat/group
-  // @Post('group')
-  // postNewGroupChannel(param: { adminUser: number }): Promise<Channel> {
-  //   return this.channelService.newGroupChannel(param.adminUser);
-  // }
+  // Post /api/chat/group
+  @Post('group')
+  postNewGroupChannel(param: {
+    ownerId: number;
+    groupName: string;
+  }): Promise<any> {
+    return this.channelService.newGroupChannel(param.ownerId, param.groupName);
+  }
 
   // Post /api/chat/group/userAdd
   @Post('group/userAdd')
