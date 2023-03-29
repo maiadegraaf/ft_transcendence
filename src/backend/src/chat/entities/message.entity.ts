@@ -1,5 +1,5 @@
 // import { User } from "src/user/entities/user.entity";
-import { User } from "src/typeorm/entities/User";
+import { User } from "src/user/user.entity";
 import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Channel} from "./channel.entity";
 

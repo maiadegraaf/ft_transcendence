@@ -18,10 +18,10 @@ export default {
       });
 
       console.log(response.data);
-      const { login, email, usual_full_name } = response.data;
-      this.content = { login, email, usual_full_name };
-      // const postResponse = await axios.post('http://localhost:8080/api/users', this.content);
-      await axios.post('http://localhost:8080/api/users', this.content);
+      const { id, login, email } = response.data;
+      this.content = { id, login, email};
+      // const postResponse = await axios.post('http://localhost:8080/api/user', this.content);
+      await axios.post('http://localhost:8080/api/user', this.content);
     } catch (error) {
       console.error(error);
     }

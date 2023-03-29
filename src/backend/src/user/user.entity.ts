@@ -5,14 +5,14 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Primary
 @Entity({ name: 'users'})
 export class User {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     id: number;
 
-    @Column()
+    @Column({nullable: true})
     login: string;
 
     // @Column( {nullable: true })
-    @Column()
+    @Column({nullable: true})
     email: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})

@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { User } from 'src/typeorm/entities/User';
-import { CreateUserParams, UpdateUserParams } from 'src/utils/types';
+import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 // import { Post } from 'src/typeorm/entities/Post';
@@ -9,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 
 @Injectable()
-export class UsersService {
+export class UserService {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
@@ -22,38 +21,40 @@ export class UsersService {
         // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
     }
     
-    async findUserByID(id: number){
+    async findUserByID(id: number) : Promise<User> {
         const user = await this.userRepository.findOne({ where : { id }});
         if (!user){
             throw new NotFoundException('User with ID ${id} not found');
         }
         return user;
     }
-
-    createUser(userDetails: CreateUserParams) {
-        const newUser = this.userRepository.create({ //not async so not need to await
-            ...userDetails,
-        });
-        return this.userRepository.save(newUser); //returns promise so need to await in controller
-    }
-
-    // '...updateUserDetails' will spread updateUserDatails. I user only updates username/email, only username/email will be updated
-    // If username and email. then username AND email will be updated
-    updateUser(id: number, updateUserDetails: UpdateUserParams) {
-        return this.userRepository.update({ id }, {...updateUserDetails });
+    
+    async findOrCreateUser(id: number, email: string, login: string) : Promise<User> {
+        let user = await this.userRepository.findOne({ where : { id }} );
+        if (!user) {
+            user = await this.userRepository.save({ id, email, login});
+        }
+        return user;
     }
 
     deleteUser(id: number) {
         return this.userRepository.delete({ id });
     }
-
-    // async findOrCreateUser(id: number, email: string, login_name: string): Promise<User>{
-    //     let user = await this.userRepository.findOne({ where : { id }} );
-    //     if (!user) {
-    //         user = await this.userRepository.save({ id, email, login_name});
-    //     }
-    //     return user;
+    
+    // createUser(userDetails: CreateUserParams) {
+    //     const newUser = this.userRepository.create({ //not async so not need to await
+    //         ...userDetails,
+    //     });
+    //     return this.userRepository.save(newUser); //returns promise so need to await in controller
     // }
+
+    // '...updateUserDetails' will spread updateUserDatails. I user only updates username/email, only username/email will be updated
+    // If username and email. then username AND email will be updated
+    // updateUser(id: number, updateUserDetails: UpdateUserParams) {
+    //     return this.userRepository.update({ id }, {...updateUserDetails });
+    // }
+
+
 
 
 

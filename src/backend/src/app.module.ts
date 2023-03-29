@@ -4,8 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { User } from './typeorm/entities/User';
-import { UserModule } from './users/users.module'
+import { User } from './user/user.entity';
+import { UserModule } from './user/user.module'
 // import { Profile } from './typeorm/entities/Profile';
 // import { Post } from './typeorm/entities/Post';
 
@@ -35,4 +35,4 @@ import { UserModule } from './users/users.module'
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
