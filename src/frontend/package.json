@@ -26,6 +26,10 @@
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^4.1.6",
     "vuetify": "^3.1.11"
+    "vue-otp-input": "^1.0.0",
+    "vue-session": "^1.0.0",
+    "vue3-qrcode-reader": "^0.0.1",
+    "vue3-storage": "^0.1.11"
   },
   "devDependencies": {
     "@mdi/font": "^7.2.96",

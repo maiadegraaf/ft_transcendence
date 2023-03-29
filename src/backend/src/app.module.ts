@@ -13,6 +13,7 @@ import { UserModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import {GroupProfile} from "./chat/entities/groupProfile.entity";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,11 +28,12 @@ import {GroupProfile} from "./chat/entities/groupProfile.entity";
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../..', '../frontend/dist'),
+      rootPath: join(__dirname, '../..', './frontend/dist'),
     }),
     UserModule,
     PongModule,
     ChatModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
