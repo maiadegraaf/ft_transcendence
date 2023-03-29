@@ -22,12 +22,13 @@
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "vue": "^3.2.47",
-    "vue-property-decorator": "^9.1.2",
-    "vuetify": "^3.1.11",
     "vue-class-component": "^7.2.6",
-    "vue-router": "^4.1.6"
+    "vue-property-decorator": "^9.1.2",
+    "vue-router": "^4.1.6",
+    "vuetify": "^3.1.11"
   },
   "devDependencies": {
+    "@mdi/font": "^7.2.96",
     "@rushstack/eslint-patch": "^1.2.0",
     "@types/jsdom": "^21.1.0",
     "@types/node": "^18.14.2",

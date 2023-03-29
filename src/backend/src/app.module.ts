@@ -12,7 +12,7 @@ import { Channel } from './chat/entities/channel.entity';
 import { UserModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
-import { GroupProfile } from './chat/entities/groupProfile.entity';
+import {GroupProfile} from "./chat/entities/groupProfile.entity";
 
 @Module({
   imports: [

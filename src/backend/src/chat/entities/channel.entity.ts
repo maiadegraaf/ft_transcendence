@@ -12,7 +12,6 @@ import { User } from '../../users/entities/users.entity';
 import { ChannelEnum } from '../../utils/types';
 import { GroupProfile } from './groupProfile.entity';
 
-// @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
 export class Channel {
   @PrimaryGeneratedColumn()
