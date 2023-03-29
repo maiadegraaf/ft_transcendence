@@ -19,6 +19,7 @@ export class GroupProfile {
   @OneToOne(() => Channel, (channel) => channel.profile) // @PrimaryGeneratedColumn()
   channel: Channel;
 
+  @JoinTable()
   @ManyToMany(() => User, (admin) => admin.groupProfile)
   admin: User[];
 
