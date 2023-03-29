@@ -27,6 +27,16 @@ export class ChannelService {
     return await this.channelRepository.save(channel);
   }
 
+  async getChannelById(channelId: number): Promise<any> {
+    const channel = await this.channelRepository.findOne({
+      where: { id: channelId },
+    });
+    if (!channel) {
+      throw new NotFoundException('Channel with ID ${id} not found');
+    }
+    return channel;
+  }
+
   async addUserToChannel(channelId: number, userId: number): Promise<any> {
     const channel = await this.channelRepository.findOne({
       where: { id: channelId },
