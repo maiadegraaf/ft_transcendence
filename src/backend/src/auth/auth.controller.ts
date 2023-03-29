@@ -12,13 +12,23 @@ export class AuthController {
     console.log('log in successful');
   }
 
-  // Get /api/auth/42/callback
   @Get('42/callback')
   @UseGuards(AuthGuard('42'))
   async callback42(@Req() req, @Res() res) {
     console.log(req.user.accessToken);
-    await this.authService.newUser(req.user.user);
+    await this.authService.newUser(
+      req.user.user.id,
+      req.user.user.login,
+      req.user.user.email,
+    );
     res.redirect('/Home');
     return req.user;
+  }
+
+  @Get('token')
+  @UseGuards(AuthGuard('42'))
+  async token(@Req() req) {
+    console.log(req.user);
+    // return req.user.user.accessToken;
   }
 }

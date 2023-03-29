@@ -6,8 +6,6 @@
 //     dob: string;
 // }
 
-
-
 // **** ENTITY FOR PROFILE ******* (example not needed for trancendance)
 
 // import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";

@@ -3,13 +3,13 @@ import { PassportModule } from '@nestjs/passport';
 import { FortyTwoStrategy } from './auth.strategy';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/services/users/users.service';
-import { User } from '../typeorm/entities/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../user/user.entity';
+import { UserService } from '../user/services/user/user.service';
 
 @Module({
   imports: [PassportModule, TypeOrmModule.forFeature([User])],
-  providers: [FortyTwoStrategy, AuthService, UsersService],
+  providers: [FortyTwoStrategy, AuthService, UserService],
   controllers: [AuthController],
 })
 export class AuthModule {}
