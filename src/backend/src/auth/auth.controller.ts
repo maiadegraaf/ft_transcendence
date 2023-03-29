@@ -18,7 +18,7 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async callback42(@Req() req, @Res() res) {
     res.redirect('/Home');
-    console.log(req.user.profile);
-    await this.authService.newUser(req.user.profile);
+    console.log(req.user.profile._json.login);
+    await this.authService.newUser(req.user.profile._json);
   }
 }
