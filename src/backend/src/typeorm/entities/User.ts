@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
@@ -14,13 +22,13 @@ export class User {
   @Column()
   email: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
-    createdAt: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
-    // @OneToOne(() => Profile)
-    // @JoinColumn()
-    // profile: Profile;
+  // @OneToOne(() => Profile)
+  // @JoinColumn()
+  // profile: Profile;
 
-    // @OneToMany(() => Post, (post) => post.user)
-    // posts: Post[];
+  // @OneToMany(() => Post, (post) => post.user)
+  // posts: Post[];
 }

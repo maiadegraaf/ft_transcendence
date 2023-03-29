@@ -9,23 +9,18 @@ export default {
       content: {}
     }
   },
-  // async created() {
-  //   try {
-  //     const response = await axios.get('https://api.intra.42.fr/v2/me', {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem('token')}`
-  //       }
-  //     })
-  //
-  //     console.log(response.data)
-  //     const { login, email, usual_full_name } = response.data
-  //     this.content = { login, email, usual_full_name }
-  //     // const postResponse = await axios.post('http://localhost:8080/api/users', this.content);
-  //     await axios.post('http://localhost:8080/api/users', this.content)
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // },
+  async created() {
+    try {
+      await axios
+          .get('https://localhost:8080/api/users/{{id}}')
+          .then((response) => {
+
+          })
+
+    } catch (error) {
+      console.error(error)
+    }
+  },
   components: {
     Nav
   }
