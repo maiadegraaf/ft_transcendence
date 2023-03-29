@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { User } from 'src/user/entities/user.entity';
+import { User } from 'src/users/entities/users.entity';
 import { Match } from 'src/pong/match/match.entity';
 import { MatchInstance } from './match-instance/match-instance.service';
 import { MatchmakingService } from './matchmaking/matchmaking.service';
@@ -162,9 +162,9 @@ export class PongService {
         await this.matchmakingService.removeBySocket(client.id);
     }
 
-    tick(): void {
+    tick(client: Socket): void {
         for (const matchId in this.instances) {
-            this.instances[matchId].tick();
+            this.instances[matchId].tick(client);
         }
     }
 

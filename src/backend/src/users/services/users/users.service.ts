@@ -7,42 +7,42 @@ import { Channel } from '../../../chat/entities/channel.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+    constructor(
+        @InjectRepository(User) private userRepository: Repository<User>,
+    ) {}
 
-  findAllUsers() {
-    return this.userRepository.find();
-    // return this.userRepository.find(parameters zetten)
-  }
-
-  async findUserByID(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User with ID ${id} not found');
+    findAllUsers() {
+        return this.userRepository.find();
+        // return this.userRepository.find(parameters zetten)
     }
-    return user;
-  }
 
-  createUser(userDetails: CreateUserParams) {
-    const newUser = this.userRepository.create({
-      //not async so not need to await
-      ...userDetails,
-    });
-    return this.userRepository.save(newUser); //returns promise so need to await in controller
-  }
+    async findUserByID(id: number) {
+        const user = await this.userRepository.findOne({ where: { id } });
+        if (!user) {
+            throw new NotFoundException('User with ID ${id} not found');
+        }
+        return user;
+    }
 
-  // '...updateUserDetails' will spread updateUserDatails. I user only updates username/email, only username/email will be updated
-  // If username and email. then username AND email will be updated
-  updateUser(id: number, updateUserDetails: UpdateUserParams) {
-    return this.userRepository.update({ id }, { ...updateUserDetails });
-  }
+    createUser(userDetails: CreateUserParams) {
+        const newUser = this.userRepository.create({
+            //not async so not need to await
+            ...userDetails,
+        });
+        return this.userRepository.save(newUser); //returns promise so need to await in controller
+    }
 
-  deleteUser(id: number) {
-    return this.userRepository.delete({ id });
-  }
+    // '...updateUserDetails' will spread updateUserDatails. I user only updates username/email, only username/email will be updated
+    // If username and email. then username AND email will be updated
+    updateUser(id: number, updateUserDetails: UpdateUserParams) {
+        return this.userRepository.update({ id }, { ...updateUserDetails });
+    }
 
-  async saveUser(user: User): Promise<any> {
-    return this.userRepository.save(user);
-  }
+    deleteUser(id: number) {
+        return this.userRepository.delete({ id });
+    }
+
+    async saveUser(user: User): Promise<any> {
+        return this.userRepository.save(user);
+    }
 }

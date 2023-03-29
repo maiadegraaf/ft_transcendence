@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { User } from 'src/user/entities/user.entity';
+import { User } from 'src/users/entities/users.entity';
 
 export class JoinMatchDto {
   @IsNotEmpty()

@@ -93,10 +93,10 @@ export class MatchInstance {
     handlePlayerDisconnect(client: Socket): void {
         if (client.id == this.player1.user.socketId) {
             this.player2.score = 10;
-            this.end('Player 2');
+            this.end('Player 2', client);
         } else if (client.id == this.player2.user.socketId) {
             this.player1.score = 10;
-            this.end('Player 1');
+            this.end('Player 1', client);
         }
     }
 
@@ -130,25 +130,29 @@ export class MatchInstance {
         }
     }
 
-    emitToBothPlayers(event: string, data: any): void {
+    emitToBothPlayers(event: string, data: any, client: Socket): void {
         if (!this.player1.user || !this.player2.user) {
             console.log('no socket id');
             return;
         }
-        this.server.to(this.player1.user.socketId).emit(event, data);
-        this.server.to(this.player2.user.socketId).emit(event, data);
+        client.to(this.player1.user.socketId).emit(event, data);
+        client.to(this.player2.user.socketId).emit(event, data);
     }
 
-    end(winner: string): void {
+    end(winner: string, client: Socket): void {
         this.gamestate = GameState.End;
         this.winner = winner;
-        this.emitToBothPlayers('state', {
-            ball: this.ball,
-            player1: this.player1,
-            player2: this.player2,
-            gamestate: this.gamestate,
-            winner: this.winner,
-        });
+        this.emitToBothPlayers(
+            'state',
+            {
+                ball: this.ball,
+                player1: this.player1,
+                player2: this.player2,
+                gamestate: this.gamestate,
+                winner: this.winner,
+            },
+            client,
+        );
         this.matchServices.updateScore(
             this.match,
             this.player1.score,
@@ -181,15 +185,15 @@ export class MatchInstance {
         return player;
     }
 
-    tick(): void {
+    tick(client: Socket): void {
         if (this.gamestate !== GameState.Playing) {
             return;
         }
         if (this.player1.score >= this.winning_condition) {
-            this.end('Player 1');
+            this.end('Player 1', client);
             return;
         } else if (this.player2.score >= this.winning_condition) {
-            this.end('Player 2');
+            this.end('Player 2', client);
             return;
         }
 
@@ -242,12 +246,16 @@ export class MatchInstance {
             this.ball.dy = Direction.Down;
         }
 
-        this.emitToBothPlayers('state', {
-            ball: this.ball,
-            player1: this.player1,
-            player2: this.player2,
-            gamestate: this.gamestate,
-            winner: this.winner,
-        });
+        this.emitToBothPlayers(
+            'state',
+            {
+                ball: this.ball,
+                player1: this.player1,
+                player2: this.player2,
+                gamestate: this.gamestate,
+                winner: this.winner,
+            },
+            client,
+        );
     }
 }
