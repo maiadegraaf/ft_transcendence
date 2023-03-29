@@ -1,19 +1,24 @@
-// import { User } from "src/user/entities/user.entity";
-import { User } from "src/typeorm/entities/User";
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { User } from 'src/users/entities/users.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Match {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToMany(() => User)
-    @JoinTable()
-    players: User[];
+  @ManyToMany(() => User)
+  @JoinTable()
+  players: User[];
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
-    @Column()
-    score: string;
+  @Column()
+  score: string;
 }
