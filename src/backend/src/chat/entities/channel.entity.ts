@@ -1,18 +1,17 @@
 import {
-  // Column,
+  Column,
   Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
-  // OneToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Message } from './message.entity';
-import { User } from '../../user/entities/user.entity';
-// import { ChannelEnum } from '../../utils/types';
-// import { GroupProfile } from './groupProfile.entity';
+import { User } from '../../users/entities/users.entity';
+import { ChannelEnum } from '../../utils/types';
+import { GroupProfile } from './groupProfile.entity';
 
-// @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
 export class Channel {
   @PrimaryGeneratedColumn()
@@ -25,8 +24,8 @@ export class Channel {
   @ManyToMany(() => User, (usr) => usr.id)
   users: User[];
 
-  // @OneToOne(() => GroupProfile, (profile) => profile.channel)
-  // profile: GroupProfile;
+  @OneToOne(() => GroupProfile, (profile) => profile.channel)
+  profile: GroupProfile;
   //
   // @Column()
   // type: ChannelEnum;

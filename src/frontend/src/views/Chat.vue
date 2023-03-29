@@ -28,7 +28,7 @@
         color="deep-purple-lighten-4"
     >
       <v-toolbar
-          density="compact" 
+          density="compact"
           title="Chat"
           color="grey"
       ></v-toolbar>
@@ -95,6 +95,7 @@
       placeholder="Enter your name"
       required></v-text-field>
 </template>
+
 <script lang="ts">
 import io from 'socket.io-client'
 import Nav from '@/components/Nav.vue'
