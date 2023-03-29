@@ -12,6 +12,7 @@ import { Channel } from './chat/entities/channel.entity';
 import { UserModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
+import {GroupProfile} from "./chat/entities/groupProfile.entity";
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { PongModule } from './pong/pong.module';
       username: 'pongmaster',
       password: 'ping_pong42',
       database: 'transcendence',
-      entities: [User, Match, Message, Channel],
+      entities: [User, Match, Message, Channel, GroupProfile],
       synchronize: true,
     }),
     ServeStaticModule.forRoot({

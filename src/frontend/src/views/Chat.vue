@@ -90,7 +90,7 @@
   <br>
   <v-text-field
       bg-color="white"
-      v-model="userId"
+      v-model="name"
       label="Name"
       placeholder="Enter your name"
       required></v-text-field>
@@ -132,7 +132,7 @@ export default {
   watch: {
     // Watches the messages array for changes and scrolls the chat window to the bottom.
     messages: {
-      handler(messages: any): void {
+      handler(): void {
         nextTick(() => {
           const container = document.getElementById('chatList')
           if (container) {
@@ -182,9 +182,5 @@ export default {
 </script>
 
 <style>
-
-.border-right {
-  border-right: 1px solid rgba(0, 0, 0, 0.12) !important;
-}
 
 </style>
