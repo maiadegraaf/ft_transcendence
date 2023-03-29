@@ -4,7 +4,6 @@ import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
 import { User } from '../users/entities/users.entity';
-import { promises } from 'dns';
 // import { AppService } from './app.service';
 
 @Controller('chat')
