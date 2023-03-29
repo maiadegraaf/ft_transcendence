@@ -30,11 +30,11 @@ const router = createRouter({
       name: 'Chat',
       component: Chat
     },
-    {
-      path: '/:catchAll(.*)',
-      name: '404Name',
-      component: viewfour
-    },
+    // {
+    //   path: '/:catchAll(.*)',
+    //   name: '404Name',
+    //   component: viewfour
+    // },
     {
       path: '/Pong',
       name: 'Pong',

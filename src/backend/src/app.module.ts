@@ -6,6 +6,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { User } from './typeorm/entities/User';
 import { UserModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 // import { ChatModule } from './chat/chat.module';
 // import { PongModule } from './pong/pong.module';
 
@@ -22,9 +23,10 @@ import { UserModule } from './users/users.module';
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../..', '../frontend/dist'),
+      rootPath: join(__dirname, '../..', './frontend/dist'),
     }),
     UserModule,
+    AuthModule,
     //PongModule,
     //ChatModule,
   ],

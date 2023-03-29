@@ -1,19 +1,24 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
+// import { UsersService } from '../users/services/users/users.service';
+
 
 @Controller('auth')
 export class AuthController {
+  constructor(private authService: AuthService) {}
   @Get('42')
   @UseGuards(AuthGuard('42'))
   async login42(@Req() req, @Res() res) {
-    // This method will redirect the user to the 42 authentication page
+    console.log('log in successful');
   }
 
+  // Get /api/auth/42/callback
   @Get('42/callback')
   @UseGuards(AuthGuard('42'))
-  async callback42(@Req() req) {
-    // This method will be called after the authentication is successful
-    // You can access the authenticated user object with the `req.user` property
-    return req.user;
+  async callback42(@Req() req, @Res() res) {
+    res.redirect('/Home');
+    console.log(req.user.profile);
+    await this.authService.newUser(req.user.profile);
   }
 }

@@ -1,24 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-42';
+import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { FortyTwoStrategy } from './auth.strategy';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { UsersService } from '../users/services/users/users.service';
+import { User } from '../typeorm/entities/User';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-@Injectable()
-export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
-  constructor() {
-    super({
-      clientID: process.env['FORTYTWO_APP_ID '],
-      clientSecret: process.env['FORTYTWO_APP_SECRET'],
-      callbackURL: 'http://localhost:8080/auth/42/callback',
-    });
-  }
-
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: any,
-    done: Function,
-  ) {
-    // Here you can validate the user's credentials and retrieve the user's profile information from the 42 API
-    done(null, profile);
-  }
-}
+@Module({
+  imports: [PassportModule, TypeOrmModule.forFeature([User])],
+  providers: [FortyTwoStrategy, AuthService, UsersService],
+  controllers: [AuthController],
+})
+export class AuthModule {}
