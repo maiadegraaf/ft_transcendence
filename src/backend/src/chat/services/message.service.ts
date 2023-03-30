@@ -18,8 +18,8 @@ export class MessageService {
 
   // add the channel id to this
   async createMessage(payload: {
-    text: string;
     userId: number;
+    text: string;
     channelId: number;
   }): Promise<Message> {
     try {

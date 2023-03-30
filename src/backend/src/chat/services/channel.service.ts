@@ -57,13 +57,13 @@ export class ChannelService {
       }
       const user = await this.userService.findUserByID(userId);
       channel.users.push(user);
-      user.channels.push(channel);
-      if (!(await this.userService.saveUser(user))) {
-        throw new HttpException(
-          'Channel with ID ${id} not found',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+      // user.channels.push(channel);
+      // if (!(await this.userService.saveUser(user))) {
+      //   throw new HttpException(
+      //     'Channel with ID ${id} not found',
+      //     HttpStatus.FORBIDDEN,
+      //   );
+      // }
       return await this.channelRepository.save(channel);
     } catch {}
   }

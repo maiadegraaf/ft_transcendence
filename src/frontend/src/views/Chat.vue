@@ -34,26 +34,26 @@
       ></v-toolbar>
       <div class="overflow-y-auto fill-height d-flex flex-column-reverse" ref="chatSpace">
           <v-list id="chatList" class="bg-deep-purple-lighten-4">
-            <div v-for="message of messages" :key="message.name">
-              <v-card v-if="message.name === 'Bert'"
+            <div v-for="message of messages" :key="message.userId">
+              <v-card v-if="message.userId != userId"
                       flat
                       tile
                       class="mb-1 ml-2 d-flex justify-center"
                       width=50%
                       color="purple-darken-2"
               >
-                <div class="font-weight-bold mt-2 ml-3"> {{ message.name }}</div>
+                <div class="font-weight-bold mt-2 ml-3"> {{ message.userId }}</div>
                 <div class="mr-2 mb-2 ml-3"> {{ message.text }}</div>
               </v-card>
               <div class="d-flex justify-end">
-                <v-card v-if="message.name === 'Hans'"
+                <v-card v-if="message.userId == userId"
                         class="mb-1 mr-2 text-right d-flex justify-center"
                         tile
                         flat
                         width=50%
                         color="purple-lighten-2"
                 >
-                  <div class="font-weight-bold mr-4 mt-1"> {{ message.name }}</div>
+                  <div class="font-weight-bold mr-4 mt-1"> {{ message.userId }}</div>
                   <div class="mr-4 mb-1 ml-2"> {{ message.text }}</div>
                 </v-card>
               </div>
@@ -94,12 +94,14 @@
       label="Name"
       placeholder="Enter your name"
       required></v-text-field>
+  <v-btn @click="joinRoom">Join Room</v-btn>
 </template>
 
 <script lang="ts">
 import io from 'socket.io-client'
 import Nav from '@/components/Nav.vue'
 import { nextTick } from 'vue'
+import axios from "axios";
 
 export default {
   components: { Nav },
@@ -111,12 +113,13 @@ export default {
     name: string
     text: string
     messages: {
-      name: string
-      text: string
+      userId: number,
+      text: string,
+      channelId: number,
     }[]
     socket: any
     userId: number
-    ChannelId: number
+    channelId: number
   } {
     // The initial data of the Vue instance.
     return {
@@ -126,7 +129,7 @@ export default {
       messages: [],
       socket: null,
       userId: 0,
-      ChannelId: 1
+      channelId: 11
     }
   },
   watch: {
@@ -145,22 +148,51 @@ export default {
   },
   // The methods of the Vue instance.
   methods: {
+    joinRoom(): void {
+      this.setUserId()
+      const payload = {
+        userId: this.userId,
+        channelId: this.channelId
+      }
+      this.socket.emit('joinRoom', payload)
+    },
+    setUserId(): void {
+      if (this.name === 'Bert') {
+        this.userId = 1
+      } else {
+        this.userId = 2
+      }
+      this.channelId = 11
+    },
+    // Creates a new Channel.
+    createChannel(): void {
+      const payload = {
+        user1: 1,
+        user2: 2
+      }
+      axios.post('http://localhost:8080/api/chat/dm', payload)
+        .then((response) => {
+          console.log(response.data)
+          this.channelId = response.data.id
+        })
+    },
     // Sends a message to the server.
     sendMessage(): void {
       // Validates the input before sending the message.
       if (this.validateInput()) {
+        // Creates a message object.
         const message = {
-          name: this.name,
-          text: this.text
+          userId: this.userId,
+          text: this.text,
+          channelId: this.channelId,
         }
-        // Emits a 'msgToServer' event with the message.
         this.socket.emit('msgToServer', message)
         // Resets the input field.
         this.text = ''
       }
     },
     // Receives a message from the server.
-    async receivedMessage(message: { name: string; text: string }): Promise<void> {
+    async receivedMessage(message: { userId: number, text: string, channelId: number, }): Promise<void> {
       // Adds the message to the messages array.
       this.messages.push(message)
     },
@@ -174,7 +206,7 @@ export default {
     // Initializes the Socket.IO client and stores it in the Vue instance.
     this.socket = io('http://localhost:8080')
     // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
-    this.socket.on('msgToClient', (message: { name: string; text: string }) => {
+    this.socket.on('msgToClient', (message: { userId: number, text: string, channelId: number,  }) => {
       this.receivedMessage(message)
     })
   }
