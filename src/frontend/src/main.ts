@@ -36,4 +36,5 @@ app
   .use(router)
   .use(vuetify)
   .use(Vue3Storage, { namespace: 'session_', storage: StorageType.Session })
+  .use(vuetify)
   .mount('#app')
