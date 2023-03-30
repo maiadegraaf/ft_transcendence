@@ -1,5 +1,4 @@
-// import { User } from "src/user/entities/user.entity";
-import { User } from 'src/user/user.entity';
+import { User } from 'src/users/entities/users.entity';
 import {
   Column,
   Entity,
@@ -11,7 +10,7 @@ import {
 import { Channel } from './channel.entity';
 
 @Entity()
-export class Msg {
+export class Message {
   @PrimaryGeneratedColumn()
   id: number;
 
