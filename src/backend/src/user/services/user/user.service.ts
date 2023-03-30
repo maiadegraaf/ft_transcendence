@@ -15,9 +15,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>,
-  ) // @InjectRepository(Post) private postRepository: Repository<Post>,
-  {}
+    private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
+  ) {}
 
   findAllUsers() {
     return this.userRepository.find();
@@ -48,6 +47,11 @@ export class UserService {
     return this.userRepository.delete({ id });
   }
 
+  async getUserByName(userName: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { username: {userName} },
+    });
+  }
   // createUser(userDetails: CreateUserParams) {
   //     const newUser = this.userRepository.create({ //not async so not need to await
   //         ...userDetails,
