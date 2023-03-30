@@ -16,8 +16,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>,
-  ) // @InjectRepository(Post) private postRepository: Repository<Post>,
-  {}
+  ) {}
 
   findAllUsers() {
     return this.userRepository.find();
