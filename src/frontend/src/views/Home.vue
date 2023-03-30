@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 import axios from 'axios'
 import Nav from '../components/Nav.vue'
 
@@ -12,7 +12,7 @@ export default {
   async created() {
     try {
       await axios
-          .get('https://localhost:8080/api/users/{{id}}')
+          .get('https://localhost:8080/api/user/{{id}}')
           .then((response) => {
 
       console.log(response.data);
@@ -28,14 +28,15 @@ export default {
     Nav
   }
 };
-</script>
+</script> -->
 
 <template>
   <div>
     <Nav />
     <header></header>
     <main>
-      {{ content }}
+      <!-- {{ content }} -->
+      {{  }}
     </main>
   </div>
 </template>
