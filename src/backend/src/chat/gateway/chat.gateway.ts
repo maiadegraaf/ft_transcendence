@@ -1,8 +1,8 @@
 import {
   SubscribeMessage,
   WebSocketGateway,
-  OnGatewayInit,
   WebSocketServer,
+  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
@@ -10,6 +10,8 @@ import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { MessageService } from '../services/message.service';
 import { Message } from '../entities/message.entity';
+// import {UsersService} from "../../users/services/users/users.service";
+// import {ChannelService} from "../services/channel.service";
 
 @WebSocketGateway({
   cors: {
@@ -20,6 +22,8 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(private readonly messageService: MessageService) {}
+  // private readonly userService: UsersService,
+  // private readonly channelService: ChannelService,
 
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('ChatGateway');
@@ -45,6 +49,14 @@ export class ChatGateway
       text: `${payload.userId} has joined the room`,
     });
   }
+
+  // @SubscribeMessage('addUserByName')
+  // handleUserByName(client: Socket, payload: { userName: string }): void {
+  //   // const user = this.userService.getUserByName(payload.userName);
+  //   // this.server.emit('msgToClient', {
+  //   //   channelId:
+  //   // })
+  // }
 
   afterInit(server: Server) {
     this.logger.log('Init chat');

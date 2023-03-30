@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
@@ -35,7 +29,7 @@ export class ChannelService {
       });
       if (!channel) {
         throw new HttpException(
-          "'Channel with ID ${id} not found'",
+          'Channel with ID ${id} not found',
           HttpStatus.FORBIDDEN,
         );
       }
@@ -57,13 +51,6 @@ export class ChannelService {
       }
       const user = await this.userService.findUserByID(userId);
       channel.users.push(user);
-      // user.channels.push(channel);
-      // if (!(await this.userService.saveUser(user))) {
-      //   throw new HttpException(
-      //     'Channel with ID ${id} not found',
-      //     HttpStatus.FORBIDDEN,
-      //   );
-      // }
       return await this.channelRepository.save(channel);
     } catch {}
   }

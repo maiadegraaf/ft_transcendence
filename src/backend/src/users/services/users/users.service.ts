@@ -42,6 +42,13 @@ export class UsersService {
     return this.userRepository.delete({ id });
   }
 
+  async getUserByName(userName: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { username: userName },
+    });
+    return user;
+  }
+
   // async addChannelToUser(userId: number, channelId: number): Promise<any> {
   //   const user = await this.findUserByID(userId);
   //   const channel = await this.channelRepository.findOne({

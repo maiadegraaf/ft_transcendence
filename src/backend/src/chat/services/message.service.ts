@@ -4,8 +4,6 @@ import { Repository } from 'typeorm';
 import { Message } from '../entities/message.entity';
 import { UsersService } from '../../users/services/users/users.service';
 import { ChannelService } from './channel.service';
-// import { Channel } from '../entities/channel.entity';
-// import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 export class MessageService {
@@ -33,6 +31,7 @@ export class MessageService {
         payload.channelId,
       );
       if (!channel) {
+        console.log(payload);
         throw new HttpException('could not find user', HttpStatus.FORBIDDEN);
       }
       message.channel = channel;

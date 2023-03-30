@@ -94,6 +94,7 @@
       label="Name"
       placeholder="Enter your name"
       required></v-text-field>
+<!--  <v-btn @click="createChannel">Create Channel</v-btn>-->
   <v-btn @click="joinRoom">Join Room</v-btn>
 </template>
 
@@ -129,7 +130,7 @@ export default {
       messages: [],
       socket: null,
       userId: 0,
-      channelId: 11
+      channelId: 1
     }
   },
   watch: {
@@ -162,7 +163,7 @@ export default {
       } else {
         this.userId = 2
       }
-      this.channelId = 11
+      this.channelId = 1
     },
     // Creates a new Channel.
     createChannel(): void {
