@@ -4,15 +4,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { User } from './user/user.entity';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import { Match } from 'src/pong/entities/match.entity';
-// import { Avatar } from 'src/users/entities/avatar.entity';
-import { User } from 'src/users/entities/users.entity';
-import { Message } from './chat/entities/message.entity';
 import { Channel } from './chat/entities/channel.entity';
-import { UserModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import { GroupProfile } from './chat/entities/groupProfile.entity';
+import { Message } from './chat/entities/message.entity';
 
 @Module({
   imports: [
@@ -27,11 +27,13 @@ import { GroupProfile } from './chat/entities/groupProfile.entity';
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../..', '../frontend/dist'),
+      rootPath: join(__dirname, '../..', './frontend/dist'),
     }),
     UserModule,
     PongModule,
     ChatModule,
+    AuthModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
