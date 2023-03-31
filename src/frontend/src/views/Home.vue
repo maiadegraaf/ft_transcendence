@@ -13,12 +13,7 @@ export default {
     }
   },
   mounted() {
-    this.$cookie.setCookie("usr", "wajo");
-    console.log(this.$cookie.keys());
     this.user = this.$cookie.getCookie("user").user;
-    // const user = JSON.parse(decodeURIComponent(usernotparse.data));
-    // console.log(user);
-    console.log(this.user);
   },
   components:{
     Nav
