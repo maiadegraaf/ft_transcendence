@@ -14,8 +14,7 @@ export class AuthController {
   async callback42(@Req() req, @Res() res) {
     const user = req.user;
     res.cookie('user', JSON.stringify(user), {
-      maxAge: 3600000,
-      httpOnly: true,
+      maxAge: 3600000
     });
     res.redirect(`/Home`);
   }
