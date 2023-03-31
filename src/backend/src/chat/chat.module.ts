@@ -8,8 +8,8 @@ import { ChatController } from './chat.controler';
 import { ChannelService } from './services/channel.service';
 import { GroupProfile } from './entities/groupProfile.entity';
 import { GroupProfileService } from './services/groupProfile.service';
-import { UsersService } from '../users/services/users/users.service';
-import { User } from '../users/entities/users.entity';
+import { UserService } from '../user/services/user/user.service';
+import { User } from 'src/user/user.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User])],
@@ -19,7 +19,7 @@ import { User } from '../users/entities/users.entity';
     MessageService,
     ChannelService,
     GroupProfileService,
-    UsersService,
+    UserService,
   ],
 })
 export class ChatModule {}

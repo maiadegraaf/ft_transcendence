@@ -12,6 +12,7 @@ import { MessageService } from '../services/message.service';
 import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from '../services/channel.service';
+import { promises } from 'dns';
 
 @WebSocketGateway({
   cors: {
@@ -52,12 +53,20 @@ export class ChatGateway
     });
   }
 
-  @SubscribeMessage('addUserByName')
-  handleUserByName(client: Socket, payload: { userName: string }): void {
-    const user = this.userService.getUserByName(payload.userName);
-    // this.server.emit('msgToClient', {
-    //   channelId:
-    // })
+  @SubscribeMessage('dmNewUserChannel')
+  async dmNewUserChannel(
+    client: Socket,
+    payload: { userName: string; userId: number },
+  ): Promise<any> {
+    const user2 = await this.userService.getUserByName(payload.userName);
+    if (!user2) {
+      console.log('Do something');
+    }
+    const channel = await this.channelService.newDmChannel(
+      payload.userId,
+      user2.id,
+    );
+    return channel;
   }
 
   afterInit(server: Server) {

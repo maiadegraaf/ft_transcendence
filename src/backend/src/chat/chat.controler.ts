@@ -1,9 +1,9 @@
-import {Controller, Get, Post, Param, Body} from '@nestjs/common';
+import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { Channel } from './entities/channel.entity';
 import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
-import { User } from '../users/entities/users.entity';
+// import { User } from '../user/entities/user.entity';
 // import { AppService } from './app.service';
 
 @Controller('chat')
@@ -27,7 +27,9 @@ export class ChatController {
 
   // Post /api/chat/dm
   @Post('dm')
-  postNewChannel(@Body() param: { user1: number; user2: number }): Promise<any> {
+  postNewChannel(
+    @Body() param: { user1: number; user2: number },
+  ): Promise<any> {
     return this.channelService.newDmChannel(param.user1, param.user2);
   }
 

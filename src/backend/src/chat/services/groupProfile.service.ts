@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
 // import { User } from '../../users/entities/users.entity';
-import { UsersService } from '../../users/services/users/users.service';
+import { UserService } from '../../user/services/user/user.service';
 import { GroupProfile } from '../entities/groupProfile.entity';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class GroupProfileService {
   constructor(
     @InjectRepository(GroupProfile)
     private readonly groupProfileRepository: Repository<GroupProfile>,
-    private readonly userService: UsersService,
+    private readonly userService: UserService,
   ) {}
 
   async createGroupProfile(

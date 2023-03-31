@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Message } from './message.entity';
-import { User } from '../../users/entities/users.entity';
+import { User } from '../../user/user.entity';
 import { GroupProfile } from './groupProfile.entity';
 
 @Entity()

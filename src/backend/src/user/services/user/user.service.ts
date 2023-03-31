@@ -47,10 +47,15 @@ export class UserService {
     return this.userRepository.delete({ id });
   }
 
-  async getUserByName(userName: string): Promise<any> {
+  async getUserByName(login: string): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: { username: {userName} },
+      where: { login },
+      relations: ['login'],
     });
+    if (!user) {
+      return false;
+    }
+    return user;
   }
   // createUser(userDetails: CreateUserParams) {
   //     const newUser = this.userRepository.create({ //not async so not need to await

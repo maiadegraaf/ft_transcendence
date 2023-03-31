@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
 // import { User } from '../../users/entities/users.entity';
-import { UsersService } from '../../users/services/users/users.service';
+import { UserService } from '../../user/services/user/user.service';
 import { GroupProfile } from '../entities/groupProfile.entity';
 import { GroupProfileService } from './groupProfile.service';
 import { use } from 'passport';
@@ -14,7 +14,7 @@ export class ChannelService {
     @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>,
     private readonly groupProfileService: GroupProfileService,
-    private readonly userService: UsersService,
+    private readonly userService: UserService,
   ) {}
 
   async createChannel(): Promise<Channel> {
