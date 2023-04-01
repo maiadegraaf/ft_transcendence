@@ -1,4 +1,4 @@
-import { User } from '../../users/entities/users.entity'
+import { User } from '../../user/user.entity'
 
 export interface Player {
     user: User;

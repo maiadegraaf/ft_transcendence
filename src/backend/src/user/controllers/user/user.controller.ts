@@ -61,11 +61,11 @@ export class UserController {
   // //but we are not using sessions yet
   // @Post(':id/profiles')
   // createUserProfile(@Param('id', ParseIntPipe) id: number, @Body() CreateUserProfileDto: CreateUserProfileDto) {
-  //     return this.usersService.createUserProfile(id, CreateUserProfileDto);
+  //     return this.UserService.createUserProfile(id, CreateUserProfileDto);
   // }
 
   // @Post(':id/posts')
   // createUserPost(@Param('id', ParseIntPipe) id: number, @Body() CreateUserPostDto: CreateUserPostDto,){
-  //     return this.usersService.createUserPost(id, CreateUserPostDto);
+  //     return this.UserService.createUserPost(id, CreateUserPostDto);
   // }
 }

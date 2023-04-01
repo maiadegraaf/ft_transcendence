@@ -6,15 +6,15 @@
 //   UnauthorizedException,
 // } from '@nestjs/common';
 // import * as speakeasy from 'speakeasy';
-// import { UsersService } from './users.service';
+// import { UserService } from './user.service';
 //
 // @Controller('auth/2fa')
 // export class TwoFactorAuthController {
-//   constructor(private readonly usersService: UsersService) {}
+//   constructor(private readonly UserService: UserService) {}
 //
 //   @Post('generate')
 //   async generate(@Req() req) {
-//     const user = await this.usersService.findById(req.user.id); // retrieve user from the database
+//     const user = await this.UserService.findById(req.user.id); // retrieve user from the database
 //     if (!user) {
 //       throw new UnauthorizedException();
 //     }
@@ -37,7 +37,7 @@
 //
 //   @Post('verify')
 //   async verify(@Body() { otp }: { otp: string }, @Req() req) {
-//     const user = await this.usersService.findById(req.user.id); // retrieve user from the database
+//     const user = await this.UserService.findById(req.user.id); // retrieve user from the database
 //     if (!user) {
 //       throw new UnauthorizedException();
 //     }

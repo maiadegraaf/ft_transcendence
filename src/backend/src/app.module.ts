@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Match } from 'src/pong/match/match.entity';
-// import { Avatar } from 'src/users/entities/avatar.entity';
+// import { Avatar } from 'src/user/entities/avatar.entity';
 import { Message } from './chat/entities/message.entity';
 import { User } from './user/user.entity';
 import { UserModule } from './user/user.module';
@@ -19,7 +19,6 @@ import { MatchModule } from './pong/match/match.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity'
-import { Message } from './chat/entities/message.entity';
 
 @Module({
     imports: [

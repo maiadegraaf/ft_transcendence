@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { User } from 'src/users/entities/users.entity';
+import { User } from 'src/user/user.entity';
 import { MatchInstance } from './match-instance/match-instance';
 import { MatchmakingService } from './matchmaking/matchmaking.service';
 import { MatchService } from './match/match.service';
 import { Info } from './interfaces/info.interface';
 import { PracticeMatch } from './practice-match/practice-match'
 import { PracticeMatchService } from './practice-match/practice-match.service'
-import { UsersService } from '../users/services/users/users.service'
+import { UserService } from '../user/services/user/user.service'
 
 @Injectable()
 export class PongService {
@@ -20,7 +20,7 @@ export class PongService {
         private matchmakingService: MatchmakingService,
         private matchesService: MatchService,
         private practiceMatchService: PracticeMatchService,
-        private userService: UsersService,
+        private userService: UserService,
     ) {}
 
     async handleConnection(client: Socket): Promise<void> {

@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 import { PongGateway } from './gateway/pong.gateway';
 import { PongController } from './pong.controller';
 import { PongService } from './pong.service';
-import { UserModule } from '../users/users.module';
+import { UserModule } from '../user/user.module';
 import { MatchmakingModule } from './matchmaking/matchmaking.module';
 import { MatchmakingService } from './matchmaking/matchmaking.service';
 import { Matchmaking } from './matchmaking/matchmaking.entity';
@@ -15,8 +15,8 @@ import { MatchInstanceModule } from './match-instance/match-instance.module';
 import { PracticeMatchModule } from './practice-match/practice-match.module';
 import { PracticeMatchService } from './practice-match/practice-match.service';
 import { PracticeMatchEntity } from './practice-match/practice-match.entity';
-import { UsersService } from '../users/services/users/users.service'
-import { User } from '../users/entities/users.entity'
+import { UserService } from '../user/services/user/user.service'
+import { User } from '../user/user.entity'
 
 @Module({
     imports: [
@@ -38,7 +38,7 @@ import { User } from '../users/entities/users.entity'
         MatchmakingService,
         MatchService,
         PracticeMatchService,
-        UsersService,
+        UserService,
     ],
 })
 export class PongModule {}

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Match } from 'src/pong/match/match.entity';
-import { User } from 'src/users/entities/users.entity';
+import { User } from 'src/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 

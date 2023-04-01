@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from '../entities/message.entity';
-import { UsersService } from '../../users/services/users/users.service';
+import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from './channel.service';
 // import { Channel } from '../entities/channel.entity';
 // import { User } from '../../user/entities/user.entity';
@@ -12,7 +12,7 @@ export class MessageService {
   constructor(
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
-    private readonly userService: UsersService,
+    private readonly userService: UserService,
     private readonly channelService: ChannelService,
   ) {}
 

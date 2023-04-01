@@ -7,7 +7,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/users.entity';
+import { User } from '../../user/user.entity';
 import { Channel } from './channel.entity';
 
 // @TableInheritance({ column: { type: 'varchar', name: 'type' } })
@@ -20,10 +20,10 @@ export class GroupProfile {
   channel: Channel;
 
   @JoinTable()
-  @ManyToMany(() => User, (admin) => admin.groupProfile)
+  // @ManyToMany(() => User, (admin) => admin.groupProfile)
   admin: User[];
 
-  @OneToOne(() => User, (owner) => owner.groupProfile)
+  // @OneToOne(() => User, (owner) => owner.groupProfile)
   owner: User;
 
   @JoinTable()

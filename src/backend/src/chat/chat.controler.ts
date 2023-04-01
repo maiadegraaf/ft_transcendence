@@ -3,7 +3,7 @@ import { Channel } from './entities/channel.entity';
 import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
-import { User } from '../users/entities/users.entity';
+import { User } from '../user/user.entity';
 import { promises } from 'dns';
 // import { AppService } from './app.service';
 

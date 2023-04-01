@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Matchmaking } from './matchmaking.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { User } from '../../users/entities/users.entity'
+import { User } from '../../user/user.entity'
 
 @Injectable()
 export class MatchmakingService {

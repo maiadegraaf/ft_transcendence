@@ -82,4 +82,17 @@ export class UserService {
   //     const newPost = this.postRepository.create({ ...createUserPostDetails, user, }); //ensure that it relates to that user
   //     return this.postRepository.save(newPost);
   // }
+
+  async addSocketIdToUser(userId: number, socketId: string): Promise<any> {
+    const user = await this.findUserByID(userId);
+    if (user.socketId) {
+      console.log('Replacing socketId ${user.socketId} with ${socketId} for user ${user.username}');
+    }
+    user.socketId = socketId;
+    return this.userRepository.save(user);
+  }
+
+  async returnUserBySocketId(socketId: string): Promise<User> {
+    return this.userRepository.findOne({ where: { socketId } });
+  }
 }

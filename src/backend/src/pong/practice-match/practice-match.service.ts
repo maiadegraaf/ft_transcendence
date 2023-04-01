@@ -3,7 +3,7 @@ import { PracticeMatchEntity } from './practice-match.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Difficulty } from './practice-match.entity'
-import { User } from '../../users/entities/users.entity'
+import { User } from '../../user/user.entity'
 
 @Injectable()
 export class PracticeMatchService {
