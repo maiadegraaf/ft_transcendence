@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MatchInstance } from './match-instance.service';
+import { MatchInstance } from './match-instance';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Match } from '../match/match.entity';
 import { MatchModule } from '../match/match.module';

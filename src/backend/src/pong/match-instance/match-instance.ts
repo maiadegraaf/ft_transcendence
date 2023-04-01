@@ -1,54 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Player } from '../player/player.entity';
 import { Server, Socket } from 'socket.io';
 import { Match } from '../match/match.entity';
 import { MatchService } from '../match/match.service';
+import { Direction, GameState } from "../enums";
+import { Ball } from '../interfaces/ball.interface';
+import { PlayerInterface } from '../interfaces/player-interface.interface';
+import { Info } from '../interfaces/info.interface';
 
 const height = 450;
 const width = 800;
 const max_y = height - 15;
 const min_y = 10;
-
-enum Direction {
-    Up = -1,
-    Down = 1,
-    Left = -1,
-    Right = 1,
-}
-
-enum GameState {
-    Start = 'start',
-    Playing = 'playing',
-    End = 'end',
-}
-
-interface Info {
-    d: Direction;
-    matchId: number;
-}
-
-interface Ball {
-    x: number;
-    y: number;
-    dx: Direction;
-    dy: Direction;
-}
-
-interface PlayerInterface {
-    user: Player;
-    x: number;
-    y: number;
-    new_y: number;
-    score: number;
-}
+const winning_condition = 10;
 
 @Injectable()
 export class MatchInstance {
     private logger: Logger = new Logger('PongGateway');
     private gamestate: GameState = GameState.Start;
     private winner = '';
-    private winning_condition = 10;
-    private match: Match;
+    private readonly match: Match;
     private server: Server;
     private ball: Ball = {
         x: width / 2,
@@ -189,10 +159,10 @@ export class MatchInstance {
         if (this.gamestate !== GameState.Playing) {
             return;
         }
-        if (this.player1.score >= this.winning_condition) {
+        if (this.player1.score >= winning_condition) {
             this.end('Player 1', client);
             return;
-        } else if (this.player2.score >= this.winning_condition) {
+        } else if (this.player2.score >= winning_condition) {
             this.end('Player 2', client);
             return;
         }

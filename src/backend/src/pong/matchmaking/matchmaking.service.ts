@@ -46,6 +46,7 @@ export class MatchmakingService {
                 return matchmaking;
             }
         }
+        return null;
     }
 
     async remove(matchmaking: Matchmaking) {
@@ -90,13 +91,7 @@ export class MatchmakingService {
         for (const matchmaking of await this.getMatchmaking()) {
             console.log(
                 matchmaking,
-                //              + ' ' +
-                //             matchmaking.player.id +
-                //             ' ' +
-                //             matchmaking.player.socketId,
             );
         }
-        // const matchmaking = await this.getMatchmaking();
-        // console.log(matchmaking);
     }
 }

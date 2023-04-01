@@ -15,6 +15,9 @@ import { PlayerModule } from './player/player.module';
 import { Player } from './player/player.entity';
 import { PlayerService } from './player/player.service';
 import { MatchInstanceModule } from './match-instance/match-instance.module';
+import { PracticeMatchModule } from './practice-match/practice-match.module';
+import { PracticeMatchService } from './practice-match/practice-match.service';
+import { PracticeMatchEntity } from './practice-match/practice-match.entity';
 
 @Module({
     imports: [
@@ -26,6 +29,8 @@ import { MatchInstanceModule } from './match-instance/match-instance.module';
         PlayerModule,
         TypeOrmModule.forFeature([Player]),
         MatchInstanceModule,
+        PracticeMatchModule,
+        TypeOrmModule.forFeature([PracticeMatchEntity]),
     ],
     controllers: [PongController],
     providers: [
@@ -35,6 +40,7 @@ import { MatchInstanceModule } from './match-instance/match-instance.module';
         MatchmakingService,
         MatchService,
         PlayerService,
+        PracticeMatchService,
     ],
 })
 export class PongModule {}

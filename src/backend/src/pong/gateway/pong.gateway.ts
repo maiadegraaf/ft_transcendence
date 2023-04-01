@@ -7,20 +7,8 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { PongService } from '../pong.service';
-import { MatchService } from '../match/match.service';
 import { Match } from '../match/match.entity';
-
-enum Direction {
-    Up = -1,
-    Down = 1,
-    Left = -1,
-    Right = 1,
-}
-
-interface Info {
-    d: Direction;
-    matchId: number;
-}
+import { Info } from '../interfaces/info.interface';
 
 @WebSocketGateway({
     cors: { origin: '*' },
@@ -28,7 +16,6 @@ interface Info {
 export class PongGateway {
     constructor(private readonly pongService: PongService) {}
 
-    private match: Match = null;
     @WebSocketServer() server: Server;
 
     handleConnection(@ConnectedSocket() client: Socket): void {
@@ -62,13 +49,13 @@ export class PongGateway {
     //     this.pongService.handleStart();
     // }
 
-    // @SubscribeMessage('start practice')
-    // handleStartPractice(
-    //     @ConnectedSocket() client: Socket,
-    //     @MessageBody() data: any,
-    // ): void {
-    //     this.pongService.handlePracticeMode(client, data);
-    // }
+    @SubscribeMessage('start practice')
+    handleStartPractice(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any,
+    ): void {
+        this.pongService.handlePracticeMode(client, data);
+    }
 
     afterInit(@ConnectedSocket() client: Socket): void {
         setInterval(() => this.pongService.tick(client), 1000 / 60);

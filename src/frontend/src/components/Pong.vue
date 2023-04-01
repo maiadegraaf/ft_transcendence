@@ -1,7 +1,7 @@
 <template>
-  <div v-if="!started" class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple text-white">
+  <div v-if="!started" class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple-800 text-white">
     <h1 class="text-8xl mb-8 font-bold text-buff drop-shadow-lg shadow-vista-blue-500/50">PONG</h1>
-    <button v-if="!waiting" @click="setPracticeMode" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
+    <button v-if="!waiting && !practiceMode" @click="setPracticeMode" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
       Start a Practice Game
     </button>
     <div v-if="practiceMode" class="flex flex-col items-center">
@@ -104,6 +104,7 @@ export default {
       },
       // socket: io("http://localhost:8080"),
       info: {
+        practiceMatchId: '',
         matchId: '',
         d: 0,
       }
@@ -130,6 +131,13 @@ export default {
     this.socket.on("opponentFound", (matchId: number) => {
       console.log("Opponent found");
       this.info.matchId = matchId;
+      this.waiting = false;
+      this.started = true;
+    });
+
+    this.socket.on("practiceMatchCreated", (practiceMatchId: number) => {
+      console.log("Practice match created");
+      this.info.practiceMatchId = practiceMatchId;
       this.waiting = false;
       this.started = true;
     });

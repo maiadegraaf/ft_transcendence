@@ -18,6 +18,8 @@ import { MatchModule } from './pong/match/match.module';
 import { PlayerModule } from './pong/player/player.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
+import { Player } from './pong/player/player.entity';
+import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity'
 
 @Module({
     imports: [
@@ -32,6 +34,8 @@ import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
                 User,
                 Match,
                 Matchmaking,
+                PracticeMatchEntity,
+                Player,
                 Message,
                 Channel,
                 GroupProfile,
