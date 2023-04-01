@@ -1,12 +1,12 @@
-import { Player } from 'src/pong/player/player.entity';
 import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/entities/users.entity'
 
 @Entity()
 export class Matchmaking {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => Player)
+    @OneToOne(() => User)
     @JoinColumn()
-    player: Player;
+    player: User;
 }

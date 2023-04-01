@@ -1,14 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { User } from 'src/users/entities/users.entity';
-import { Match } from 'src/pong/match/match.entity';
 import { MatchInstance } from './match-instance/match-instance';
 import { MatchmakingService } from './matchmaking/matchmaking.service';
 import { MatchService } from './match/match.service';
-import { PlayerService } from './player/player.service';
 import { Info } from './interfaces/info.interface';
 import { PracticeMatch } from './practice-match/practice-match'
 import { PracticeMatchService } from './practice-match/practice-match.service'
+import { UsersService } from '../users/services/users/users.service'
 
 @Injectable()
 export class PongService {
@@ -20,15 +19,15 @@ export class PongService {
         private readonly server: Server,
         private matchmakingService: MatchmakingService,
         private matchesService: MatchService,
-        private playerService: PlayerService,
         private practiceMatchService: PracticeMatchService,
+        private userService: UsersService,
     ) {}
 
     async handleConnection(client: Socket): Promise<void> {
         this.logger.log(`Client connected: ${client.id}`);
         const user = new User();
-        await this.playerService.createPlayer(user, client.id);
-        this.logger.log('player created for ' + client.id);
+        user.socketId = client.id;
+        this.logger.log('SocketId added to User: [${client.id}]');
     }
 
     handleDisconnect(client: Socket): void {
@@ -66,7 +65,7 @@ export class PongService {
 
     async handleJoinMatchmaking(client: Socket): Promise<void> {
         this.logger.log(client.id + ' joined the waitlist');
-        const newPlayer = await this.playerService.getPlayerBySocket(client.id);
+        const newPlayer = await this.userService.returnUserBySocketId(client.id);
         await this.matchmakingService.addPlayer(newPlayer);
         // console.log(newPlayer + ' added to matchmaking');
         // this.logger.log(
@@ -149,7 +148,7 @@ export class PongService {
     }
 
     async handlePracticeMode(client: Socket, data: any) {
-        const player = await this.playerService.getPlayerBySocket(client.id);
+        const player = await this.userService.returnUserBySocketId(client.id);
         const practiceMatch = await this.practiceMatchService.createPracticeMatch(player);
         this.practiceInstance[practiceMatch.id] = new PracticeMatch(this.server, practiceMatch, this.practiceMatchService);
         client.emit('practiceMatchCreated', practiceMatch.id);

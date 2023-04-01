@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Matchmaking } from './matchmaking.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player } from '../player/player.entity';
 import { Not, Repository } from 'typeorm';
-import { Match } from '../match/match.entity';
+import { User } from '../../users/entities/users.entity'
 
 @Injectable()
 export class MatchmakingService {
@@ -12,7 +11,7 @@ export class MatchmakingService {
         private readonly matchmakingRepository: Repository<Matchmaking>,
     ) {}
 
-    async addPlayer(player: Player): Promise<Matchmaking> {
+    async addPlayer(player: User): Promise<Matchmaking> {
         let matchmaking = await this.getMatchmakingByPlayer(player);
         if (!matchmaking) {
             matchmaking = new Matchmaking();
@@ -33,7 +32,7 @@ export class MatchmakingService {
         return this.matchmakingRepository.findOne({ where: { id } });
     }
 
-    async getMatchmakingByPlayer(player: Player): Promise<Matchmaking> {
+    async getMatchmakingByPlayer(player: User): Promise<Matchmaking> {
         return this.matchmakingRepository.findOne({ where: { player } });
     }
 
@@ -66,7 +65,7 @@ export class MatchmakingService {
         }
     }
 
-    async pop(): Promise<Player> {
+    async pop(): Promise<User> {
         const matchmaking = await this.matchmakingRepository.findOne({
             where: { id: Not(0) },
             relations: {

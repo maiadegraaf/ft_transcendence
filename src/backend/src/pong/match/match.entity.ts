@@ -1,16 +1,16 @@
-import { Player } from 'src/pong/player/player.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/entities/users.entity'
 
 @Entity()
 export class Match {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Player)
-    player1: Player;
+    @ManyToOne(() => User)
+    player1: User;
 
-    @ManyToOne(() => Player)
-    player2: Player;
+    @ManyToOne(() => User)
+    player2: User;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

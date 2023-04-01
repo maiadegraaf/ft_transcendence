@@ -4,7 +4,7 @@ import { Match } from '../match/match.entity';
 import { MatchService } from '../match/match.service';
 import { Direction, GameState } from "../enums";
 import { Ball } from '../interfaces/ball.interface';
-import { PlayerInterface } from '../interfaces/player-interface.interface';
+import { Player } from '../interfaces/player.interface';
 import { Info } from '../interfaces/info.interface';
 
 const height = 450;
@@ -26,14 +26,14 @@ export class MatchInstance {
         dx: Direction.Left,
         dy: Direction.Up,
     };
-    private player1: PlayerInterface = {
+    private player1: Player = {
         user: null,
         x: 20,
         y: height / 2 - 50,
         new_y: height / 2 - 50,
         score: 0,
     };
-    private player2: PlayerInterface = {
+    private player2: Player = {
         user: null,
         x: width - 20,
         y: height / 2 - 50,

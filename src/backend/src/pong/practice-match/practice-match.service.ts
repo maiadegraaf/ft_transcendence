@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PracticeMatchEntity } from './practice-match.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Player } from '../player/player.entity'
 import { Difficulty } from './practice-match.entity'
+import { User } from '../../users/entities/users.entity'
 
 @Injectable()
 export class PracticeMatchService {
@@ -13,10 +13,10 @@ export class PracticeMatchService {
     ) {}
 
     async createPracticeMatch(
-        player: Player,
+        user: User,
     ): Promise<PracticeMatchEntity> {
         const practiceMatch = new PracticeMatchEntity();
-        practiceMatch.player = player;
+        practiceMatch.player = user;
         try {
             const savedPracticeMatch = await this.practiceMatchRepository
                 .createQueryBuilder()
@@ -35,7 +35,7 @@ export class PracticeMatchService {
         return this.practiceMatchRepository.findOne({ where: { id } });
     }
 
-    async returnPlayer(practiceMatch: PracticeMatchEntity): Promise<Player> {
+    async returnPlayer(practiceMatch: PracticeMatchEntity): Promise<User> {
         const tmp = await this.practiceMatchRepository.findOne({
             where: { id: practiceMatch.id },
             relations: {
@@ -53,7 +53,7 @@ export class PracticeMatchService {
         await this.practiceMatchRepository.delete({ player: { id: playerId } });
     }
 
-    async deletePracticeMatchByPlayer(player: Player): Promise<void> {
+    async deletePracticeMatchByPlayer(player: User): Promise<void> {
         await this.practiceMatchRepository.delete({ player });
     }
 

@@ -1,5 +1,5 @@
-import { Player } from 'src/pong/player/player.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/entities/users.entity'
 
 export enum Difficulty {
     EASY = 'EASY',
@@ -12,8 +12,8 @@ export class PracticeMatchEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Player)
-    player: Player;
+    @ManyToOne(() => User)
+    player: User;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

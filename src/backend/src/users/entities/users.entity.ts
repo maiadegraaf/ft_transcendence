@@ -40,4 +40,9 @@ export class User {
   @ManyToMany(() => Channel)
   @JoinTable()
   channels: Channel[];
+
+  @Column({
+    default: null,
+  })
+  socketId: string;
 }

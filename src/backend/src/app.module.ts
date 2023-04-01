@@ -15,10 +15,8 @@ import { PongModule } from './pong/pong.module';
 import { GroupProfile } from './chat/entities/groupProfile.entity';
 import { MatchmakingModule } from './pong/matchmaking/matchmaking.module';
 import { MatchModule } from './pong/match/match.module';
-import { PlayerModule } from './pong/player/player.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
-import { Player } from './pong/player/player.entity';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity'
 
 @Module({
@@ -35,7 +33,6 @@ import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity
                 Match,
                 Matchmaking,
                 PracticeMatchEntity,
-                Player,
                 Message,
                 Channel,
                 GroupProfile,
@@ -44,7 +41,6 @@ import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity
         }),
         MatchmakingModule,
         MatchModule,
-        PlayerModule,
         MatchInstanceModule,
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '../..', '../frontend/dist'),

@@ -3,7 +3,7 @@ import { Direction, GameState } from '../enums'
 import { Server, Socket } from 'socket.io'
 import { Difficulty, PracticeMatchEntity } from './practice-match.entity'
 import { Ball } from '../interfaces/ball.interface'
-import { PlayerInterface } from '../interfaces/player-interface.interface'
+import { Player } from '../interfaces/player.interface'
 import { Info } from '../interfaces/info.interface'
 import { PracticeMatchService } from './practice-match.service'
 
@@ -27,7 +27,7 @@ export class PracticeMatch {
         dy: Direction.Up,
     };
 
-    private player: PlayerInterface = {
+    private player: Player = {
         user: null,
         x: 20,
         y: height / 2 - 50,
@@ -35,7 +35,7 @@ export class PracticeMatch {
         score: 0,
     };
 
-    private computer: PlayerInterface = {
+    private computer: Player = {
         user: null,
         x: width - 20,
         y: height / 2 - 50,

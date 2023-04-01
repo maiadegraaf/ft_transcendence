@@ -11,13 +11,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchModule } from './match/match.module';
 import { MatchService } from './match/match.service';
 import { Match } from './match/match.entity';
-import { PlayerModule } from './player/player.module';
-import { Player } from './player/player.entity';
-import { PlayerService } from './player/player.service';
 import { MatchInstanceModule } from './match-instance/match-instance.module';
 import { PracticeMatchModule } from './practice-match/practice-match.module';
 import { PracticeMatchService } from './practice-match/practice-match.service';
 import { PracticeMatchEntity } from './practice-match/practice-match.entity';
+import { UsersService } from '../users/services/users/users.service'
+import { User } from '../users/entities/users.entity'
 
 @Module({
     imports: [
@@ -26,11 +25,10 @@ import { PracticeMatchEntity } from './practice-match/practice-match.entity';
         TypeOrmModule.forFeature([Matchmaking]),
         MatchModule,
         TypeOrmModule.forFeature([Match]),
-        PlayerModule,
-        TypeOrmModule.forFeature([Player]),
         MatchInstanceModule,
         PracticeMatchModule,
         TypeOrmModule.forFeature([PracticeMatchEntity]),
+        TypeOrmModule.forFeature([User]),
     ],
     controllers: [PongController],
     providers: [
@@ -39,8 +37,8 @@ import { PracticeMatchEntity } from './practice-match/practice-match.entity';
         Server,
         MatchmakingService,
         MatchService,
-        PlayerService,
         PracticeMatchService,
+        UsersService,
     ],
 })
 export class PongModule {}
