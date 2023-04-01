@@ -6,10 +6,11 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Match } from 'src/pong/match/match.entity';
 // import { Avatar } from 'src/users/entities/avatar.entity';
-import { User } from 'src/users/entities/users.entity';
 import { Message } from './chat/entities/message.entity';
+import { User } from './user/user.entity';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import { Channel } from './chat/entities/channel.entity';
-import { UserModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import { GroupProfile } from './chat/entities/groupProfile.entity';
@@ -18,6 +19,7 @@ import { MatchModule } from './pong/match/match.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity'
+import { Message } from './chat/entities/message.entity';
 
 @Module({
     imports: [
@@ -43,12 +45,12 @@ import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity
         MatchModule,
         MatchInstanceModule,
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '../..', '../frontend/dist'),
+            rootPath: join(__dirname, '../..', './frontend/dist'),
         }),
         UserModule,
         PongModule,
         ChatModule,
-    ],
+    AuthModule,],
     controllers: [AppController],
     providers: [AppService],
 })

@@ -1,29 +1,3 @@
-<!--<template>-->
-<!--    <div class="mx-auto h-screen w-screen bg-dark-purple font-mono">-->
-<!--        <div class = "container h-screen w-screen">-->
-<!--            <router-view />-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</template>-->
-
-<!--<script lang="ts">-->
-<!--export default {-->
-<!--  name: 'App',-->
-<!--  components: {}-->
-<!--}-->
-<!--</script>-->
-
-<!--<style scoped>-->
-<!--.container {-->
-<!--    background-image: url('../src/assets/images/gradient_pong_background.png');-->
-<!--    background-size: 20%;-->
-<!--    background-repeat: repeat-x;-->
-<!--    background-position: bottom center;-->
-<!--    width: 100vw;-->
-<!--}-->
-
-<!--</style>-->
-
 <template>
     <div class="flex flex-col h-screen w-screen bg-dark-purple font-mono">
         <div class="flex-1 w-full mx-auto bg-gradient-to-r from-transparent via-transparent to-dark-purple">

@@ -6,7 +6,7 @@ import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
 import TmpLogin from '../views/TmpLogin.vue'
-import axios from "axios";
+import axios from 'axios'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -31,16 +31,15 @@ const router = createRouter({
       name: 'Chat',
       component: Chat
     },
-    {
-      path: '/:catchAll(.*)',
-      name: '404Name',
-      component: viewfour
-    },
+    // {
+    //   path: '/:catchAll(.*)',
+    //   name: '404Name',
+    //   component: viewfour
+    // },
     {
       path: '/Pong',
       name: 'Pong',
       component: PongGame,
-      // beforeEnter: requireAuth
     },
     {
       path: '/TmpLogin',
@@ -49,7 +48,6 @@ const router = createRouter({
     }
   ]
 })
-
 
 // router.beforeEach((to, from, next) => {
 //   axios.get('https://api.intra.42.fr/v2/me', {
@@ -72,6 +70,5 @@ const router = createRouter({
 //           next()
 //       })
 // });
-
 
 export default router

@@ -22,6 +22,11 @@
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "vue": "^3.2.47",
+    "vue-otp-input": "^1.0.0",
+    "vue-router": "^4.1.6",
+    "vue-session": "^1.0.0",
+    "vue3-qrcode-reader": "^0.0.1",
+    "vue3-storage": "^0.1.11"
     "vue-property-decorator": "^9.1.2",
     "vuetify": "^3.1.11",
     "vue-class-component": "^7.2.6",
