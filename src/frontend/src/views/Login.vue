@@ -52,6 +52,7 @@
     >
       User 6
     </button>
+    <p>if user # doesn't redirect you it doesn't exist in the database</p>
   </div>
 </template>
 
@@ -77,6 +78,9 @@ export default {
       window.location.href = 'http://localhost:8080/api/auth/42'
     },
     fake_user(i: number) {
+      const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms))
+      }
       axios.get("http://localhost:8080/api/user/" + i)
           .then((response) => {
             this.user.accessToken = "fake_user";
@@ -84,7 +88,14 @@ export default {
             console.log(response.status)
             this.$cookie.setCookie('user', JSON.stringify(this.user))
           })
-      this.$router.push('/Home')
+      sleep(100).then(() => {
+        if (this.$cookie.isCookieAvailable('user') == true)
+          {
+            this.$router.push('/Home')
+          }
+      })
+
+
     }
   }
 }
