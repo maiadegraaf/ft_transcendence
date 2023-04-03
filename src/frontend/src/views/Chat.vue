@@ -94,7 +94,8 @@
       label="Name"
       placeholder="Enter your name"
       required></v-text-field>
-<!--  <v-btn @click="createChannel">Create Channel</v-btn>-->
+  <v-btn @click="createChannel">Create Channel</v-btn>
+  <v-btn @click="channelsByUser">Get Channels</v-btn>
   <v-btn @click="joinRoom">Join Room</v-btn>
 </template>
 
@@ -200,17 +201,34 @@ export default {
     // Validates the input for sending a message.
     validateInput(): boolean {
       return this.name.length > 0 && this.text.length > 0
+    },
+    // Retrieves the channels per user
+    channelsByUser(): void {
+      const userId = sessionStorage.getItem('session_user_id');
+      if (!userId) {
+        return ;
+      }
+      const userIdValue = JSON.parse(userId).value;
+      axios.get('http://localhost:8080/api/chat/' + userIdValue +'/channel')
+          .then((response) => {
+            console.log(response.data)
+          })
     }
   },
   // The created hook of the Vue instance.
   created(): void {
     // Initializes the Socket.IO client and stores it in the Vue instance.
-    this.socket = io('http://localhost:8080')
+    this.socket = io('http://localhost:8080');
     // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
     this.socket.on('msgToClient', (message: { userId: number, text: string, channelId: number,  }) => {
       this.receivedMessage(message)
     })
   }
+
+    // .then((response) => {
+    //   console.log(response.data)
+    //   this.channelId = response.data.id
+    // })
 }
 </script>
 

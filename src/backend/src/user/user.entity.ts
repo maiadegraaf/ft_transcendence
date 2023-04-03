@@ -30,7 +30,7 @@ export class User {
   createdAt: Date;
 
   @JoinTable()
-  @ManyToMany(() => Channel, (id) => id.users)
+  @ManyToMany(() => Channel, (channel) => channel.users)
   channels: Channel[];
 
   @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)

@@ -37,37 +37,48 @@ export class ChannelService {
     } catch {}
   }
 
-  async addUserToChannel(channelId: number, userId: number): Promise<any> {
+  async addUserToChannel(channel: Channel, userId: number): Promise<any> {
     try {
-      const channel = await this.channelRepository.findOne({
-        where: { id: channelId },
-        relations: ['users'],
-      });
-      if (!channel) {
-        throw new HttpException(
-          'Channel with ID ${id} not found',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+      // const channel = await this.channelRepository.findOne({
+      //       //   where: { id: channelId },
+      //       //   relations: ['users'],
+      //       // });
+      //       // if (!channel) {
+      //       //   return ;
+      //       //   throw new HttpException(
+      //       //     'Channel with ID ${id} not found',
+      //       //     HttpStatus.FORBIDDEN,
+      //       //   );
+      //       // }
+
+      console.log('addUserToChannel channel ' + channel.id);
       const user = await this.userService.findUserByID(userId);
+      console.log('user ' + user.id);
       channel.users.push(user);
-      return await this.channelRepository.save(channel);
+      await this.channelRepository.save(channel);
+      await this.userService.addChannelToUser(channel, userId);
     } catch {}
   }
 
   async newDmChannel(user1: number, user2: number): Promise<any> {
     try {
       const channel = await this.createChannel();
-      if (
-        !(await this.addUserToChannel(channel.id, user1)) ||
-        !(await this.addUserToChannel(channel.id, user2))
-      ) {
-        throw new HttpException(
-          'could not save users to DM channel',
-          HttpStatus.FORBIDDEN,
-        );
-      }
-      return await this.channelRepository.save(channel);
+      await this.addUserToChannel(channel, user1);
+      // console.log('newDmChannel ' + channel1.id);
+      await this.addUserToChannel(channel, user2);
+      // if (
+      //   !(await this.addUserToChannel(channel.id, user1)) ||
+      //   !(await this.addUserToChannel(channel.id, user2))
+      // ) {
+      //   throw new HttpException(
+      //     'could not save users to DM channel',
+      //     HttpStatus.FORBIDDEN,
+      //   );
+      // }
+      // console.log('newDmChannel ' + channel2);
+      await this.channelRepository.save(channel);
+      // console.log('testje!');
+      return channel;
     } catch {}
   }
 
@@ -102,7 +113,25 @@ export class ChannelService {
       if (!user) {
         throw new HttpException('Could not find user', HttpStatus.FORBIDDEN);
       }
-      return user.channels;
+      console.log(user);
+      const channels = await this.channelRepository.find({
+        where: { users: user },
+        relations: ['users'],
+      });
+      // JSON.parse(channels)
+      console.log(channels);
+      return channels;
+      // const channels = await this.userService.getChannelsByUserId(userId);
+      // user.channels;
+
+      // find({
+      //   where: { users: user },
+      //   relations: ['users'],
+      // });
+      // console.log(user.channels);
+      // return user.channels;
+      // console.log(channels);
+      // return channels;
     } catch {}
   }
 }

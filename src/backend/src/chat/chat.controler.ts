@@ -14,23 +14,25 @@ export class ChatController {
     private readonly messageService: MessageService,
   ) {}
 
-  // Get /api/chat/id
+  // Get /api/chat/${id}
   @Get('/:id')
   getChannelMessages(@Param('id') id: number): Promise<any> {
     return this.messageService.getMessagesByChannelID(id);
   }
 
+  // Get /api/chat/${id}/channel
   @Get('/:id/channel')
-  getUserChannels(@Param(':id') id: number): Promise<any> {
-    return this.channelService.getChannelsByUserId(id);
+  async getUserChannels(@Param('id') id: number): Promise<any> {
+    console.log('this is the right id: ' + id);
+    return await this.channelService.getChannelsByUserId(id);
   }
 
   // Post /api/chat/dm
   @Post('dm')
-  postNewChannel(
+  async postNewChannel(
     @Body() param: { user1: number; user2: number },
   ): Promise<any> {
-    return this.channelService.newDmChannel(param.user1, param.user2);
+    return await this.channelService.newDmChannel(param.user1, param.user2);
   }
 
   // Post /api/chat/group
@@ -44,7 +46,11 @@ export class ChatController {
 
   // Post /api/chat/group/userAdd
   @Post('group/userAdd')
-  postUserToChannel(param: { chanelId: number; userId: number }): Promise<any> {
-    return this.channelService.addUserToChannel(param.chanelId, param.userId);
+  async postUserToChannel(param: {
+    channelId: number;
+    userId: number;
+  }): Promise<any> {
+    const channel = await this.channelService.getChannelById(param.channelId);
+    return this.channelService.addUserToChannel(channel, param.userId);
   }
 }
