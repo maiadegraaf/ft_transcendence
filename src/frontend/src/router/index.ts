@@ -5,7 +5,6 @@ import Auth from '../views/Authenticated.vue'
 import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
-import TmpLogin from '../views/TmpLogin.vue'
 import axios from 'axios'
 
 const router = createRouter({
@@ -40,11 +39,6 @@ const router = createRouter({
       path: '/Pong',
       name: 'Pong',
       component: PongGame,
-    },
-    {
-      path: '/TmpLogin',
-      name: 'TmpLogin',
-      component: TmpLogin
     }
   ]
 })

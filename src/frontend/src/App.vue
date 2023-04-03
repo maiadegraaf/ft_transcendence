@@ -16,7 +16,7 @@ export default {
 <style scoped>
 .bg-gradient-to-r {
     background-image: url('../src/assets/images/gradient_pong_background.png');
-    background-size: 200px;
+    background-size: 400px;
     background-repeat: repeat-x;
     background-position: bottom;
 }
