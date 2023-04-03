@@ -32,95 +32,81 @@
     </v-list>
   </v-card>
   <br>
-  <input type="text" v-model="name" id="username" class="form-control chat_box" placeholder="Enter name...">
+  <input type="text" v-model="name" id="username" class="form-control" placeholder="Enter name...">
   <br>
-  <textarea id="textarea" class="form-control chat_box" v-model="text" placeholder="Enter message..."></textarea>
+  <textarea id="textarea" class="form-control" v-model="text" placeholder="Enter message..."></textarea>
   <br>
-  <button id="send" class="btn chat_box" @click.prevent="sendMessage">Send</button>
+  <button id="send" class="btn" @click.prevent="sendMessage">Send</button>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import io from 'socket.io-client'
-import Nav from '@/components/Nav.vue'
+import io from 'socket.io-client';
 
 export default {
-  components: { Nav },
   // The root element of the Vue instance.
   el: '#app',
   // The data object of the Vue instance.
   data(): {
-    title: string
-    name: string
-    text: string
+    title: string;
+    name: string;
+    text: string;
+    id: number;
     messages: {
-      name: string
-      text: string
-      // id: number
-    }[]
-    socket: any
+      name: string;
+      text: string;
+      id: number;
+    }[];
+    socket: any;
   } {
     // The initial data of the Vue instance.
     return {
       title: 'Nestjs Websockets Chat',
       name: '',
       text: '',
+      id: 1,
       messages: [],
-      socket: null
-    }
+      socket: null,
+    };
   },
   // The methods of the Vue instance.
   methods: {
     // Sends a message to the server.
     sendMessage(): void {
+      // if (this.validateInput()) {
+//
       // Validates the input before sending the message.
       if (this.validateInput()) {
+        if (this.name == 'Bert') this.id = 2;
+        else this.id = 1;
         const message = {
           name: this.name,
-          text: this.text
-        }
+          text: this.text,
+          id: this.id,
+        };
         // Emits a 'msgToServer' event with the message.
-        this.socket.emit('msgToServer', message)
+        this.socket.emit('msgToServer', message);
         // Resets the input field.
-        this.text = ''
+        this.text = '';
       }
     },
     // Receives a message from the server.
-    receivedMessage(message: { name: string; text: string }): void {
+    receivedMessage(message: { name: string; text: string; id: number}): void {
       // Adds the message to the messages array.
-      this.messages.push(message)
+      this.messages.push(message);
     },
     // Validates the input for sending a message.
     validateInput(): boolean {
-      return this.name.length > 0 && this.text.length > 0
-    }
+      return this.name.length > 0 && this.text.length > 0;
+    },
   },
   // The created hook of the Vue instance.
   created(): void {
     // Initializes the Socket.IO client and stores it in the Vue instance.
-    this.socket = io('http://localhost:8080')
+    this.socket = io('http://localhost:8080');
     // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
-    this.socket.on('msgToClient', (message: { name: string; text: string }) => {
-      this.receivedMessage(message)
-    })
-  }
-}
+    this.socket.on('msgToClient', (message: { name: string; text: string; id: number}) => {
+      this.receivedMessage(message);
+    });
+  },
+};
 </script>
-
-<style>
-#messages {
-  height: 300px;
-  overflow-y: scroll;
-}
-
-#app {
-  margin-top: 2rem;
-  margin: auto;
-  /*width: 40%;*/
-}
-
-.chat_box {
-  background: white;
-  color : black;
-}
-</style>

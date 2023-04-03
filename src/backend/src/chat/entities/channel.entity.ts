@@ -1,19 +1,39 @@
 import {
+  Column,
   Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
-  TableInheritance,
 } from 'typeorm';
-import { Msg } from './message.entity';
+import { Message } from './message.entity';
+import { User } from '../../users/entities/users.entity';
+import { ChannelEnum } from '../../utils/types';
+import { GroupProfile } from './groupProfile.entity';
 
+// @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class Channel {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(() => Msg, (msg) => msg.channel)
-  messages: Msg[];
+  @OneToMany(() => Message, (msg) => msg.channel)
+  messages: Message[];
+
+  @JoinTable()
+  @ManyToMany(() => User, (usr) => usr.id)
+  users: User[];
+
+  @OneToOne(() => GroupProfile, (profile) => profile.channel)
+  profile: GroupProfile;
+  //
+  // @Column()
+  // type: ChannelEnum;
+  //
+  // @Column()
+  // dmChannel: ChannelEnum;
+
+  // @Column()
+  // name: string;
 }
