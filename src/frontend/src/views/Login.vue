@@ -89,7 +89,7 @@ export default {
             this.$cookie.setCookie('user', JSON.stringify(this.user))
           })
       sleep(100).then(() => {
-        if (this.$cookie.isCookieAvailable('user') == true)
+        if (this.$cookie.isCookieAvailable('user'))
           {
             this.$router.push('/Home')
           }

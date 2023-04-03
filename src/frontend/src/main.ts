@@ -35,7 +35,6 @@ app
   .use(router)
   .use(vuetify)
   .use(VueCookieNext)
-  .use(vuetify)
   .mount('#app')
 
 VueCookieNext.config({ expire: '7d' })
