@@ -1,4 +1,3 @@
-import { User } from 'src/users/entities/users.entity';
 import {
   Column,
   Entity,
@@ -6,6 +5,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { User } from '../../user/user.entity';
 
 @Entity()
 export class Match {

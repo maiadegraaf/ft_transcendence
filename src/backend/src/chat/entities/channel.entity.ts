@@ -8,11 +8,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Message } from './message.entity';
-import { User } from '../../users/entities/users.entity';
-import { ChannelEnum } from '../../utils/types';
+import { User } from '../../user/user.entity';
 import { GroupProfile } from './groupProfile.entity';
 
-// @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
 export class Channel {
   @PrimaryGeneratedColumn()
@@ -22,7 +20,7 @@ export class Channel {
   messages: Message[];
 
   @JoinTable()
-  @ManyToMany(() => User, (usr) => usr.id)
+  @ManyToMany(() => User, (user) => user.channels)
   users: User[];
 
   @OneToOne(() => GroupProfile, (profile) => profile.channel)

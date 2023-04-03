@@ -2,11 +2,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Channel } from '../chat/entities/channel.entity';
+import { GroupProfile } from '../chat/entities/groupProfile.entity';
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
@@ -25,6 +29,12 @@ export class User {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
+  @JoinTable()
+  @ManyToMany(() => Channel, (channel) => channel.users)
+  channels: Channel[];
+
+  @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
+  groupProfile: GroupProfile;
   // @OneToOne(() => Profile)
   // @JoinColumn()
   // profile: Profile;

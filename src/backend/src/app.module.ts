@@ -33,7 +33,6 @@ import { Message } from './chat/entities/message.entity';
     PongModule,
     ChatModule,
     AuthModule,
-
   ],
   controllers: [AppController],
   providers: [AppService],

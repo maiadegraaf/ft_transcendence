@@ -7,8 +7,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/users.entity';
 import { Channel } from './channel.entity';
+import { User } from '../../user/user.entity';
 
 // @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
