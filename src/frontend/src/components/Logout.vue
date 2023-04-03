@@ -12,8 +12,7 @@ export default {
   name: 'Logout',
   methods: {
     destroyToken() {
-      localStorage.removeItem('token')
-      this.$storage.clearStorageSync()
+      this.$cookie.removeCookie('user')
       this.$router.push('/')
     }
   }

@@ -59,12 +59,31 @@
 import axios from 'axios'
 
 export default {
+  data() {
+    return {
+      user: {
+        accessToken: String,
+        user: {
+          id: Number,
+          login: String,
+          email: String,
+          createdAt: String
+        }
+      }
+    }
+  },
   methods: {
     login42() {
       window.location.href = 'http://localhost:8080/api/auth/42'
     },
     fake_user(i: number) {
-      this.$storage.setStorageSync('user_id', i)
+      axios.get("http://localhost:8080/api/user/" + i)
+          .then((response) => {
+            this.user.accessToken = "fake_user";
+            this.user.user = response.data;
+            console.log(response.status)
+            this.$cookie.setCookie('user', JSON.stringify(this.user))
+          })
       this.$router.push('/Home')
     }
   }
