@@ -29,8 +29,8 @@ export class User {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @JoinTable()
   @ManyToMany(() => Channel, (channel) => channel.users)
+  @JoinTable()
   channels: Channel[];
 
   @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)

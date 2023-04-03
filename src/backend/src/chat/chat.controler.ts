@@ -32,7 +32,9 @@ export class ChatController {
   async postNewChannel(
     @Body() param: { user1: number; user2: number },
   ): Promise<any> {
-    return await this.channelService.newDmChannel(param.user1, param.user2);
+    const channel = await this.channelService.newDmChannel(param.user1, param.user2);
+    console.log(channel);
+    return channel;
   }
 
   // Post /api/chat/group

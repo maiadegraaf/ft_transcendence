@@ -19,8 +19,8 @@ export class Channel {
   @OneToMany(() => Message, (msg) => msg.channel)
   messages: Message[];
 
-  @JoinTable()
   @ManyToMany(() => User, (user) => user.channels)
+  @JoinTable()
   users: User[];
 
   @OneToOne(() => GroupProfile, (profile) => profile.channel)

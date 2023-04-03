@@ -54,9 +54,9 @@ export class ChannelService {
       console.log('addUserToChannel channel ' + channel.id);
       const user = await this.userService.findUserByID(userId);
       console.log('user ' + user.id);
+      await this.userService.addChannelToUser(channel, userId);
       channel.users.push(user);
       await this.channelRepository.save(channel);
-      await this.userService.addChannelToUser(channel, userId);
     } catch {}
   }
 
@@ -114,10 +114,11 @@ export class ChannelService {
         throw new HttpException('Could not find user', HttpStatus.FORBIDDEN);
       }
       console.log(user);
-      const channels = await this.channelRepository.find({
-        where: { users: user },
-        relations: ['users'],
-      });
+      const channels = await this.userService.getChannelsByUserId(userId);
+      //     await this.channelRepository.find({
+      //   where: { users: user },
+      //   relations: ['users'],
+      // });
       // JSON.parse(channels)
       console.log(channels);
       return channels;

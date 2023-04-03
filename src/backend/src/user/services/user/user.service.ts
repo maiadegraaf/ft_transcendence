@@ -7,7 +7,7 @@ import {
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import {Channel} from "../../../chat/entities/channel.entity";
+import { Channel } from '../../../chat/entities/channel.entity';
 // import {Channel} from "../../../chat/entities/channel.entity";
 // import { Post } from 'src/typeorm/entities/Post';
 // import { Profile } from 'src/typeorm/entities/Profile';
@@ -61,21 +61,25 @@ export class UserService {
   }
 
   async getChannelsByUserId(userId: number): Promise<any> {
-    const user = await this.findUserByID(userId);
-    // const user = await this.userRepository.findOne(userId, {
-    //   relations: ['channels'],
-    // });
-    // user.channels;
-    console.log(user.channels);
+    // const user = await this.findUserByID(userId);
+    // const user = await this.userRepository
+    //   .findOne(userId, { relations: ['channels'] })
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['channels'],
+    });
     return user.channels;
+    // user.channels;
+    // console.log(user.channels);
+    // return user.channels;
     // const channels = user.find
     // return user.channels;
   }
 
   async addChannelToUser(channel: Channel, userId: number): Promise<any> {
     // await this.userRepository.save(channel);
-    const user = await this.getChannelsByUserId(userId);
-    user.channel.push(channel);
+    const user = await this.findUserByID(userId);
+    user.channels.push(channel);
     return await this.userRepository.save(user);
   }
   // createUser(userDetails: CreateUserParams) {
