@@ -1,9 +1,15 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { PongService } from './pong.service';
-import { JoinMatchDto } from '../dto/join-match.dto/join-match.dto';
+import { Controller, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
 
 @Controller('pong')
 export class PongController {
-  constructor(private readonly pongService: PongService) {}
-
+    @Get('profile')
+    getProfile(@Req() req: Request) {
+        // const session_user_id = req.session.session_user_id;
+        // if (!session_user_id) {
+        //     return { error: 'Not logged in' };
+        // }
+        // const userId = JSON.parse(session_user_id).value;
+        // return { userId };
+    }
 }

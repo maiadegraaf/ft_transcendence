@@ -1,40 +1,39 @@
 import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
+    Column,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    // PrimaryColumn,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ nullable: true })
-  login: string;
+    @Column({ nullable: true })
+    login: string;
 
-  // @Column( {nullable: true })
-  @Column({ nullable: true })
-  email: string;
+    // @Column( {nullable: true })
+    @Column({ nullable: true })
+    email: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
 
-  // @OneToOne(() => Profile)
-  // @JoinColumn()
-  // profile: Profile;
+    // @OneToOne(() => Profile)
+    // @JoinColumn()
+    // profile: Profile;
 
-  // @OneToMany(() => Post, (post) => post.user)
-  // posts: Post[];
+    // @OneToMany(() => Post, (post) => post.user)
+    // posts: Post[];
 
-  @Column ({
-    default: null,
-      }
-  )
+    @Column({
+        default: null,
+    })
     socketId: string;
 }

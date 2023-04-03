@@ -16,6 +16,11 @@
       >Login with 42</button
     >
     <button
+        @click="fake_user(randomUser)"
+        class="text-l mt-14 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
+    >Random User -> {{ randomUser }}</button
+    >
+    <button
         @click="fake_user(1)"
       class="text-l mt-14 p-2 uppercase font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
       >User 1</button
@@ -54,6 +59,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      randomUser: 0,
       formdata: {
         grant_type: 'authorization_code',
         client_id: 'u-s4t2ud-39cfad1d6f73c8c527bed1273cb6689ff7a806f4fae38fc551c6c2f3aa6cfa44',
@@ -80,7 +86,7 @@ export default {
         this.$router.push('/Home')
       })
       .catch((error) => console.log(error))
-
+    this.randomNumber(1, 917);
   },
   methods: {
     login42() {
@@ -89,6 +95,10 @@ export default {
     fake_user(i: number) {
       this.$storage.setStorageSync('user_id', i)
       this.$router.push('/Home')
+    },
+    randomNumber(min: number, max: number) : number {
+      this.randomUser = Math.floor(Math.random() * (max - min + 1) + min);
+      return this.randomUser;
     }
   }
 }

@@ -10,6 +10,6 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
     await app.listen(8080);
     const logger: Logger = new Logger('BackendMain');
-  logger.log('Application is running on: ' + (await app.getUrl()));
+    logger.log('Application is running on: ' + (await app.getUrl()));
 }
 bootstrap();

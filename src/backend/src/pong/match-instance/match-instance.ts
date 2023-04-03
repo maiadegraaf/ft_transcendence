@@ -45,6 +45,7 @@ export class MatchInstance {
         server: Server,
         match: Match,
         private matchServices: MatchService,
+        // private userService: UserService,
     ) {
         this.server = server;
         this.match = match;
@@ -160,10 +161,10 @@ export class MatchInstance {
             return;
         }
         if (this.player1.score >= winning_condition) {
-            this.end('Player 1', client);
+            this.end(this.player1.user.login, client);
             return;
         } else if (this.player2.score >= winning_condition) {
-            this.end('Player 2', client);
+            this.end(this.player1.user.login, client);
             return;
         }
 

@@ -18,7 +18,7 @@ import { MatchmakingModule } from './pong/matchmaking/matchmaking.module';
 import { MatchModule } from './pong/match/match.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
-import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity'
+import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity';
 
 @Module({
     imports: [

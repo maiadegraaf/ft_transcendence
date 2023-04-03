@@ -73,6 +73,7 @@ export class MatchmakingService {
             },
         });
         if (!matchmaking) return null;
+        console.log('Player removed from matchmaking: ', matchmaking.player);
         await this.matchmakingRepository.remove(matchmaking);
         const player = matchmaking.player;
         return player;

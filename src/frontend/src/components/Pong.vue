@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!started" class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple-800 text-white">
+  <div v-if="!started || startedBy !== currentPlayerId" class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple-800 text-white">
     <h1 class="text-8xl mb-8 font-bold text-buff drop-shadow-lg shadow-vista-blue-500/50">PONG</h1>
     <button v-if="!waiting && !practiceMode" @click="setPracticeMode" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
       Start a Practice Game
@@ -29,7 +29,7 @@
         <div v-if="waiting">
             <p>Waiting for opponent...</p>
             <button @click="leaveList" class="m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue border-red-500">
-              Leave Waitlist
+              Leave Wait List
             </button>
         </div>
       </div>
@@ -75,6 +75,7 @@ export default {
   data(): any {
     return {
       started: false,
+      startedBy: '',
       gameOver: false,
       winner: '',
       gamestate: '',
@@ -82,6 +83,7 @@ export default {
       practiceMode: false,
       winningScore: 10,
       difficulty: 'easy',
+      currentPlayerId: '',
       ball: {
         x: 400,
         y: 300,
@@ -111,13 +113,27 @@ export default {
     }
   },
   created() {
-    // this.socket = io("http://localhost:8080");
+    this.currentPlayerId = sessionStorage.getItem('session_user_id');
+    const userId = JSON.parse(this.currentPlayerId).value;
+    console.log("Current player id: " + userId);
+    this.socket = io("http://localhost:8080", {
+      query: {
+        userId: userId
+      }
+    });
   },
   mounted() {
-    this.socket = io("http://localhost:8080");
+    // this.socket = io("http://localhost:8080");
 
     //listen for the state updates from the server
-    this.socket.on("state", (state: { ball: any; player1: any; player2: any; gamestate: any; winner: any; }) => {
+    this.socket.on("state",
+        (state:
+           { ball: any;
+             player1: any;
+             player2: any;
+             gamestate: any;
+             winner: any;
+           }) => {
       this.ball = state.ball;
       this.player1 = state.player1;
       this.player2 = state.player2;
@@ -130,12 +146,19 @@ export default {
 
     this.socket.on("opponentFound", (matchId: number) => {
       console.log("Opponent found");
+      this.startedBy = this.currentPlayerId;
       this.info.matchId = matchId;
       this.waiting = false;
       this.started = true;
     });
 
-    this.socket.on("practiceMatchCreated", (practiceMatchId: number) => {
+    this.socket.on("practiceMatchCreated", (practiceMatchId: number, socketId: string) => {
+      // console.log("Practice match created by socket " + socketId);
+      // if (socketId !== this.socket.id) {
+      //   console.log("Practice match created by other socket");
+      //   this.started = false;
+      //   return ;
+      // }
       console.log("Practice match created");
       this.info.practiceMatchId = practiceMatchId;
       this.waiting = false;
@@ -167,17 +190,15 @@ export default {
   },
   methods: {
     start() {
-      this.started = true;
+      // this.currentPlayerId = sessionStorage.getItem("session_user_id");
+      this.startedBy = this.currentPlayerId;
+      console.log("Starting game by " + this.startedBy);
       this.gameOver = false;
       this.winner = "";
-      if (this.practiceMode)
-      {
-        this.practiceSettings.difficulty = this.difficulty;
-        this.practiceSettings.score = this.winningScore;
-        this.socket.emit("start practice", this.practiceSettings);
-        return ;
-      }
-      this.socket.emit("start");
+      this.practiceSettings.difficulty = this.difficulty;
+      this.practiceSettings.score = this.winningScore;
+      this.socket.emit("start practice", this.practiceSettings);
+      return ;
     },
     reset() {
       this.started = false;

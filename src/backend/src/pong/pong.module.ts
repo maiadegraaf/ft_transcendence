@@ -15,8 +15,8 @@ import { MatchInstanceModule } from './match-instance/match-instance.module';
 import { PracticeMatchModule } from './practice-match/practice-match.module';
 import { PracticeMatchService } from './practice-match/practice-match.service';
 import { PracticeMatchEntity } from './practice-match/practice-match.entity';
-import { UserService } from '../user/services/user/user.service'
-import { User } from '../user/user.entity'
+import { UserService } from '../user/services/user/user.service';
+import { User } from '../user/user.entity';
 
 @Module({
     imports: [

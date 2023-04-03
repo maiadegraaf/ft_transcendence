@@ -1,6 +1,8 @@
 import {
     ConnectedSocket,
     MessageBody,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
@@ -13,13 +15,15 @@ import { Info } from '../interfaces/info.interface';
 @WebSocketGateway({
     cors: { origin: '*' },
 })
-export class PongGateway {
+export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly pongService: PongService) {}
 
     @WebSocketServer() server: Server;
 
     handleConnection(@ConnectedSocket() client: Socket): void {
-        this.pongService.handleConnection(client);
+        const userId = client.handshake.query.userId;
+        console.log('Client Connected ' + client.id);
+        this.pongService.handleConnection(client, userId);
     }
 
     handleDisconnect(@ConnectedSocket() client: Socket): void {
