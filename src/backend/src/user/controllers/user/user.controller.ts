@@ -6,15 +6,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Put, Req, UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dtos/CreateUser.dto';
 import { UserService } from 'src/user/services/user/user.service';
-// import { UpdateUserDto } from 'src/user/dtos/UpdateUser.dto';
-// import { CreateUserPostDto } from 'src/user/dtos/CreateUserPost.dto';
-// import { CreateUserProfileDto } from 'src/user/dtos/CreateUserProfile.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {

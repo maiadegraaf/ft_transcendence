@@ -1,42 +1,36 @@
-<!-- <script lang="ts">
-import axios from 'axios'
+<script lang="ts">
 import Nav from '../components/Nav.vue'
 
 export default {
-  name: 'User',
   data() {
     return {
-      content: {}
+      user: {
+        id: Number,
+        login: String,
+        email: String,
+        createdAt: String
+      }
     }
   },
-  async created() {
-    try {
-      await axios
-          .get('https://localhost:8080/api/user/{{id}}')
-          .then((response) => {
-
-      console.log(response.data);
-      const { id, login, email } = response.data;
-      this.content = { id, login, email};
-      // const postResponse = await axios.post('http://localhost:8080/api/user', this.content);
-      await axios.post('http://localhost:8080/api/user', this.content);
-    } catch (error) {
-      console.error(error);
-    }
+  mounted() {
+    this.user = this.$cookie.getCookie("user").user;
   },
-  components: {
+  components:{
     Nav
   }
-};
-</script> -->
+}
+</script>
 
 <template>
   <div>
     <Nav />
     <header></header>
     <main>
-      <!-- {{ content }} -->
-      {{  }}
+      <div v-if="user">
+        <h1>Welcome, {{ user.login }}</h1>
+        <h1>id: {{ user.id }}</h1>
+        <p>Email: {{ user.email }}</p>
+      </div>
     </main>
   </div>
 </template>
