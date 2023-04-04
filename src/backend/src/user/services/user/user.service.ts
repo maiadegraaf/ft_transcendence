@@ -114,6 +114,7 @@ export class UserService {
 
     async addSocketIdToUser(user: User, socketId: string): Promise<any> {
         if (user.socketId) {
+            // add logic here if user is in a match or waitlist.
             console.log(
                 'Replacing socketId ' +
                     user.socketId +

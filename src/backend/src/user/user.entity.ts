@@ -16,7 +16,7 @@ import { GroupProfile } from '../chat/entities/groupProfile.entity';
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ nullable: true })
@@ -41,4 +41,9 @@ export class User {
 
   // @OneToMany(() => Post, (post) => post.user)
   // posts: Post[];
+
+    @Column({
+        default: null,
+    })
+    socketId: string;
 }
