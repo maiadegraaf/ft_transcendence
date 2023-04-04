@@ -1,39 +1,44 @@
 import {
-    Column,
-    Entity,
-    JoinColumn,
-    OneToMany,
-    OneToOne,
-    // PrimaryColumn,
-    PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Channel } from '../chat/entities/channel.entity';
+import { GroupProfile } from '../chat/entities/groupProfile.entity';
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
 @Entity({ name: 'users' })
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryColumn()
+  id: number;
 
-    @Column({ nullable: true })
-    login: string;
+  @Column({ nullable: true })
+  login: string;
 
-    // @Column( {nullable: true })
-    @Column({ nullable: true })
-    email: string;
+  // @Column( {nullable: true })
+  @Column({ nullable: true })
+  email: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
-    // @OneToOne(() => Profile)
-    // @JoinColumn()
-    // profile: Profile;
+  @JoinTable()
+  @ManyToMany(() => Channel, (channel) => channel.users)
+  channels: Channel[];
 
-    // @OneToMany(() => Post, (post) => post.user)
-    // posts: Post[];
+  @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
+  groupProfile: GroupProfile;
+  // @OneToOne(() => Profile)
+  // @JoinColumn()
+  // profile: Profile;
 
-    @Column({
-        default: null,
-    })
-    socketId: string;
+  // @OneToMany(() => Post, (post) => post.user)
+  // posts: Post[];
 }

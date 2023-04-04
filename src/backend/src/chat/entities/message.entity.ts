@@ -1,13 +1,12 @@
-import { User } from 'src/user/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Channel } from './channel.entity';
+import { User } from '../../user/user.entity';
 
 @Entity()
 export class Message {
@@ -17,7 +16,7 @@ export class Message {
   @Column()
   text: string;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn()
   sender: User;
 

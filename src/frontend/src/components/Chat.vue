@@ -83,6 +83,7 @@ export default {
           text: this.text,
           id: this.id,
         };
+        console.log(message);
         // Emits a 'msgToServer' event with the message.
         this.socket.emit('msgToServer', message);
         // Resets the input field.
