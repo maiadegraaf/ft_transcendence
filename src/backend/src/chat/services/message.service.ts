@@ -39,6 +39,14 @@ export class MessageService {
       return this.messageRepository.save(message);
     } catch {}
   }
+
+  async getMessageById(messageId: number): Promise<any> {
+    const message = this.messageRepository.findOne({
+      where: { id: messageId },
+      // relations: ['text'],
+    });
+    return message;
+  }
   //
   // async getMessagesByChannelID(id: number): Promise<Message[]> {
   //   return await this.messageRepository.find({

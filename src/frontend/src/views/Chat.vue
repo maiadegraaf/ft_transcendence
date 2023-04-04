@@ -97,7 +97,7 @@
   <v-btn @click="createChannel">Create Channel</v-btn>
   <v-btn @click="channelsByUser">Get Channels</v-btn>
   <v-btn @click="joinRoom">Join Room</v-btn>
-  <v-btn @click="messagesByChannelId">Get Messages</v-btn>
+  <v-btn @click="messagesByChannelId">Get Messages only for channel 1</v-btn>
 
 </template>
 

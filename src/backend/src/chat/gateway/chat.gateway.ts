@@ -36,21 +36,41 @@ export class ChatGateway
     client: Socket,
     payload: { userId: number; text: string; channelId: number },
   ): void {
-    this.server.to('room' + payload.channelId).emit('msgToClient', payload);
-    console.log(payload);
     this.messageService.createMessage(payload);
+    this.server.to('room' + payload.channelId).emit('msgToClient', payload);
+    this.logger.log(
+      `createMessage: message send by ${payload.userId} in channel ${payload.channelId}`,
+    );
   }
 
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(
+  async handleJoinRoom(
     client: Socket,
     payload: { userId: number; channelId: number },
-  ): void {
+  ): Promise<any> {
     client.join('room' + payload.channelId);
     this.server.emit('msgToClient', {
       name: 'server',
       text: `${payload.userId} has joined the room`,
     });
+    const messages = await this.channelService.getMessagesFromChannel(
+      payload.channelId,
+    );
+    messages.forEach((msg) => {
+      this.server.emit('msgToClient', {
+        name: 'server',
+        text: msg.text,
+      });
+    });
+    this.logger.log(`handleJoinRoom: ${client.id} joined the room`);
+
+    // JSON.parse(messages)
+    // console.log(JSON.stringify(messages));
+    // for (const message in messages) {
+    //   console.log('this is message ' + message);
+    //   // const msg = await this.messageService.getMessageById(parseInt(message));
+    //   // console.log('this is msg.txt ' + JSON.parse(msg));
+    // }
   }
 
   @SubscribeMessage('dmNewUserChannel')
