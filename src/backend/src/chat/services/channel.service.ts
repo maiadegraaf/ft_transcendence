@@ -37,47 +37,32 @@ export class ChannelService {
     } catch {}
   }
 
-  async addUserToChannel(channel: Channel, userId: number): Promise<any> {
-    try {
-      // const channel = await this.channelRepository.findOne({
-      //       //   where: { id: channelId },
-      //       //   relations: ['users'],
-      //       // });
-      //       // if (!channel) {
-      //       //   return ;
-      //       //   throw new HttpException(
-      //       //     'Channel with ID ${id} not found',
-      //       //     HttpStatus.FORBIDDEN,
-      //       //   );
-      //       // }
-
-      console.log('addUserToChannel channel ' + channel.id);
-      const user = await this.userService.findUserByID(userId);
-      console.log('user ' + user.id);
-      await this.userService.addChannelToUser(channel, userId);
-      channel.users.push(user);
-      await this.channelRepository.save(channel);
-    } catch {}
-  }
-
   async newDmChannel(user1: number, user2: number): Promise<any> {
     try {
-      const channel = await this.createChannel();
-      await this.addUserToChannel(channel, user1);
-      // console.log('newDmChannel ' + channel1.id);
-      await this.addUserToChannel(channel, user2);
-      // if (
-      //   !(await this.addUserToChannel(channel.id, user1)) ||
-      //   !(await this.addUserToChannel(channel.id, user2))
-      // ) {
-      //   throw new HttpException(
-      //     'could not save users to DM channel',
-      //     HttpStatus.FORBIDDEN,
-      //   );
-      // }
-      // console.log('newDmChannel ' + channel2);
+      let channel = await this.createChannel();
+      if (!channel) {
+        throw new HttpException(
+          'Could not create new dm channel',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      if (!(await this.userService.addChannelToUser(channel, user1))) {
+        throw new HttpException(
+          'Could not add user to dm channel',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      channel = await this.channelRepository.save(channel);
+      if (!(await this.userService.addChannelToUser(channel, user2))) {
+        throw new HttpException(
+          'Could not add user to dm channel',
+          HttpStatus.FORBIDDEN,
+        );
+      }
       return await this.channelRepository.save(channel);
-    } catch {}
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async newGroupChannel(ownerId: number, groupName: string): Promise<any> {
@@ -102,44 +87,6 @@ export class ChannelService {
       }
       channel.profile = groupProfile;
       return await this.channelRepository.save(channel);
-    } catch {}
-  }
-
-  async getChannelsByUserId(userId: number): Promise<any> {
-    try {
-      // const channels = await this.channelRepository.find({
-      //   where: { users: userId },
-      //   relations: ['users'];
-      // });
-      // const user = await this.userService.findUserByID(userId);
-      // if (!user) {
-      //   throw new HttpException('Could not find user', HttpStatus.FORBIDDEN);
-      // }
-      // console.log(user);
-      // const channels = await this.channelRepository.findOne({
-      //   where: { id: userId },
-      //   relations: ['users'],
-      // });
-      // return
-      //getChannelsByUserId(userId);
-      //     await this.channelRepository.find({
-      //   where: { users: user },
-      //   relations: ['users'],
-      // });
-      // JSON.parse(channels);
-      // console.log(channels);
-      // return channels;
-      // const channels = await this.userService.getChannelsByUserId(userId);
-      // user.channels;
-
-      // find({
-      //   where: { users: user },
-      //   relations: ['users'],
-      // });
-      // console.log(user.channels);
-      // return user.channels;
-      // console.log(channels);
-      // return channels;
     } catch {}
   }
 

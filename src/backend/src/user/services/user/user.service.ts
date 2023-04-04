@@ -1,17 +1,8 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../../../chat/entities/channel.entity';
-// import {Channel} from "../../../chat/entities/channel.entity";
-// import { Post } from 'src/typeorm/entities/Post';
-// import { Profile } from 'src/typeorm/entities/Profile';
-// import { CreateUserParams, CreateUserPostParams, CreateUserProfileParams, UpdateUserParams } from 'src/utils/types';
 
 @Injectable()
 export class UserService {
@@ -20,8 +11,8 @@ export class UserService {
     private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
   ) {}
 
-  findAllUsers() {
-    return this.userRepository.find();
+  async findAllUsers() {
+    return await this.userRepository.find();
     // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
   }
 
@@ -45,8 +36,8 @@ export class UserService {
     return user;
   }
 
-  deleteUser(id: number) {
-    return this.userRepository.delete({ id });
+  async deleteUser(id: number) {
+    return await this.userRepository.delete({ id });
   }
 
   async getUserByName(login: string): Promise<any> {
@@ -61,26 +52,19 @@ export class UserService {
   }
 
   async getChannelsByUserId(userId: number): Promise<any> {
-    // const user = await this.findUserByID(userId);
-    // const user = await this.userRepository
-    //   .findOne(userId, { relations: ['channels'] })
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['channels'],
     });
-    console.log('user' + JSON.stringify(user));
-    console.log('user' + user.channels);
+    // console.log('getChannelsByUserId: user' + JSON.stringify(user.channels));
     return user.channels;
-    // user.channels;
-    // console.log(user.channels);
-    // return user.channels;
-    // const channels = user.find
-    // return user.channels;
   }
 
   async addChannelToUser(channel: Channel, userId: number): Promise<any> {
-    // await this.userRepository.save(channel);
-    const user = await this.findUserByID(userId);
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['channels'],
+    });
     user.channels.push(channel);
     return await this.userRepository.save(user);
   }
