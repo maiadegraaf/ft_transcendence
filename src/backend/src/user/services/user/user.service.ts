@@ -7,7 +7,7 @@ import {
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import {Channel} from "../../../chat/entities/channel.entity";
+import { Channel } from '../../../chat/entities/channel.entity';
 // import {Channel} from "../../../chat/entities/channel.entity";
 // import { Post } from 'src/typeorm/entities/Post';
 // import { Profile } from 'src/typeorm/entities/Profile';
