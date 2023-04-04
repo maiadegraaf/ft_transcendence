@@ -39,8 +39,12 @@ export class MessageService {
       return this.messageRepository.save(message);
     } catch {}
   }
-
-  async getMessagesByChannelID(id: number): Promise<Message[]> {
-    return this.messageRepository.find({ where: { id } });
-  }
+  //
+  // async getMessagesByChannelID(id: number): Promise<Message[]> {
+  //   return await this.messageRepository.find({
+  //     where: { id },
+  //     relations: ['channel'],
+  //   });
+  //   //{ where: { channel: id} , relations: ['channel'] } });
+  // }
 }

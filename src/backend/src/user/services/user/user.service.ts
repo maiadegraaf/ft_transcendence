@@ -68,6 +68,8 @@ export class UserService {
       where: { id: userId },
       relations: ['channels'],
     });
+    console.log('user' + JSON.stringify(user));
+    console.log('user' + user.channels);
     return user.channels;
     // user.channels;
     // console.log(user.channels);

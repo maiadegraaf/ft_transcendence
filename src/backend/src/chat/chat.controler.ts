@@ -3,6 +3,7 @@ import { Channel } from './entities/channel.entity';
 import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
+import { UserService } from '../user/services/user/user.service';
 // import { User } from '../user/entities/user.entity';
 // import { AppService } from './app.service';
 
@@ -12,19 +13,22 @@ export class ChatController {
   constructor(
     private readonly channelService: ChannelService,
     private readonly messageService: MessageService,
+    private readonly userService: UserService,
   ) {}
 
   // Get /api/chat/${id}
   @Get('/:id')
-  getChannelMessages(@Param('id') id: number): Promise<any> {
-    return this.messageService.getMessagesByChannelID(id);
+  async getChannelMessages(@Param('id') id: number): Promise<any> {
+    return await this.channelService.getMessagesFromChannel(id);
+    // return this.messageService.getMessagesByChannelID(id);
   }
 
   // Get /api/chat/${id}/channel
   @Get('/:id/channel')
   async getUserChannels(@Param('id') id: number): Promise<any> {
     console.log('this is the right id: ' + id);
-    return await this.channelService.getChannelsByUserId(id);
+    return await this.userService.getChannelsByUserId(id);
+    // return await this.channelService.getChannelsByUserId(id);
   }
 
   // Post /api/chat/dm
@@ -32,7 +36,10 @@ export class ChatController {
   async postNewChannel(
     @Body() param: { user1: number; user2: number },
   ): Promise<any> {
-    const channel = await this.channelService.newDmChannel(param.user1, param.user2);
+    const channel = await this.channelService.newDmChannel(
+      param.user1,
+      param.user2,
+    );
     console.log(channel);
     return channel;
   }

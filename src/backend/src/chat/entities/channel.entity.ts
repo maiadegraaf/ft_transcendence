@@ -20,7 +20,6 @@ export class Channel {
   messages: Message[];
 
   @ManyToMany(() => User, (user) => user.channels)
-  @JoinTable()
   users: User[];
 
   @OneToOne(() => GroupProfile, (profile) => profile.channel)

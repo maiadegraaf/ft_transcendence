@@ -76,9 +76,7 @@ export class ChannelService {
       //   );
       // }
       // console.log('newDmChannel ' + channel2);
-      await this.channelRepository.save(channel);
-      // console.log('testje!');
-      return channel;
+      return await this.channelRepository.save(channel);
     } catch {}
   }
 
@@ -109,19 +107,28 @@ export class ChannelService {
 
   async getChannelsByUserId(userId: number): Promise<any> {
     try {
-      const user = await this.userService.findUserByID(userId);
-      if (!user) {
-        throw new HttpException('Could not find user', HttpStatus.FORBIDDEN);
-      }
-      console.log(user);
-      const channels = await this.userService.getChannelsByUserId(userId);
+      // const channels = await this.channelRepository.find({
+      //   where: { users: userId },
+      //   relations: ['users'];
+      // });
+      // const user = await this.userService.findUserByID(userId);
+      // if (!user) {
+      //   throw new HttpException('Could not find user', HttpStatus.FORBIDDEN);
+      // }
+      // console.log(user);
+      // const channels = await this.channelRepository.findOne({
+      //   where: { id: userId },
+      //   relations: ['users'],
+      // });
+      // return
+      //getChannelsByUserId(userId);
       //     await this.channelRepository.find({
       //   where: { users: user },
       //   relations: ['users'],
       // });
-      // JSON.parse(channels)
-      console.log(channels);
-      return channels;
+      // JSON.parse(channels);
+      // console.log(channels);
+      // return channels;
       // const channels = await this.userService.getChannelsByUserId(userId);
       // user.channels;
 
@@ -134,5 +141,13 @@ export class ChannelService {
       // console.log(channels);
       // return channels;
     } catch {}
+  }
+
+  async getMessagesFromChannel(channelId: number): Promise<any> {
+    const channel = await this.channelRepository.findOne({
+      where: { id: channelId },
+      relations: ['messages'],
+    });
+    return channel.messages;
   }
 }
