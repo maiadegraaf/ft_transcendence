@@ -60,7 +60,7 @@
 import axios from 'axios'
 
 export default {
-  data() {
+  data: function () {
     return {
       user: {
         accessToken: String,
@@ -81,21 +81,20 @@ export default {
             sessionStorage.setItem('user', JSON.stringify(response.data))
           })
     },
-    fake_user(i: number) {
+    fake_user: function (i: number) {
       const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms))
       }
       axios.get("http://localhost:8080/api/user/" + i)
           .then((response) => {
-            this.user.accessToken = "fake_user";
-            this.user.user = response.data;
+            // this.user.accessToken = "fake_user"
+            this.user.user = response.data
             sessionStorage.setItem('user', JSON.stringify(this.user))
           })
       sleep(100).then(() => {
-        if (sessionStorage.getItem('user'))
-          {
-            this.$router.push('/Home')
-          }
+        if (sessionStorage.getItem('user')) {
+          this.$router.push('/Home')
+        }
       })
 
 

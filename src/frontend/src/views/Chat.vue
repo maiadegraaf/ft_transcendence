@@ -106,6 +106,8 @@ import io from 'socket.io-client'
 import Nav from '@/components/Nav.vue'
 import { nextTick } from 'vue'
 import axios from "axios";
+import {VueCookieNext} from "vue-cookie-next";
+import {UserChatStore} from "@/store/store";
 
 export default {
   components: { Nav },
@@ -116,6 +118,18 @@ export default {
     title: string
     name: string
     text: string
+    channels: {
+      id: number
+      messages: {
+        id: number,
+        sender: number,
+        senderName: string,
+        channel: number,
+        text: string,
+        timestamp: Date,
+      }[]
+      groupProfile: any
+    }[]
     messages: {
       userId: number,
       text: string,
@@ -124,17 +138,37 @@ export default {
     socket: any
     userId: number
     channelId: number
+    joined: boolean
   } {
     // The initial data of the Vue instance.
     return {
       title: 'Nestjs Websockets Chat',
       name: '',
       text: '',
+      channels: [],
       messages: [],
       socket: null,
-      userId: 0,
-      channelId: 1
+      userId: 1,
+      channelId: 1,
+      joined: false,
     }
+  },
+  setup() {
+    // const userChatStore = UserChatStore()
+    // userChatStore.fetchUserData()
+    // return {
+    //   // usrId
+    //   usrId: userChatStore.getUserId,
+    //   userName: userChatStore.getUserName,
+    //   userChannels: userChatStore.getUserChannels,
+    // }
+    axios.get('http://localhost:8080/api/chat/' + this.userId)
+        .then(response => {
+            console.log(response)
+            this.channels = response.data
+        }).catch(error => {
+            console.log(error)
+        })
   },
   watch: {
     // Watches the messages array for changes and scrolls the chat window to the bottom.
@@ -153,12 +187,16 @@ export default {
   // The methods of the Vue instance.
   methods: {
     joinRoom(): void {
+      if ((this.joined)) {
+        return ;
+      }
       this.setUserId()
       const payload = {
         userId: this.userId,
         channelId: this.channelId
       }
       this.socket.emit('joinRoom', payload)
+      this.joined = true;
     },
     setUserId(): void {
       if (this.name === 'Bert') {
@@ -206,15 +244,17 @@ export default {
     },
     // Retrieves the channels per user
     channelsByUser(): void {
-      const userId = sessionStorage.getItem('session_user_id');
-      if (!userId) {
-        return ;
+      const userCookie = VueCookieNext.getCookie('user')
+      if (userCookie == null) {
+        this.$router.push('/Login')
+      } else {
+        const userId = userCookie.user.id
+        console.log('Current player id: ' + userId)
+        axios.get('http://localhost:8080/api/chat/' + userId +'/channel')
+            .then((response) => {
+              console.log(response.data)
+            })
       }
-      const userIdValue = JSON.parse(userId).value;
-      axios.get('http://localhost:8080/api/chat/' + userIdValue +'/channel')
-          .then((response) => {
-            console.log(response.data)
-          })
     },
 
     messagesByChannelId(): void {
@@ -223,10 +263,20 @@ export default {
       //   return ;
       // }
       // const userIdValue = JSON.parse(userId).value;
-      axios.get('http://localhost:8080/api/chat/' + 1)
-          .then((response) => {
-            console.log(response.data)
-          })
+      const userCookie = VueCookieNext.getCookie('user');
+      if (userCookie == null) {
+        axios.get('http://localhost:8080/api/chat/' + 1)
+            .then((response) => {
+              console.log(response.data)
+            })
+        // this.$router.push('/Login')
+      } else {
+        const userId = userCookie.user.id
+        axios.get('http://localhost:8080/api/chat/' + userId)
+            .then((response) => {
+              console.log(response.data)
+            })
+      }
     }
   },
   // The created hook of the Vue instance.
