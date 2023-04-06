@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { AuthService } from './auth.service';
+import {User} from "../user/user.entity";
+import {Profile} from "passport";
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -15,14 +17,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any) {
+  async validate(accessToken: string, refreshToken: string, profile: Profile, done: any) {
     const user = await this.authService.validateUser(profile);
-
-    if (!user.isTwoFactorAuthenticationEnabled) {
-      return { accessToken, user };
-    }
-    if (profile.isTwoFactorAuthenticated) {
-      return { accessToken, user };
-    }
+    done(null, user)
   }
 }
