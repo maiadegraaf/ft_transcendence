@@ -51,6 +51,18 @@ export class UserService {
     return user;
   }
 
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+    return this.userRepository.update(userId, {
+      twoFactorAuthenticationSecret: secret,
+    });
+  }
+
+  async turnOnTwoFactorAuthentication(userId: number) {
+    return this.userRepository.update(userId, {
+      isTwoFactorAuthenticationEnabled: true,
+    });
+  }
+
   async getChannelsByUserId(userId: number): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
