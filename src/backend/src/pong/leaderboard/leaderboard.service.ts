@@ -8,12 +8,16 @@ import {
     Difficulty,
     PracticeMatchEntity,
 } from '../practice-match/practice-match.entity';
+import { PracticeMatchService } from '../practice-match/practice-match.service';
+import { MatchService } from '../match/match.service';
 
 @Injectable()
 export class LeaderboardService {
     constructor(
         @InjectRepository(Leaderboard)
         private leaderboardRepository: Repository<Leaderboard>,
+        private readonly practiceMatchService: PracticeMatchService,
+        private readonly matchService: MatchService,
     ) {}
 
     async findAll(): Promise<Leaderboard[]> {
@@ -31,12 +35,21 @@ export class LeaderboardService {
     }
 
     async findLeaderboardEntry(player: User) {
-        const entry = await this.leaderboardRepository.findOne({
-            where: { user: player },
-            relations: {
-                user: true,
-            },
-        });
+        console.log('looking for leaderboard entry for player: ', player);
+        let entry;
+        for (const e of await this.findAll()) {
+            if (e.user?.id === player.id) {
+                entry = e;
+                break;
+            }
+        }
+        // const entry = await this.leaderboardRepository.findOne({
+        //     where: { user: player },
+        //     relations: {
+        //         user: true,
+        //     },
+        // });
+        console.log('found entry: ', entry);
         if (!entry) {
             return await this.createNewLeaderboardEntry(player);
         }
@@ -44,14 +57,14 @@ export class LeaderboardService {
     }
 
     async addWinToLeaderboardEntry(entry: Leaderboard, newRating: number) {
-        entry.rating = newRating;
+        entry.rating = Math.round(newRating);
         entry.wins++;
         entry.winStreak++;
         return await this.leaderboardRepository.save(entry);
     }
 
     async addLossToLeaderboardEntry(entry: Leaderboard, newRating: number) {
-        entry.rating = newRating;
+        entry.rating = Math.round(newRating);
         entry.losses++;
         entry.winStreak = 0;
         return await this.leaderboardRepository.save(entry);
@@ -71,8 +84,12 @@ export class LeaderboardService {
     }
 
     async addMatchToLeaderboard(match: Match) {
-        const player1 = await this.findLeaderboardEntry(match.player1);
-        const player2 = await this.findLeaderboardEntry(match.player2);
+        const player1 = await this.findLeaderboardEntry(
+            await this.matchService.returnPlayer1(match),
+        );
+        const player2 = await this.findLeaderboardEntry(
+            await this.matchService.returnPlayer2(match),
+        );
         if (match.score1 == 10) {
             await this.assignWinnerAndLoser(player1, player2);
         } else {
@@ -107,7 +124,9 @@ export class LeaderboardService {
     }
 
     async addPracticeMatchToLeaderboard(practiceMatch: PracticeMatchEntity) {
-        const player = await this.findLeaderboardEntry(practiceMatch.player);
+        const player = await this.findLeaderboardEntry(
+            await this.practiceMatchService.returnPlayer(practiceMatch),
+        );
         if (practiceMatch.score1 == 10) {
             await this.assignPracticeMatchType(
                 practiceMatch.difficulty,

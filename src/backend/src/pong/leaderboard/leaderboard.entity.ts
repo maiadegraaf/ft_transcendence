@@ -1,6 +1,7 @@
 import {
     Column,
     Entity,
+    JoinColumn,
     ManyToOne,
     OneToOne,
     PrimaryGeneratedColumn,
@@ -12,6 +13,7 @@ export class Leaderboard {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @JoinColumn()
     @OneToOne(() => User)
     user: User;
 

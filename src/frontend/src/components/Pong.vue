@@ -136,26 +136,41 @@ export default {
         }
     },
     components: {
-        ErrorPopUp,
-        Select,
-        Input
+        ErrorPopUp
     },
     mounted() {
-        // this.socket = io("http://localhost:8080");
-        const userCookie = VueCookieNext.getCookie('user')
-        console.log('userCookie: ' + userCookie)
-        if (userCookie === null) {
+        //from session storage
+        const userId = sessionStorage.getItem('user')
+        console.log('Session Storage User: ' + userId)
+        if (userId === null) {
             this.$router.push('/')
         } else {
-            // const user = JSON.parse(userCookie)
-            this.currentPlayerId = userCookie.user.id
+            this.currentPlayerId = JSON.parse(userId).user.id
             console.log('Current player id: ' + this.currentPlayerId)
+            // console.log('Current player id: ' + this.currentPlayerId)
             this.socket = io('http://localhost:8080', {
                 query: {
                     userId: this.currentPlayerId
                 }
             })
         }
+
+        // from cookies
+        // this.socket = io("http://localhost:8080");
+        // const userCookie = VueCookieNext.getCookie('user')
+        // console.log('userCookie: ' + userCookie)
+        // if (userCookie === null) {
+        //     this.$router.push('/')
+        // } else {
+        //     // const user = JSON.parse(userCookie)
+        //     this.currentPlayerId = userCookie.user.id
+        //     console.log('Current player id: ' + this.currentPlayerId)
+        //     this.socket = io('http://localhost:8080', {
+        //         query: {
+        //             userId: this.currentPlayerId
+        //         }
+        //     })
+        // }
 
         //listen for the state updates from the server
         this.socket.on(
