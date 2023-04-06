@@ -19,6 +19,7 @@ import { MatchModule } from './pong/match/match.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity';
+import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
 
 @Module({
     imports: [
@@ -34,6 +35,7 @@ import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity
                 Match,
                 Matchmaking,
                 PracticeMatchEntity,
+                Leaderboard,
                 Message,
                 Channel,
                 GroupProfile,
@@ -49,7 +51,8 @@ import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity
         UserModule,
         PongModule,
         ChatModule,
-    AuthModule,],
+        AuthModule,
+    ],
     controllers: [AppController],
     providers: [AppService],
 })

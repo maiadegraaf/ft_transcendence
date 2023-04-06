@@ -31,8 +31,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('joinMatchmaking')
-    handleJoinMatchmaking(@ConnectedSocket() client: Socket): void {
-        this.pongService.handleJoinMatchmaking(client);
+    handleJoinMatchmaking(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() userId: number,
+    ): void {
+        this.pongService.handleJoinMatchmaking(client, userId);
     }
 
     @SubscribeMessage('leaveMatchmaking')

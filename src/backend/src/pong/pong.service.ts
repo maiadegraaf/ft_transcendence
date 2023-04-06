@@ -8,6 +8,9 @@ import { Info } from './interfaces/info.interface';
 import { PracticeMatch } from './practice-match/practice-match';
 import { PracticeMatchService } from './practice-match/practice-match.service';
 import { UserService } from '../user/services/user/user.service';
+import { LeaderboardService } from './leaderboard/leaderboard.service';
+import { Match } from './match/match.entity';
+import { PracticeMatchEntity } from './practice-match/practice-match.entity';
 
 @Injectable()
 export class PongService {
@@ -21,17 +24,29 @@ export class PongService {
         private matchesService: MatchService,
         private practiceMatchService: PracticeMatchService,
         private userService: UserService,
+        private leaderboardService: LeaderboardService,
     ) {}
 
     async handleConnection(client: Socket, userId: any): Promise<void> {
-        this.logger.log('UserId sent by client: ' + userId);
-        this.logger.log(`Client connected: ${client.id}`);
+        // this.logger.log('UserId sent by client: ' + userId);
+        // this.logger.log(`Client connected: ${client.id}`);
         const user = await this.userService.findUserByID(userId);
-        if (!user) {
-            this.logger.error('User not found');
-            return;
-        }
-        this.userService.addSocketIdToUser(user, client.id);
+        // if (!user) {
+        //     this.logger.error('User not found');
+        //     return;
+        // }
+        // if (await this.matchmakingService.getMatchmakingByPlayer(user)) {
+        //     this.logger.log('User is already in matchmaking!');
+        //     await this.matchmakingService.removeMatchmakingByPlayer(user);
+        //     client.to(user.socketId).emit('matchmakingCanceled');
+        // }
+        // const instance = this.getInstanceByPlayerSocket(user.socketId);
+        // if (instance) {
+        //     instance.handlePlayerDisconnect(
+        //         this.server.sockets.sockets.get(user.socketId),
+        //     );
+        // }
+        // this.userService.addSocketIdToUser(user, client.id);
         this.logger.log('User connected: ' + user.login);
     }
 
@@ -57,6 +72,7 @@ export class PongService {
                 ];
             }
         }
+        // turn off for now
         // this.playerService.removePlayerBySocket(client.id);
         // if (!this.playerService.getPlayerBySocket(client.id)) {
         //     console.log('player removed for ' + client.id);
@@ -72,17 +88,35 @@ export class PongService {
         client.to(opponentSocketId).emit('opponentFound', matchId);
     }
 
-    async handleJoinMatchmaking(client: Socket): Promise<void> {
+    async addSocketIdToUser(userId: number, client: Socket): Promise<User> {
+        const user = await this.userService.findUserByID(userId);
+        this.logger.log('User found: ' + user.login);
+        if (!user) {
+            this.logger.error('User not found');
+            return null;
+        }
+        await this.matchmakingService.print();
+        if (await this.matchmakingService.getMatchmakingByPlayer(user)) {
+            client.emit('matchmakingCanceled');
+            return null;
+        }
+        const instance = this.getInstanceByPlayerSocket(user.socketId);
+        if (instance) {
+            instance.handlePlayerDisconnect(
+                this.server.sockets.sockets.get(user.socketId),
+            );
+        }
+        await this.userService.addSocketIdToUser(user, client.id);
+        return user;
+    }
+
+    async handleJoinMatchmaking(client: Socket, userId: number): Promise<void> {
         this.logger.log(client.id + ' joined the waitlist');
-        const newPlayer = await this.userService.returnUserBySocketId(
-            client.id,
-        );
+        const newPlayer = await this.addSocketIdToUser(userId, client);
+        if (!newPlayer) {
+            return;
+        }
         await this.matchmakingService.addPlayer(newPlayer);
-        console.log(newPlayer + ' added to matchmaking');
-        this.logger.log(
-            'This is the current matchmaking list: ' +
-                (await this.matchmakingService.print()),
-        );
         const length = await this.matchmakingService.length();
         if (length > 1) {
             const player1 = await this.matchmakingService.pop();
@@ -90,15 +124,6 @@ export class PongService {
             const match = await this.matchesService.createMatch(
                 player1,
                 player2,
-            );
-            this.logger.log('match created: ' + match.id);
-            this.logger.log('player1 ' + player1.login);
-            this.logger.log('player2 ' + player2.login);
-            this.logger.log(
-                'player1 socket: ' + player1.socketId + ' id: ' + player1.id,
-            );
-            this.logger.log(
-                'player2 socket: ' + player2.socketId + ' id: ' + player2.id,
             );
             this.instances[match.id] = new MatchInstance(
                 this.server,
@@ -111,7 +136,6 @@ export class PongService {
                 this.emitOpponentFound(client, player1.socketId, match.id);
             }
             await this.instances[match.id].start();
-            console.log('match started: ' + match.id);
         }
     }
 
@@ -120,12 +144,36 @@ export class PongService {
         await this.matchmakingService.removeBySocket(client.id);
     }
 
-    tick(client: Socket): void {
+    checkForEndOfMatch(match: Match): void {
+        if (match.score1 == 10 || match.score2 == 10) {
+            this.leaderboardService.addMatchToLeaderboard(match);
+            delete this.instances[match.id];
+        }
+    }
+
+    checkForEndOfPracticeMatch(practiceMatch: PracticeMatchEntity): void {
+        if (practiceMatch.score1 == 10 || practiceMatch.score2 == 10) {
+            this.leaderboardService.addPracticeMatchToLeaderboard(
+                practiceMatch,
+            );
+            delete this.practiceInstance[practiceMatch.id];
+        }
+    }
+
+    async tick(client: Socket): Promise<void> {
         for (const matchId in this.instances) {
             this.instances[matchId].tick(client);
+            this.checkForEndOfMatch(
+                await this.matchesService.getMatchById(parseInt(matchId, 10)),
+            );
         }
         for (const practiceMatchId in this.practiceInstance) {
             this.practiceInstance[practiceMatchId].tick(client);
+            this.checkForEndOfPracticeMatch(
+                await this.practiceMatchService.getPracticeMatchById(
+                    parseInt(practiceMatchId, 10),
+                ),
+            );
         }
     }
 

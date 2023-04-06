@@ -17,6 +17,9 @@ import { PracticeMatchService } from './practice-match/practice-match.service';
 import { PracticeMatchEntity } from './practice-match/practice-match.entity';
 import { UserService } from '../user/services/user/user.service';
 import { User } from '../user/user.entity';
+import { LeaderboardModule } from './leaderboard/leaderboard.module';
+import { Leaderboard } from './leaderboard/leaderboard.entity';
+import { LeaderboardService } from './leaderboard/leaderboard.service';
 
 @Module({
     imports: [
@@ -29,6 +32,8 @@ import { User } from '../user/user.entity';
         PracticeMatchModule,
         TypeOrmModule.forFeature([PracticeMatchEntity]),
         TypeOrmModule.forFeature([User]),
+        LeaderboardModule,
+        TypeOrmModule.forFeature([Leaderboard]),
     ],
     controllers: [PongController],
     providers: [
@@ -39,6 +44,7 @@ import { User } from '../user/user.entity';
         MatchService,
         PracticeMatchService,
         UserService,
+        LeaderboardService,
     ],
 })
 export class PongModule {}

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Matchmaking } from './matchmaking.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { User } from '../../user/user.entity'
+import { User } from '../../user/user.entity';
 
 @Injectable()
 export class MatchmakingService {
@@ -21,6 +21,7 @@ export class MatchmakingService {
     }
 
     async getMatchmaking(): Promise<Matchmaking[]> {
+        // this is giving an error?
         return this.matchmakingRepository.find({
             relations: {
                 player: true,
@@ -33,15 +34,21 @@ export class MatchmakingService {
     }
 
     async getMatchmakingByPlayer(player: User): Promise<Matchmaking> {
-        return this.matchmakingRepository.findOne({ where: { player } });
+        let entry = null;
+        for (const matchmaking of await this.getMatchmaking()) {
+            if (matchmaking.player.id === player.id) {
+                entry = matchmaking;
+            }
+        }
+        if (entry) {
+            return entry;
+        }
+        return null;
     }
 
     async getMatchmakingBySocket(socketId: string): Promise<Matchmaking> {
         for (const matchmaking of await this.getMatchmaking()) {
-            if (
-                matchmaking.player &&
-                matchmaking.player.socketId === socketId
-            ) {
+            if (matchmaking.player.socketId === socketId) {
                 return matchmaking;
             }
         }
@@ -89,9 +96,11 @@ export class MatchmakingService {
 
     async print() {
         for (const matchmaking of await this.getMatchmaking()) {
-            console.log(
-                matchmaking,
-            );
+            console.log(matchmaking);
         }
+    }
+
+    removeMatchmakingByPlayer(user: User) {
+        return this.matchmakingRepository.delete({ player: user });
     }
 }

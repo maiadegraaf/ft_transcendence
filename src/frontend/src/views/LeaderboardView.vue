@@ -1,19 +1,16 @@
 <template>
     <body>
         <Nav />
-        <Pong />
+        <Leaderboard />
     </body>
 </template>
 
 <script lang="ts">
-import Pong from '../components/Pong.vue'
 import Nav from '@/components/Nav.vue'
+import Leaderboard from '@/components/Leaderboard.vue'
 
 export default {
-    name: 'PongGame',
-    components: {
-        Nav,
-        Pong
-    }
+    name: 'LeaderboardView',
+    components: { Nav, Leaderboard }
 }
 </script>
