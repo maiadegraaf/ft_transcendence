@@ -13,7 +13,8 @@ export default {
     }
   },
   mounted() {
-    this.user = this.$cookie.getCookie("user").user;
+    const userSession = sessionStorage.getItem('user') as string;
+    this.user = JSON.parse(userSession).user;
   },
   components:{
     Nav

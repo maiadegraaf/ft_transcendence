@@ -12,7 +12,7 @@ export default {
   name: 'Logout',
   methods: {
     destroyToken() {
-      this.$cookie.removeCookie('user')
+      sessionStorage.clear()
       this.$router.push('/')
     }
   }

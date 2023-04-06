@@ -7,7 +7,7 @@ import {
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import {Channel} from "../../../chat/entities/channel.entity";
+import { Channel } from '../../../chat/entities/channel.entity';
 // import {Channel} from "../../../chat/entities/channel.entity";
 // import { Post } from 'src/typeorm/entities/Post';
 // import { Profile } from 'src/typeorm/entities/Profile';
@@ -58,6 +58,18 @@ export class UserService {
       return false;
     }
     return user;
+  }
+
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+    return this.userRepository.update(userId, {
+      twoFactorAuthenticationSecret: secret,
+    });
+  }
+
+  async turnOnTwoFactorAuthentication(userId: number) {
+    return this.userRepository.update(userId, {
+      isTwoFactorAuthenticationEnabled: true,
+    });
   }
 
   async getChannelsByUserId(userId: number): Promise<any> {

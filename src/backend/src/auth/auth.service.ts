@@ -9,7 +9,7 @@ export class AuthService {
 
   async validateUser(profile: any): Promise<User> {
     const user = this.userService.findOrCreateUser(
-        profile._json.id,
+      profile._json.id,
       profile._json.email,
       profile._json.login,
     );

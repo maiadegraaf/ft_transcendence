@@ -86,7 +86,10 @@ export default {
     methods: {
         login42() {
             window.location.href = 'http://localhost:8080/api/auth/42'
-        },
+        axios.get("http://localhost:8080/api/auth/profile")
+          .then((response) => {
+            sessionStorage.setItem('user', JSON.stringify(response.data))
+          })},
         fake_user(i: number) {
             const sleep = (ms) => {
                 return new Promise((resolve) => setTimeout(resolve, ms))
@@ -94,11 +97,10 @@ export default {
             axios.get('http://localhost:8080/api/user/' + i).then((response) => {
                 this.user.accessToken = 'fake_user'
                 this.user.user = response.data
-                console.log(response.status)
-                this.$cookie.setCookie('user', JSON.stringify(this.user))
+                sessionStorage.setItem('user', JSON.stringify(this.user))
             })
             sleep(100).then(() => {
-                if (this.$cookie.isCookieAvailable('user')) {
+                if (sessionStorage.getItem('user')) {
                     this.$router.push('/Home')
                 }
             })
