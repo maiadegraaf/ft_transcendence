@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen justify-center items-center">
+  <div class="flex flex-col h-screen justify-center items-center flex-column">
     <h1
       class="text-center text-4xl uppercase font-semibold tracking-wider text-blush drop-shadow-2xl"
     >
@@ -74,31 +74,27 @@ export default {
     }
   },
   methods: {
-    login42() {
+    async login42() {
       window.location.href = 'http://localhost:8080/api/auth/42'
-      axios.get("http://localhost:8080/api/auth/profile")
-          .then((response) => {
-            sessionStorage.setItem('user', JSON.stringify(response.data))
-          })
+      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        console.log(response.data)
+        sessionStorage.setItem('user', JSON.stringify(response.data))
+      })
     },
     fake_user(i: number) {
       const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms))
+        return new Promise((resolve) => setTimeout(resolve, ms))
       }
-      axios.get("http://localhost:8080/api/user/" + i)
-          .then((response) => {
-            this.user.accessToken = "fake_user";
-            this.user.user = response.data;
-            sessionStorage.setItem('user', JSON.stringify(this.user))
-          })
-      sleep(100).then(() => {
-        if (sessionStorage.getItem('user'))
-          {
-            this.$router.push('/Home')
-          }
+      axios.get('http://localhost:8080/api/user/' + i).then((response) => {
+        // this.user.accessToken = 'fake_user'
+        this.user.user = response.data
+        sessionStorage.setItem('user', JSON.stringify(this.user))
       })
-
-
+      sleep(100).then(() => {
+        if (sessionStorage.getItem('user')) {
+          this.$router.push('/2fa')
+        }
+      })
     }
   }
 }

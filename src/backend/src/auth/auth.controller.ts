@@ -12,9 +12,8 @@ export class AuthController {
   @Get('42/callback')
   @UseGuards(FortyTwoAuthGuard)
   async callback42(@Req() req, @Res() res) {
-    // console.log(req.user)
     req.session.user = req.user;
-    res.redirect(`/Home`);
+    res.redirect(`/2fa`);
   }
 
   @Get('profile')

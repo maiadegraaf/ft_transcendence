@@ -5,6 +5,7 @@ import Auth from '../views/Authenticated.vue'
 import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
+import TwoFA from '../views/2fa.vue'
 import axios from 'axios'
 
 const router = createRouter({
@@ -30,11 +31,16 @@ const router = createRouter({
       name: 'Chat',
       component: Chat
     },
-    // {
-    //   path: '/:catchAll(.*)',
-    //   name: '404Name',
-    //   component: viewfour
-    // },
+    {
+      path: '/2fa',
+      name: '2fa',
+      component: TwoFA
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: '404Name',
+      component: viewfour
+    },
     {
       path: '/Pong',
       name: 'Pong',

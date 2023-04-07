@@ -5,10 +5,10 @@ import './assets/index.css'
 import { VueCookieNext } from 'vue-cookie-next'
 
 export default {
-    name: 'app',
-    components: {
-        App
-    }
+  name: 'app',
+  components: {
+    App
+  }
 }
 
 import 'vuetify/styles'
@@ -19,22 +19,18 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
 
 const vuetify = createVuetify({
-    icons: {
-        defaultSet: 'mdi',
-        aliases,
-        sets: {
-            mdi,
-        }
-    },
-    components,
-    directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi
+    }
+  },
+  components,
+  directives
 })
 
 const app = createApp(App)
-app
-  .use(router)
-  .use(vuetify)
-  .use(VueCookieNext)
-  .mount('#app')
+app.use(router).use(vuetify).use(VueCookieNext).mount('#app')
 
 VueCookieNext.config({ expire: '7d' })

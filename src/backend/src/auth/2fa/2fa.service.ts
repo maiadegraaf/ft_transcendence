@@ -8,8 +8,6 @@ import { User } from '../../user/user.entity';
 export class TwoFactorAuthenticationService {
   constructor(private userService: UserService) {}
 
-
-
   // public isTwoFactorAuthenticationCodeValid(
   //   twoFactorAuthenticationCode: string,
   //   user: User,

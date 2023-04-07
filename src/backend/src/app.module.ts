@@ -13,7 +13,7 @@ import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import { GroupProfile } from './chat/entities/groupProfile.entity';
 import { Message } from './chat/entities/message.entity';
-import {TwoFAModule} from "./auth/2fa/2fa.module";
+import { TwoFAModule } from './auth/2fa/2fa.module';
 
 @Module({
   imports: [
