@@ -6,39 +6,39 @@ import { Channel } from '../../../chat/entities/channel.entity';
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
-    ) {}
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
+  ) {}
 
   async findAllUsers() {
     return await this.userRepository.find();
     // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
   }
 
-    async findUserByID(id: number): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { id } });
-        if (!user) {
-            return null;
-        }
-        return user;
+  async findUserByID(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      return null;
     }
+    return user;
+  }
 
-    async findOrCreateUser(
-        id: number,
-        email: string,
-        login: string,
-    ): Promise<User> {
-        let user = await this.userRepository.findOne({ where: { id } });
-        if (!user) {
-            user = await this.userRepository.save({ id, email, login });
-        }
-        return user;
+  async findOrCreateUser(
+    id: number,
+    email: string,
+    login: string,
+  ): Promise<User> {
+    let user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      user = await this.userRepository.save({ id, email, login });
     }
+    return user;
+  }
 
-    deleteUser(id: number) {
-        return this.userRepository.delete({ id });
-    }
+  deleteUser(id: number) {
+    return this.userRepository.delete({ id });
+  }
 
   async getUserByName(login: string): Promise<any> {
     const user = await this.userRepository.findOne({
@@ -97,6 +97,22 @@ export class UserService {
       where: { id: userId },
     });
     return user.login;
+  }
+
+  async addSocketIdToUser(user: User, socketId: string): Promise<any> {
+    if (user.socketId) {
+      // add logic here if user is in a match or waitlist.
+      console.log(
+        'Replacing socketId ' +
+          user.socketId +
+          ' with ' +
+          socketId +
+          ' for user ' +
+          user.login,
+      );
+    }
+    user.socketId = socketId;
+    return this.userRepository.save(user);
   }
   // createUser(userDetails: CreateUserParams) {
   //     const newUser = this.userRepository.create({ //not async so not need to await
