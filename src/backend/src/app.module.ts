@@ -20,6 +20,7 @@ import { MatchInstanceModule } from './pong/match-instance/match-instance.module
 import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity';
 import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
+import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
 
 @Module({
     imports: [
@@ -52,6 +53,7 @@ import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
         PongModule,
         ChatModule,
         AuthModule,
+        LeaderboardModule,
     ],
     controllers: [AppController],
     providers: [AppService],

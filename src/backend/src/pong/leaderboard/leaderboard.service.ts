@@ -20,6 +20,18 @@ export class LeaderboardService {
         private readonly matchService: MatchService,
     ) {}
 
+    async findMatchResults(): Promise<Leaderboard[]> {
+        return this.leaderboardRepository.find({
+            select: ['rating', 'wins', 'losses', 'winStreak'],
+            relations: {
+                user: true,
+            },
+            order: {
+                rating: 'DESC',
+            },
+        });
+    }
+
     async findAll(): Promise<Leaderboard[]> {
         return this.leaderboardRepository.find({
             relations: {
@@ -35,7 +47,6 @@ export class LeaderboardService {
     }
 
     async findLeaderboardEntry(player: User) {
-        console.log('looking for leaderboard entry for player: ', player);
         let entry;
         for (const e of await this.findAll()) {
             if (e.user?.id === player.id) {
@@ -49,7 +60,6 @@ export class LeaderboardService {
         //         user: true,
         //     },
         // });
-        console.log('found entry: ', entry);
         if (!entry) {
             return await this.createNewLeaderboardEntry(player);
         }
