@@ -6,13 +6,14 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import {Body, Logger, ValidationPipe} from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { MessageService } from '../services/message.service';
 import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from '../services/channel.service';
 import { promises } from 'dns';
+import {MessageDto} from "../dtos/chat.dtos";
 
 @WebSocketGateway({
   cors: {
@@ -32,14 +33,17 @@ export class ChatGateway
   private logger: Logger = new Logger('ChatGateway');
 
   @SubscribeMessage('msgToServer')
-  handleMessage(
+  async handleMessage(
     client: Socket,
-    payload: { userId: number; text: string; channelId: number },
-  ): void {
-    this.messageService.createMessage(payload);
-    this.server.to('room' + payload.channelId).emit('msgToClient', payload);
+    @Body(new ValidationPipe()) payload: MessageDto,
+    // payload: { userId: number; text: string; channelId: number },
+  ): Promise<any> {
+    // 1 validation pipe for the payload
+    const message = await this.messageService.createMessage(payload);
+    payload.id = message.id;
+    this.server.to('room' + payload.channel).emit('msgToClient', payload);
     this.logger.log(
-      `createMessage: message send by ${payload.userId} in channel ${payload.channelId}`,
+      `createMessage: message send by ${payload.sender} in channel ${payload.channel}`,
     );
   }
 
@@ -53,24 +57,16 @@ export class ChatGateway
       name: 'server',
       text: `${payload.userId} has joined the room`,
     });
-    const messages = await this.channelService.getMessagesFromChannel(
-      payload.channelId,
-    );
-    messages.forEach((msg) => {
-      this.server.emit('msgToClient', {
-        name: 'server',
-        text: msg.text,
-      });
-    });
+    // const messages = await this.channelService.getMessagesFromChannel(
+    //   payload.channelId,
+    // );
+    // messages.forEach((msg) => {
+    //   this.server.emit('msgToClient', {
+    //     name: 'server',
+    //     text: msg.text,
+    //   });
+    // });
     this.logger.log(`handleJoinRoom: ${client.id} joined the room`);
-
-    // JSON.parse(messages)
-    // console.log(JSON.stringify(messages));
-    // for (const message in messages) {
-    //   console.log('this is message ' + message);
-    //   // const msg = await this.messageService.getMessageById(parseInt(message));
-    //   // console.log('this is msg.txt ' + JSON.parse(msg));
-    // }
   }
 
   @SubscribeMessage('dmNewUserChannel')

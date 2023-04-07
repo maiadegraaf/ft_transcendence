@@ -91,6 +91,13 @@ export class UserService {
     }
     return user;
   }
+
+  async retrieveUserLogin(userId: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    return user.login;
+  }
   // createUser(userDetails: CreateUserParams) {
   //     const newUser = this.userRepository.create({ //not async so not need to await
   //         ...userDetails,

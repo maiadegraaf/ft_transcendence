@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from './channel.service';
+import { MessageDto } from '../dtos/chat.dtos';
 
 @Injectable()
 export class MessageService {
@@ -15,28 +16,22 @@ export class MessageService {
   ) {}
 
   // add the channel id to this
-  async createMessage(payload: {
-    userId: number;
-    text: string;
-    channelId: number;
-  }): Promise<Message> {
+  async createMessage(payload: MessageDto): Promise<Message> {
     try {
       const message = new Message();
-      const sender = await this.userService.findUserByID(payload.userId);
+      const sender = await this.userService.findUserByID(payload.sender);
       if (!sender) {
         throw new HttpException('could not find user', HttpStatus.FORBIDDEN);
       }
       message.sender = sender;
-      const channel = await this.channelService.getChannelById(
-        payload.channelId,
-      );
+      const channel = await this.channelService.getChannelById(payload.channel);
       if (!channel) {
         console.log(payload);
         throw new HttpException('could not find user', HttpStatus.FORBIDDEN);
       }
       message.channel = channel;
       message.text = payload.text;
-      return this.messageRepository.save(message);
+      return await this.messageRepository.save(message);
     } catch {}
   }
 

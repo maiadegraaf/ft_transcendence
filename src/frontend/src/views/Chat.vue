@@ -261,9 +261,11 @@ export default {
       if (this.validateInput()) {
         // Creates a message object.
         const message = {
-          userId: this.userId,
+          id: 0,
+          sender: this.userChannels.id,
+          senderName: this.userChannels.name,
+          channel: this.channelId,
           text: this.text,
-          channelId: this.channelId,
         }
         this.socket.emit('msgToServer', message)
         // Resets the input field.
@@ -271,13 +273,20 @@ export default {
       }
     },
     // Receives a message from the server.
-    async receivedMessage(message: { userId: number, text: string, channelId: number, }): Promise<void> {
+    async receivedMessage(message: { id: number, sender: number, senderName: string, channel: number, text: string }): Promise<void> {
       // Adds the message to the messages array.
-      this.messages.push(message)
+      const msg = {
+        userId: message.sender,
+        text: message.text,
+        channelId: message.channel,
+      }
+      this.messages.push(msg)
+      const Idx = this.userChannels.channels.findIndex(channel => channel.id === message.channel)
+      this.userChannels.channels[Idx].messages.push(message)
     },
     // Validates the input for sending a message.
     validateInput(): boolean {
-      return this.name.length > 0 && this.text.length > 0
+      return this.userChannels.name.length > 0 && this.text.length > 0
     },
     // Retrieves the channels per user
   },
@@ -286,7 +295,7 @@ export default {
     // Initializes the Socket.IO client and stores it in the Vue instance.
     this.socket = io('http://localhost:8080');
     // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
-    this.socket.on('msgToClient', (message: { userId: number, text: string, channelId: number,  }) => {
+    this.socket.on('msgToClient', (message: { id: number, sender: number, senderName: string, channel: number, text: string, }) => {
       this.receivedMessage(message)
     })
   }
