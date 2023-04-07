@@ -1,8 +1,8 @@
 import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
@@ -15,57 +15,57 @@ import { Channel } from '../../../chat/entities/channel.entity';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
-  ) {}
+    constructor(
+        @InjectRepository(User)
+        private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
+    ) {}
 
-  findAllUsers() {
-    return this.userRepository.find();
-    // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
-  }
-
-  async findUserByID(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User with ID ${id} not found');
+    findAllUsers() {
+        return this.userRepository.find();
+        // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
     }
-    return user;
-  }
 
-  async findOrCreateUser(
-    id: number,
-    email: string,
-    login: string,
-  ): Promise<User> {
-    let user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      user = await this.userRepository.save({ id, email, login });
+    async findUserByID(id: number): Promise<User> {
+        const user = await this.userRepository.findOne({ where: { id } });
+        if (!user) {
+            throw new NotFoundException('User with ID ${id} not found');
+        }
+        return user;
     }
-    return user;
-  }
 
-  deleteUser(id: number) {
-    return this.userRepository.delete({ id });
-  }
-
-  async getUserByName(login: string): Promise<any> {
-    const user = await this.userRepository.findOne({
-      where: { login },
-      relations: ['login'],
-    });
-    if (!user) {
-      return false;
+    async findOrCreateUser(
+        id: number,
+        email: string,
+        login: string,
+    ): Promise<User> {
+        let user = await this.userRepository.findOne({ where: { id } });
+        if (!user) {
+            user = await this.userRepository.save({ id, email, login });
+        }
+        return user;
     }
-    return user;
-  }
 
-  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
-    console.log(userId);
-    return this.userRepository.update(userId, {
-      twoFactorAuthenticationSecret: secret,
-    });
-  }
+    deleteUser(id: number) {
+        return this.userRepository.delete({ id });
+    }
+
+    async getUserByName(login: string): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { login },
+            relations: ['login'],
+        });
+        if (!user) {
+            return false;
+        }
+        return user;
+    }
+
+    async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+        console.log(userId);
+        return this.userRepository.update(userId, {
+            twoFactorAuthenticationSecret: secret,
+        });
+    }
 
     async turnOnTwoFactorAuthentication(userId: number) {
         return this.userRepository.update(userId, {

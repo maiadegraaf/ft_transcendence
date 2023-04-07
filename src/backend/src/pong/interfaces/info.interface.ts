@@ -1,4 +1,4 @@
-import { Direction } from '../enums'
+import { Direction } from '../enums';
 
 export interface Info {
     d: Direction;

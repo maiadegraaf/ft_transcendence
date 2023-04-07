@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 html {
-  @apply text-white bg-dark-purple font-mono;
+    @apply text-white bg-dark-purple font-mono;
 }
 
 .btn {
-   @apply m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue transition-all duration-200;
+    @apply m-4 px-8 py-4 bg-vista-blue hover:text-vista-blue hover:bg-yinmn-blue text-yinmn-blue text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-blush border-vista-blue transition-all duration-200;
 }
 
 .btn--error {
-  @apply w-full py-4 bg-amaranth-purple hover:bg-amaranth-purple-darker text-white text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-amaranth-purple hover:border-amaranth-purple transition-all duration-200;
+    @apply w-full py-4 bg-amaranth-purple hover:bg-amaranth-purple-darker text-white text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-amaranth-purple hover:border-amaranth-purple transition-all duration-200;
 }
 
 .h1 {

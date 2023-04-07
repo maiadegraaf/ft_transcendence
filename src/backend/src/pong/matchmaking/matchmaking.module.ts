@@ -4,9 +4,7 @@ import { Matchmaking } from './matchmaking.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Matchmaking]),
-    ],
+    imports: [TypeOrmModule.forFeature([Matchmaking])],
     controllers: [],
     providers: [MatchmakingService],
 })

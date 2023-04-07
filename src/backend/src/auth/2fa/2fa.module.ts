@@ -6,8 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../user/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
-  providers: [TwoFactorAuthenticationService, UserService],
-  controllers: [TwoFactorAuthenticationController],
+    imports: [TypeOrmModule.forFeature([User])],
+    providers: [TwoFactorAuthenticationService, UserService],
+    controllers: [TwoFactorAuthenticationController],
 })
 export class TwoFAModule {}
