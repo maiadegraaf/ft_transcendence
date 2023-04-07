@@ -12,10 +12,16 @@ export class AuthController {
   @Get('42/callback')
   @UseGuards(FortyTwoAuthGuard)
   async callback42(@Req() req, @Res() res) {
-    const user = req.user;
-    res.cookie('user', JSON.stringify(user), {
-      maxAge: 3600000
-    });
+    // const user = req.user;
+    req.session.user = req.user;
+    // res.cookie('user', JSON.stringify(user), {
+    //   maxAge: 3600000,
+    // });
     res.redirect(`/Home`);
+  }
+
+  @Get('profile')
+  async profile(@Req() req) {
+    return req.session.user;
   }
 }

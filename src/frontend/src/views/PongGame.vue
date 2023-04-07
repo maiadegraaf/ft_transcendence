@@ -1,8 +1,8 @@
 <template>
-  <body>
-    <Nav />
-    <Pong />
-  </body>
+    <body>
+        <Nav />
+        <Pong />
+    </body>
 </template>
 
 <script lang="ts">
@@ -10,12 +10,10 @@ import Pong from '../components/Pong.vue'
 import Nav from '@/components/Nav.vue'
 
 export default {
-  name: 'PongGame',
-  components: {
-    Nav,
-    Pong
-  }
+    name: 'PongGame',
+    components: {
+        Nav,
+        Pong
+    }
 }
 </script>
-
-<style scoped></style>

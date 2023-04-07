@@ -8,7 +8,6 @@ import { User } from '../user/user.entity';
 import { UserService } from '../user/services/user/user.service';
 import { Repository } from 'typeorm';
 
-
 @Module({
   imports: [PassportModule, TypeOrmModule.forFeature([User])],
   providers: [FortyTwoStrategy, AuthService, UserService],

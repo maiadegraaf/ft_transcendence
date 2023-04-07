@@ -1,13 +1,14 @@
 import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+    OneToOne,
+    PrimaryColumn,
+    PrimaryGeneratedColumn,
+    RelationOptions,
 } from 'typeorm';
 import { Channel } from '../chat/entities/channel.entity';
 import { GroupProfile } from '../chat/entities/groupProfile.entity';
@@ -16,29 +17,40 @@ import { GroupProfile } from '../chat/entities/groupProfile.entity';
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ nullable: true })
-  login: string;
+    @Column({ nullable: true })
+    login: string;
 
-  // @Column( {nullable: true })
-  @Column({ nullable: true })
-  email: string;
+    // @Column( {nullable: true })
+    @Column({ nullable: true })
+    email: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
 
-  @JoinTable()
-  @ManyToMany(() => Channel, (channel) => channel.users)
-  channels: Channel[];
+    @Column({ nullable: true })
+    twoFactorAuthenticationSecret?: string;
 
-  @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
-  groupProfile: GroupProfile;
-  // @OneToOne(() => Profile)
-  // @JoinColumn()
-  // profile: Profile;
+    @Column({ default: false })
+    isTwoFactorAuthenticationEnabled: boolean;
 
-  // @OneToMany(() => Post, (post) => post.user)
-  // posts: Post[];
+    @JoinTable()
+    @ManyToMany(() => Channel, (channel) => channel.users)
+    channels: Channel[];
+
+    @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
+    groupProfile: GroupProfile;
+    // @OneToOne(() => Profile)
+    // @JoinColumn()
+    // profile: Profile;
+
+    // @OneToMany(() => Post, (post) => post.user)
+    // posts: Post[];
+
+    @Column({
+        default: null,
+    })
+    socketId: string;
 }
