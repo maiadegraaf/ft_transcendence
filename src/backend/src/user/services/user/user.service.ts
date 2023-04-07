@@ -80,6 +80,17 @@ export class UserService {
     user.channels.push(channel);
     return await this.userRepository.save(user);
   }
+
+  async retrieveUserChannelMessages(userId: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['channels', 'channels.messages', 'channels.messages.sender'],
+    });
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
   // createUser(userDetails: CreateUserParams) {
   //     const newUser = this.userRepository.create({ //not async so not need to await
   //         ...userDetails,

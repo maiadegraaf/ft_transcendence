@@ -5,6 +5,7 @@
     "noImplicitAny": false,
     "composite": true,
     "lib": [],
-    "types": ["node", "jsdom"]
+    "types": ["node", "jsdom"],
+    "allowJs": true
   }
 }

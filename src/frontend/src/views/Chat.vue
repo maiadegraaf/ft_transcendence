@@ -1,3 +1,4 @@
+<!--<script src="../../../backend/src/chat/chat.controler.ts"></script>-->
 <template>
   <Nav />
   <v-sheet
@@ -95,9 +96,9 @@
       placeholder="Enter your name"
       required></v-text-field>
   <v-btn @click="createChannel">Create Channel</v-btn>
-  <v-btn @click="channelsByUser">Get Channels</v-btn>
+  <v-btn @click="retrieveChatData">Get Channel Messages</v-btn>
   <v-btn @click="joinRoom">Join Room</v-btn>
-  <v-btn @click="messagesByChannelId">Get Messages only for channel 1</v-btn>
+  <v-btn @click="messagesByChannelId(1)">Get Messages only for channel 1</v-btn>
 
 </template>
 
@@ -107,7 +108,8 @@ import Nav from '@/components/Nav.vue'
 import { nextTick } from 'vue'
 import axios from "axios";
 import {VueCookieNext} from "vue-cookie-next";
-import {UserChatStore} from "@/store/store";
+import {promises} from "dns";
+// import {UserChatStore} from "@/store/store";
 
 export default {
   components: { Nav },
@@ -118,18 +120,22 @@ export default {
     title: string
     name: string
     text: string
-    channels: {
+    userChannels: {
       id: number
-      messages: {
+      name: string
+      channels: {
         id: number,
-        sender: number,
-        senderName: string,
-        channel: number,
-        text: string,
-        timestamp: Date,
+        messages: {
+          id: number,
+          sender: number,
+          senderName: string,
+          channel: number,
+          text: string,
+          // timestamp: Date,
+        }[]
+        //groupProfile: string | GroupProfile
       }[]
-      groupProfile: any
-    }[]
+    }
     messages: {
       userId: number,
       text: string,
@@ -145,30 +151,17 @@ export default {
       title: 'Nestjs Websockets Chat',
       name: '',
       text: '',
-      channels: [],
+      userChannels: {
+        id: 0,
+        name: '',
+        channels: [],
+      },
       messages: [],
       socket: null,
       userId: 1,
       channelId: 1,
       joined: false,
     }
-  },
-  setup() {
-    // const userChatStore = UserChatStore()
-    // userChatStore.fetchUserData()
-    // return {
-    //   // usrId
-    //   usrId: userChatStore.getUserId,
-    //   userName: userChatStore.getUserName,
-    //   userChannels: userChatStore.getUserChannels,
-    // }
-    axios.get('http://localhost:8080/api/chat/' + this.userId)
-        .then(response => {
-            console.log(response)
-            this.channels = response.data
-        }).catch(error => {
-            console.log(error)
-        })
   },
   watch: {
     // Watches the messages array for changes and scrolls the chat window to the bottom.
@@ -186,6 +179,50 @@ export default {
   },
   // The methods of the Vue instance.
   methods: {
+    async retrieveChatData(): Promise<void> {
+      const user = sessionStorage.getItem('user')
+      if (user == null) {
+        this.$router.push('/Login')
+        return
+      } else {
+        const userId = JSON.parse(user).user.id
+        await axios.get('http://localhost:8080/api/chat/' + userId)
+            .then((response) => {
+              console.log('got something at retrieve Chat data')
+              console.log(response.data);
+              this.userChannels = response.data
+            })
+      }
+      console.log(JSON.stringify(this.userChannels))
+    },
+
+    async channelsByUser(): Promise<any> {
+      const user = sessionStorage.getItem('user')
+      if (user == null) {
+        this.$router.push('/Login')
+        return null
+      } else {
+        const userId = JSON.parse(user).user.id
+        let channels
+        await axios.get('http://localhost:8080/api/chat/' + userId +'/channel')
+            .then((response) => {
+              console.log('Current player id: ' + userId)
+              console.log(response.data)
+              channels = response.data
+            })
+        return channels
+      }
+    },
+    async messagesByChannelId(channelId: number): Promise<any> {
+      let message
+      await axios.get('http://localhost:8080/api/chat/' + channelId)
+          .then((response) => {
+            console.log(response.data)
+            message = response.data
+          })
+      return message
+    },
+
     joinRoom(): void {
       if ((this.joined)) {
         return ;
@@ -243,41 +280,6 @@ export default {
       return this.name.length > 0 && this.text.length > 0
     },
     // Retrieves the channels per user
-    channelsByUser(): void {
-      const userCookie = VueCookieNext.getCookie('user')
-      if (userCookie == null) {
-        this.$router.push('/Login')
-      } else {
-        const userId = userCookie.user.id
-        console.log('Current player id: ' + userId)
-        axios.get('http://localhost:8080/api/chat/' + userId +'/channel')
-            .then((response) => {
-              console.log(response.data)
-            })
-      }
-    },
-
-    messagesByChannelId(): void {
-      // const userId = sessionStorage.getItem('session_user_id');
-      // if (!userId) {
-      //   return ;
-      // }
-      // const userIdValue = JSON.parse(userId).value;
-      const userCookie = VueCookieNext.getCookie('user');
-      if (userCookie == null) {
-        axios.get('http://localhost:8080/api/chat/' + 1)
-            .then((response) => {
-              console.log(response.data)
-            })
-        // this.$router.push('/Login')
-      } else {
-        const userId = userCookie.user.id
-        axios.get('http://localhost:8080/api/chat/' + userId)
-            .then((response) => {
-              console.log(response.data)
-            })
-      }
-    }
   },
   // The created hook of the Vue instance.
   created(): void {

@@ -7,6 +7,12 @@ import { UserService } from '../../user/services/user/user.service';
 import { GroupProfile } from '../entities/groupProfile.entity';
 import { GroupProfileService } from './groupProfile.service';
 import { use } from 'passport';
+import { promises } from 'dns';
+import {
+  ChannelMessagesDto,
+  MessageDto,
+  UserChannelsMessagesDto,
+} from '../dtos/chat.dtos';
 
 @Injectable()
 export class ChannelService {
@@ -95,6 +101,43 @@ export class ChannelService {
       where: { id: channelId },
       relations: ['messages'],
     });
-    return channel.messages;
+    console.log(channel);
+    if (channel) {
+      return channel.messages;
+    }
   }
+
+  async getUserChannelDTO(userId: number): Promise<any> {
+    const user = await this.userService.retrieveUserChannelMessages(userId);
+
+    if (!user) {
+      return;
+    }
+    // console.log('this is user: ' + JSON.stringify(user));
+    const userChannelMessageDTO: UserChannelsMessagesDto = {
+      id: user.id,
+      name: user.login,
+      channels: user.channels.map((channel) => {
+        const channelMessageDTO: ChannelMessagesDto = {
+          id: channel.id,
+          messages: channel.messages.map((message) => {
+            const messageDTO: MessageDto = {
+              id: message.id,
+              sender: message.sender.id,
+              senderName: message.sender.login,
+              channel: channel.id,
+              text: message.text,
+            };
+            return messageDTO;
+          }),
+        };
+        return channelMessageDTO;
+      }),
+    };
+    // console.log('this is the DTO: ' + JSON.stringify(userChannelMessageDTO));
+    return userChannelMessageDTO;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // async getUserChatData(userId: number): Promise<any> {}
 }

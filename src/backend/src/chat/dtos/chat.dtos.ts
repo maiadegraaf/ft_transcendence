@@ -7,7 +7,7 @@ export class UserChannelsMessagesDto {
 export class ChannelMessagesDto {
   id: number;
   messages: MessageDto[];
-  groupProfile: string | GroupProfileDto;
+  // groupProfile: string | GroupProfileDto;
 }
 
 export class MessageDto {
@@ -16,10 +16,13 @@ export class MessageDto {
   senderName: string;
   channel: number;
   text: string;
-  timestamp: Date;
+  // timestamp: Date;
 }
 
 export class GroupProfileDto {
   owner: number;
   name: string;
+  admin: [userId: number];
+  blocker: [userId: number];
+  channelId: number;
 }

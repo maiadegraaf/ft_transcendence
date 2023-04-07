@@ -21,15 +21,12 @@ export class ChatController {
   // Get /api/chat/${id}
   @Get('/:id')
   async getChannelMessages(@Param('id') id: number): Promise<any> {
-    const messages = await this.channelService.getMessagesFromChannel(id);
-    if (!messages) {
-      this.logger.error(
-        'getChannelMessages: no messages found from channel: ' + id,
-      );
-      return;
-    }
+    // console.log(id);
+    // const messages = await this.channelService.getMessagesFromChannel(id);
+    // this.logger.log('getChannelMessages: messages found from channel: ' + id);
+    // return messages;
     this.logger.log('getChannelMessages: messages found from channel: ' + id);
-    return messages;
+    return this.channelService.getUserChannelDTO(id);
     // return this.messageService.getMessagesByChannelID(id);
   }
 
