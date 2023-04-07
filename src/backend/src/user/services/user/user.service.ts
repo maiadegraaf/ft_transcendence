@@ -6,39 +6,39 @@ import { Channel } from '../../../chat/entities/channel.entity';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
-  ) {}
+    constructor(
+        @InjectRepository(User)
+        private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
+    ) {}
 
   async findAllUsers() {
     return await this.userRepository.find();
     // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
   }
 
-  async findUserByID(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User with ID ${id} not found');
+    async findUserByID(id: number): Promise<User> {
+        const user = await this.userRepository.findOne({ where: { id } });
+        if (!user) {
+            return null;
+        }
+        return user;
     }
-    return user;
-  }
 
-  async findOrCreateUser(
-    id: number,
-    email: string,
-    login: string,
-  ): Promise<User> {
-    let user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      user = await this.userRepository.save({ id, email, login });
+    async findOrCreateUser(
+        id: number,
+        email: string,
+        login: string,
+    ): Promise<User> {
+        let user = await this.userRepository.findOne({ where: { id } });
+        if (!user) {
+            user = await this.userRepository.save({ id, email, login });
+        }
+        return user;
     }
-    return user;
-  }
 
-  async deleteUser(id: number) {
-    return await this.userRepository.delete({ id });
-  }
+    deleteUser(id: number) {
+        return this.userRepository.delete({ id });
+    }
 
   async getUserByName(login: string): Promise<any> {
     const user = await this.userRepository.findOne({

@@ -51,7 +51,7 @@ fi
 if [ "$METHOD" = "GET" ] && [ "$USER_ID" = "" ]; then
   curl -X GET http://localhost:8080/api/users
 elif [ "$METHOD" = "GET" ] && [ "$USER_ID" != "" ]; then
-  curl -X GET http://localhost:8080/api/users/$USER_ID
+  curl -X GET http://localhost:8080/api/user/$USER_ID
 elif [ "$METHOD" != "GET" ] && [ "$METHOD" != "POST" ]  && [ "$USER_ID" = "" ]; then
   echo "Please specify a user ID with the -i flag (e.g. -i 2)"
   exit 1
@@ -59,7 +59,7 @@ else
   if [ "$METHOD" = "POST" ]; then
     curl -X "$METHOD" http://localhost:8080/api/users -H "Content-Type: application/json" -d "{\"login\":\"$LOGIN\",\"email\":\"$EMAIL\"}"
   elif [ "$METHOD" = "DELETE" ]; then
-    curl -X "$METHOD" http://localhost:8080/api/users/$USER_ID
+    curl -X "$METHOD" http://localhost:8080/api/user/$USER_ID
   else
     JSON_BODY="{"
     if [ "$LOGIN" != "" ]; then
@@ -72,6 +72,6 @@ else
       JSON_BODY="$JSON_BODY \"email\":\"$EMAIL\""
     fi
     JSON_BODY="$JSON_BODY }"
-    curl -X "$METHOD" http://localhost:8080/api/users/$USER_ID -H "Content-Type: application/json" -d "$JSON_BODY"
+    curl -X "$METHOD" http://localhost:8080/api/user/$USER_ID -H "Content-Type: application/json" -d "$JSON_BODY"
   fi
 fi
