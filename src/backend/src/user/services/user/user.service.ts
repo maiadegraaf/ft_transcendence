@@ -50,46 +50,46 @@ export class UserService {
     }
 
     async getUserByName(login: string): Promise<any> {
-    const user = await this.userRepository.findOne({
-      where: { login },
-      relations: ['login'],
-    });
-    if (!user) {
-      return false;
+        const user = await this.userRepository.findOne({
+            where: { login },
+            relations: ['login'],
+        });
+        if (!user) {
+            return false;
+        }
+        return user;
     }
-    return user;
-  }
 
-  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
-    return this.userRepository.update(userId, {
-      twoFactorAuthenticationSecret: secret,
-    });
-  }
+    async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+        return this.userRepository.update(userId, {
+            twoFactorAuthenticationSecret: secret,
+        });
+    }
 
-  async turnOnTwoFactorAuthentication(userId: number) {
-    return this.userRepository.update(userId, {
-      isTwoFactorAuthenticationEnabled: true,
-    });
-  }
+    async turnOnTwoFactorAuthentication(userId: number) {
+        return this.userRepository.update(userId, {
+            isTwoFactorAuthenticationEnabled: true,
+        });
+    }
 
-  async getChannelsByUserId(userId: number): Promise<any> {
-    const user = await this.findUserByID(userId);
-    // const user = await this.userRepository.findOne(userId, {
-    //   relations: ['channels'],
-    // });
-    // user.channels;
-    console.log(user.channels);
-    return user.channels;
-    // const channels = user.find
-    // return user.channels;
-  }
+    async getChannelsByUserId(userId: number): Promise<any> {
+        const user = await this.findUserByID(userId);
+        // const user = await this.userRepository.findOne(userId, {
+        //   relations: ['channels'],
+        // });
+        // user.channels;
+        console.log(user.channels);
+        return user.channels;
+        // const channels = user.find
+        // return user.channels;
+    }
 
-  async addChannelToUser(channel: Channel, userId: number): Promise<any> {
-    // await this.userRepository.save(channel);
-    const user = await this.getChannelsByUserId(userId);
-    user.channel.push(channel);
-    return await this.userRepository.save(user);
-  }// createUser(userDetails: CreateUserParams) {
+    async addChannelToUser(channel: Channel, userId: number): Promise<any> {
+        // await this.userRepository.save(channel);
+        const user = await this.getChannelsByUserId(userId);
+        user.channel.push(channel);
+        return await this.userRepository.save(user);
+    } // createUser(userDetails: CreateUserParams) {
     //     const newUser = this.userRepository.create({ //not async so not need to await
     //         ...userDetails,
     //     });
@@ -141,6 +141,15 @@ export class UserService {
     }
 
     async returnUserBySocketId(socketId: string): Promise<User> {
-        return this.userRepository.findOne({ where: { socketId } });
+        for (const u of await this.findAllUsers()) {
+            if (u.socketId === socketId) {
+                console.log(
+                    'Found user ' + u.login + ' with socketId ' + socketId,
+                );
+                return u;
+            }
+        }
+
+        // return this.userRepository.findOne({ where: { socketId: socketId } });
     }
 }

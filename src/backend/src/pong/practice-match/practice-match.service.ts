@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PracticeMatchEntity } from './practice-match.entity'
-import { Repository } from 'typeorm'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Difficulty } from './practice-match.entity'
-import { User } from '../../user/user.entity'
+import { PracticeMatchEntity } from './practice-match.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Difficulty } from './practice-match.entity';
+import { User } from '../../user/user.entity';
 
 @Injectable()
 export class PracticeMatchService {
@@ -12,9 +12,7 @@ export class PracticeMatchService {
         private readonly practiceMatchRepository: Repository<PracticeMatchEntity>,
     ) {}
 
-    async createPracticeMatch(
-        user: User,
-    ): Promise<PracticeMatchEntity> {
+    async createPracticeMatch(user: User): Promise<PracticeMatchEntity> {
         const practiceMatch = new PracticeMatchEntity();
         practiceMatch.player = user;
         try {
@@ -42,6 +40,7 @@ export class PracticeMatchService {
                 player: true,
             },
         });
+        console.log('tmp.player: ', tmp.player);
         return tmp.player;
     }
 
@@ -61,7 +60,9 @@ export class PracticeMatchService {
         await this.practiceMatchRepository.save(practiceMatch);
     }
 
-    async printPracticeMatch(practiceMatch: PracticeMatchEntity): Promise<void> {
+    async printPracticeMatch(
+        practiceMatch: PracticeMatchEntity,
+    ): Promise<void> {
         const tmp = await this.practiceMatchRepository.findOne({
             where: { id: practiceMatch.id },
             relations: {
@@ -71,7 +72,11 @@ export class PracticeMatchService {
         console.log('tmp: ', tmp);
     }
 
-    async updateScore(practiceMatch: PracticeMatchEntity, score1: number, score2: number): Promise<void> {
+    async updateScore(
+        practiceMatch: PracticeMatchEntity,
+        score1: number,
+        score2: number,
+    ): Promise<void> {
         practiceMatch.score1 = score1;
         practiceMatch.score2 = score2;
         await this.practiceMatchRepository.save(practiceMatch);
@@ -81,7 +86,9 @@ export class PracticeMatchService {
         return this.practiceMatchRepository.find();
     }
 
-    async getPracticeMatchBySocket(socketId: string): Promise<PracticeMatchEntity> {
+    async getPracticeMatchBySocket(
+        socketId: string,
+    ): Promise<PracticeMatchEntity> {
         for (const practiceMatch of await this.getPracticeMatches()) {
             if (
                 practiceMatch.player &&
@@ -93,12 +100,18 @@ export class PracticeMatchService {
         return null;
     }
 
-    async updateDifficulty(practiceMatch: PracticeMatchEntity, difficulty: Difficulty): Promise<void> {
+    async updateDifficulty(
+        practiceMatch: PracticeMatchEntity,
+        difficulty: Difficulty,
+    ): Promise<void> {
         practiceMatch.difficulty = difficulty;
         await this.practiceMatchRepository.save(practiceMatch);
     }
 
-    async updateWinningCondition(practiceMatch: PracticeMatchEntity, winningCondition: number): Promise<void> {
+    async updateWinningCondition(
+        practiceMatch: PracticeMatchEntity,
+        winningCondition: number,
+    ): Promise<void> {
         practiceMatch.winningCondition = winningCondition;
         await this.practiceMatchRepository.save(practiceMatch);
     }

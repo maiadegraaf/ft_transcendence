@@ -137,7 +137,9 @@ export class LeaderboardService {
         const player = await this.findLeaderboardEntry(
             await this.practiceMatchService.returnPlayer(practiceMatch),
         );
-        if (practiceMatch.score1 == 10) {
+        console.log('player', player);
+        console.log('practiceMatch', practiceMatch);
+        if (practiceMatch.score1 == practiceMatch.winningCondition) {
             await this.assignPracticeMatchType(
                 practiceMatch.difficulty,
                 player,

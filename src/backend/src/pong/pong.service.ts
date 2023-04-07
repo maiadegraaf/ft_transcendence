@@ -152,7 +152,10 @@ export class PongService {
     }
 
     checkForEndOfPracticeMatch(practiceMatch: PracticeMatchEntity): void {
-        if (practiceMatch.score1 == 10 || practiceMatch.score2 == 10) {
+        if (
+            practiceMatch.score1 == practiceMatch.winningCondition ||
+            practiceMatch.score2 == practiceMatch.winningCondition
+        ) {
             this.leaderboardService.addPracticeMatchToLeaderboard(
                 practiceMatch,
             );
@@ -216,7 +219,9 @@ export class PongService {
     }
 
     async handlePracticeMode(client: Socket, data: any) {
-        const player = await this.userService.returnUserBySocketId(client.id);
+        const player = await this.addSocketIdToUser(data.userId, client);
+        // const player = await this.userService.returnUserBySocketId(client.id);
+        console.log('player >' + player.login + '< wants to practice');
         const practiceMatch =
             await this.practiceMatchService.createPracticeMatch(player);
         this.practiceInstance[practiceMatch.id] = new PracticeMatch(

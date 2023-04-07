@@ -3,15 +3,15 @@
     position: relative;
 }
 
-.table-row td:last-child {
+.row-right {
     border-radius: 0 0.5rem 0.5rem 0;
 }
 
-.table-row td:nth-child(3) {
+.row-both {
     border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
 }
 
-.table-row td:nth-child(5) {
+.row-left {
     border-radius: 0.5rem 0 0 0.5rem;
 }
 
@@ -44,8 +44,8 @@
     border-top: 2px solid #5d90e9ff;
     border-left: 2px solid #5d90e9ff;
     border-right: 2px solid #5d90e9ff;
-    background-color: #f1ac7eff;
     position: relative;
+    background-color: #170623;
     z-index: 1;
 }
 
@@ -93,7 +93,7 @@
             </button>
             <div class="tab-shape"></div>
         </div>
-        <div class="relative w-full rounded-b-lg -mt-0.5 bg-buff p-4 border-2 border-vista-blue">
+        <div class="relative w-full rounded-b-lg -mt-0.5 p-4 border-2 border-vista-blue">
             <table
                 v-if="tab == 'Overall'"
                 class="table-fixed w-[600px] m-auto -mt-2 border-separate border-spacing-y-4 text-center"
@@ -112,61 +112,129 @@
                 </thead>
                 <tbody class="text-center">
                     <tr v-for="(item, index) in leaderboardData" :key="index" class="table-row">
-                        <td class="text-dark-purple text-2xl">{{ index + 1 }}</td>
+                        <td
+                            class="text-2xl"
+                            :class="currentUser === item.user.id ? 'text-buff' : 'text-vista-blue'"
+                        >
+                            {{ index + 1 }}
+                        </td>
                         <td class="">{{ whitespace }}</td>
                         <td
-                            class="border-2"
-                            :class="
-                                currentUser === item.user.id
-                                    ? 'bg-vista-blue border-blush'
-                                    : 'bg-amaranth-purple border-blush'
-                            "
+                            class="text-dark-purple row-both"
+                            :class="currentUser === item.user.id ? 'bg-buff' : 'bg-vista-blue'"
                         >
                             {{ item.user ? item.user.login : '' }}
                         </td>
                         <td>{{ whitespace }}</td>
-                        <td class="w-[85px] bg-blush shadow-lg">{{ item.rating }}</td>
-                        <td class="w-[85px] bg-blush shadow-lg">{{ item.wins }}</td>
-                        <td class="w-[85px] bg-blush shadow-lg">{{ item.losses }}</td>
-                        <td class="w-[85px] bg-blush shadow-lg">{{ item.winStreak }}</td>
+                        <td
+                            class="w-[85px] row-left bg-dark-purple border-t-2 border-b-2 border-l-2 shadow-lg"
+                            :class="
+                                currentUser === item.user.id
+                                    ? 'border-buff text-buff'
+                                    : 'border-vista-blue text-vista-blue'
+                            "
+                        >
+                            {{ item.rating }}
+                        </td>
+                        <td
+                            class="w-[85px] bg-dark-purple border-t-2 border-b-2 shadow-lg"
+                            :class="
+                                currentUser === item.user.id
+                                    ? 'border-buff text-buff'
+                                    : 'border-vista-blue text-vista-blue'
+                            "
+                        >
+                            {{ item.wins }}
+                        </td>
+                        <td
+                            class="w-[85px] bg-dark-purple border-t-2 border-b-2 shadow-lg"
+                            :class="
+                                currentUser === item.user.id
+                                    ? 'border-buff text-buff'
+                                    : 'border-vista-blue text-vista-blue'
+                            "
+                        >
+                            {{ item.losses }}
+                        </td>
+                        <td
+                            class="w-[85px] row-right bg-dark-purple border-t-2 border-b-2 border-r-2 shadow-lg"
+                            :class="
+                                currentUser === item.user.id
+                                    ? 'border-buff text-buff'
+                                    : 'border-vista-blue text-vista-blue'
+                            "
+                        >
+                            {{ item.winStreak }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
             <table
                 v-if="tab === 'Practice Matches'"
-                class="w-full border border-separate border-spacing-y-4 text-center shadow-md"
+                class="table-fixed w-[300px] m-auto -mt-2 border-separate border-spacing-y-4 text-center"
             >
                 <thead>
-                    <tr class="bg-gray-200">
-                        <th class="w-full">Difficulty</th>
-                        <th class="w-full">Matches Played</th>
-                        <th class="w-full">Wins</th>
+                    <tr class="">
+                        <th class="w-[150px] pl-4 pr-4"></th>
+                        <th class="w-[10px] pl-2 pr-2">{{ whitespace }}</th>
+                        <th class="w-[85px] pl-2 pr-2">Matches Played</th>
+                        <th class="w-[85px] pl-2 pr-2">Wins</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-white">
-                        <td class="w-full border">Easy</td>
-                        <td class="w-full border">{{ practiceMatchData.practiceEasyPlayed }}</td>
-                        <td class="w-full border">{{ practiceMatchData.practiceEasyWins }}</td>
+                    <tr v-if="practiceMatchData.practiceEasyPlayed > 0">
+                        <td class="text-dark-purple row-both bg-easy">Easy</td>
+                        <td class="">{{ whitespace }}</td>
+                        <td
+                            class="row-left text-easy border-l-2 border-t-2 border-b-2 bg-dark-purple border-easy"
+                        >
+                            {{ practiceMatchData.practiceEasyPlayed }}
+                        </td>
+                        <td
+                            class="row-right text-easy border-r-2 border-t-2 border-b-2 bg-dark-purple border-easy"
+                        >
+                            {{ practiceMatchData.practiceEasyWins }}
+                        </td>
                     </tr>
-                    <tr class="bg-white">
-                        <td class="w-full border">Normal</td>
-                        <td class="w-full border">
+                    <tr v-if="practiceMatchData.practiceNormalPlayed > 0">
+                        <td class="text-dark-purple row-both bg-normal">Normal</td>
+                        <td class="">{{ whitespace }}</td>
+                        <td
+                            class="row-left text-normal border-l-2 border-t-2 border-b-2 bg-dark-purple border-normal"
+                        >
                             {{ practiceMatchData.practiceNormalPlayed }}
                         </td>
-                        <td class="w-full border">{{ practiceMatchData.practiceNormalWins }}</td>
+                        <td
+                            class="row-right text-normal border-r-2 border-t-2 border-b-2 bg-dark-purple border-normal"
+                        >
+                            {{ practiceMatchData.practiceNormalWins }}
+                        </td>
                     </tr>
-                    <tr class="bg-white">
-                        <td class="w-full border">Hard</td>
-                        <td class="w-full border">{{ practiceMatchData.practiceHardPlayed }}</td>
-                        <td class="w-full border">{{ practiceMatchData.practiceHardWins }}</td>
+                    <tr v-if="practiceMatchData.practiceHardPlayed > 0">
+                        <td class="text-dark-purple row-both bg-hard">Hard</td>
+                        <td class="">{{ whitespace }}</td>
+                        <td
+                            class="row-left text-hard border-l-2 border-t-2 border-b-2 bg-dark-purple border-hard"
+                        >
+                            {{ practiceMatchData.practiceHardPlayed }}
+                        </td>
+                        <td
+                            class="row-right text-hard border-r-2 border-t-2 border-b-2 bg-dark-purple border-hard"
+                        >
+                            {{ practiceMatchData.practiceHardWins }}
+                        </td>
                     </tr>
-                    <tr class="bg-white">
-                        <td class="w-full border">Expert</td>
-                        <td class="w-full border">
+                    <tr v-if="practiceMatchData.practiceImpossiblePlayed > 0">
+                        <td class="text-dark-purple row-both bg-impossible">Impossible</td>
+                        <td class="">{{ whitespace }}</td>
+                        <td
+                            class="row-left text-impossible border-l-2 border-t-2 border-b-2 bg-dark-purple border-impossible"
+                        >
                             {{ practiceMatchData.practiceImpossiblePlayed }}
                         </td>
-                        <td class="w-full border">
+                        <td
+                            class="row-right text-impossible border-r-2 border-t-2 border-b-2 bg-dark-purple border-impossible"
+                        >
                             {{ practiceMatchData.practiceImpossibleWins }}
                         </td>
                     </tr>
