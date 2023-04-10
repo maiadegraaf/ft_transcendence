@@ -36,7 +36,7 @@
         </div>
         <div v-else>
             <button v-if="!waiting" @click="joinMatch" class="btn">Join Match</button>
-            <div v-if="waiting">
+            <div v-if="waiting" class="animate-spin">
                 <p>Waiting for opponent...</p>
                 <button @click="leaveList" class="btn">Leave Waiting List</button>
             </div>

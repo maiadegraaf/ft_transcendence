@@ -182,7 +182,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-if="practiceMatchData.practiceEasyPlayed > 0">
+                    <tr>
                         <td class="text-dark-purple row-both bg-easy">Easy</td>
                         <td class="">{{ whitespace }}</td>
                         <td
@@ -196,7 +196,7 @@
                             {{ practiceMatchData.practiceEasyWins }}
                         </td>
                     </tr>
-                    <tr v-if="practiceMatchData.practiceNormalPlayed > 0">
+                    <tr>
                         <td class="text-dark-purple row-both bg-normal">Normal</td>
                         <td class="">{{ whitespace }}</td>
                         <td
@@ -210,7 +210,7 @@
                             {{ practiceMatchData.practiceNormalWins }}
                         </td>
                     </tr>
-                    <tr v-if="practiceMatchData.practiceHardPlayed > 0">
+                    <tr>
                         <td class="text-dark-purple row-both bg-hard">Hard</td>
                         <td class="">{{ whitespace }}</td>
                         <td
@@ -224,7 +224,7 @@
                             {{ practiceMatchData.practiceHardWins }}
                         </td>
                     </tr>
-                    <tr v-if="practiceMatchData.practiceImpossiblePlayed > 0">
+                    <tr>
                         <td class="text-dark-purple row-both bg-impossible">Impossible</td>
                         <td class="">{{ whitespace }}</td>
                         <td
