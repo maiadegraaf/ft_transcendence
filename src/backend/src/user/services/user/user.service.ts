@@ -72,6 +72,14 @@ export class UserService {
         return user.channels;
     }
 
+    async getUserNameById(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+        });
+        // console.log('getChannelsByUserId: user' + JSON.stringify(user.channels));
+        return user.login;
+    }
+
     async addChannelToUser(channel: Channel, userId: number): Promise<any> {
         const user = await this.userRepository.findOne({
             where: { id: userId },
@@ -96,11 +104,11 @@ export class UserService {
         return user;
     }
 
-    async retrieveUserLogin(userId: number): Promise<any> {
+    async getUserByLogin(userLogin: string): Promise<any> {
         const user = await this.userRepository.findOne({
-            where: { id: userId },
+            where: { login: userLogin },
         });
-        return user.login;
+        return user;
     }
 
     async addSocketIdToUser(user: User, socketId: string): Promise<any> {

@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Param, Body, Logger } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Param,
+    Body,
+    Logger,
+    ValidationPipe,
+} from '@nestjs/common';
 import { Channel } from './entities/channel.entity';
 import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
 import { UserService } from '../user/services/user/user.service';
+import { CreateDmChannelDto } from './dtos/chat.dtos';
 // import { User } from '../user/entities/user.entity';
 // import { AppService } from './app.service';
 
@@ -49,28 +58,37 @@ export class ChatController {
     // Post /api/chat/dm
     @Post('dm')
     async postNewDMChannel(
-        @Body() param: { user1: number; user2: number },
+        @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
+        const user2 = await this.userService.getUserByLogin(param.invitee);
+        if (!user2) {
+            this.logger.error(
+                'postNewDMChannel: no user found for name: ' +
+                    JSON.stringify(param),
+            );
+            return;
+        }
         const channel = await this.channelService.newDmChannel(
-            param.user1,
-            param.user2,
+            param.userId,
+            user2.id,
         );
         if (!channel) {
             this.logger.error(
                 'postNewDMChannel: no new dm channel for users: ' +
-                    param.user1 +
+                    param.userId +
                     ' & ' +
-                    param.user2,
+                    param.invitee,
             );
             return;
         }
         this.logger.log(
             'postNewDMChannel: new dm channel for users: ' +
-                param.user1 +
+                param.userId +
                 ' & ' +
-                param.user2,
+                param.invitee,
         );
-        return channel;
+        const channelDto = await this.channelService.newChannelDTO(channel.id);
+        return channelDto;
     }
 
     // // Post /api/chat/group

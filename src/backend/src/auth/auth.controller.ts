@@ -7,6 +7,7 @@ export class AuthController {
     constructor(private authService: AuthService) {}
     @Get('42')
     @UseGuards(FortyTwoAuthGuard)
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async login42(@Req() req, @Res() res) {}
 
     @Get('42/callback')

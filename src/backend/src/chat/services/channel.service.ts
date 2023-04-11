@@ -142,6 +142,14 @@ export class ChannelService {
         return userChannelMessageDTO;
     }
 
+    async newChannelDTO(channelId: number): Promise<any> {
+        const channelDto: ChannelMessagesDto = {
+            id: channelId,
+            messages: [],
+        };
+        return channelDto;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     // async getUserChatData(userId: number): Promise<any> {}
 }

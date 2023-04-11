@@ -5,6 +5,7 @@ import {
     OnGatewayInit,
     OnGatewayConnection,
     OnGatewayDisconnect,
+    ConnectedSocket,
 } from '@nestjs/websockets';
 import { Body, Logger, ValidationPipe } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
@@ -13,7 +14,7 @@ import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from '../services/channel.service';
 import { promises } from 'dns';
-import { MessageDto } from '../dtos/chat.dtos';
+import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 
 @WebSocketGateway({
     cors: {
@@ -34,9 +35,8 @@ export class ChatGateway
 
     @SubscribeMessage('msgToServer')
     async handleMessage(
-        client: Socket,
+        @ConnectedSocket() client: Socket,
         @Body(new ValidationPipe()) payload: MessageDto,
-        // payload: { userId: number; text: string; channelId: number },
     ): Promise<any> {
         // 1 validation pipe for the payload
         const message = await this.messageService.createMessage(payload);
@@ -49,29 +49,29 @@ export class ChatGateway
 
     @SubscribeMessage('joinRoom')
     async handleJoinRoom(
-        client: Socket,
-        payload: { userId: number; channelId: number },
+        @ConnectedSocket() client: Socket,
+        @Body(new ValidationPipe()) payload: JoinRoomDto,
     ): Promise<any> {
-        client.join('room' + payload.channelId);
+        await client;
+        if (!client) {
+            this.logger.error('handleJoinRoom: client is undefined');
+            return;
+        }
+        await client.join('room' + payload.channelId);
+        const userName = await this.userService.getUserNameById(payload.userId);
         this.server.emit('msgToClient', {
-            name: 'server',
-            text: `${payload.userId} has joined the room`,
+            id: -1,
+            sender: payload.userId,
+            senderName: userName,
+            channel: payload.channelId,
+            text: `${payload.userName} (${payload.userId}) has joined the room`,
         });
-        // const messages = await this.channelService.getMessagesFromChannel(
-        //   payload.channelId,
-        // );
-        // messages.forEach((msg) => {
-        //   this.server.emit('msgToClient', {
-        //     name: 'server',
-        //     text: msg.text,
-        //   });
-        // });
         this.logger.log(`handleJoinRoom: ${client.id} joined the room`);
     }
 
     @SubscribeMessage('dmNewUserChannel')
     async dmNewUserChannel(
-        client: Socket,
+        @ConnectedSocket() client: Socket,
         payload: { userName: string; userId: number },
     ): Promise<any> {
         const user2 = await this.userService.getUserByName(payload.userName);

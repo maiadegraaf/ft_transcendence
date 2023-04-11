@@ -26,3 +26,14 @@ export class GroupProfileDto {
     blocker: [userId: number];
     channelId: number;
 }
+
+export class JoinRoomDto {
+    userId: number;
+    userName: string;
+    channelId: number;
+}
+
+export class CreateDmChannelDto {
+    userId: number;
+    invitee: string;
+}

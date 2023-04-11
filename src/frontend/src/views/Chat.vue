@@ -1,4 +1,3 @@
-<!--<script src="../../../backend/src/chat/chat.controler.ts"></script>-->
 <template>
   <Nav />
   <v-sheet
@@ -17,7 +16,11 @@
           color="grey"
           class="border-right"
       ></v-toolbar>
-      <v-list></v-list>
+      <v-list id="channelList">
+        <div v-for="n in userChannels.channels" :key="n.id">
+          <v-btn @click="joinRoom(n.id)">Join Room : Channel {{ n.id }}</v-btn>
+        </div>
+      </v-list>
       <v-footer>
         <v-row>Footer</v-row>
       </v-footer>
@@ -89,17 +92,23 @@
     </v-sheet>
   </v-sheet>
   <br>
-  <v-text-field
-      bg-color="white"
-      v-model="name"
-      label="Name"
-      placeholder="Enter your name"
-      required></v-text-field>
-  <v-btn @click="createChannel">Create Channel</v-btn>
-  <v-btn @click="retrieveChatData">Get Channel Messages</v-btn>
-  <v-btn @click="joinRoom">Join Room</v-btn>
-  <v-btn @click="messagesByChannelId(1)">Get Messages only for channel 1</v-btn>
-
+  <v-sheet
+      color="grey-lighten-3"
+      width="40%"
+  >
+    <v-text-field
+        v-model="invite"
+        density="compact"
+        variant="solo"
+        label="New DM user name..."
+        single-line
+        hide-details
+        class="ml-4 mr-2 my-3"
+        @keyup.enter="createChannel(invite)"
+    >
+    </v-text-field>
+  </v-sheet>
+  <v-btn @click="createChannel(invite)">Create Channel</v-btn>
 </template>
 
 <script lang="ts">
@@ -120,6 +129,7 @@ export default {
     title: string
     name: string
     text: string
+    invite: string
     userChannels: {
       id: number
       name: string
@@ -151,6 +161,7 @@ export default {
       title: 'Nestjs Websockets Chat',
       name: '',
       text: '',
+      invite: '',
       userChannels: {
         id: 0,
         name: '',
@@ -162,6 +173,35 @@ export default {
       channelId: 1,
       joined: false,
     }
+  },
+  mounted() {
+      const userSession = sessionStorage.getItem('user')
+      if (userSession == null) {
+      this.$router.push('/Login')
+      return
+    } else {
+      const user = JSON.parse(userSession).user
+      this.userId = user.id
+      this.name = user.login
+      fetch('http://localhost:8080/api/chat/' + this.userId)
+          .then(response => response.json())
+          .then(data => {
+            console.log('got something at retrieve Chat data')
+            console.log(data);
+            this.userChannels = data
+          }).catch(error => {
+        console.log(error)
+      })
+      // axios.get('http://localhost:8080/api/chat/' + userId)
+      // await axios.get('http://localhost:8080/api/chat/' + userId)
+      //     .then((response) => {
+      //       console.log('got something at retrieve Chat data')
+      //       console.log(response.data);
+      //       this.userChannels = response.data
+      //     })
+    }
+    // console.log(JSON.stringify(this.userChannels))
+
   },
   watch: {
     // Watches the messages array for changes and scrolls the chat window to the bottom.
@@ -177,83 +217,51 @@ export default {
       deep: true
     }
   },
+
   // The methods of the Vue instance.
   methods: {
-    async retrieveChatData(): Promise<void> {
-      const user = sessionStorage.getItem('user')
-      if (user == null) {
-        this.$router.push('/Login')
-        return
-      } else {
-        const userId = JSON.parse(user).user.id
-        await axios.get('http://localhost:8080/api/chat/' + userId)
-            .then((response) => {
-              console.log('got something at retrieve Chat data')
-              console.log(response.data);
-              this.userChannels = response.data
-            })
-      }
-      console.log(JSON.stringify(this.userChannels))
-    },
-
-    async channelsByUser(): Promise<any> {
-      const user = sessionStorage.getItem('user')
-      if (user == null) {
-        this.$router.push('/Login')
-        return null
-      } else {
-        const userId = JSON.parse(user).user.id
-        let channels
-        await axios.get('http://localhost:8080/api/chat/' + userId +'/channel')
-            .then((response) => {
-              console.log('Current player id: ' + userId)
-              console.log(response.data)
-              channels = response.data
-            })
-        return channels
-      }
-    },
-    async messagesByChannelId(channelId: number): Promise<any> {
-      let message
-      await axios.get('http://localhost:8080/api/chat/' + channelId)
-          .then((response) => {
-            console.log(response.data)
-            message = response.data
-          })
-      return message
-    },
-
-    joinRoom(): void {
-      if ((this.joined)) {
-        return ;
-      }
-      this.setUserId()
+    // Sends a message to the server.
+    async joinRoom(id: number): Promise<void> {
+      this.channelId = id
       const payload = {
         userId: this.userId,
+        userName: this.name,
         channelId: this.channelId
       }
+      this.messages = []
       this.socket.emit('joinRoom', payload)
-      this.joined = true;
+      await this.pushMessages()
+      // this.joined = true;
     },
-    setUserId(): void {
-      if (this.name === 'Bert') {
-        this.userId = 1
-      } else {
-        this.userId = 2
-      }
-      this.channelId = 1
+    // Sends a message to the server.
+    async pushMessages(): Promise<void> {
+      const idx = this.userChannels.channels.findIndex((channel) => channel.id === this.channelId)
+      const channel = await this.userChannels.channels[idx]
+      await channel.messages.forEach((message) => {
+        const msg = {
+          userId: message.sender,
+          text: message.text,
+          channelId: message.channel
+        }
+        this.messages.push(msg)
+      })
     },
     // Creates a new Channel.
-    createChannel(): void {
+    async createChannel(inviteeName: string): Promise<void> {
       const payload = {
-        user1: 1,
-        user2: 2
+        userId: 1,
+        invitee: inviteeName,
       }
-      axios.post('http://localhost:8080/api/chat/dm', payload)
+      await axios.post('http://localhost:8080/api/chat/dm', payload)
         .then((response) => {
           console.log(response.data)
-          this.channelId = response.data.id
-        })
+          // this.channelId = response.data.id
+          this.userChannels.channels.push(response.data)
+          console.log(this.userChannels.channels)
+      }).catch(error => {
+        console.log(error)
+      })
+      this.invite = ''
     },
     // Sends a message to the server.
     sendMessage(): void {
@@ -281,8 +289,10 @@ export default {
         channelId: message.channel,
       }
       this.messages.push(msg)
-      const Idx = this.userChannels.channels.findIndex(channel => channel.id === message.channel)
-      this.userChannels.channels[Idx].messages.push(message)
+      if (message.id > 0) {
+        const Idx = this.userChannels.channels.findIndex(channel => channel.id === message.channel)
+        this.userChannels.channels[Idx].messages.push(message)
+      }
     },
     // Validates the input for sending a message.
     validateInput(): boolean {
@@ -299,11 +309,6 @@ export default {
       this.receivedMessage(message)
     })
   }
-
-    // .then((response) => {
-    //   console.log(response.data)
-    //   this.channelId = response.data.id
-    // })
 }
 </script>
 
