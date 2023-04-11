@@ -3,7 +3,7 @@
         v-if="!started || startedBy !== currentPlayerId"
         class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple-800"
     >
-        <h1 class="h1">PONG</h1>
+        <img class="m-8 w-[450px]" src="../assets/images/PONG.gif" alt="PONG" />
         <button v-if="!waiting && !practiceMode" @click="setPracticeMode" class="btn">
             Start a Practice Game
         </button>
@@ -71,6 +71,7 @@
                 <h3 class="text-3xl text-buff font-bold text-shadow-lg mb-8">{{ winner }} Wins!</h3>
                 <button @click="reset" class="btn">Play Again</button>
             </div>
+            <PracticeMatch />
         </div>
         <div class="mx-auto flex w-2/3 m-2 items-center">
             <div class="flex-auto w-1/3">
@@ -99,8 +100,10 @@ import io from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
 import { VueCookieNext } from 'vue-cookie-next'
 import ErrorPopUp from './ErrorPopUp.vue'
+import PracticeMatch from '@/components/PracticeMatch.vue'
 import Select from './formComponents/Select.vue'
 import Input from './formComponents/Input.vue'
+import practiceMatch from '@/components/PracticeMatch.vue'
 
 export default {
     name: 'pongGame',
@@ -147,7 +150,8 @@ export default {
         }
     },
     components: {
-        ErrorPopUp
+        ErrorPopUp,
+        PracticeMatch
     },
     mounted() {
         //from session storage
@@ -214,9 +218,7 @@ export default {
             //   return ;
             // }
             console.log('Practice match created')
-            this.info.practiceMatchId = practiceMatchId
-            this.waiting = false
-            this.started = true
+            this.$refs.practiceMatch.startPracticeMatch(practiceMatchId, this.socket)
         })
 
         this.socket.on('matchmakingCanceled', () => {

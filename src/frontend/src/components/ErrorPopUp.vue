@@ -32,7 +32,7 @@ export default {
         }
     },
     methods: {
-        showErrorPopup(message) {
+        showErrorPopup(message: any) {
             this.message = message
             this.showPopup = true
         },
