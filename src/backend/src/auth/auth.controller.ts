@@ -4,24 +4,24 @@ import { FortyTwoAuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
-  @Get('42')
-  @UseGuards(FortyTwoAuthGuard)
-  async login42(@Req() req, @Res() res) {}
+    constructor(private authService: AuthService) {}
+    @Get('42')
+    @UseGuards(FortyTwoAuthGuard)
+    async login42(@Req() req, @Res() res) {}
 
-  @Get('42/callback')
-  @UseGuards(FortyTwoAuthGuard)
-  async callback42(@Req() req, @Res() res) {
-    // const user = req.user;
-    req.session.user = req.user;
-    // res.cookie('user', JSON.stringify(user), {
-    //   maxAge: 3600000,
-    // });
-    res.redirect(`/Home`);
-  }
+    @Get('42/callback')
+    @UseGuards(FortyTwoAuthGuard)
+    async callback42(@Req() req, @Res() res) {
+        // const user = req.user;
+        req.session.user = req.user;
+        // res.cookie('user', JSON.stringify(user), {
+        //   maxAge: 3600000,
+        // });
+        res.redirect(`/Home`);
+    }
 
-  @Get('profile')
-  async profile(@Req() req) {
-    return req.session.user;
-  }
+    @Get('profile')
+    async profile(@Req() req) {
+        return req.session.user;
+    }
 }

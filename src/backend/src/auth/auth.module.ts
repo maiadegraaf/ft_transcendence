@@ -9,8 +9,8 @@ import { UserService } from '../user/services/user/user.service';
 import { Repository } from 'typeorm';
 
 @Module({
-  imports: [PassportModule, TypeOrmModule.forFeature([User])],
-  providers: [FortyTwoStrategy, AuthService, UserService],
-  controllers: [AuthController],
+    imports: [PassportModule, TypeOrmModule.forFeature([User])],
+    providers: [FortyTwoStrategy, AuthService, UserService],
+    controllers: [AuthController],
 })
 export class AuthModule {}

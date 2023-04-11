@@ -36,9 +36,9 @@ export class User {
     @Column({ default: false })
     isTwoFactorAuthenticationEnabled: boolean;
 
-  @ManyToMany(() => Channel, (channel) => channel.users)
-  @JoinTable()
-  channels: Channel[];
+    @ManyToMany(() => Channel, (channel) => channel.users)
+    @JoinTable()
+    channels: Channel[];
 
     @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
     groupProfile: GroupProfile;
