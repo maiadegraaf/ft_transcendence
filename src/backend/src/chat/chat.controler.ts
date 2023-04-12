@@ -13,6 +13,7 @@ import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
 import { UserService } from '../user/services/user/user.service';
 import { CreateDmChannelDto } from './dtos/chat.dtos';
+import { ChatGateway } from './gateway/chat.gateway';
 // import { User } from '../user/entities/user.entity';
 // import { AppService } from './app.service';
 
@@ -23,6 +24,7 @@ export class ChatController {
         private readonly channelService: ChannelService,
         private readonly messageService: MessageService,
         private readonly userService: UserService,
+        private readonly chatGateway: ChatGateway,
     ) {}
 
     private logger = new Logger('ChatController');
@@ -55,11 +57,27 @@ export class ChatController {
         return channels;
     }
 
+    // Get /api/chat/channel/${id}
+    @Get('/channel/:id')
+    async getChannelById(@Param('id') channelId: number): Promise<any> {
+        const channel = await this.channelService.getChannelById(channelId);
+        if (!channel) {
+            this.logger.error(
+                'getChannelById: No channel found from id: ' + channelId,
+            );
+            return;
+        }
+        const channelDto = await this.channelService.channelDTO(channel);
+        this.logger.log('getChannelById: channel found from id: ' + channelId);
+        return channelDto;
+    }
+
     // Post /api/chat/dm
     @Post('dm')
     async postNewDMChannel(
         @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
+        console.log('this is param from postNewDmChannel :' + param);
         const user2 = await this.userService.getUserByLogin(param.invitee);
         if (!user2) {
             this.logger.error(
@@ -87,26 +105,24 @@ export class ChatController {
                 ' & ' +
                 param.invitee,
         );
-        const channelDto = await this.channelService.newChannelDTO(channel.id);
-        return channelDto;
+        const newUserJoinRoomDto = await this.channelService.newJoinRoomDto(
+            channel,
+            user2,
+        );
+        console.log(
+            'this is newUserJoinRoomDto :' + JSON.stringify(newUserJoinRoomDto),
+        );
+        const dmClient = this.chatGateway.getClientById(user2.id);
+        if (dmClient) {
+            console.log('this is dmCLien :' + dmClient);
+            dmClient.emit('newUserToChannel', newUserJoinRoomDto);
+        }
+        const user1 = await this.userService.getUserById(param.userId);
+        const joinRoomDto = await this.channelService.newJoinRoomDto(
+            channel,
+            user1,
+        );
+        console.log('this is joinRoomDto :' + JSON.stringify(joinRoomDto));
+        return joinRoomDto;
     }
-
-    // // Post /api/chat/group
-    // @Post('group')
-    // postNewGroupChannel(param: {
-    //   ownerId: number;
-    //   groupName: string;
-    // }): Promise<any> {
-    //   return this.channelService.newGroupChannel(param.ownerId, param.groupName);
-    // }
-
-    // // Post /api/chat/group/userAdd
-    // @Post('group/userAdd')
-    // async postUserToChannel(param: {
-    //   channelId: number;
-    //   userId: number;
-    // }): Promise<any> {
-    //   const channel = await this.channelService.getChannelById(param.channelId);
-    //   return this.userService.addChannelToUser(channel, param.userId);
-    // }
 }

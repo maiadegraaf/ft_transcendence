@@ -10,9 +10,12 @@ import { use } from 'passport';
 import { promises } from 'dns';
 import {
     ChannelMessagesDto,
+    JoinRoomDto,
     MessageDto,
+    returnDmChannelDto,
     UserChannelsMessagesDto,
 } from '../dtos/chat.dtos';
+import { User } from '../../user/user.entity';
 
 @Injectable()
 export class ChannelService {
@@ -32,6 +35,7 @@ export class ChannelService {
         try {
             const channel = await this.channelRepository.findOne({
                 where: { id: channelId },
+                relations: ['messages', 'messages.sender'],
             });
             if (!channel) {
                 throw new HttpException(
@@ -148,6 +152,40 @@ export class ChannelService {
             messages: [],
         };
         return channelDto;
+    }
+
+    async channelDTO(channel: Channel): Promise<any> {
+        const channelDto: ChannelMessagesDto = {
+            id: channel.id,
+            messages: channel.messages.map((message) => {
+                const messageDTO: MessageDto = {
+                    id: message.id,
+                    sender: message.sender.id,
+                    senderName: message.sender.login,
+                    channel: channel.id,
+                    text: message.text,
+                };
+                return messageDTO;
+            }),
+        };
+        return channelDto;
+    }
+
+    async newReturnChannelDTO(channel: Channel, user: User): Promise<any> {
+        const returnChannelDto: returnDmChannelDto = {
+            channelId: channel.id,
+            newInviteeId: user.id,
+        };
+        return returnChannelDto;
+    }
+
+    async newJoinRoomDto(channel: Channel, user: User): Promise<any> {
+        const joinRoomDto: JoinRoomDto = {
+            userId: user.id,
+            userName: user.login,
+            channelId: channel.id,
+        };
+        return joinRoomDto;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function

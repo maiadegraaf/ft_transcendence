@@ -111,6 +111,13 @@ export class UserService {
         return user;
     }
 
+    async getUserById(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+        });
+        return user;
+    }
+
     async addSocketIdToUser(user: User, socketId: string): Promise<any> {
         if (user.socketId) {
             // add logic here if user is in a match or waitlist.

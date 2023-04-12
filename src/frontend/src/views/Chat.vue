@@ -169,14 +169,14 @@ export default {
       },
       messages: [],
       socket: null,
-      userId: 1,
-      channelId: 1,
+      userId: -1,
+      channelId: -1,
       joined: false,
     }
   },
   mounted() {
-      const userSession = sessionStorage.getItem('user')
-      if (userSession == null) {
+    const userSession = sessionStorage.getItem('user')
+    if (userSession == null) {
       this.$router.push('/Login')
       return
     } else {
@@ -192,16 +192,23 @@ export default {
           }).catch(error => {
         console.log(error)
       })
-      // axios.get('http://localhost:8080/api/chat/' + userId)
-      // await axios.get('http://localhost:8080/api/chat/' + userId)
-      //     .then((response) => {
-      //       console.log('got something at retrieve Chat data')
-      //       console.log(response.data);
-      //       this.userChannels = response.data
-      //     })
     }
-    // console.log(JSON.stringify(this.userChannels))
-
+    console.log('this is user: ' + this.userId + '. With name: ' + this.name)
+    // Initializes the Socket.IO client and stores it in the Vue instance.
+    this.socket = io('http://localhost:8080', {
+      query: {
+        userId: this.userId,
+        userName: this.name,
+      },
+    });
+    // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
+    this.socket.on('msgToClient', (message: { id: number, sender: number, senderName: string, channel: number, text: string, }) => {
+      this.receivedMessage(message)
+    })
+    // Listens for 'newUserToChannel' events and calls the addChannelToUser method with the channel.
+    this.socket.on('newUserToChannel', (channel: { userId: number, userName: string, channelId: number, }) => {
+      this.addChannelToUser(channel)
+    })
   },
   watch: {
     // Watches the messages array for changes and scrolls the chat window to the bottom.
@@ -254,10 +261,10 @@ export default {
       }
       await axios.post('http://localhost:8080/api/chat/dm', payload)
         .then((response) => {
-          console.log(response.data)
+          // console.log(response.data)
           // this.channelId = response.data.id
+          console.log(response.data)
           this.userChannels.channels.push(response.data)
-          console.log(this.userChannels.channels)
       }).catch(error => {
         console.log(error)
       })
@@ -283,6 +290,7 @@ export default {
     // Receives a message from the server.
     async receivedMessage(message: { id: number, sender: number, senderName: string, channel: number, text: string }): Promise<void> {
       // Adds the message to the messages array.
+      console.log(this.userId + ' this is the user id ')
       const msg = {
         userId: message.sender,
         text: message.text,
@@ -299,15 +307,59 @@ export default {
       return this.userChannels.name.length > 0 && this.text.length > 0
     },
     // Retrieves the channels per user
+    async addChannelToUser(channel: { userId: number, userName: string, channelId: number, }): Promise <void> {
+      console.log(this.userId + ' this is the user id ')
+      if (this.userId !== channel.userId && this.name !== channel.userName) {
+        return
+      }
+      // await this.socket.emit('joinRoom', channel)
+      await fetch('http://localhost:8080/api/chat/channel' + channel.channelId)
+        .then(response => response.json())
+        .then(data => {
+          console.log('got something at retrieve addChannelToUser')
+          console.log(data);
+          this.userChannels.channels.push(data)
+        }).catch(error => {
+        console.log(error)
+      })
+    },
   },
   // The created hook of the Vue instance.
   created(): void {
-    // Initializes the Socket.IO client and stores it in the Vue instance.
-    this.socket = io('http://localhost:8080');
-    // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
-    this.socket.on('msgToClient', (message: { id: number, sender: number, senderName: string, channel: number, text: string, }) => {
-      this.receivedMessage(message)
-    })
+    // const userSession = sessionStorage.getItem('user')
+    // if (userSession == null) {
+    //   this.$router.push('/Login')
+    //   return
+    // } else {
+    //   const user = JSON.parse(userSession).user
+    //   this.userId = user.id
+    //   this.name = user.login
+    //   fetch('http://localhost:8080/api/chat/' + this.userId)
+    //       .then(response => response.json())
+    //       .then(data => {
+    //         console.log('got something at retrieve Chat data')
+    //         console.log(data);
+    //         this.userChannels = data
+    //       }).catch(error => {
+    //     console.log(error)
+    //   })
+    // }
+    // console.log('this is user: ' + this.userId + '. With name: ' + this.name)
+    // // Initializes the Socket.IO client and stores it in the Vue instance.
+    // this.socket = io('http://localhost:8080', {
+    //   query: {
+    //     userId: this.userId,
+    //     userName: this.name,
+    //   },
+    // });
+    // // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
+    // this.socket.on('msgToClient', (message: { id: number, sender: number, senderName: string, channel: number, text: string, }) => {
+    //   this.receivedMessage(message)
+    // })
+    // // Listens for 'newUserToChannel' events and calls the addChannelToUser method with the channel.
+    // this.socket.on('newUserToChannel', (channel: { userId: number, userName: string, channelId: number, }) => {
+    //   this.addChannelToUser(channel)
+    // })
   }
 }
 </script>

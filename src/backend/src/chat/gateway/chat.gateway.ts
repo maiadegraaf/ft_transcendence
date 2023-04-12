@@ -14,7 +14,9 @@ import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from '../services/channel.service';
 import { promises } from 'dns';
-import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
+import { CreateDmChannelDto, JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
+import { Channel } from '../entities/channel.entity';
+import { User } from '../../user/user.entity';
 
 @WebSocketGateway({
     cors: {
@@ -30,7 +32,10 @@ export class ChatGateway
         private readonly channelService: ChannelService,
     ) {}
 
-    @WebSocketServer() server: Server;
+    @WebSocketServer()
+    server: Server;
+
+    private readonly clientMap: Map<number, Socket> = new Map<number, Socket>();
     private logger: Logger = new Logger('ChatGateway');
 
     @SubscribeMessage('msgToServer')
@@ -38,7 +43,6 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
         @Body(new ValidationPipe()) payload: MessageDto,
     ): Promise<any> {
-        // 1 validation pipe for the payload
         const message = await this.messageService.createMessage(payload);
         payload.id = message.id;
         this.server.to('room' + payload.channel).emit('msgToClient', payload);
@@ -69,31 +73,34 @@ export class ChatGateway
         this.logger.log(`handleJoinRoom: ${client.id} joined the room`);
     }
 
-    @SubscribeMessage('dmNewUserChannel')
-    async dmNewUserChannel(
-        @ConnectedSocket() client: Socket,
-        payload: { userName: string; userId: number },
-    ): Promise<any> {
-        const user2 = await this.userService.getUserByName(payload.userName);
-        if (!user2) {
-            console.log('Do something');
+    getClientById(userId: number): Socket {
+        if (this.clientMap.has(userId)) {
+            return this.clientMap.get(userId);
         }
-        const channel = await this.channelService.newDmChannel(
-            payload.userId,
-            user2.id,
-        );
-        return channel;
+        return null;
     }
 
     afterInit(server: Server) {
         this.logger.log('Init chat');
     }
 
-    handleDisconnect(client: Socket) {
-        this.logger.log(`Client disconnected to chat: ${client.id}`);
+    handleDisconnect(client: Socket, ...args: any[]) {
+        const userId = client.handshake.query.userId;
+        if (this.clientMap.has(parseInt(userId.toString()))) {
+            this.clientMap.delete(parseInt(userId.toString()));
+            this.logger.log(
+                `Client disconnected to chat: ${client.id} with userId: ${userId}`,
+            );
+        }
     }
 
     handleConnection(client: Socket, ...args: any[]) {
-        this.logger.log(`Client connected to chat: ${client.id}`);
+        const userId = client.handshake.query.userId;
+        console.log('user connected: with id: ' + userId);
+        // const userName = client.handshake.query.userName;
+        this.clientMap.set(parseInt(userId.toString()), client);
+        this.logger.log(
+            `Client connected to chat: ${client.id} with userId: ${userId}`,
+        );
     }
 }
