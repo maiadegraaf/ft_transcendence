@@ -1,11 +1,11 @@
-import { Logger } from '@nestjs/common'
-import { Direction, GameState } from '../enums'
-import { Server, Socket } from 'socket.io'
-import { Difficulty, PracticeMatchEntity } from './practice-match.entity'
-import { Ball } from '../interfaces/ball.interface'
-import { Player } from '../interfaces/player.interface'
-import { Info } from '../interfaces/info.interface'
-import { PracticeMatchService } from './practice-match.service'
+import { Logger } from '@nestjs/common';
+import { Direction, GameState } from '../enums';
+import { Server, Socket } from 'socket.io';
+import { Difficulty, PracticeMatchEntity } from './practice-match.entity';
+import { Ball } from '../interfaces/ball.interface';
+import { Player } from '../interfaces/player.interface';
+import { Info } from '../interfaces/info.interface';
+import { PracticeMatchService } from './practice-match.service';
 
 const height = 450;
 const width = 800;
@@ -41,12 +41,12 @@ export class PracticeMatch {
         y: height / 2 - 50,
         new_y: height / 2 - 50,
         score: 0,
-    }
+    };
 
     constructor(
         server: Server,
         practiceMatch: PracticeMatchEntity,
-        private practiceMatchServices: PracticeMatchService
+        private practiceMatchServices: PracticeMatchService,
     ) {
         this.server = server;
         this.practiceMatch = practiceMatch;
@@ -57,28 +57,40 @@ export class PracticeMatch {
         this.gamestate = GameState.Playing;
         this.player.user = this.practiceMatch.player;
         this.winning_condition = data.score;
-        this.practiceMatchServices.updateWinningCondition(this.practiceMatch, this.winning_condition);
+        this.practiceMatchServices.updateWinningCondition(
+            this.practiceMatch,
+            this.winning_condition,
+        );
         switch (data.difficulty) {
             case 'easy':
                 this.computerSpeed = 2;
                 break;
             case 'normal':
-                await this.practiceMatchServices.updateDifficulty(this.practiceMatch, Difficulty.NORMAL);
+                await this.practiceMatchServices.updateDifficulty(
+                    this.practiceMatch,
+                    Difficulty.NORMAL,
+                );
                 this.computerSpeed = 3;
                 break;
             case 'hard':
-                await this.practiceMatchServices.updateDifficulty(this.practiceMatch, Difficulty.HARD);
+                await this.practiceMatchServices.updateDifficulty(
+                    this.practiceMatch,
+                    Difficulty.HARD,
+                );
                 this.computerSpeed = 4.5;
                 break;
             case 'impossible':
-                await this.practiceMatchServices.updateDifficulty(this.practiceMatch, Difficulty.IMPOSSIBLE);
+                await this.practiceMatchServices.updateDifficulty(
+                    this.practiceMatch,
+                    Difficulty.IMPOSSIBLE,
+                );
                 this.computerSpeed = 5;
         }
     }
 
     handleDisconnect(client: Socket): void {
         this.computer.score = 10;
-        this.end("You lost :(", client);
+        this.end('You lost :(', client);
     }
 
     returnPlayerSocket() {
@@ -95,7 +107,7 @@ export class PracticeMatch {
             return;
         }
         console.log('SOCKET: ' + client.id + ' move: ' + data);
-        if ( this.gamestate == GameState.Playing) {
+        if (this.gamestate == GameState.Playing) {
             this.player.new_y += data.d * 100;
         }
     }
@@ -103,15 +115,18 @@ export class PracticeMatch {
     end(winner: string, client: Socket): void {
         this.gamestate = GameState.End;
         this.winner = winner;
-        client.emit(           'state',
-            {
-                ball: this.ball,
-                player1: this.player,
-                player2: this.computer,
-                gamestate: this.gamestate,
-                winner: this.winner,
-            },);
-        this.practiceMatchServices.updateScore(this.practiceMatch, this.player.score, this.computer.score);
+        client.emit('PracticeState', {
+            ball: this.ball,
+            player1: this.player,
+            player2: this.computer,
+            gamestate: this.gamestate,
+            winner: this.winner,
+        });
+        this.practiceMatchServices.updateScore(
+            this.practiceMatch,
+            this.player.score,
+            this.computer.score,
+        );
     }
 
     check_out_of_bounds(player): typeof player {
@@ -205,15 +220,12 @@ export class PracticeMatch {
             this.ball.dy = Direction.Down;
         }
 
-        client.emit(
-            'state',
-            {
-                ball: this.ball,
-                player1: this.player,
-                player2: this.computer,
-                gamestate: this.gamestate,
-                winner: this.winner,
-            }
-        );
+        client.emit('PracticeState', {
+            ball: this.ball,
+            player1: this.player,
+            player2: this.computer,
+            gamestate: this.gamestate,
+            winner: this.winner,
+        });
     }
 }

@@ -4,37 +4,10 @@
         class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple-800"
     >
         <img class="m-8 w-[450px]" src="../assets/images/PONG.gif" alt="PONG" />
-        <button v-if="!waiting && !practiceMode" @click="setPracticeMode" class="btn">
+        <router-link v-if="!waiting && !practiceMode" to="/PracticeMatch" class="btn">
             Start a Practice Game
-        </button>
-        <div v-if="practiceMode" class="flex flex-col items-center">
-            <label for="winningScore" class="mb-4 flex items-center">
-                <span class="mr-2 text-2xl font-bold text-buff">Winning Score:</span>
-                <input
-                    value="10"
-                    type="number"
-                    id="winningScore"
-                    v-model.number="winningScore"
-                    min="1"
-                    class="w-16 px-2 py-1 text-2xl font-bold rounded-lg border border-solid border-amaranth-purple bg-buff text-amaranth-purple focus:text-buff focus:bg-amaranth-purple focus:outline-none focus:border-amaranth-purple"
-                />
-            </label>
-            <label for="difficulty" class="mb-4 flex items-center">
-                <span class="mr-2 text-2xl font-bold text-buff">Difficulty:</span>
-                <select
-                    id="difficulty"
-                    v-model="difficulty"
-                    class="w-32 px-4 py-2 text-2xl font-bold text-amaranth-purple focus:text-buff rounded-lg border border-amaranth-purple border-solid focus:outline-none bg-buff focus:outline-none focus:bg-amaranth-purple focus:outline-none focus:border-amaranth-purple"
-                >
-                    <option value="easy">Easy</option>
-                    <option value="normal">Normal</option>
-                    <option value="hard">Hard</option>
-                    <option value="impossible">Impossible</option>
-                </select>
-            </label>
-            <button @click="start" class="btn">Start Game</button>
-        </div>
-        <div v-else>
+        </router-link>
+        <div>
             <button v-if="!waiting" @click="joinMatch" class="btn">Join Match</button>
             <div v-if="waiting" class="animate-spin">
                 <p>Waiting for opponent...</p>
@@ -71,7 +44,6 @@
                 <h3 class="text-3xl text-buff font-bold text-shadow-lg mb-8">{{ winner }} Wins!</h3>
                 <button @click="reset" class="btn">Play Again</button>
             </div>
-            <PracticeMatch />
         </div>
         <div class="mx-auto flex w-2/3 m-2 items-center">
             <div class="flex-auto w-1/3">
@@ -100,10 +72,8 @@ import io from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
 import { VueCookieNext } from 'vue-cookie-next'
 import ErrorPopUp from './ErrorPopUp.vue'
-import PracticeMatch from '@/components/PracticeMatch.vue'
 import Select from './formComponents/Select.vue'
 import Input from './formComponents/Input.vue'
-import practiceMatch from '@/components/PracticeMatch.vue'
 
 export default {
     name: 'pongGame',
@@ -151,7 +121,6 @@ export default {
     },
     components: {
         ErrorPopUp,
-        PracticeMatch
     },
     mounted() {
         //from session storage
@@ -210,17 +179,6 @@ export default {
             this.started = true
         })
 
-        this.socket.on('practiceMatchCreated', (practiceMatchId: number, socketId: string) => {
-            // console.log("Practice match created by socket " + socketId);
-            // if (socketId !== this.socket.id) {
-            //   console.log("Practice match created by other socket");
-            //   this.started = false;
-            //   return ;
-            // }
-            console.log('Practice match created')
-            this.$refs.practiceMatch.startPracticeMatch(practiceMatchId, this.socket)
-        })
-
         this.socket.on('matchmakingCanceled', () => {
             console.log('Matchmaking canceled')
             this.$refs.errorPopUp.showErrorPopup(
@@ -253,26 +211,11 @@ export default {
         })
     },
     methods: {
-        start() {
-            // this.currentPlayerId = sessionStorage.getItem("session_user_id");
-            this.startedBy = this.currentPlayerId
-            console.log('Starting game by ' + this.startedBy)
-            this.gameOver = false
-            this.winner = ''
-            this.practiceSettings.difficulty = this.difficulty
-            this.practiceSettings.score = this.winningScore
-            this.practiceSettings.userId = this.currentPlayerId
-            this.socket.emit('start practice', this.practiceSettings)
-            return
-        },
         reset() {
             this.started = false
             this.gameOver = false
             this.practiceMode = false
             this.winner = ''
-        },
-        setPracticeMode() {
-            this.practiceMode = true
         },
         joinMatch() {
             console.log('Joining match...')
