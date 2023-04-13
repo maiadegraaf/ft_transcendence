@@ -44,9 +44,8 @@ export class MatchInstance {
     constructor(
         server: Server,
         match: Match,
-        private matchServices: MatchService,
-    ) // private userService: UserService,
-    {
+        private matchServices: MatchService, // private userService: UserService,
+    ) {
         this.server = server;
         this.match = match;
     }

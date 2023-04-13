@@ -69,34 +69,39 @@ export default {
     data() {
         return {
             randomUser: 0,
-            user: {
-                accessToken: '',
+            // user: {
+            //     accessToken: '',
                 user: {
                     id: 0,
                     login: '',
                     email: '',
                     createdAt: ''
                 }
-            }
+            // }
         }
     },
     created() {
         this.randomNumber(1, 917)
     },
     methods: {
-        login42() {
+        async login42() {
+            const sleep = (ms) => {
+              return new Promise((resolve) => setTimeout(resolve, ms))
+            }
             window.location.href = 'http://localhost:8080/api/auth/42'
-            axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-                sessionStorage.setItem('user', JSON.stringify(response.data))
+            await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+                if (response.data)
+                  sessionStorage.setItem('user', JSON.stringify(response.data))
             })
+            sleep(100).then(() => {})
         },
         fake_user(i: number) {
             const sleep = (ms) => {
                 return new Promise((resolve) => setTimeout(resolve, ms))
             }
             axios.get('http://localhost:8080/api/user/' + i).then((response) => {
-                this.user.accessToken = 'fake_user'
-                this.user.user = response.data
+                // this.user.accessToken = 'fake_user'
+                this.user = response.data
                 sessionStorage.setItem('user', JSON.stringify(this.user))
             })
             sleep(100).then(() => {

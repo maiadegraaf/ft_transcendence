@@ -22,42 +22,50 @@ import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity
 import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
 import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
 import { TwoFAModule } from './auth/2fa/2fa.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'pongmaster',
-      password: 'ping_pong42',
-      database: 'transcendence',
-      entities: [
-        User,
-        Match,
-        Matchmaking,
-        PracticeMatchEntity,
-        Leaderboard,
-        Message,
-        Channel,
-        GroupProfile,
-      ],
-      synchronize: true,
-    }),
-    MatchmakingModule,
-    MatchModule,
-    MatchInstanceModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../..', './frontend/dist'),
-    }),
-    UserModule,
-    PongModule,
-    ChatModule,
-    AuthModule,
-    LeaderboardModule,
-    TwoFAModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        PassportModule,
+        TypeOrmModule.forRoot({
+            type: 'postgres',
+            host: 'localhost',
+            port: 5432,
+            username: 'pongmaster',
+            password: 'ping_pong42',
+            database: 'transcendence',
+            entities: [
+                User,
+                Match,
+                Matchmaking,
+                PracticeMatchEntity,
+                Leaderboard,
+                Message,
+                Channel,
+                GroupProfile,
+            ],
+            synchronize: true,
+        }),
+        MatchmakingModule,
+        MatchModule,
+        MatchInstanceModule,
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '../..', './frontend/dist'),
+        }),
+        UserModule,
+        PongModule,
+        ChatModule,
+        AuthModule,
+        LeaderboardModule,
+        TwoFAModule,
+    ],
+    controllers: [AppController],
+    providers: [
+        AppService,
+        // {
+        //     provide: APP_GUARD,
+        //     useClass: FortyTwoAuthGuard,
+        // },
+    ],
 })
 export class AppModule {}

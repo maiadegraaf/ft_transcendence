@@ -8,13 +8,9 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { TwoFactorAuthenticationService } from './2fa.service';
-import { Response } from 'express';
 import { FortyTwoAuthGuard } from '../auth.guard';
 import { UserService } from '../../user/services/user/user.service';
-import { User } from '../../user/user.entity';
 import { authenticator } from 'otplib';
-import * as qrcode from 'qrcode';
-import { use } from 'passport';
 
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -25,21 +21,23 @@ export class TwoFactorAuthenticationController {
     ) {}
 
     @Post('generate')
-    // @UseGuards(FortyTwoAuthGuard)
     async generate2FASecret(
         @Req() req,
     ): Promise<{ url: string; secret: string }> {
-        const secret = authenticator.generateSecret();
-        const url = authenticator.keyuri(
-            req.session.user.user.login,
+        let secret;
+        if (req.session.user.twoFactorAuthenticationSecret)
+            secret = req.session.user.twoFactorAuthenticationSecret;
+        else secret = authenticator.generateSecret();
+        const otpauthUrl = authenticator.keyuri(
+            req.session.user.login,
             'ft_transcendence',
             secret,
         );
 
-        if (!req.session.user.user.twoFactorAuthenticationSecret) {
+        if (!req.session.user.twoFactorAuthenticationSecret) {
             await this.userService.setTwoFactorAuthenticationSecret(
                 secret,
-                req.session.user.user.id,
+                req.session.user.id,
             );
             await this.userService.turnOnTwoFactorAuthentication(
                 req.session.user.id,
@@ -48,7 +46,7 @@ export class TwoFactorAuthenticationController {
 
         return {
             secret: secret,
-            url: url,
+            url: otpauthUrl,
         };
     }
 
@@ -64,9 +62,10 @@ export class TwoFactorAuthenticationController {
             return false;
         }
         console.log(token);
+        console.log(req.session.user.twoFactorAuthenticationSecret);
         const isTokenValid = authenticator.verify({
-            token: token,
-            secret: req.session.user.user.twoFactorAuthenticationSecret,
+            token,
+            secret: req.session.user.twoFactorAuthenticationSecret,
         });
         console.log(isTokenValid);
         return isTokenValid;

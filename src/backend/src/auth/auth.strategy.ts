@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { AuthService } from './auth.service';
-import { User } from '../user/user.entity';
-import { Profile } from 'passport';
+import { UserService } from '../user/services/user/user.service';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
-    constructor(private authService: AuthService) {
+    constructor(
+        private authService: AuthService,
+        private userService: UserService,
+    ) {
         super({
             clientID:
                 'u-s4t2ud-43ce865ead13681d00d684457fd09e030cd0de64b10bdd7ab171af1030c9bfbf',
@@ -20,10 +22,20 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     async validate(
         accessToken: string,
         refreshToken: string,
-        profile: Profile,
+        profile: any,
         done: any,
-    ) {
-        const user = await this.authService.validateUser(profile);
-        done(null, { accessToken, user });
+    ): Promise<any> {
+        const { id, login, email } = profile._json;
+        const find = await this.userService.findOrCreateUser(id, email, login);
+        const user = {
+            id: id,
+            login: find.login,
+            email: find.email,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+        };
+        if ((await this.authService.validateUser(accessToken, id)) == true)
+            done(null, user);
+        else done('Unauthorized', false);
     }
 }

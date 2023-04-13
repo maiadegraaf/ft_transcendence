@@ -4,15 +4,15 @@ import Nav from '../components/Nav.vue'
 export default {
     data() {
         return {
-            user: {
-                accessToken: String,
+            // user: {
+            //     accessToken: String,
                 user: {
                     id: Number,
                     login: String,
                     email: String,
                     createdAt: String
                 }
-            }
+            // }
         }
     },
     mounted() {
@@ -31,9 +31,9 @@ export default {
         <header></header>
         <main>
             <div v-if="user">
-                <h1>Welcome, {{ user.user.login }}</h1>
-                <h1>id: {{ user.user.id }}</h1>
-                <p>Email: {{ user.user.email }}</p>
+                <h1>Welcome, {{ user.login }}</h1>
+                <h1>id: {{ user.id }}</h1>
+                <p>Email: {{ user.email }}</p>
             </div>
         </main>
     </div>
