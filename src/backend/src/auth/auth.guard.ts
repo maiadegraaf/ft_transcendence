@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 export class FortyTwoAuthGuard extends AuthGuard('42') {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
-        console.log('request', request.user);
+        console.log('request', request.session.user);
         return true;
     }
 }

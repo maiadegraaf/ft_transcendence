@@ -16,6 +16,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             clientSecret:
                 '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',
             callbackURL: 'http://localhost:8080/api/auth/42/callback',
+            scope: ['public'],
         });
     }
 
@@ -31,6 +32,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             id: id,
             login: find.login,
             email: find.email,
+            isTwoFactorAuthenticationEnabled:
+                find.isTwoFactorAuthenticationEnabled,
             accessToken: accessToken,
             refreshToken: refreshToken,
         };
