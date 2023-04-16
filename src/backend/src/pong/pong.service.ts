@@ -184,11 +184,17 @@ export class PongService {
         if (!data.matchId && !data.practiceMatchId) {
             return;
         }
-        if (data.practiceMatchId) {
+        if (
+            data.practiceMatchId &&
+            this.practiceInstance[data.practiceMatchId]
+        ) {
             this.practiceInstance[data.practiceMatchId].handleMove(
                 client,
                 data,
             );
+            return;
+        }
+        if (!this.instances[data.matchId]) {
             return;
         }
         this.instances[data.matchId].handleMove(client, data);

@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import PracticeMatch from '@/components/PracticeMatch.vue'
+import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import Nav from '@/components/Nav.vue'
 
 export default {
