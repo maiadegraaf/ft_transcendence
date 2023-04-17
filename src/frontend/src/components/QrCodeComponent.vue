@@ -1,10 +1,17 @@
 <template>
   <div class="h-screen flex flex-col justify-center align-center">
-    <qrcode-vue :value="value" :size="size" level="H" />
-<!--    <img href=":value"/>-->
+    <div v-if="value" class="flex flex-col justify-center align-center">
+      <h1 class="text-4xl font-semibold text-center">Scan the QR code to enable 2FA</h1>
+      <h2 class="text-2xl font-semibold text-center">Please use Google Authenticator</h2>
+      <h3 class="font-bold text-blush text-center pb-6">You will have one chance to save this qrcode!</h3>
+      <qrcode-vue class="text-center" :value="value" :size="size" level="H" />
+    </div>
+    <div v-if="!value" class="flex flex-col justify-center align-center">
+      <h1 class="text-4xl font-semibold text-center">Enter your 2fa token to enter the website:</h1>
+    </div>
     <div class="mt-10 flex flex-col justify-center align-center">
       <div class="flex flex-col align-center justify-center">
-        <label for="token">Please enter the code:</label>
+        <label for="token">Enter token:</label>
         <input type="text" v-model="token" class="border rounded mt-3" name="token" id="token" />
         <p class="h-1 p-2 font-semibold text-blush">{{ error }}</p>
       </div>
@@ -22,15 +29,19 @@ export default {
   name: 'qrCodeComponent',
   data() {
     return {
-      value: String,
+      value: '',
       size: 300,
       token: '',
       error: '',
     }
   },
   created() {
-    axios.post('http://localhost:8080/api/2fa/generate').then((response) => {
-      this.value = response.data.url
+    axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+       if (response.data.isTwoFactorAuthenticationEnabled == false) {
+        axios.post('http://localhost:8080/api/2fa/generate').then((response) => {
+          this.value = response.data.url;
+        })
+      }
     })
   },
   methods: {

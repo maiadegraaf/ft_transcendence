@@ -7,7 +7,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthenticatedGuard, FortyTwoAuthGuard } from './auth.guard';
+import { FortyTwoAuthGuard } from './auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
@@ -21,8 +21,17 @@ export class AuthController {
     @Get('42/callback')
     @UseGuards(AuthGuard('42'))
     async callback42(@Req() req, @Res() res) {
+        const twoFactorAuthenticationSecret =
+            req.user.twoFactorAuthenticationSecret;
+        delete req.user.twoFactorAuthenticationSecret;
         req.session.user = req.user;
-        res.redirect('/Home');
+        req.session.twoFactorAuthenticationSecret =
+            twoFactorAuthenticationSecret;
+        if (req.session.user.isTwoFactorAuthenticationEnabled)
+            res.redirect('/2fa/create');
+        else {
+            res.redirect('/2fa');
+        }
     }
 
     @Get('profile')
@@ -34,9 +43,7 @@ export class AuthController {
 
     @Get('logout')
     async logout(@Req() req) {
-        console.log('before', req.session);
         req.session.destroy();
-        console.log('after', req.session);
         return 'Logged out';
     }
 }

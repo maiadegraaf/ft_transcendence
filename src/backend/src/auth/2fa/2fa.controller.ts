@@ -25,21 +25,19 @@ export class TwoFactorAuthenticationController {
         @Req() req,
     ): Promise<{ url: string; secret: string }> {
         let secret;
-        if (req.session.user.twoFactorAuthenticationSecret)
-            secret = req.session.user.twoFactorAuthenticationSecret;
+        if (req.session.user.isTwoFactorAuthenticationEnabled)
+            secret = req.session.twoFactorAuthenticationSecret;
         else secret = authenticator.generateSecret();
         const otpauthUrl = authenticator.keyuri(
             req.session.user.login,
             'ft_transcendence',
             secret,
         );
-
-        if (!req.session.user.twoFactorAuthenticationSecret) {
+        const user = await this.userService.findUserByID(req.session.user.id);
+        if (!user.isTwoFactorAuthenticationEnabled) {
+            req.session.twoFactorAuthenticationSecret = secret;
             await this.userService.setTwoFactorAuthenticationSecret(
                 secret,
-                req.session.user.id,
-            );
-            await this.userService.turnOnTwoFactorAuthentication(
                 req.session.user.id,
             );
         }
@@ -61,13 +59,17 @@ export class TwoFactorAuthenticationController {
         if (!userFound) {
             return false;
         }
-        console.log(token);
-        console.log(req.session.user.twoFactorAuthenticationSecret);
         const isTokenValid = authenticator.verify({
             token,
-            secret: req.session.user.twoFactorAuthenticationSecret,
+            secret: req.session.twoFactorAuthenticationSecret,
         });
-        console.log(isTokenValid);
+        if (isTokenValid) {
+            req.session.user.isTwoFactorAuthenticationEnabled = true;
+            await this.userService.turnOnTwoFactorAuthentication(
+                req.session.user.id,
+            );
+            req.session.isAuthenticated = true;
+        }
         return isTokenValid;
     }
 }

@@ -55,26 +55,22 @@ const router = createRouter({
     ]
 })
 
-// router.beforeEach((to, from, next) => {
-//   axios.get('https://api.intra.42.fr/v2/me', {
-//         headers: {
-//           Authorization: `Bearer ${localStorage.getItem('token')}`
-//         }
-//       })
-//       .then((response) => {
-//         console.log(response.status)
-//         if (response.status == 200 && to.path == '/')
-//           next('/Home')
-//         if (response.status == 200)
-//           next()
-//       })
-//       .catch((error) => {
-//         console.log(error)
-//         if (to.path != '/')
-//           next('/')
-//         else
-//           next()
-//       })
-// });
+router.beforeEach((to, from, next) => {
+  axios.get('/api/auth/profile')
+      .then((response) => {
+          console.log(response)
+            if (response.status == 200 && to.path == '/')
+              next('/Home')
+            if (response.status == 200)
+              next()
+      })
+      .catch((error) => {
+        console.log(error)
+        if (to.path != '/' && to.path != '/2fa/create')
+          next('/')
+        else
+          next()
+      })
+});
 
 export default router

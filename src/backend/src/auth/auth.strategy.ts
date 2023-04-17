@@ -34,6 +34,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             email: find.email,
             isTwoFactorAuthenticationEnabled:
                 find.isTwoFactorAuthenticationEnabled,
+            twoFactorAuthenticationSecret: find.twoFactorAuthenticationSecret,
             accessToken: accessToken,
             refreshToken: refreshToken,
         };
