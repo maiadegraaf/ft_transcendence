@@ -1,23 +1,24 @@
 <script lang="ts">
 import Nav from '../components/Nav.vue'
+import axios from "axios";
 
 export default {
     data() {
         return {
-            // user: {
-            //     accessToken: String,
-                user: {
-                    id: Number,
-                    login: String,
-                    email: String,
-                    createdAt: String
-                }
-            // }
+            user: {
+                id: Number,
+                login: String,
+                email: String,
+                isTwoFactorAuthenticationEnabled: Boolean,
+                accessToken: String,
+                refreshToken: String,
+            }
         }
     },
-    mounted() {
-        const userSession = sessionStorage.getItem('user') as string
-        this.user = JSON.parse(userSession)
+    async mounted() {
+      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        this.user = response.data
+      })
     },
     components: {
         Nav

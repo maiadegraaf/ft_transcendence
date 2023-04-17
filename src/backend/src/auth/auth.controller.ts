@@ -1,9 +1,14 @@
-import {Controller, Get, HttpStatus, Req, Res, UseGuards} from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    HttpStatus,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {AuthenticatedGuard, FortyTwoAuthGuard} from './auth.guard';
+import { AuthenticatedGuard, FortyTwoAuthGuard } from './auth.guard';
 import { AuthGuard } from '@nestjs/passport';
-import * as passport from 'passport';
-import {resolve} from "dns";
 
 @Controller('auth')
 export class AuthController {
@@ -25,5 +30,13 @@ export class AuthController {
     async getProfile(@Req() req) {
         const user = req.session.user;
         return user;
+    }
+
+    @Get('logout')
+    async logout(@Req() req) {
+        console.log('before', req.session);
+        req.session.destroy();
+        console.log('after', req.session);
+        return 'Logged out';
     }
 }

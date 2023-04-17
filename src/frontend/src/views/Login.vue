@@ -85,15 +85,7 @@ export default {
     },
     methods: {
         async login42() {
-            const sleep = (ms) => {
-              return new Promise((resolve) => setTimeout(resolve, ms))
-            }
             window.location.href = 'http://localhost:8080/api/auth/42'
-            await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-                if (response.data)
-                  sessionStorage.setItem('user', JSON.stringify(response.data))
-            })
-            sleep(100).then(() => {})
         },
         fake_user(i: number) {
             const sleep = (ms) => {
