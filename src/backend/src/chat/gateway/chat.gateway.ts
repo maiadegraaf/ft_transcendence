@@ -10,10 +10,8 @@ import {
 import { Body, Logger, ValidationPipe } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { MessageService } from '../services/message.service';
-import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from '../services/channel.service';
-import { promises } from 'dns';
 import { CreateDmChannelDto, JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
@@ -56,24 +54,40 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
         @Body(new ValidationPipe()) payload: JoinRoomDto,
     ): Promise<any> {
-        await client;
-        if (!client) {
-            this.logger.error('handleJoinRoom: client is undefined');
-            return;
-        }
         await client.join('room' + payload.channelId);
         const userName = await this.userService.getUserNameById(payload.userId);
-        this.server.emit('msgToClient', {
+        this.server.to('room' + payload.channelId).emit('msgToClient', {
             id: -1,
             sender: payload.userId,
             senderName: userName,
             channel: payload.channelId,
-            text: `${payload.userName} (${payload.userId}) has joined the room`,
+            text: `${payload.userName} (${payload.userId}) has joined the room with channel id: ${payload.channelId}`,
         });
-        this.logger.log(`handleJoinRoom: ${client.id} joined the room`);
+        this.logger.log(
+            `handleJoinRoom: ${client.id} joined the room with id: ${payload.channelId}`,
+        );
     }
 
-    getClientById(userId: number): Socket {
+    @SubscribeMessage('leaveRoom')
+    async handleLeaveRoom(
+        @ConnectedSocket() client: Socket,
+        @Body(new ValidationPipe()) payload: JoinRoomDto,
+    ) {
+        await client.leave('room' + payload.channelId);
+        const userName = await this.userService.getUserNameById(payload.userId);
+        this.server.to('room' + payload.channelId).emit('msgToClient', {
+            id: -1,
+            sender: payload.userId,
+            senderName: userName,
+            channel: payload.channelId,
+            text: `${payload.userName} (${payload.userId}) has left the room with channel id: ${payload.channelId}`,
+        });
+        this.logger.log(
+            `handleLeaveRoom: ${client.id} left the room with id: ${payload.channelId}`,
+        );
+    }
+
+    getClientSocketById(userId: number): Socket {
         if (this.clientMap.has(userId)) {
             return this.clientMap.get(userId);
         }
@@ -96,7 +110,7 @@ export class ChatGateway
 
     handleConnection(client: Socket, ...args: any[]) {
         const userId = client.handshake.query.userId;
-        console.log('user connected: with id: ' + userId);
+        // console.log('user connected: with id: ' + userId);
         // const userName = client.handshake.query.userName;
         this.clientMap.set(parseInt(userId.toString()), client);
         this.logger.log(

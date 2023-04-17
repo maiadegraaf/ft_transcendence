@@ -32,15 +32,10 @@ export class ChatController {
     // Get /api/chat/${id}
     @Get('/:id')
     async getChannelMessages(@Param('id') id: number): Promise<any> {
-        // console.log(id);
-        // const messages = await this.channelService.getMessagesFromChannel(id);
-        // this.logger.log('getChannelMessages: messages found from channel: ' + id);
-        // return messages;
         this.logger.log(
             'getChannelMessages: messages found from channel: ' + id,
         );
         return this.channelService.getUserChannelDTO(id);
-        // return this.messageService.getMessagesByChannelID(id);
     }
 
     // Get /api/chat/${id}/channel
@@ -77,7 +72,9 @@ export class ChatController {
     async postNewDMChannel(
         @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
-        console.log('this is param from postNewDmChannel :' + param);
+        console.log(
+            'this is param from postNewDmChannel :' + JSON.stringify(param),
+        );
         const user2 = await this.userService.getUserByLogin(param.invitee);
         if (!user2) {
             this.logger.error(
@@ -109,20 +106,16 @@ export class ChatController {
             channel,
             user2,
         );
-        console.log(
-            'this is newUserJoinRoomDto :' + JSON.stringify(newUserJoinRoomDto),
-        );
-        const dmClient = this.chatGateway.getClientById(user2.id);
+        // console.log(
+        //     'this is newUserJoinRoomDto :' + JSON.stringify(newUserJoinRoomDto),
+        // );
+        const dmClient = this.chatGateway.getClientSocketById(user2.id);
         if (dmClient) {
-            console.log('this is dmCLien :' + dmClient);
+            console.log('this is dmCLien :' + dmClient.id);
             dmClient.emit('newUserToChannel', newUserJoinRoomDto);
         }
-        const user1 = await this.userService.getUserById(param.userId);
-        const joinRoomDto = await this.channelService.newJoinRoomDto(
-            channel,
-            user1,
-        );
-        console.log('this is joinRoomDto :' + JSON.stringify(joinRoomDto));
-        return joinRoomDto;
+        const newChannelDto = this.channelService.newChannelDTO(channel);
+        // console.log('this is newChannelDto :' + JSON.stringify(newChannelDto));
+        return newChannelDto;
     }
 }

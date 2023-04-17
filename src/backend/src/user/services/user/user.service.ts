@@ -104,6 +104,17 @@ export class UserService {
         return user;
     }
 
+    async retrieveUserChannel(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['channels'],
+        });
+        if (!user) {
+            return null;
+        }
+        return user;
+    }
+
     async getUserByLogin(userLogin: string): Promise<any> {
         const user = await this.userRepository.findOne({
             where: { login: userLogin },

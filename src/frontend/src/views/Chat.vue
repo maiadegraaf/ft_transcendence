@@ -46,8 +46,9 @@
                       width=50%
                       color="purple-darken-2"
               >
-                <div class="font-weight-bold mt-2 ml-3"> {{ message.userId }}</div>
+                <div class="font-weight-bold mt-2 ml-3"> {{ message.sender }}</div>
                 <div class="mr-2 mb-2 ml-3"> {{ message.text }}</div>
+                <div class="mr-2 mb-2 ml-3">{{ new Date().toLocaleTimeString('en-GB') }}</div>
               </v-card>
               <div class="d-flex justify-end">
                 <v-card v-if="message.userId == userId"
@@ -57,8 +58,9 @@
                         width=50%
                         color="purple-lighten-2"
                 >
-                  <div class="font-weight-bold mr-4 mt-1"> {{ message.userId }}</div>
+<!--                  <div class="font-weight-bold mr-4 mt-1"> {{ message.sender }}</div>-->
                   <div class="mr-4 mb-1 ml-2"> {{ message.text }}</div>
+                  <div class="mr-2 mb-2 ml-3">{{ new Date().toLocaleTimeString('en-GB') }}</div>
                 </v-card>
               </div>
             </div>
@@ -150,6 +152,7 @@ export default {
       userId: number,
       text: string,
       channelId: number,
+      sender: string,
     }[]
     socket: any
     userId: number
@@ -229,16 +232,23 @@ export default {
   methods: {
     // Sends a message to the server.
     async joinRoom(id: number): Promise<void> {
-      this.channelId = id
+      if (id == this.channelId) {
+        return
+      }
       const payload = {
         userId: this.userId,
         userName: this.name,
         channelId: this.channelId
       }
+      if (this.joined) {
+        this.socket.emit('leaveRoom', payload)
+      }
+      this.channelId = id
+      payload.channelId = id
       this.messages = []
       this.socket.emit('joinRoom', payload)
       await this.pushMessages()
-      // this.joined = true;
+      this.joined = true;
     },
     // Sends a message to the server.
     async pushMessages(): Promise<void> {
@@ -248,7 +258,8 @@ export default {
         const msg = {
           userId: message.sender,
           text: message.text,
-          channelId: message.channel
+          channelId: message.channel,
+          sender: message.senderName,
         }
         this.messages.push(msg)
       })
@@ -256,7 +267,7 @@ export default {
     // Creates a new Channel.
     async createChannel(inviteeName: string): Promise<void> {
       const payload = {
-        userId: 1,
+        userId: this.userId,
         invitee: inviteeName,
       }
       await axios.post('http://localhost:8080/api/chat/dm', payload)
@@ -264,11 +275,15 @@ export default {
           // console.log(response.data)
           // this.channelId = response.data.id
           console.log(response.data)
+          this.channelId = response.data.id
           this.userChannels.channels.push(response.data)
       }).catch(error => {
         console.log(error)
       })
       this.invite = ''
+      await this.joinRoom(this.channelId)
+      this.joined = true
+      // this.channelId = -1
     },
     // Sends a message to the server.
     sendMessage(): void {
@@ -295,10 +310,11 @@ export default {
         userId: message.sender,
         text: message.text,
         channelId: message.channel,
+        sender: message.senderName,
       }
       this.messages.push(msg)
       if (message.id > 0) {
-        const Idx = this.userChannels.channels.findIndex(channel => channel.id === message.channel)
+        const Idx = this.userChannels.channels.findIndex((channel) => channel.id === message.channel)
         this.userChannels.channels[Idx].messages.push(message)
       }
     },
@@ -309,11 +325,12 @@ export default {
     // Retrieves the channels per user
     async addChannelToUser(channel: { userId: number, userName: string, channelId: number, }): Promise <void> {
       console.log(this.userId + ' this is the user id ')
-      if (this.userId !== channel.userId && this.name !== channel.userName) {
+      if (this.userId !== channel.userId || this.name !== channel.userName) {
+        console.log('not correct channel for user')
         return
       }
-      // await this.socket.emit('joinRoom', channel)
-      await fetch('http://localhost:8080/api/chat/channel' + channel.channelId)
+      await this.socket.emit('joinRoom', channel)
+      await fetch('http://localhost:8080/api/chat/channel/' + channel.channelId)
         .then(response => response.json())
         .then(data => {
           console.log('got something at retrieve addChannelToUser')
@@ -322,44 +339,12 @@ export default {
         }).catch(error => {
         console.log(error)
       })
+      this.joined = true
     },
   },
   // The created hook of the Vue instance.
   created(): void {
-    // const userSession = sessionStorage.getItem('user')
-    // if (userSession == null) {
-    //   this.$router.push('/Login')
-    //   return
-    // } else {
-    //   const user = JSON.parse(userSession).user
-    //   this.userId = user.id
-    //   this.name = user.login
-    //   fetch('http://localhost:8080/api/chat/' + this.userId)
-    //       .then(response => response.json())
-    //       .then(data => {
-    //         console.log('got something at retrieve Chat data')
-    //         console.log(data);
-    //         this.userChannels = data
-    //       }).catch(error => {
-    //     console.log(error)
-    //   })
-    // }
-    // console.log('this is user: ' + this.userId + '. With name: ' + this.name)
-    // // Initializes the Socket.IO client and stores it in the Vue instance.
-    // this.socket = io('http://localhost:8080', {
-    //   query: {
-    //     userId: this.userId,
-    //     userName: this.name,
-    //   },
-    // });
-    // // Listens for 'msgToClient' events and calls the receivedMessage method with the message.
-    // this.socket.on('msgToClient', (message: { id: number, sender: number, senderName: string, channel: number, text: string, }) => {
-    //   this.receivedMessage(message)
-    // })
-    // // Listens for 'newUserToChannel' events and calls the addChannelToUser method with the channel.
-    // this.socket.on('newUserToChannel', (channel: { userId: number, userName: string, channelId: number, }) => {
-    //   this.addChannelToUser(channel)
-    // })
+
   }
 }
 </script>

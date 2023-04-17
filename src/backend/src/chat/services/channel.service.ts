@@ -1,21 +1,27 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+    Body,
+    HttpException,
+    HttpStatus,
+    Injectable,
+    Logger,
+    ValidationPipe,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
-// import { User } from '../../users/entities/users.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { GroupProfile } from '../entities/groupProfile.entity';
 import { GroupProfileService } from './groupProfile.service';
-import { use } from 'passport';
-import { promises } from 'dns';
 import {
     ChannelMessagesDto,
+    CreateDmChannelDto,
     JoinRoomDto,
     MessageDto,
     returnDmChannelDto,
     UserChannelsMessagesDto,
 } from '../dtos/chat.dtos';
 import { User } from '../../user/user.entity';
+import { ChatGateway } from '../gateway/chat.gateway';
 
 @Injectable()
 export class ChannelService {
@@ -23,8 +29,11 @@ export class ChannelService {
         @InjectRepository(Channel)
         private readonly channelRepository: Repository<Channel>,
         private readonly groupProfileService: GroupProfileService,
-        private readonly userService: UserService,
+        private readonly userService: UserService, // private readonly chatGateway: ChatGateway,
     ) {}
+
+    private readonly chatGateway: ChatGateway;
+    // private logger = new Logger('ChannelService');
 
     async createChannel(): Promise<Channel> {
         const channel = new Channel();
@@ -46,6 +55,51 @@ export class ChannelService {
             return channel;
         } catch {}
     }
+
+    // async createDmChannel(
+    //     @Body(new ValidationPipe()) param: CreateDmChannelDto,
+    // ): Promise<any> {
+    //     try {
+    //         const user1 = await this.userService.getUserById(param.userId);
+    //         if (!user1) {
+    //             // this.logger.error(
+    //             //     'createDmChannel: no user found for id: ' + param.userId,
+    //             // );
+    //             return;
+    //         }
+    //         const user2 = await this.userService.getUserByLogin(param.invitee);
+    //         if (!user2) {
+    //             // this.logger.error(
+    //             //     'createDmChannel: no user found for name: ' +
+    //             //         JSON.stringify(param),
+    //             // );
+    //             return;
+    //         }
+    //         const channel = await this.newDmChannel(param.userId, user2.id);
+    //         if (!channel) {
+    //             // this.logger.error(
+    //             //     'createDmChannel: no new dm channel for users: ' +
+    //             //         param.userId +
+    //             //         ' & ' +
+    //             //         param.invitee,
+    //             // );
+    //             return;
+    //         }
+    //         // this.logger.log(
+    //         //     'postNewDMChannel: new dm channel for users: ' +
+    //         //         param.userId +
+    //         //         ' & ' +
+    //         //         param.invitee,
+    //         // );
+    //         // await this.emitNewUserToChannel(user1, channel);
+    //         await this.emitNewUserToChannel(user2, channel);
+    //         const newChannelDto = this.newChannelDTO(channel);
+    //         console.log(
+    //             'this is newChannelDto :' + JSON.stringify(newChannelDto),
+    //         );
+    //         return newChannelDto;
+    //     } catch {}
+    // }
 
     async newDmChannel(user1: number, user2: number): Promise<any> {
         try {
@@ -75,6 +129,18 @@ export class ChannelService {
                 error.message,
                 HttpStatus.INTERNAL_SERVER_ERROR,
             );
+        }
+    }
+
+    async emitNewUserToChannel(user: User, channel: Channel): Promise<any> {
+        const joinRoomDto = await this.newJoinRoomDto(channel, user);
+        console.log(
+            'this is newUserJoinRoomDto :' + JSON.stringify(JoinRoomDto),
+        );
+        const dmClient = this.chatGateway.getClientSocketById(user.id);
+        if (dmClient) {
+            console.log('this is dmCLien :' + dmClient.id);
+            dmClient.emit('newUserToChannel', joinRoomDto);
         }
     }
 
@@ -142,13 +208,12 @@ export class ChannelService {
                 return channelMessageDTO;
             }),
         };
-        // console.log('this is the DTO: ' + JSON.stringify(userChannelMessageDTO));
         return userChannelMessageDTO;
     }
 
-    async newChannelDTO(channelId: number): Promise<any> {
+    newChannelDTO(channel: Channel): any {
         const channelDto: ChannelMessagesDto = {
-            id: channelId,
+            id: channel.id,
             messages: [],
         };
         return channelDto;
