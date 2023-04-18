@@ -17,7 +17,7 @@ import { GroupProfile } from '../chat/entities/groupProfile.entity';
 
 @Entity({ name: 'users' })
 export class User {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     id: number;
 
     @Column({ nullable: true })

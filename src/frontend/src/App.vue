@@ -1,6 +1,8 @@
 <template>
     <div class="flex flex-col h-screen w-screen bg-dark-purple font-mono">
-        <div class="flex-1 w-full mx-auto bg-gradient-to-r from-transparent via-transparent to-dark-purple">
+        <div
+            class="flex-1 w-full mx-auto bg-gradient-to-r from-transparent via-transparent to-dark-purple"
+        >
             <router-view />
         </div>
     </div>
