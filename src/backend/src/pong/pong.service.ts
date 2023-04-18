@@ -2,8 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { User } from 'src/user/user.entity';
 import { MatchInstance } from './match-instance/match-instance';
-import { MatchmakingService } from './matchmaking/matchmaking.service';
-import { MatchService } from './match/match.service';
 import { Info } from './interfaces/info.interface';
 import { PracticeMatch } from './practice-match/practice-match';
 import { PracticeMatchService } from './practice-match/practice-match.service';
@@ -11,16 +9,17 @@ import { UserService } from '../user/services/user/user.service';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
 import { Match } from './match/match.entity';
 import { PracticeMatchEntity } from './practice-match/practice-match.entity';
+import { MatchService } from './match/match.service';
 
 @Injectable()
 export class PongService {
     private logger: Logger = new Logger('PongGateway');
+    private matchmakingList: User[] = [];
     private instances: { [key: number]: MatchInstance } = {};
     private practiceInstance: { [key: number]: PracticeMatch } = {};
 
     constructor(
         private readonly server: Server,
-        private matchmakingService: MatchmakingService,
         private matchesService: MatchService,
         private practiceMatchService: PracticeMatchService,
         private userService: UserService,
@@ -56,9 +55,9 @@ export class PongService {
         if (instance) {
             instance.handlePlayerDisconnect(client);
             delete this.instances[instance.returnMatchId()];
-        } else if (this.matchmakingService.getMatchmakingBySocket(client.id)) {
+        } else if (this.getMatchmakingBySocket(client.id)) {
             this.handleLeaveMatchmaking(client);
-            if (!this.matchmakingService.getMatchmakingBySocket(client.id)) {
+            if (!this.getMatchmakingBySocket(client.id)) {
                 console.log('player removed from matchmaking for ' + client.id);
             }
         } else {
@@ -95,8 +94,8 @@ export class PongService {
             this.logger.error('User not found');
             return null;
         }
-        await this.matchmakingService.print();
-        if (await this.matchmakingService.getMatchmakingByPlayer(user)) {
+        this.logger.log(this.matchmakingList);
+        if (this.matchmakingList.find((u) => u.id == user.id)) {
             client.emit('matchmakingCanceled');
             return null;
         }
@@ -116,11 +115,10 @@ export class PongService {
         if (!newPlayer) {
             return;
         }
-        await this.matchmakingService.addPlayer(newPlayer);
-        const length = await this.matchmakingService.length();
-        if (length > 1) {
-            const player1 = await this.matchmakingService.pop();
-            const player2 = await this.matchmakingService.pop();
+        this.matchmakingList.push(newPlayer);
+        if (this.matchmakingList.length > 1) {
+            const player1 = this.matchmakingList.pop();
+            const player2 = this.matchmakingList.pop();
             const match = await this.matchesService.createMatch(
                 player1,
                 player2,
@@ -141,7 +139,12 @@ export class PongService {
 
     async handleLeaveMatchmaking(client: Socket): Promise<void> {
         this.logger.log(client.id + ' left the waitlist');
-        await this.matchmakingService.removeBySocket(client.id);
+        this.matchmakingList.splice(
+            this.matchmakingList.indexOf(
+                this.getMatchmakingBySocket(client.id),
+            ),
+            1,
+        );
     }
 
     checkForEndOfMatch(match: Match): void {
@@ -198,6 +201,15 @@ export class PongService {
             return;
         }
         this.instances[data.matchId].handleMove(client, data);
+    }
+
+    getMatchmakingBySocket(socketId: string): User {
+        for (const user of this.matchmakingList) {
+            if (user.socketId == socketId) {
+                return user;
+            }
+        }
+        return null;
     }
 
     getInstanceByPlayerSocket(socketId: string): MatchInstance {

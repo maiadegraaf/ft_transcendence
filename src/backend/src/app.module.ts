@@ -14,10 +14,8 @@ import { Channel } from './chat/entities/channel.entity';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import { GroupProfile } from './chat/entities/groupProfile.entity';
-import { MatchmakingModule } from './pong/matchmaking/matchmaking.module';
 import { MatchModule } from './pong/match/match.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
-import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity';
 import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
 import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
@@ -34,7 +32,6 @@ import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
             entities: [
                 User,
                 Match,
-                Matchmaking,
                 PracticeMatchEntity,
                 Leaderboard,
                 Message,
@@ -43,7 +40,6 @@ import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
             ],
             synchronize: true,
         }),
-        MatchmakingModule,
         MatchModule,
         MatchInstanceModule,
         ServeStaticModule.forRoot({

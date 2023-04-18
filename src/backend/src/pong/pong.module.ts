@@ -4,9 +4,6 @@ import { PongGateway } from './gateway/pong.gateway';
 import { PongController } from './pong.controller';
 import { PongService } from './pong.service';
 import { UserModule } from '../user/user.module';
-import { MatchmakingModule } from './matchmaking/matchmaking.module';
-import { MatchmakingService } from './matchmaking/matchmaking.service';
-import { Matchmaking } from './matchmaking/matchmaking.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchModule } from './match/match.module';
 import { MatchService } from './match/match.service';
@@ -24,8 +21,6 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
 @Module({
     imports: [
         UserModule,
-        MatchmakingModule,
-        TypeOrmModule.forFeature([Matchmaking]),
         MatchModule,
         TypeOrmModule.forFeature([Match]),
         MatchInstanceModule,
@@ -40,7 +35,6 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
         PongGateway,
         PongService,
         Server,
-        MatchmakingService,
         MatchService,
         PracticeMatchService,
         UserService,
