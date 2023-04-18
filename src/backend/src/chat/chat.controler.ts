@@ -5,6 +5,7 @@ import {
     Param,
     Body,
     Logger,
+    UseGuards,
     ValidationPipe,
 } from '@nestjs/common';
 import { Channel } from './entities/channel.entity';
@@ -14,6 +15,7 @@ import { ChannelService } from './services/channel.service';
 import { UserService } from '../user/services/user/user.service';
 import { CreateDmChannelDto } from './dtos/chat.dtos';
 import { ChatGateway } from './gateway/chat.gateway';
+import { UserGroupGard } from './guards/chat.guard';
 // import { User } from '../user/entities/user.entity';
 // import { AppService } from './app.service';
 
@@ -31,6 +33,7 @@ export class ChatController {
 
     // Get /api/chat/${id}
     @Get('/:id')
+    // @UseGuards(UserGroupGard)
     async getChannelMessages(@Param('id') id: number): Promise<any> {
         this.logger.log(
             'getChannelMessages: messages found from channel: ' + id,
