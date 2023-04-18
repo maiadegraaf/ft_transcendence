@@ -24,29 +24,23 @@
                 <option value="IMPOSSIBLE">Impossible</option>
             </select>
         </label>
-        <button @click="start" class="btn">Start Game</button>
+        <div class="flex">
+            <button @click="back" class="btn">Go Back</button>
+            <button @click="start" class="btn">Start Game</button>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 interface practiceSettingsInterface {
     score: number
-    difficulty: string
+    selectedDifficulty: string
     userId: string
 }
 
-enum Difficulty {
-    EASY = 'EASY',
-    NORMAL = 'NORMAL',
-    HARD = 'HARD',
-    IMPOSSIBLE = 'IMPOSSIBLE'
-}
 export default {
     name: 'practiceMatchConfiguration',
     props: ['userId'],
-    enums: {
-        Difficulty
-    },
     data() {
         return {
             winningScore: 10,
@@ -57,28 +51,16 @@ export default {
     methods: {
         start() {
             console.log('Starting game by ' + this.userId)
-            switch (this.selectedDifficulty) {
-                case 'EASY':
-                    this.selectedDifficulty = Difficulty.EASY
-                    break
-                case 'NORMAL':
-                    this.selectedDifficulty = Difficulty.NORMAL
-                    break
-                case 'HARD':
-                    this.selectedDifficulty = Difficulty.HARD
-                    break
-                case 'IMPOSSIBLE':
-                    this.selectedDifficulty = Difficulty.IMPOSSIBLE
-                    break
-            }
             let practiceSettings: practiceSettingsInterface = {
                 score: this.winningScore,
-                difficulty: this.selectedDifficulty,
+                selectedDifficulty: this.selectedDifficulty,
                 userId: this.userId
             }
-            console.log(practiceSettings)
             this.$emit('start-practice', practiceSettings)
             return
+        },
+        back() {
+            this.$emit('back')
         }
     }
 }

@@ -5,7 +5,7 @@ import { Match } from './match/match';
 import { MatchInstance } from './match/match-instance';
 import { Info } from './interfaces/info.interface';
 import { PracticeMatchInstance } from './practice-match/practice-match-instance';
-import { PracticeMatch } from './practice-match/practice-match';
+import { Difficulty, PracticeMatch } from './practice-match/practice-match';
 import { UserService } from '../user/services/user/user.service';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
 import { PracticeMatchModule } from './practice-match/practice-match.module';
@@ -220,10 +220,9 @@ export class PongService {
 
     async handlePracticeMode(client: Socket, data: any) {
         const player = await this.addSocketIdToUser(data.userId, client);
-        // const player = await this.userService.returnUserBySocketId(client.id);
         const practiceMatch = new PracticeMatch(
             player,
-            data.difficulty,
+            data.selectedDifficulty,
             data.score,
         );
         this.practiceInstance[practiceMatch.id] = new PracticeMatchInstance(

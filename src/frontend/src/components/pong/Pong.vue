@@ -14,6 +14,7 @@
             <practice-match-configuration
                 :user-id="currentPlayerId"
                 @start-practice="handleStartPractice"
+                @back="back"
             />
         </div>
         <div v-if="startPractice && startedBy == currentPlayerId">
@@ -49,10 +50,9 @@ import PracticeMatchConfiguration from '@/components/pong/practiceMatchConfigura
 import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import WaitingRoom from '@/components/pong/WaitingRoom.vue'
 import Match from '@/components/pong/Match.vue'
-
 interface practiceSettingsInterface {
     score: number
-    difficulty: string
+    selectedDifficulty: string
     userId: string
 }
 
@@ -65,7 +65,7 @@ export default {
             practiceMode: false,
             practiceSettings: {
                 score: 10,
-                difficulty: 'easy',
+                selectedDifficulty: 'EASY',
                 userId: ''
             } as practiceSettingsInterface,
             startPractice: false,
@@ -148,10 +148,7 @@ export default {
             this.practiceMode = true
         },
         handleStartPractice(practiceSettings: practiceSettingsInterface) {
-            console.log('Starting practice mode...')
             this.startedBy = practiceSettings.userId
-            console.log('Practice Settings difficulty ' + practiceSettings.difficulty)
-            console.log('Started by: ' + this.startedBy)
             this.startPractice = true
             this.practiceSettings = practiceSettings
         },
@@ -177,6 +174,9 @@ export default {
             this.startMatch = true
             this.waiting = false
             this.matchId = matchId
+        },
+        back() {
+            this.practiceMode = false
         }
     }
 }
