@@ -9,6 +9,8 @@ import { PracticeMatchService } from '../practice-match/practice-match.service';
 import { PracticeMatchEntity } from '../practice-match/practice-match.entity';
 import { User } from '../../user/user.entity';
 import { UserService } from '../../user/services/user/user.service';
+import { AvatarService } from 'src/user/services/user/avatar.service';
+import { Avatar } from 'src/user/avatar.entity';
 
 @Module({
     imports: [
@@ -16,12 +18,14 @@ import { UserService } from '../../user/services/user/user.service';
         TypeOrmModule.forFeature([Match]),
         TypeOrmModule.forFeature([PracticeMatchEntity]),
         TypeOrmModule.forFeature([User]),
+        TypeOrmModule.forFeature([Avatar]),
     ],
     providers: [
         LeaderboardService,
         MatchService,
         PracticeMatchService,
         UserService,
+        AvatarService,
     ],
     controllers: [LeaderboardController],
 })

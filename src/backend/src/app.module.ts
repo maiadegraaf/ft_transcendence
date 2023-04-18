@@ -23,6 +23,7 @@ import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
 import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
 import { TwoFAModule } from './auth/2fa/2fa.module';
 import { PassportModule } from '@nestjs/passport';
+import { Avatar } from './user/avatar.entity';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { PassportModule } from '@nestjs/passport';
             database: 'transcendence',
             entities: [
                 User,
+                Avatar,
                 Match,
                 Matchmaking,
                 PracticeMatchEntity,

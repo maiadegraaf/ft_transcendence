@@ -20,6 +20,8 @@ import { User } from '../user/user.entity';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { Leaderboard } from './leaderboard/leaderboard.entity';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
+import { AvatarService } from 'src/user/services/user/avatar.service';
+import { Avatar } from 'src/user/avatar.entity';
 
 @Module({
     imports: [
@@ -28,6 +30,7 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
         TypeOrmModule.forFeature([Matchmaking]),
         MatchModule,
         TypeOrmModule.forFeature([Match]),
+        TypeOrmModule.forFeature([Avatar]),
         MatchInstanceModule,
         PracticeMatchModule,
         TypeOrmModule.forFeature([PracticeMatchEntity]),
@@ -45,6 +48,7 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
         PracticeMatchService,
         UserService,
         LeaderboardService,
+        AvatarService,
     ],
 })
 export class PongModule {}
