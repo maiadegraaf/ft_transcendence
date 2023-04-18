@@ -13,8 +13,7 @@ import { Channel } from './chat/entities/channel.entity';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import { GroupProfile } from './chat/entities/groupProfile.entity';
-import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
-import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity';
+import { MatchInstanceModule } from './pong/match/match-instance.module';
 import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
 import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
 
@@ -27,14 +26,7 @@ import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
             username: 'pongmaster',
             password: 'ping_pong42',
             database: 'transcendence',
-            entities: [
-                User,
-                PracticeMatchEntity,
-                Leaderboard,
-                Message,
-                Channel,
-                GroupProfile,
-            ],
+            entities: [User, Leaderboard, Message, Channel, GroupProfile],
             synchronize: true,
         }),
         MatchInstanceModule,

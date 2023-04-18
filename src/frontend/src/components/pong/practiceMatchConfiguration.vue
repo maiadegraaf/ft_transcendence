@@ -15,13 +15,13 @@
             <span class="mr-2 text-2xl font-bold text-buff">Difficulty:</span>
             <select
                 id="difficulty"
-                v-model="difficulty"
+                v-model="selectedDifficulty"
                 class="w-32 px-4 py-2 text-2xl font-bold text-amaranth-purple focus:text-buff rounded-lg border border-amaranth-purple border-solid focus:outline-none bg-buff focus:outline-none focus:bg-amaranth-purple focus:outline-none focus:border-amaranth-purple"
             >
-                <option value="easy">Easy</option>
-                <option value="normal">Normal</option>
-                <option value="hard">Hard</option>
-                <option value="impossible">Impossible</option>
+                <option value="EASY">Easy</option>
+                <option value="NORMAL">Normal</option>
+                <option value="HARD">Hard</option>
+                <option value="IMPOSSIBLE">Impossible</option>
             </select>
         </label>
         <button @click="start" class="btn">Start Game</button>
@@ -34,22 +34,46 @@ interface practiceSettingsInterface {
     difficulty: string
     userId: string
 }
+
+enum Difficulty {
+    EASY = 'EASY',
+    NORMAL = 'NORMAL',
+    HARD = 'HARD',
+    IMPOSSIBLE = 'IMPOSSIBLE'
+}
 export default {
     name: 'practiceMatchConfiguration',
     props: ['userId'],
+    enums: {
+        Difficulty
+    },
     data() {
         return {
             winningScore: 10,
-            difficulty: 'easy',
+            selectedDifficulty: 'EASY',
             multipleConnectionsError: false
         }
     },
     methods: {
         start() {
             console.log('Starting game by ' + this.userId)
+            switch (this.selectedDifficulty) {
+                case 'EASY':
+                    this.selectedDifficulty = Difficulty.EASY
+                    break
+                case 'NORMAL':
+                    this.selectedDifficulty = Difficulty.NORMAL
+                    break
+                case 'HARD':
+                    this.selectedDifficulty = Difficulty.HARD
+                    break
+                case 'IMPOSSIBLE':
+                    this.selectedDifficulty = Difficulty.IMPOSSIBLE
+                    break
+            }
             let practiceSettings: practiceSettingsInterface = {
                 score: this.winningScore,
-                difficulty: this.difficulty,
+                difficulty: this.selectedDifficulty,
                 userId: this.userId
             }
             console.log(practiceSettings)

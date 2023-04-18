@@ -1,25 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { User } from 'src/user/user.entity';
-import { Match } from './match-instance/match';
-import { MatchInstance } from './match-instance/match-instance';
+import { Match } from './match/match';
+import { MatchInstance } from './match/match-instance';
 import { Info } from './interfaces/info.interface';
+import { PracticeMatchInstance } from './practice-match/practice-match-instance';
 import { PracticeMatch } from './practice-match/practice-match';
-import { PracticeMatchService } from './practice-match/practice-match.service';
 import { UserService } from '../user/services/user/user.service';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
-import { PracticeMatchEntity } from './practice-match/practice-match.entity';
+import { PracticeMatchModule } from './practice-match/practice-match.module';
 
 @Injectable()
 export class PongService {
     private logger: Logger = new Logger('PongGateway');
     private matchmakingList: User[] = [];
     private instances: { [key: number]: MatchInstance } = {};
-    private practiceInstance: { [key: number]: PracticeMatch } = {};
+    private practiceInstance: { [key: number]: PracticeMatchInstance } = {};
 
     constructor(
         private readonly server: Server,
-        private practiceMatchService: PracticeMatchService,
+        private practiceMatchService: PracticeMatch,
         private userService: UserService,
         private leaderboardService: LeaderboardService,
     ) {}
@@ -113,10 +113,7 @@ export class PongService {
             const player1 = this.matchmakingList.pop();
             const player2 = this.matchmakingList.pop();
             const match = new Match(player1, player2);
-            this.instances[match.getId()] = new MatchInstance(
-                this.server,
-                match,
-            );
+            this.instances[match.id] = new MatchInstance(this.server, match);
             if (client.id == player1.socketId) {
                 this.emitOpponentFound(client, player2.socketId, match.id);
             } else {
@@ -143,7 +140,7 @@ export class PongService {
         }
     }
 
-    checkForEndOfPracticeMatch(practiceMatch: PracticeMatchEntity): void {
+    checkForEndOfPracticeMatch(practiceMatch: PracticeMatch): void {
         if (
             practiceMatch.score1 == practiceMatch.winningCondition ||
             practiceMatch.score2 == practiceMatch.winningCondition
@@ -163,9 +160,7 @@ export class PongService {
         for (const practiceMatchId in this.practiceInstance) {
             this.practiceInstance[practiceMatchId].tick(client);
             this.checkForEndOfPracticeMatch(
-                await this.practiceMatchService.getPracticeMatchById(
-                    parseInt(practiceMatchId, 10),
-                ),
+                this.practiceInstance[practiceMatchId].returnPracticeMatch(),
             );
         }
     }
@@ -211,7 +206,7 @@ export class PongService {
         return null;
     }
 
-    getPracticeInstanceByPlayerSocket(socketId: string): PracticeMatch {
+    getPracticeInstanceByPlayerSocket(socketId: string): PracticeMatchInstance {
         for (const practiceMatchId in this.practiceInstance) {
             if (
                 this.practiceInstance[practiceMatchId].returnPlayerSocket() ==
@@ -226,12 +221,14 @@ export class PongService {
     async handlePracticeMode(client: Socket, data: any) {
         const player = await this.addSocketIdToUser(data.userId, client);
         // const player = await this.userService.returnUserBySocketId(client.id);
-        const practiceMatch =
-            await this.practiceMatchService.createPracticeMatch(player);
-        this.practiceInstance[practiceMatch.id] = new PracticeMatch(
+        const practiceMatch = new PracticeMatch(
+            player,
+            data.difficulty,
+            data.score,
+        );
+        this.practiceInstance[practiceMatch.id] = new PracticeMatchInstance(
             this.server,
             practiceMatch,
-            this.practiceMatchService,
         );
         client.emit('practiceMatchCreated', practiceMatch.id, client.id);
         await this.practiceInstance[practiceMatch.id].start(data);

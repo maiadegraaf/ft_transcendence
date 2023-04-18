@@ -3,19 +3,16 @@ import { User } from '../../user/user.entity';
 import { Leaderboard } from './leaderboard.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-    Difficulty,
-    PracticeMatchEntity,
-} from '../practice-match/practice-match.entity';
-import { PracticeMatchService } from '../practice-match/practice-match.service';
-import { Match } from '../match-instance/match';
+import { PracticeMatch, Difficulty } from '../practice-match/practice-match';
+import { Match } from '../match/match';
+import { PracticeMatchInstance } from '../practice-match/practice-match-instance';
 
 @Injectable()
 export class LeaderboardService {
     constructor(
         @InjectRepository(Leaderboard)
         private leaderboardRepository: Repository<Leaderboard>,
-        private readonly practiceMatchService: PracticeMatchService,
+        private readonly practiceMatchService: PracticeMatch,
     ) {}
 
     async findMatchResults(): Promise<Leaderboard[]> {
@@ -86,8 +83,8 @@ export class LeaderboardService {
     }
 
     async addMatchToLeaderboard(match: Match) {
-        const player1 = await this.findLeaderboardEntry(match.getPlayer1());
-        const player2 = await this.findLeaderboardEntry(match.getPlayer2());
+        const player1 = await this.findLeaderboardEntry(match.player1);
+        const player2 = await this.findLeaderboardEntry(match.player2);
         if (match.score1 == 10) {
             await this.assignWinnerAndLoser(player1, player2);
         } else {
@@ -121,10 +118,8 @@ export class LeaderboardService {
         return await this.leaderboardRepository.save(player);
     }
 
-    async addPracticeMatchToLeaderboard(practiceMatch: PracticeMatchEntity) {
-        const player = await this.findLeaderboardEntry(
-            await this.practiceMatchService.returnPlayer(practiceMatch),
-        );
+    async addPracticeMatchToLeaderboard(practiceMatch: PracticeMatch) {
+        const player = await this.findLeaderboardEntry(practiceMatch.player);
         console.log('player', player);
         console.log('practiceMatch', practiceMatch);
         if (practiceMatch.score1 == practiceMatch.winningCondition) {

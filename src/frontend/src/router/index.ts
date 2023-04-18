@@ -7,7 +7,6 @@ import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
 import axios from 'axios'
 import LeaderboardView from '@/views/LeaderboardView.vue'
-import PracticeMatchView from "@/views/PracticeMatchView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -46,11 +45,6 @@ const router = createRouter({
             path: '/Leaderboard',
             name: 'Leaderboard',
             component: LeaderboardView
-        },
-        {
-            path: '/PracticeMatch',
-            name: 'PracticeMatch',
-            component: PracticeMatchView
         }
     ]
 })

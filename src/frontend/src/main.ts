@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import './assets/index.css'
 import { VueCookieNext } from 'vue-cookie-next'
+import enums from 'vue-enums'
 
 export default {
     name: 'app',
@@ -23,18 +24,14 @@ const vuetify = createVuetify({
         defaultSet: 'mdi',
         aliases,
         sets: {
-            mdi,
+            mdi
         }
     },
     components,
-    directives,
+    directives
 })
 
 const app = createApp(App)
-app
-  .use(router)
-  .use(vuetify)
-  .use(VueCookieNext)
-  .mount('#app')
+app.use(router).use(vuetify).use(VueCookieNext).use(enums).mount('#app')
 
 VueCookieNext.config({ expire: '7d' })

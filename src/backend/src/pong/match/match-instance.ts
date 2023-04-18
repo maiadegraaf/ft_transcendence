@@ -47,8 +47,8 @@ export class MatchInstance {
 
     async start(): Promise<void> {
         this.gamestate = GameState.Playing;
-        this.player1.user = this.match.getPlayer1();
-        this.player2.user = this.match.getPlayer2();
+        this.player1.user = this.match.player1;
+        this.player2.user = this.match.player2;
     }
 
     handlePlayerDisconnect(client: Socket): void {
