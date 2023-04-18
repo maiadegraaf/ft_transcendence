@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MatchInstance } from './match-instance';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Match } from '../match/match.entity';
-import { MatchModule } from '../match/match.module';
 import { Server } from 'socket.io';
-import { MatchService } from '../match/match.service';
+import { Match } from './match';
 
 @Module({
-    imports: [MatchModule, TypeOrmModule.forFeature([Match])],
-    providers: [MatchInstance, Server, Match, MatchService],
+    imports: [],
+    providers: [MatchInstance, Server, Match],
 })
 export class MatchInstanceModule {}

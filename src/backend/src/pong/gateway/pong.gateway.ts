@@ -9,7 +9,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { PongService } from '../pong.service';
-import { Match } from '../match/match.entity';
 import { Info } from '../interfaces/info.interface';
 
 @WebSocketGateway({

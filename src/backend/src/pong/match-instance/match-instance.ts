@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { Match } from '../match/match.entity';
-import { MatchService } from '../match/match.service';
+import { Match } from './match';
 import { Direction, GameState } from '../enums';
 import { Ball } from '../interfaces/ball.interface';
 import { Player } from '../interfaces/player.interface';
@@ -41,23 +40,15 @@ export class MatchInstance {
         score: 0,
     };
 
-    constructor(
-        server: Server,
-        match: Match,
-        private matchServices: MatchService, // private userService: UserService,
-    ) {
+    constructor(server: Server, match: Match) {
         this.server = server;
         this.match = match;
     }
 
     async start(): Promise<void> {
-        console.log('from match-instance: start');
         this.gamestate = GameState.Playing;
-        this.player1.user = await this.matchServices.returnPlayer1(this.match);
-        this.player2.user = await this.matchServices.returnPlayer2(this.match);
-        await this.matchServices.print(this.match);
-        console.log(this.player1);
-        console.log(this.player2);
+        this.player1.user = this.match.getPlayer1();
+        this.player2.user = this.match.getPlayer2();
     }
 
     handlePlayerDisconnect(client: Socket): void {
@@ -80,6 +71,10 @@ export class MatchInstance {
 
     returnMatchId() {
         return this.match.id;
+    }
+
+    returnMatch() {
+        return this.match;
     }
 
     handleMove(client: Socket, data: Info): void {
@@ -124,11 +119,7 @@ export class MatchInstance {
             },
             client,
         );
-        this.matchServices.updateScore(
-            this.match,
-            this.player1.score,
-            this.player2.score,
-        );
+        this.match.updateScore(this.player1.score, this.player2.score);
         this.player1.score = 0;
         this.player2.score = 0;
         this.player1.y = height / 2 - 50;
@@ -164,7 +155,7 @@ export class MatchInstance {
             this.end(this.player1.user.login, client);
             return;
         } else if (this.player2.score >= winning_condition) {
-            this.end(this.player1.user.login, client);
+            this.end(this.player2.user.login, client);
             return;
         }
 

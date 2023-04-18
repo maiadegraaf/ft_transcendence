@@ -5,9 +5,7 @@ import { PongController } from './pong.controller';
 import { PongService } from './pong.service';
 import { UserModule } from '../user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MatchModule } from './match/match.module';
-import { MatchService } from './match/match.service';
-import { Match } from './match/match.entity';
+import { Match } from './match-instance/match';
 import { MatchInstanceModule } from './match-instance/match-instance.module';
 import { PracticeMatchModule } from './practice-match/practice-match.module';
 import { PracticeMatchService } from './practice-match/practice-match.service';
@@ -21,8 +19,6 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
 @Module({
     imports: [
         UserModule,
-        MatchModule,
-        TypeOrmModule.forFeature([Match]),
         MatchInstanceModule,
         PracticeMatchModule,
         TypeOrmModule.forFeature([PracticeMatchEntity]),
@@ -35,7 +31,7 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
         PongGateway,
         PongService,
         Server,
-        MatchService,
+        Match,
         PracticeMatchService,
         UserService,
         LeaderboardService,

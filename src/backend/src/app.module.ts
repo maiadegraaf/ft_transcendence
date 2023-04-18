@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { Match } from 'src/pong/match/match.entity';
 // import { Avatar } from 'src/user/entities/avatar.entity';
 import { Message } from './chat/entities/message.entity';
 import { User } from './user/user.entity';
@@ -14,7 +13,6 @@ import { Channel } from './chat/entities/channel.entity';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './pong/pong.module';
 import { GroupProfile } from './chat/entities/groupProfile.entity';
-import { MatchModule } from './pong/match/match.module';
 import { MatchInstanceModule } from './pong/match-instance/match-instance.module';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity';
 import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
@@ -31,7 +29,6 @@ import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
             database: 'transcendence',
             entities: [
                 User,
-                Match,
                 PracticeMatchEntity,
                 Leaderboard,
                 Message,
@@ -40,7 +37,6 @@ import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
             ],
             synchronize: true,
         }),
-        MatchModule,
         MatchInstanceModule,
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '../..', './frontend/dist'),

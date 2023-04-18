@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Match } from '../match/match.entity';
 import { User } from '../../user/user.entity';
 import { Leaderboard } from './leaderboard.entity';
 import { Repository } from 'typeorm';
@@ -9,7 +8,7 @@ import {
     PracticeMatchEntity,
 } from '../practice-match/practice-match.entity';
 import { PracticeMatchService } from '../practice-match/practice-match.service';
-import { MatchService } from '../match/match.service';
+import { Match } from '../match-instance/match';
 
 @Injectable()
 export class LeaderboardService {
@@ -17,7 +16,6 @@ export class LeaderboardService {
         @InjectRepository(Leaderboard)
         private leaderboardRepository: Repository<Leaderboard>,
         private readonly practiceMatchService: PracticeMatchService,
-        private readonly matchService: MatchService,
     ) {}
 
     async findMatchResults(): Promise<Leaderboard[]> {
@@ -54,12 +52,6 @@ export class LeaderboardService {
                 break;
             }
         }
-        // const entry = await this.leaderboardRepository.findOne({
-        //     where: { user: player },
-        //     relations: {
-        //         user: true,
-        //     },
-        // });
         if (!entry) {
             return await this.createNewLeaderboardEntry(player);
         }
@@ -94,12 +86,8 @@ export class LeaderboardService {
     }
 
     async addMatchToLeaderboard(match: Match) {
-        const player1 = await this.findLeaderboardEntry(
-            await this.matchService.returnPlayer1(match),
-        );
-        const player2 = await this.findLeaderboardEntry(
-            await this.matchService.returnPlayer2(match),
-        );
+        const player1 = await this.findLeaderboardEntry(match.getPlayer1());
+        const player2 = await this.findLeaderboardEntry(match.getPlayer2());
         if (match.score1 == 10) {
             await this.assignWinnerAndLoser(player1, player2);
         } else {
