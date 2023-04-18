@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import Nav from '@/components/Nav.vue'
-import Leaderboard from '@/components/Leaderboard.vue'
+import Leaderboard from '@/components/leaderboard/Leaderboard.vue'
 
 export default {
     name: 'LeaderboardView',
