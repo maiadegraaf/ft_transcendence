@@ -7,7 +7,6 @@ import {
     Body,
     UseGuards,
 } from '@nestjs/common';
-import { TwoFactorAuthenticationService } from './2fa.service';
 import { FortyTwoAuthGuard } from '../auth.guard';
 import { UserService } from '../../user/services/user/user.service';
 import { authenticator } from 'otplib';
@@ -16,7 +15,6 @@ import { authenticator } from 'otplib';
 @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthenticationController {
     constructor(
-        private readonly twoFactorAuthenticationService: TwoFactorAuthenticationService,
         private userService: UserService,
     ) {}
 

@@ -58,7 +58,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   axios.get('/api/auth/profile')
       .then((response) => {
-          console.log(response)
             if (response.status == 200 && to.path == '/')
               next('/Home')
             if (response.status == 200)
