@@ -21,9 +21,12 @@ import { Matchmaking } from './pong/matchmaking/matchmaking.entity';
 import { PracticeMatchEntity } from './pong/practice-match/practice-match.entity';
 import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
 import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
+import { TwoFAModule } from './auth/2fa/2fa.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
     imports: [
+        PassportModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: 'localhost',
@@ -54,8 +57,15 @@ import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
         ChatModule,
         AuthModule,
         LeaderboardModule,
+        TwoFAModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        // {
+        //     provide: APP_GUARD,
+        //     useClass: FortyTwoAuthGuard,
+        // },
+    ],
 })
 export class AppModule {}

@@ -7,40 +7,46 @@ import { ChannelService } from './channel.service';
 
 @Injectable()
 export class MessageService {
-  constructor(
-    @InjectRepository(Message)
-    private readonly messageRepository: Repository<Message>,
-    private readonly userService: UserService,
-    private readonly channelService: ChannelService,
-  ) {}
+    constructor(
+        @InjectRepository(Message)
+        private readonly messageRepository: Repository<Message>,
+        private readonly userService: UserService,
+        private readonly channelService: ChannelService,
+    ) {}
 
-  // add the channel id to this
-  async createMessage(payload: {
-    userId: number;
-    text: string;
-    channelId: number;
-  }): Promise<Message> {
-    try {
-      const message = new Message();
-      const sender = await this.userService.findUserByID(payload.userId);
-      if (!sender) {
-        throw new HttpException('could not find user', HttpStatus.FORBIDDEN);
-      }
-      message.sender = sender;
-      const channel = await this.channelService.getChannelById(
-        payload.channelId,
-      );
-      if (!channel) {
-        console.log(payload);
-        throw new HttpException('could not find user', HttpStatus.FORBIDDEN);
-      }
-      message.channel = channel;
-      message.text = payload.text;
-      return this.messageRepository.save(message);
-    } catch {}
-  }
+    // add the channel id to this
+    async createMessage(payload: {
+        userId: number;
+        text: string;
+        channelId: number;
+    }): Promise<Message> {
+        try {
+            const message = new Message();
+            const sender = await this.userService.findUserByID(payload.userId);
+            if (!sender) {
+                throw new HttpException(
+                    'could not find user',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            message.sender = sender;
+            const channel = await this.channelService.getChannelById(
+                payload.channelId,
+            );
+            if (!channel) {
+                console.log(payload);
+                throw new HttpException(
+                    'could not find user',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            message.channel = channel;
+            message.text = payload.text;
+            return this.messageRepository.save(message);
+        } catch {}
+    }
 
-  async getMessagesByChannelID(id: number): Promise<Message[]> {
-    return this.messageRepository.find({ where: { id } });
-  }
+    async getMessagesByChannelID(id: number): Promise<Message[]> {
+        return this.messageRepository.find({ where: { id } });
+    }
 }

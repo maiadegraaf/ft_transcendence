@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { Match } from '../match/match.entity';
 import { MatchService } from '../match/match.service';
-import { Direction, GameState } from "../enums";
+import { Direction, GameState } from '../enums';
 import { Ball } from '../interfaces/ball.interface';
 import { Player } from '../interfaces/player.interface';
 import { Info } from '../interfaces/info.interface';
@@ -44,8 +44,7 @@ export class MatchInstance {
     constructor(
         server: Server,
         match: Match,
-        private matchServices: MatchService,
-        // private userService: UserService,
+        private matchServices: MatchService, // private userService: UserService,
     ) {
         this.server = server;
         this.match = match;

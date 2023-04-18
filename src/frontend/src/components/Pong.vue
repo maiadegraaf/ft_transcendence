@@ -99,8 +99,6 @@ import io from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
 import { VueCookieNext } from 'vue-cookie-next'
 import ErrorPopUp from './ErrorPopUp.vue'
-import Select from './formComponents/Select.vue'
-import Input from './formComponents/Input.vue'
 
 export default {
     name: 'pongGame',

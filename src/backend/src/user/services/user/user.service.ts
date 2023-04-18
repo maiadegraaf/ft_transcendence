@@ -28,7 +28,7 @@ export class UserService {
     async findUserByID(id: number): Promise<User> {
         const user = await this.userRepository.findOne({ where: { id } });
         if (!user) {
-            return null;
+            throw new NotFoundException('User with ID ${id} not found');
         }
         return user;
     }
@@ -61,6 +61,7 @@ export class UserService {
     }
 
     async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+        console.log(userId);
         return this.userRepository.update(userId, {
             twoFactorAuthenticationSecret: secret,
         });

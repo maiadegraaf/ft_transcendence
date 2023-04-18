@@ -6,13 +6,16 @@ import {
     Param,
     ParseIntPipe,
     Post,
-    Put, Req, UseGuards,
+    Put,
+    Req,
+    UseGuards,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dtos/CreateUser.dto';
 import { UserService } from 'src/user/services/user/user.service';
 import { AuthGuard } from '@nestjs/passport';
+import { FortyTwoAuthGuard } from '../../../auth/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -25,6 +28,7 @@ export class UserController {
     }
 
     @Get(':id')
+    @UseGuards(FortyTwoAuthGuard)
     async findUserByID(@Param('id') id: number) {
         const user = await this.userService.findUserByID(id);
         return user;

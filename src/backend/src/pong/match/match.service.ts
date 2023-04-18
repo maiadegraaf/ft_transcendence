@@ -11,10 +11,7 @@ export class MatchService {
         private readonly matchRepository: Repository<Match>,
     ) {}
 
-    async createMatch(
-        player1: User,
-        player2: User,
-    ): Promise<Match> {
+    async createMatch(player1: User, player2: User): Promise<Match> {
         const match = new Match();
         match.player1 = player1;
         match.player2 = player2;
