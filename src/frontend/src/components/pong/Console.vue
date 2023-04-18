@@ -1,6 +1,6 @@
 <template>
     <div
-        class="mx-auto w-[800px] relative w-full aspect-video border-double border-4 border-buff bg-dark-purple"
+        class="mx-auto w-[800px] relative aspect-video border-double border-4 border-buff bg-dark-purple"
     >
         <div v-if="!gameOver" ref="pongGame">
             <div class="absolute left-5 w-5 h-24 bg-white" :style="{ top: player1.y + 'px' }"></div>

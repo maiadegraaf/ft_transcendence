@@ -121,6 +121,7 @@ export class PracticeMatch {
             player2: this.computer,
             gamestate: this.gamestate,
             winner: this.winner,
+            practiceMatchId: this.practiceMatch.id,
         });
         this.practiceMatchServices.updateScore(
             this.practiceMatch,
@@ -226,6 +227,7 @@ export class PracticeMatch {
             player2: this.computer,
             gamestate: this.gamestate,
             winner: this.winner,
+            practiceMatchId: this.practiceMatch.id,
         });
     }
 }

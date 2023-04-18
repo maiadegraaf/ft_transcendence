@@ -3,7 +3,11 @@
         class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple-800"
     >
         <img class="m-8 w-[450px]" src="../../assets/images/PONG.gif" alt="PONG" />
-        <button v-if="!waiting && !practiceMode" @click="setPracticeMode" class="btn">
+        <button
+            v-if="!waiting && !practiceMode && !startMatch"
+            @click="setPracticeMode"
+            class="btn"
+        >
             Start a Practice Game
         </button>
         <div v-if="practiceMode && !startPractice">
@@ -13,9 +17,11 @@
             />
         </div>
         <div v-if="startPractice && startedBy == currentPlayerId">
-            <practice-match :practice-settings="practiceSettings" :socket="socket" />
+            <practice-match :practice-settings="practiceSettings" :socket="socket" @reset="reset" />
         </div>
-        <button v-if="!waiting && !practiceMode" @click="joinMatch" class="btn">Join Match</button>
+        <button v-if="!waiting && !practiceMode && !startMatch" @click="joinMatch" class="btn">
+            Join Match
+        </button>
         <div v-if="waiting">
             <waiting-room
                 :user-id="currentPlayerId"
@@ -26,15 +32,13 @@
             />
         </div>
         <div v-if="startMatch">
-            <Match :socket="socket" :match-id="matchId" :user-id="currentPlayerId" />
+            <Match :socket="socket" :match-id="matchId" :user-id="currentPlayerId" @reset="reset" />
         </div>
     </div>
     <div>
         <ErrorPopUp ref="errorPopUp" />
     </div>
 </template>
-
-<!---->
 
 <script lang="ts">
 import io from 'socket.io-client'
@@ -112,8 +116,6 @@ export default {
         //     })
         // }
 
-        //listen for the state updates from the server
-
         window.addEventListener('keydown', (event) => {
             console.log('Key pressed')
             if (!this.started) {
@@ -137,25 +139,28 @@ export default {
             this.socket.emit('move', this.info)
         })
     },
+    beforeUnmount() {
+        this.socket.disconnect()
+        this.$root.$off('reset')
+    },
     methods: {
         setPracticeMode() {
             this.practiceMode = true
         },
         handleStartPractice(practiceSettings: practiceSettingsInterface) {
             console.log('Starting practice mode...')
-            this.started = true
             this.startedBy = practiceSettings.userId
             console.log('Practice Settings difficulty ' + practiceSettings.difficulty)
             console.log('Started by: ' + this.startedBy)
             this.startPractice = true
             this.practiceSettings = practiceSettings
         },
-        // reset() {
-        //     this.started = false
-        //     this.gameOver = false
-        //     this.practiceMode = false
-        //     this.winner = ''
-        // },
+        reset() {
+            this.startPractice = false
+            this.practiceMode = false
+            this.startedBy = ''
+            this.startMatch = false
+        },
         joinMatch() {
             console.log('Joining match...')
             this.waiting = true
@@ -167,16 +172,11 @@ export default {
         matchmakingError() {
             this.$refs.errorPopUp.show('You cannot join a match in multiple tabs or windows.')
         },
-        opponentFound() {
+        opponentFound(matchId: number) {
             this.startedBy = this.currentPlayerId
             this.startMatch = true
-        }
-    },
-    watch: {
-        gamestate() {
-            if (this.gamestate === 'end') {
-                this.gameOver = true
-            }
+            this.waiting = false
+            this.matchId = matchId
         }
     }
 }

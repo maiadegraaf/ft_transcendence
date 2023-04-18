@@ -40,16 +40,48 @@ export default {
         }
     },
     mounted() {
+        this.info.matchId = this.matchId
+
         this.socket.on(
             'state',
-            (state: { ball: any; player1: any; player2: any; gamestate: any; winner: any }) => {
+            (state: {
+                ball: any
+                player1: any
+                player2: any
+                gamestate: any
+                winner: any
+                matchId: any
+            }) => {
+                if (state.matchId !== this.matchId) {
+                    return
+                }
                 this.ball = state.ball
                 this.player1 = state.player1
                 this.player2 = state.player2
                 this.gamestate = state.gamestate
                 this.winner = state.winner
+                if (this.gamestate === 'end') {
+                    this.gameOver = true
+                }
             }
         )
+
+        window.addEventListener('keydown', (event) => {
+            console.log('Key pressed')
+            switch (event.keyCode) {
+                case 38: // up arrow key
+                    this.info.d = -1
+                    break
+                case 40: // down arrow key
+                    this.info.d = 1
+                    break
+            }
+            if (!this.socket) {
+                console.log('Socket not connected')
+                return
+            }
+            this.socket.emit('move', this.info)
+        })
     }
 }
 </script>

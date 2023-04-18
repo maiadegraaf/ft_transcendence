@@ -12,7 +12,12 @@ export default {
     props: ['winner'],
     methods: {
         reset() {
-            this.$emit('reset')
+            if (!this.$parent) {
+                console.log('No root')
+                return
+            }
+            console.log('Resetting game')
+            this.$parent.$emit('reset')
         }
     }
 }
