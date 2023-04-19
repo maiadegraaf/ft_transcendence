@@ -5,8 +5,9 @@ import Auth from '../views/Authenticated.vue'
 import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
+import TwoFA from '../views/2fa.vue'
+import TwoFACreate from '../views/2fa.create.vue'
 import axios from 'axios'
-import LeaderboardView from '@/views/LeaderboardView.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -31,44 +32,44 @@ const router = createRouter({
             name: 'Chat',
             component: Chat
         },
-        // {
-        //   path: '/:catchAll(.*)',
-        //   name: '404Name',
-        //   component: viewfour
-        // },
+        {
+            path: '/2fa',
+            name: '2fa',
+            component: TwoFA
+        },
+        {
+            path: '/2fa/create',
+            name: '2fa_create',
+            component: TwoFACreate
+        },
+        {
+            path: '/:catchAll(.*)',
+            name: '404Name',
+            component: viewfour
+        },
         {
             path: '/Pong',
             name: 'Pong',
             component: PongGame
-        },
-        {
-            path: '/Leaderboard',
-            name: 'Leaderboard',
-            component: LeaderboardView
         }
     ]
 })
 
-// router.beforeEach((to, from, next) => {
-//   axios.get('https://api.intra.42.fr/v2/me', {
-//         headers: {
-//           Authorization: `Bearer ${localStorage.getItem('token')}`
-//         }
-//       })
-//       .then((response) => {
-//         console.log(response.status)
-//         if (response.status == 200 && to.path == '/')
-//           next('/Home')
-//         if (response.status == 200)
-//           next()
-//       })
-//       .catch((error) => {
-//         console.log(error)
-//         if (to.path != '/')
-//           next('/')
-//         else
-//           next()
-//       })
-// });
+router.beforeEach((to, from, next) => {
+  axios.get('/api/auth/profile')
+      .then((response) => {
+            if (response.status == 200 && to.path == '/')
+              next('/Home')
+            if (response.status == 200)
+              next()
+      })
+      .catch((error) => {
+        console.log(error)
+        if (to.path != '/' && to.path != '/2fa/create')
+          next('/')
+        else
+          next()
+      })
+});
 
 export default router
