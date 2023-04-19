@@ -5,44 +5,49 @@ import Auth from '../views/Authenticated.vue'
 import Chat from '../views/Chat.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
-import axios from "axios";
+import axios from 'axios'
+import LeaderboardView from '@/views/LeaderboardView.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-      path: '/Home',
-      name: 'Home',
-      component: Home
-    },
-    {
-      path: '/Authenticated',
-      name: 'Authenticated',
-      component: Auth
-    },
-    {
-      path: '/',
-      name: 'Login',
-      component: Login
-    },
-    {
-      path: '/Chat',
-      name: 'Chat',
-      component: Chat
-    },
-    {
-      path: '/:catchAll(.*)',
-      name: '404Name',
-      component: viewfour
-    },
-    {
-      path: '/Pong',
-      name: 'Pong',
-      component: PongGame
-    }
-  ]
+    history: createWebHistory(),
+    routes: [
+        {
+            path: '/Home',
+            name: 'Home',
+            component: Home
+        },
+        {
+            path: '/Authenticated',
+            name: 'Authenticated',
+            component: Auth
+        },
+        {
+            path: '/',
+            name: 'Login',
+            component: Login
+        },
+        {
+            path: '/Chat',
+            name: 'Chat',
+            component: Chat
+        },
+        // {
+        //   path: '/:catchAll(.*)',
+        //   name: '404Name',
+        //   component: viewfour
+        // },
+        {
+            path: '/Pong',
+            name: 'Pong',
+            component: PongGame
+        },
+        {
+            path: '/Leaderboard',
+            name: 'Leaderboard',
+            component: LeaderboardView
+        }
+    ]
 })
-
 
 // router.beforeEach((to, from, next) => {
 //   axios.get('https://api.intra.42.fr/v2/me', {
@@ -65,6 +70,5 @@ const router = createRouter({
 //           next()
 //       })
 // });
-
 
 export default router

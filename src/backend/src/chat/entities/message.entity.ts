@@ -1,27 +1,26 @@
-import { User } from 'src/users/entities/users.entity';
 import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Channel } from './channel.entity';
+import { User } from '../../user/user.entity';
 
 @Entity()
 export class Message {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  text: string;
+    @Column()
+    text: string;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  sender: User;
+    @ManyToOne(() => User)
+    @JoinColumn()
+    sender: User;
 
-  @ManyToOne(() => Channel)
-  @JoinColumn()
-  channel: Channel;
+    @ManyToOne(() => Channel)
+    @JoinColumn()
+    channel: Channel;
 }
