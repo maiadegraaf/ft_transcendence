@@ -18,7 +18,7 @@
       ></v-toolbar>
       <v-list id="channelList">
         <div v-for="n in userChannels.channels" :key="n.id">
-          <v-btn @click="joinRoom(n.id)">Join Room : Channel {{ n.id }}</v-btn>
+          <v-btn :key="n.name.toString()" @click="joinRoom(n.id)">{{ n.name }} : Channel {{ n.id }}</v-btn>
         </div>
       </v-list>
       <v-footer>
@@ -144,8 +144,9 @@ export default {
           channel: number,
           text: string,
           // timestamp: Date,
-        }[]
-        //groupProfile: string | GroupProfile
+        }[],
+        name: string,
+        groupProfile: null,
       }[]
     }
     messages: {
@@ -209,7 +210,7 @@ export default {
       this.receivedMessage(message)
     })
     // Listens for 'newUserToChannel' events and calls the addChannelToUser method with the channel.
-    this.socket.on('newUserToChannel', (channel: { userId: number, userName: string, channelId: number, }) => {
+    this.socket.on('newUserToChannel', (channel: { userId: number, userName: string, channelId: number, channelName: string }) => {
       this.addChannelToUser(channel)
     })
   },
@@ -323,14 +324,14 @@ export default {
       return this.userChannels.name.length > 0 && this.text.length > 0
     },
     // Retrieves the channels per user
-    async addChannelToUser(channel: { userId: number, userName: string, channelId: number, }): Promise <void> {
+    async addChannelToUser(channel: { userId: number, userName: string, channelId: number, channelName: string}): Promise <void> {
       console.log(this.userId + ' this is the user id ')
       if (this.userId !== channel.userId || this.name !== channel.userName) {
         console.log('not correct channel for user')
         return
       }
       await this.socket.emit('joinRoom', channel)
-      await fetch('http://localhost:8080/api/chat/channel/' + channel.channelId)
+      await fetch('http://localhost:8080/api/chat/' + this.userId + '/channel/' + channel.channelId)
         .then(response => response.json())
         .then(data => {
           console.log('got something at retrieve addChannelToUser')

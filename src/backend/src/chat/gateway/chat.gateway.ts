@@ -12,9 +12,7 @@ import { Socket, Server } from 'socket.io';
 import { MessageService } from '../services/message.service';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from '../services/channel.service';
-import { CreateDmChannelDto, JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
-import { Channel } from '../entities/channel.entity';
-import { User } from '../../user/user.entity';
+import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 
 @WebSocketGateway({
     cors: {

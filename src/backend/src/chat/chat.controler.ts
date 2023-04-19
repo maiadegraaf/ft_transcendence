@@ -12,8 +12,9 @@ import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
 import { UserService } from '../user/services/user/user.service';
-import { CreateDmChannelDto } from './dtos/chat.dtos';
+import { CreateDmChannelDto, CreateGroupChannelDto } from './dtos/chat.dtos';
 import { ChatGateway } from './gateway/chat.gateway';
+import { validatePath } from '@nestjs/serve-static/dist/utils/validate-path.util';
 // import { User } from '../user/entities/user.entity';
 // import { AppService } from './app.service';
 
@@ -52,9 +53,12 @@ export class ChatController {
         return channels;
     }
 
-    // Get /api/chat/channel/${id}
-    @Get('/channel/:id')
-    async getChannelById(@Param('id') channelId: number): Promise<any> {
+    // Get /api/chat/{$uId}/channel/${id}
+    @Get(':uId/channel/:id')
+    async getChannelById(
+        @Param('uId') userId: number,
+        @Param('id') channelId: number,
+    ): Promise<any> {
         const channel = await this.channelService.getChannelById(channelId);
         if (!channel) {
             this.logger.error(
@@ -62,7 +66,12 @@ export class ChatController {
             );
             return;
         }
-        const channelDto = await this.channelService.channelDTO(channel);
+        const user = await this.userService.getUserById(userId);
+        if (!user) {
+            this.logger.error('getUSerById: No user found from id: ' + userId);
+            return;
+        }
+        const channelDto = await this.channelService.channelDTO(channel, user);
         this.logger.log('getChannelById: channel found from id: ' + channelId);
         return channelDto;
     }
@@ -106,9 +115,6 @@ export class ChatController {
             channel,
             user2,
         );
-        // console.log(
-        //     'this is newUserJoinRoomDto :' + JSON.stringify(newUserJoinRoomDto),
-        // );
         const dmClient = this.chatGateway.getClientSocketById(user2.id);
         if (dmClient) {
             console.log('this is dmCLien :' + dmClient.id);
@@ -117,5 +123,20 @@ export class ChatController {
         const newChannelDto = this.channelService.newChannelDTO(channel);
         // console.log('this is newChannelDto :' + JSON.stringify(newChannelDto));
         return newChannelDto;
+    }
+
+    // Post /api/chat/group
+    @Post('group')
+    async postNewGroupChannel(
+        @Body(new ValidationPipe()) param: CreateGroupChannelDto,
+    ): Promise<any> {
+        try {
+            return await this.channelService.newGroupChannel(
+                param.userId,
+                param.groupName,
+            );
+        } catch {
+            this.logger.error('postNewGroupChannel: no new group channel');
+        }
     }
 }

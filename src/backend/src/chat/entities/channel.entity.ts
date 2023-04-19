@@ -1,6 +1,7 @@
 import {
     Column,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
     OneToMany,
@@ -19,10 +20,13 @@ export class Channel {
     @OneToMany(() => Message, (msg) => msg.channel)
     messages: Message[];
 
-    @ManyToMany(() => User, (user) => user.channels)
+    @ManyToMany(() => User, (users) => users.channels)
     users: User[];
 
-    @OneToOne(() => GroupProfile, (profile) => profile.channel)
+    @JoinColumn()
+    @OneToOne(() => GroupProfile, (profile) => profile.channel, {
+        nullable: true,
+    })
     profile: GroupProfile;
     //
     // @Column()
