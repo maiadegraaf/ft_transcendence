@@ -31,16 +31,16 @@ export class ChatController {
 
     // Get /api/chat/${id}
     @Get('/:id')
-    async getChannelMessages(@Param('id') id: number): Promise<any> {
+    async getUserChannels(@Param('id') id: number): Promise<Channel[]> {
         this.logger.log(
             'getChannelMessages: messages found from channel: ' + id,
         );
-        return this.channelService.getUserChannelDTO(id);
+        return this.channelService.getUserChannels(id);
     }
 
     // Get /api/chat/${id}/channel
     @Get('/:id/channel')
-    async getUserChannels(@Param('id') userId: number): Promise<any> {
+    async getUserChannel(@Param('id') userId: number): Promise<any> {
         const channels = await this.userService.getChannelsByUserId(userId);
         if (!channels) {
             this.logger.error(
@@ -53,19 +53,19 @@ export class ChatController {
     }
 
     // Get /api/chat/channel/${id}
-    @Get('/channel/:id')
-    async getChannelById(@Param('id') channelId: number): Promise<any> {
-        const channel = await this.channelService.getChannelById(channelId);
-        if (!channel) {
-            this.logger.error(
-                'getChannelById: No channel found from id: ' + channelId,
-            );
-            return;
-        }
-        const channelDto = await this.channelService.channelDTO(channel);
-        this.logger.log('getChannelById: channel found from id: ' + channelId);
-        return channelDto;
-    }
+    // @Get('/channel/:id')
+    // async getChannelById(@Param('id') channelId: number): Promise<any> {
+    //     const channel = await this.channelService.getChannelById(channelId);
+    //     if (!channel) {
+    //         this.logger.error(
+    //             'getChannelById: No channel found from id: ' + channelId,
+    //         );
+    //         return;
+    //     }
+    //     // const channelDto = await this.channelService.channelDTO(channel);
+    //     this.logger.log('getChannelById: channel found from id: ' + channelId);
+    //     return channelDto;
+    // }
 
     // Post /api/chat/dm
     @Post('dm')

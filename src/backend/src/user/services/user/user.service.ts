@@ -92,16 +92,13 @@ export class UserService {
     async retrieveUserChannelMessages(userId: number): Promise<any> {
         const user = await this.userRepository.findOne({
             where: { id: userId },
-            relations: [
-                'channels',
-                'channels.messages',
-                'channels.messages.sender',
-            ],
+            relations: ['channels'],
+            select: ['channels'],
         });
         if (!user) {
             return null;
         }
-        return user;
+        return user.channels;
     }
 
     async retrieveUserChannel(userId: number): Promise<any> {

@@ -19,7 +19,9 @@ export class MessageService {
     async createMessage(payload: MessageDto): Promise<Message> {
         try {
             const message = new Message();
-            const sender = await this.userService.findUserByID(payload.sender);
+            const sender = await this.userService.findUserByID(
+                payload.sender.id,
+            );
             if (!sender) {
                 throw new HttpException(
                     'could not find user',

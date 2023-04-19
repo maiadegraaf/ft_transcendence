@@ -12,8 +12,10 @@ export class ChannelMessagesDto {
 
 export class MessageDto {
     id: number;
-    sender: number;
-    senderName: string;
+    sender: {
+        id: number;
+        login: string;
+    };
     channel: number;
     text: string;
     // timestamp: Date;
