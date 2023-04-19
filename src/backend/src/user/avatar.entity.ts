@@ -12,7 +12,10 @@ export class Avatar {
     @Column({ type: "bytea", nullable: true })
     data: Buffer;
 
-    @OneToOne(() => User, (user) => user.avatar, { onDelete: 'CASCADE', cascade: ['remove'] })
+    // HIER VERDER
+    
+    // @OneToOne(() => User, (user) => user.avatar, { onDelete: 'CASCADE', cascade: ['remove'] })
+    @OneToOne(() => User, (user) => user.avatar)
     @JoinColumn()
     user: User;
 }

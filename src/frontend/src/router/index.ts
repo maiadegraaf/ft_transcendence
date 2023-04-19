@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import Profile from '../views/Profile.vue'
 import Login from '../views/Login.vue'
 import Auth from '../views/Authenticated.vue'
 import Chat from '../views/Chat.vue'
@@ -51,6 +52,11 @@ const router = createRouter({
             path: '/Pong',
             name: 'Pong',
             component: PongGame
+        },
+        {
+            path: '/Profile',
+            name: 'Profile',
+            component: Profile
         }
     ]
 })

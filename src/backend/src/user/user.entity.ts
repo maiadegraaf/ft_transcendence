@@ -44,9 +44,11 @@ export class User {
     @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
     groupProfile: GroupProfile;
 
+    // HIER VERDER
     @OneToOne(() => Avatar, (avatar) => avatar.user, {
         onDelete: 'CASCADE',
     })
+    @JoinColumn()
     avatar: Avatar;
 
     @Column({

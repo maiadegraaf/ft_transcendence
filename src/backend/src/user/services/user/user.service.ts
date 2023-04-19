@@ -37,14 +37,13 @@ export class UserService {
 		return user;
 	}
 
-	async findOrCreateUser(
-		id: number,
-		email: string,
-		login: string,
-	): Promise<User> {
+	async findOrCreateUser(id: number, email: string, login: string): Promise<User> {
 		let user = await this.userRepository.findOne({ where: { id } });
 		if (!user) {
 			user = await this.userRepository.save({ id, email, login });
+			const avatar = await this.avatarService.createDefaultAvatar(user);
+			user.avatar = avatar;
+			await this.userRepository.save(user);
 		}
 		return user;
 	}
@@ -157,6 +156,7 @@ export class UserService {
 		// return this.userRepository.findOne({ where: { socketId: socketId } });
 	}
 
+	// HIER VERDER
 	async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
 		if (!file)
 		  throw new HttpException('File required', HttpStatus.NOT_ACCEPTABLE);
@@ -164,7 +164,13 @@ export class UserService {
 		const filename = file.originalname;
 		const data = file.buffer;
 		const user: User = await this.findUserByID(userId, ['avatar']);
-		
+
+		//Delete the old avatar if it exists (always the case)
+		//If i run the code below also the user is deleted
+		// if (user.avatar){
+		// 	await this.avatarService.deleteAvatar(user.avatar);
+		// }
+		// Create the new avatar
 		await this.avatarService.createAvatar(filename, data, user);
 	}
 	
@@ -175,3 +181,4 @@ export class UserService {
 		return user.avatar;
 	}
 }
+ 
