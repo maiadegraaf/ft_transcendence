@@ -18,11 +18,13 @@ export class Channel {
     @OneToMany(() => Message, (msg) => msg.channel)
     messages: Message[];
 
-    @ManyToMany(() => User, (user) => user.channels)
+    @ManyToMany(() => User, (users) => users.channels)
     users: User[];
 
     @JoinColumn()
-    @OneToOne(() => GroupProfile, (profile) => profile.channel)
+    @OneToOne(() => GroupProfile, (profile) => profile.channel, {
+        nullable: true,
+    })
     profile: GroupProfile;
     //
     // @Column()

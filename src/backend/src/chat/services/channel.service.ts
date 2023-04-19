@@ -144,32 +144,6 @@ export class ChannelService {
         }
     }
 
-    async newGroupChannel(ownerId: number, groupName: string): Promise<any> {
-        try {
-            const channel = await this.createChannel();
-            if (!channel) {
-                throw new HttpException(
-                    'could not create channel',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            const groupProfile =
-                await this.groupProfileService.createGroupProfile(
-                    ownerId,
-                    groupName,
-                    channel,
-                );
-            if (!groupProfile) {
-                throw new HttpException(
-                    'could not create groupProfile',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            channel.profile = groupProfile;
-            return await this.channelRepository.save(channel);
-        } catch {}
-    }
-
     async getMessagesFromChannel(channelId: number): Promise<any> {
         const channel = await this.channelRepository.findOne({
             where: { id: channelId },
@@ -227,11 +201,14 @@ export class ChannelService {
         const channelDto: ChannelMessagesDto = {
             id: channel.id,
             messages: [],
+            name: null,
+            groupProfile: null,
         };
         return channelDto;
     }
 
-    // async channelDTO(channel: Channel): Promise<any> {
+    // async channelDTO(channel: Channel, user: User): Promise<any> {
+    //     const channelName = await this.getChannelName(channel.id, user);
     //     const channelDto: ChannelMessagesDto = {
     //         id: channel.id,
     //         messages: channel.messages.map((message) => {
@@ -244,27 +221,92 @@ export class ChannelService {
     //             };
     //             return messageDTO;
     //         }),
+    //         name: channelName,
+    //         groupProfile: null,
     //     };
     //     return channelDto;
     // }
 
-    async newReturnChannelDTO(channel: Channel, user: User): Promise<any> {
-        const returnChannelDto: returnDmChannelDto = {
-            channelId: channel.id,
-            newInviteeId: user.id,
-        };
-        return returnChannelDto;
+    // async newReturnChannelDTO(channel: Channel, user: User): Promise<any> {
+    //     const returnChannelDto: returnDmChannelDto = {
+    //         channelId: channel.id,
+    //         newInviteeId: user.id,
+    //     };
+    //     return returnChannelDto;
+    // }
+
+    // async newJoinRoomDto(channel: Channel, user: User): Promise<any> {
+    //     const name = await this.getChannelName(channel.id, user);
+    //     const joinRoomDto: JoinRoomDto = {
+    //         userId: user.id,
+    //         userName: user.login,
+    //         channelId: channel.id,
+    //         channelName: name,
+    //     };
+    //     return joinRoomDto;
+    // }
+
+    async getChannelName(channel: number, user: User): Promise<string> {
+        const channelName = await this.channelRepository.findOne({
+            where: { id: channel },
+            relations: ['profile', 'users'],
+        });
+        if (!channelName) {
+            return null;
+        }
+        if (channelName.profile) {
+            return channelName.profile.name;
+        }
+        const channelUsers = channelName.users;
+        const channelUserNames = channelUsers.map((usr) => usr.login);
+        channelUserNames.forEach((name) => {
+            if (name !== user.login) {
+                console.log('this is name: ' + name);
+                return name;
+            }
+        });
+        return null;
     }
 
-    async newJoinRoomDto(channel: Channel, user: User): Promise<any> {
-        const joinRoomDto: JoinRoomDto = {
-            userId: user.id,
-            userName: user.login,
-            channelId: channel.id,
-        };
-        return joinRoomDto;
+    async allowedNewDmChannel(user: User, invitee: string): Promise<boolean> {
+        if (user.login === invitee) {
+            return false;
+        }
+        const channel = await this.channelRepository
+            .createQueryBuilder('channel')
+            .leftJoinAndSelect('channel.users', 'users')
+            .where('users', { users: user })
+            .andWhere('users.login = :login', { login: invitee })
+            .andWhere('channel.profile IS NULL')
+            .getOne();
+        if (channel) {
+            return false;
+        }
+        return true;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    // async getUserChatData(userId: number): Promise<any> {}
+    async newGroupChannel(ownerId: number, groupName: string): Promise<any> {
+        try {
+            const channel = await this.createChannel();
+            if (!channel) {
+                throw new HttpException(
+                    'could not create channel',
+                    HttpStatus.FORBIDDEN,
+                );
+                return;
+            }
+            const groupProfile =
+                await this.groupProfileService.createGroupProfile(
+                    ownerId,
+                    groupName,
+                );
+            channel.profile = groupProfile;
+            return await this.channelRepository.save(channel);
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }

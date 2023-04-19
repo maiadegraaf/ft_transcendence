@@ -7,7 +7,8 @@ export class UserChannelsMessagesDto {
 export class ChannelMessagesDto {
     id: number;
     messages: MessageDto[];
-    // groupProfile: string | GroupProfileDto;
+    name: string;
+    groupProfile: GroupProfileDto;
 }
 
 export class MessageDto {
@@ -22,17 +23,18 @@ export class MessageDto {
 }
 
 export class GroupProfileDto {
-    owner: number;
     name: string;
+    channelId: number;
+    owner: number;
     admin: [userId: number];
     blocker: [userId: number];
-    channelId: number;
 }
 
 export class JoinRoomDto {
     userId: number;
     userName: string;
     channelId: number;
+    channelName: string;
 }
 
 export class CreateDmChannelDto {
@@ -43,4 +45,9 @@ export class CreateDmChannelDto {
 export class returnDmChannelDto {
     channelId: number;
     newInviteeId: number;
+}
+
+export class CreateGroupChannelDto {
+    userId: number;
+    groupName: string;
 }
