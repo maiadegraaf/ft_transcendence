@@ -47,6 +47,17 @@ export class ChatGateway
         );
     }
 
+    @SubscribeMessage('joinRoomById')
+    async handleJoinRoomById(
+        @ConnectedSocket() client: Socket,
+        @Body() payload: { channelId: number },
+    ): Promise<any> {
+        await client.join('room' + payload.channelId);
+        this.logger.log(
+            `handleJoinRoomById: ${client.id} joined the room with id: ${payload.channelId}`,
+        );
+    }
+
     @SubscribeMessage('joinRoom')
     async handleJoinRoom(
         @ConnectedSocket() client: Socket,

@@ -155,35 +155,46 @@ export class ChannelService {
         }
     }
 
-    async getUserChannelDTO(userId: number): Promise<any> {
-        const user = await this.userService.retrieveUserChannelMessages(userId);
+    async getUserChannels(userId: number): Promise<Channel[]> {
+        // const channels = await this.userService.retrieveUserChannelMessages(userId);
+        const channels = await this.channelRepository
+            .createQueryBuilder('channel')
+            .innerJoin('channel.users', 'user')
+            .where('user.id = :id', { id: userId })
+            .leftJoinAndSelect('channel.messages', 'message')
+            .leftJoin('message.sender', 'sender')
+            .addSelect(['sender.id', 'sender.login'])
+            .leftJoinAndSelect('channel.profile', 'profile')
+            .orderBy('message.id', 'ASC')
+            .getMany();
 
-        if (!user) {
+        if (!channels) {
             return;
         }
-        const userChannelMessageDTO: UserChannelsMessagesDto = {
-            id: user.id,
-            name: user.login,
-            channels: user.channels.map(async (channel) => {
-                const channelMessageDTO: ChannelMessagesDto = {
-                    id: channel.id,
-                    messages: channel.messages.map((message) => {
-                        const messageDTO: MessageDto = {
-                            id: message.id,
-                            sender: message.sender.id,
-                            senderName: message.sender.login,
-                            channel: channel.id,
-                            text: message.text,
-                        };
-                        return messageDTO;
-                    }),
-                    name: await this.getChannelName(channel.id, user),
-                    groupProfile: null,
-                };
-                return channelMessageDTO;
-            }),
-        };
-        return userChannelMessageDTO;
+
+        return channels;
+        // console.log('this is user: ' + JSON.stringify(user));
+        // const userChannelMessageDTO: UserChannelsMessagesDto = {
+        //     id: user.id,
+        //     name: user.login,
+        //     channels: user.channels.map((channel) => {
+        //         const channelMessageDTO: ChannelMessagesDto = {
+        //             id: channel.id,
+        //             messages: channel.messages.map((message) => {
+        //                 const messageDTO: MessageDto = {
+        //                     id: message.id,
+        //                     sender: message.sender.id,
+        //                     senderName: message.sender.login,
+        //                     channel: channel.id,
+        //                     text: message.text,
+        //                 };
+        //                 return messageDTO;
+        //             }),
+        //         };
+        //         return channelMessageDTO;
+        //     }),
+        // };
+        // return userChannelMessageDTO;
     }
 
     newChannelDTO(channel: Channel): any {
@@ -196,25 +207,25 @@ export class ChannelService {
         return channelDto;
     }
 
-    async channelDTO(channel: Channel, user: User): Promise<any> {
-        const channelName = await this.getChannelName(channel.id, user);
-        const channelDto: ChannelMessagesDto = {
-            id: channel.id,
-            messages: channel.messages.map((message) => {
-                const messageDTO: MessageDto = {
-                    id: message.id,
-                    sender: message.sender.id,
-                    senderName: message.sender.login,
-                    channel: channel.id,
-                    text: message.text,
-                };
-                return messageDTO;
-            }),
-            name: channelName,
-            groupProfile: null,
-        };
-        return channelDto;
-    }
+    // async channelDTO(channel: Channel, user: User): Promise<any> {
+    //     const channelName = await this.getChannelName(channel.id, user);
+    //     const channelDto: ChannelMessagesDto = {
+    //         id: channel.id,
+    //         messages: channel.messages.map((message) => {
+    //             const messageDTO: MessageDto = {
+    //                 id: message.id,
+    //                 sender: message.sender.id,
+    //                 senderName: message.sender.login,
+    //                 channel: channel.id,
+    //                 text: message.text,
+    //             };
+    //             return messageDTO;
+    //         }),
+    //         name: channelName,
+    //         groupProfile: null,
+    //     };
+    //     return channelDto;
+    // }
 
     // async newReturnChannelDTO(channel: Channel, user: User): Promise<any> {
     //     const returnChannelDto: returnDmChannelDto = {
