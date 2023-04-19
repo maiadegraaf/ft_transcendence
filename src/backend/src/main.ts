@@ -8,15 +8,13 @@ import * as passport from 'passport';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix('api'); // New
-    app.use(cookieParser())
-        .use(
-            session({
-                secret: 'my-secret',
-                resave: false,
-                saveUninitialized: false,
-            }),
-        )
-        .use(passport.initialize());
+    app.use(cookieParser()).use(
+        session({
+            secret: 'my-secret',
+            resave: false,
+            saveUninitialized: false,
+        }),
+    );
 
     await app.listen(8080);
 

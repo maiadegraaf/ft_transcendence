@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from './channel.service';
+import { MessageDto } from '../dtos/chat.dtos';
 
 @Injectable()
 export class MessageService {
@@ -15,14 +16,12 @@ export class MessageService {
     ) {}
 
     // add the channel id to this
-    async createMessage(payload: {
-        userId: number;
-        text: string;
-        channelId: number;
-    }): Promise<Message> {
+    async createMessage(payload: MessageDto): Promise<Message> {
         try {
             const message = new Message();
-            const sender = await this.userService.findUserByID(payload.userId);
+            const sender = await this.userService.findUserByID(
+                payload.sender.id,
+            );
             if (!sender) {
                 throw new HttpException(
                     'could not find user',
@@ -31,7 +30,7 @@ export class MessageService {
             }
             message.sender = sender;
             const channel = await this.channelService.getChannelById(
-                payload.channelId,
+                payload.channel,
             );
             if (!channel) {
                 console.log(payload);
@@ -42,11 +41,23 @@ export class MessageService {
             }
             message.channel = channel;
             message.text = payload.text;
-            return this.messageRepository.save(message);
+            return await this.messageRepository.save(message);
         } catch {}
     }
 
-    async getMessagesByChannelID(id: number): Promise<Message[]> {
-        return this.messageRepository.find({ where: { id } });
+    async getMessageById(messageId: number): Promise<any> {
+        const message = this.messageRepository.findOne({
+            where: { id: messageId },
+            // relations: ['text'],
+        });
+        return message;
     }
+    //
+    // async getMessagesByChannelID(id: number): Promise<Message[]> {
+    //   return await this.messageRepository.find({
+    //     where: { id },
+    //     relations: ['channel'],
+    //   });
+    //   //{ where: { channel: id} , relations: ['channel'] } });
+    // }
 }

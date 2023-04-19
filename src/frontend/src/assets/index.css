@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html {
-    @apply text-white bg-dark-purple font-mono;
+  @apply text-white bg-dark-purple font-mono !overflow-y-hidden;
 }
 
 .btn {
@@ -16,4 +16,8 @@ html {
 
 .h1 {
     @apply text-8xl mb-8 font-bold text-buff drop-shadow-lg;
+}
+
+.h2 {
+    @apply text-5xl font-bold text-buff drop-shadow-lg;
 }
