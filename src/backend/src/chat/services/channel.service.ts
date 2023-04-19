@@ -235,16 +235,16 @@ export class ChannelService {
     //     return returnChannelDto;
     // }
 
-    // async newJoinRoomDto(channel: Channel, user: User): Promise<any> {
-    //     const name = await this.getChannelName(channel.id, user);
-    //     const joinRoomDto: JoinRoomDto = {
-    //         userId: user.id,
-    //         userName: user.login,
-    //         channelId: channel.id,
-    //         channelName: name,
-    //     };
-    //     return joinRoomDto;
-    // }
+    async newJoinRoomDto(channel: Channel, user: User): Promise<any> {
+        const name = await this.getChannelName(channel.id, user);
+        const joinRoomDto: JoinRoomDto = {
+            userId: user.id,
+            userName: user.login,
+            channelId: channel.id,
+            channelName: name,
+        };
+        return joinRoomDto;
+    }
 
     async getChannelName(channel: number, user: User): Promise<string> {
         const channelName = await this.channelRepository.findOne({

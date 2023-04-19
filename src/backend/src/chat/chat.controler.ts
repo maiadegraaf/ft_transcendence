@@ -54,27 +54,27 @@ export class ChatController {
     }
 
     // Get /api/chat/{$uId}/channel/${id}
-    @Get(':uId/channel/:id')
-    async getChannelById(
-        @Param('uId') userId: number,
-        @Param('id') channelId: number,
-    ): Promise<any> {
-        const channel = await this.channelService.getChannelById(channelId);
-        if (!channel) {
-            this.logger.error(
-                'getChannelById: No channel found from id: ' + channelId,
-            );
-            return;
-        }
-        const user = await this.userService.getUserById(userId);
-        if (!user) {
-            this.logger.error('getUSerById: No user found from id: ' + userId);
-            return;
-        }
-        const channelDto = await this.channelService.channelDTO(channel, user);
-        this.logger.log('getChannelById: channel found from id: ' + channelId);
-        return channelDto;
-    }
+    // @Get(':uId/channel/:id')
+    // async getChannelById(
+    //     @Param('uId') userId: number,
+    //     @Param('id') channelId: number,
+    // ): Promise<any> {
+    //     const channel = await this.channelService.getChannelById(channelId);
+    //     if (!channel) {
+    //         this.logger.error(
+    //             'getChannelById: No channel found from id: ' + channelId,
+    //         );
+    //         return;
+    //     }
+    //     const user = await this.userService.getUserById(userId);
+    //     if (!user) {
+    //         this.logger.error('getUSerById: No user found from id: ' + userId);
+    //         return;
+    //     }
+    //     const channelDto = await this.channelService.channelDTO(channel, user);
+    //     this.logger.log('getChannelById: channel found from id: ' + channelId);
+    //     return channelDto;
+    // }
 
     // Post /api/chat/dm
     @Post('dm')
