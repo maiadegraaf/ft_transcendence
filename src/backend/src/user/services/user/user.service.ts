@@ -21,6 +21,8 @@ export class UserService {
 	constructor(
 		private readonly avatarService: AvatarService,
 	   
+		@InjectRepository(Avatar)
+		private avatarRepository: Repository<Avatar>,
 		@InjectRepository(User)
 		private userRepository: Repository<User>, 
 	) {}
@@ -156,22 +158,23 @@ export class UserService {
 		// return this.userRepository.findOne({ where: { socketId: socketId } });
 	}
 
-	// HIER VERDER
 	async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
-		if (!file)
-		  throw new HttpException('File required', HttpStatus.NOT_ACCEPTABLE);
-
-		const filename = file.originalname;
-		const data = file.buffer;
+		if (!file) {
+			throw new HttpException('File required', HttpStatus.NOT_ACCEPTABLE);
+		}
 		const user: User = await this.findUserByID(userId, ['avatar']);
-
-		//Delete the old avatar if it exists (always the case)
-		//If i run the code below also the user is deleted
-		// if (user.avatar){
-		// 	await this.avatarService.deleteAvatar(user.avatar);
-		// }
-		// Create the new avatar
-		await this.avatarService.createAvatar(filename, data, user);
+		if (user.avatar) {
+			// updatae avatar
+			user.avatar.data = file.buffer;
+			user.avatar.filename = file.originalname;
+			await this.avatarRepository.save(user.avatar);
+		}
+		else {
+			// create avatar
+			const filename = file.originalname;
+			const data = file.buffer;
+			await this.avatarService.createAvatar(filename, data, user);
+		}
 	}
 	
 	async getAvatar(userId: number): Promise<Avatar> {
@@ -179,6 +182,12 @@ export class UserService {
 		if (!user.avatar)
 			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 		return user.avatar;
+	}
+
+	async updateUsername(userId: number, username: string): Promise<User> {
+		const user = await this.findUserByID(userId);
+		user.login = username;
+		return this.userRepository.save(user);
 	}
 }
  

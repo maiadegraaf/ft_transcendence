@@ -11,8 +11,8 @@ export class AvatarService {
     constructor(
         @InjectRepository(Avatar)
         private avatarRepository: Repository<Avatar>,
-        // @InjectRepository(User)
-        // private userRepository: Repository<User>,
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
     ) {}
 
     async createAvatar(filename: string, data: Buffer, user: User): Promise<Avatar> {
@@ -31,14 +31,23 @@ export class AvatarService {
         return this.avatarRepository.save(avatar);
     }
 
-    // async deleteAvatar(avatarID: number): Promise<void> {
-    //     //try catch block
-    //     await this.avatarRepository.delete({ id: avatarID });
+
+    // async deleteAvatar(avatar: Avatar): Promise<void> {
+    //     try {
+    //         await this.avatarRepository.delete(avatar.id);
+    //     } catch (error) {
+    //         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    //     }
     // }
 
     async deleteAvatar(avatar: Avatar): Promise<void> {
         try {
-            await this.avatarRepository.remove(avatar);
+            const user = await this.userRepository.findOne({ where: { avatar: avatar } });
+            if (user) {
+                user.avatar = null;
+                await this.userRepository.save(user);
+            }
+            await this.avatarRepository.delete(avatar.id);
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }

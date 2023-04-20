@@ -17,3 +17,7 @@ html {
 .h1 {
     @apply text-8xl mb-8 font-bold text-buff drop-shadow-lg;
 }
+
+.h2 {
+    @apply text-3xl mb-3 font-bold text-buff drop-shadow-lg;
+}

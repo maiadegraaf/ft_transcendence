@@ -14,8 +14,8 @@ export class Avatar {
 
     // HIER VERDER
     
-    // @OneToOne(() => User, (user) => user.avatar, { onDelete: 'CASCADE', cascade: ['remove'] })
-    @OneToOne(() => User, (user) => user.avatar)
+    // @OneToOne(() => User, (user) => user.avatar)
+    @OneToOne(() => User, (user) => user.avatar, { onDelete: 'CASCADE' })
     @JoinColumn()
     user: User;
 }

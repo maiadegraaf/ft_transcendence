@@ -26,7 +26,6 @@ import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarService } from 'src/user/services/user/avatar.service';
 
-
 @Controller('user')
 export class UserController {
     constructor(
@@ -75,7 +74,16 @@ export class UserController {
         @UploadedFile() file: Express.Multer.File, 
         @Param('id', ParseIntPipe) id: number,
         ): Promise<void> {
-        return this.userService.setAvatar(id, file);
+        await this.userService.setAvatar(id, file);
+    }
+
+    @Put(':id/username')
+    @UseGuards(FortyTwoAuthGuard)
+    async updateUsername(
+        @Param('id', ParseIntPipe) id: number,
+        @Body('username') username: string,
+        ): Promise<User> {
+        return this.userService.updateUsername(id, username);
     }
 
     @Post()
