@@ -26,13 +26,4 @@ export class Channel {
         nullable: true,
     })
     profile: GroupProfile;
-    //
-    // @Column()
-    // type: ChannelEnum;
-    //
-    // @Column()
-    // dmChannel: ChannelEnum;
-
-    // @Column()
-    // name: string;
 }

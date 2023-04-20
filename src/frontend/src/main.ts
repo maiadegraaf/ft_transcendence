@@ -15,7 +15,6 @@ import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import {createPinia} from "pinia";
 
-
 const store = createPinia()
 
 const app = createApp(App)

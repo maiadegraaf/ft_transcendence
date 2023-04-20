@@ -1,30 +1,30 @@
-import axios from 'axios';
+import axios from 'axios'
 
 async function getAuthService() {
-    const response = await axios.get('/auth');
-    return response.data;
+    const response = await axios.get('/auth')
+    return response.data
 }
 
-const authService = getAuthService();
+const authService = getAuthService()
 
 export async function requireAuth(to, from, next) {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token')
     if (!token) {
         next({
-            name: "TmpLogin"
-        });
+            name: 'TmpLogin'
+        })
     } else {
         try {
-            const { username } = await authService.verifyToken(token);
+            const { username } = await authService.verifyToken(token)
             if (!username) {
-                throw new Error("Invalid token");
+                throw new Error('Invalid token')
             }
-            next();
+            next()
         } catch (error) {
-            console.error(error);
+            console.error(error)
             next({
-                name: "TmpLogin"
-            });
+                name: 'TmpLogin'
+            })
         }
     }
 }
