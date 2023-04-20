@@ -4,7 +4,7 @@
          class="block border-buff cursor-pointer border-double border-2 rounded-md">
       <div class="h-20" @click="toView(ch.id)">
         <div class="flex flex-column justify-center">
-          <div class="font-bold">Join Room : Channel {{ ch.id }}</div>
+          <div class="font-bold">DM {{ ch.name }} | {{ ch.id }}</div>
           <div>{{ lastMessage(ch) }}</div>
         </div>
       </div>

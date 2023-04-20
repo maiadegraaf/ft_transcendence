@@ -42,11 +42,6 @@ export class CreateDmChannelDto {
     invitee: string;
 }
 
-export class returnDmChannelDto {
-    channelId: number;
-    newInviteeId: number;
-}
-
 export class CreateGroupChannelDto {
     userId: number;
     groupName: string;

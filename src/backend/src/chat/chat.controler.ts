@@ -6,21 +6,18 @@ import {
     Body,
     Logger,
     ValidationPipe,
+    HttpException,
+    HttpStatus,
 } from '@nestjs/common';
 import { Channel } from './entities/channel.entity';
-import { Message } from './entities/message.entity';
 import { MessageService } from './services/message.service';
 import { ChannelService } from './services/channel.service';
 import { UserService } from '../user/services/user/user.service';
 import { CreateDmChannelDto, CreateGroupChannelDto } from './dtos/chat.dtos';
 import { ChatGateway } from './gateway/chat.gateway';
-import { validatePath } from '@nestjs/serve-static/dist/utils/validate-path.util';
-// import { User } from '../user/entities/user.entity';
-// import { AppService } from './app.service';
 
 @Controller('chat')
 export class ChatController {
-    // constructor(private readonly appService: AppService) {}
     constructor(
         private readonly channelService: ChannelService,
         private readonly messageService: MessageService,
@@ -53,76 +50,40 @@ export class ChatController {
         return channels;
     }
 
-    // Get /api/chat/{$uId}/channel/${id}
-    // @Get(':uId/channel/:id')
-    // async getChannelById(
-    //     @Param('uId') userId: number,
-    //     @Param('id') channelId: number,
-    // ): Promise<any> {
-    //     const channel = await this.channelService.getChannelById(channelId);
-    //     if (!channel) {
-    //         this.logger.error(
-    //             'getChannelById: No channel found from id: ' + channelId,
-    //         );
-    //         return;
-    //     }
-    //     const user = await this.userService.getUserById(userId);
-    //     if (!user) {
-    //         this.logger.error('getUSerById: No user found from id: ' + userId);
-    //         return;
-    //     }
-    //     const channelDto = await this.channelService.channelDTO(channel, user);
-    //     this.logger.log('getChannelById: channel found from id: ' + channelId);
-    //     return channelDto;
-    // }
-
     // Post /api/chat/dm
     @Post('dm')
     async postNewDMChannel(
         @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
-        console.log(
-            'this is param from postNewDmChannel :' + JSON.stringify(param),
-        );
-        const user2 = await this.userService.getUserByLogin(param.invitee);
-        if (!user2) {
-            this.logger.error(
-                'postNewDMChannel: no user found for name: ' +
-                    JSON.stringify(param),
-            );
-            return;
-        }
-        const channel = await this.channelService.newDmChannel(
-            param.userId,
-            user2.id,
-        );
-        if (!channel) {
-            this.logger.error(
-                'postNewDMChannel: no new dm channel for users: ' +
-                    param.userId +
-                    ' & ' +
+        try {
+            const user1 = await this.userService.getUserById(param.userId);
+            if (
+                !(await this.channelService.allowedNewDmChannel(
+                    user1,
                     param.invitee,
+                ))
+            ) {
+                throw new HttpException(
+                    'invitee not allowed to create new dm channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            const user2 = await this.userService.getUserByLogin(param.invitee);
+            if (!user1 || !user2) {
+                throw new HttpException(
+                    'Could not find user to create new dm channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            const channel = await this.channelService.newDmChannel(
+                user1,
+                user2,
             );
+            await this.chatGateway.emitNewDmChannel(user1, user2, channel);
             return;
+        } catch {
+            this.logger.error('postNewGroupChannel: no new dm channel');
         }
-        this.logger.log(
-            'postNewDMChannel: new dm channel for users: ' +
-                param.userId +
-                ' & ' +
-                param.invitee,
-        );
-        const newUserJoinRoomDto = await this.channelService.newJoinRoomDto(
-            channel,
-            user2,
-        );
-        const dmClient = this.chatGateway.getClientSocketById(user2.id);
-        if (dmClient) {
-            console.log('this is dmCLien :' + dmClient.id);
-            dmClient.emit('newUserToChannel', newUserJoinRoomDto);
-        }
-        const newChannelDto = this.channelService.newChannelDTO(channel);
-        // console.log('this is newChannelDto :' + JSON.stringify(newChannelDto));
-        return newChannelDto;
     }
 
     // Post /api/chat/group
@@ -131,10 +92,21 @@ export class ChatController {
         @Body(new ValidationPipe()) param: CreateGroupChannelDto,
     ): Promise<any> {
         try {
-            return await this.channelService.newGroupChannel(
-                param.userId,
+            const owner = await this.userService.getUserById(param.userId);
+            console.log('owner: ' + JSON.stringify(owner));
+            if (!owner) {
+                throw new HttpException(
+                    'Could not find user to create new group channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            const channel = await this.channelService.newGroupChannel(
+                owner,
                 param.groupName,
             );
+            console.log('channel: ' + JSON.stringify(channel));
+            await this.chatGateway.emitGroupChannelToUser(channel, owner);
+            return;
         } catch {
             this.logger.error('postNewGroupChannel: no new group channel');
         }
