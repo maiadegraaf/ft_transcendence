@@ -93,6 +93,7 @@ export class ChatController {
     ): Promise<any> {
         try {
             const owner = await this.userService.getUserById(param.userId);
+            console.log('owner: ' + JSON.stringify(owner));
             if (!owner) {
                 throw new HttpException(
                     'Could not find user to create new group channel',
@@ -103,6 +104,7 @@ export class ChatController {
                 owner,
                 param.groupName,
             );
+            console.log('channel: ' + JSON.stringify(channel));
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
             return;
         } catch {

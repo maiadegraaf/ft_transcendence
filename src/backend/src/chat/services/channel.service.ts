@@ -127,10 +127,12 @@ export class ChannelService {
             );
             return;
         }
+        console.log('channel created');
         const groupProfile = await this.groupProfileService.createGroupProfile(
             owner,
             groupName,
         );
+        console.log('group profile created');
         channel.users = [];
         channel.users.push(owner);
         channel.profile = groupProfile;

@@ -20,18 +20,21 @@ export class GroupProfileService {
         private readonly userService: UserService,
     ) {}
 
-    async createGroupProfile(
-        owner: User,
-        groupName: string,
-    ): Promise<GroupProfile> {
+    async createGroupProfile(owner: User, groupName: string): Promise<any> {
         const groupProfile = new GroupProfile();
+        console.log('created group profile');
         groupProfile.owner = owner;
         groupProfile.admin = [];
         // groupProfile.blocked = [];
         // groupProfile.muted = [];
+        console.log('test1');
         groupProfile.admin.push(owner);
+        console.log('test2');
         groupProfile.name = groupName;
-        return await this.groupProfileRepository.save(groupProfile);
+        console.log('test3');
+        const profile = await this.groupProfileRepository.save(groupProfile);
+        console.log('saved group profile: ' + profile);
+        return profile;
     }
 
     async addAdmin(userId: number, channelId: number): Promise<any> {
