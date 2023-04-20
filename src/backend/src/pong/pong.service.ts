@@ -1,28 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { User } from 'src/user/user.entity';
-import { MatchInstance } from './match-instance/match-instance';
-import { MatchmakingService } from './matchmaking/matchmaking.service';
-import { MatchService } from './match/match.service';
+import { Match } from './match/match';
+import { MatchInstance } from './match/match-instance';
 import { Info } from './interfaces/info.interface';
-import { PracticeMatch } from './practice-match/practice-match';
-import { PracticeMatchService } from './practice-match/practice-match.service';
+import { PracticeMatchInstance } from './practice-match/practice-match-instance';
+import { Difficulty, PracticeMatch } from './practice-match/practice-match';
 import { UserService } from '../user/services/user/user.service';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
-import { Match } from './match/match.entity';
-import { PracticeMatchEntity } from './practice-match/practice-match.entity';
+import { PracticeMatchModule } from './practice-match/practice-match.module';
 
 @Injectable()
 export class PongService {
     private logger: Logger = new Logger('PongGateway');
+    private matchmakingList: User[] = [];
     private instances: { [key: number]: MatchInstance } = {};
-    private practiceInstance: { [key: number]: PracticeMatch } = {};
+    private practiceInstance: { [key: number]: PracticeMatchInstance } = {};
 
     constructor(
         private readonly server: Server,
-        private matchmakingService: MatchmakingService,
-        private matchesService: MatchService,
-        private practiceMatchService: PracticeMatchService,
+        private practiceMatchService: PracticeMatch,
         private userService: UserService,
         private leaderboardService: LeaderboardService,
     ) {}
@@ -30,7 +27,7 @@ export class PongService {
     async handleConnection(client: Socket, userId: any): Promise<void> {
         // this.logger.log('UserId sent by client: ' + userId);
         // this.logger.log(`Client connected: ${client.id}`);
-        const user = await this.userService.findUserByID(userId);
+        // const user = await this.userService.findUserByID(userId);
         // if (!user) {
         //     this.logger.error('User not found');
         //     return;
@@ -46,8 +43,8 @@ export class PongService {
         //         this.server.sockets.sockets.get(user.socketId),
         //     );
         // }
-        // this.userService.addSocketIdToUser(user, client.id);
-        this.logger.log('User connected: ' + user.login);
+        // await this.userService.addSocketIdToUser(user, client.id);
+        this.logger.log('User connected: ' + userId);
     }
 
     handleDisconnect(client: Socket): void {
@@ -56,11 +53,8 @@ export class PongService {
         if (instance) {
             instance.handlePlayerDisconnect(client);
             delete this.instances[instance.returnMatchId()];
-        } else if (this.matchmakingService.getMatchmakingBySocket(client.id)) {
+        } else if (this.getMatchmakingBySocket(client.id)) {
             this.handleLeaveMatchmaking(client);
-            if (!this.matchmakingService.getMatchmakingBySocket(client.id)) {
-                console.log('player removed from matchmaking for ' + client.id);
-            }
         } else {
             const practiceInstance = this.getPracticeInstanceByPlayerSocket(
                 client.id,
@@ -72,11 +66,6 @@ export class PongService {
                 ];
             }
         }
-        // turn off for now
-        // this.playerService.removePlayerBySocket(client.id);
-        // if (!this.playerService.getPlayerBySocket(client.id)) {
-        //     console.log('player removed for ' + client.id);
-        // }
     }
 
     emitOpponentFound(
@@ -90,22 +79,32 @@ export class PongService {
 
     async addSocketIdToUser(userId: number, client: Socket): Promise<User> {
         const user = await this.userService.findUserByID(userId);
-        this.logger.log('User found: ' + user.login);
         if (!user) {
             this.logger.error('User not found');
             return null;
         }
-        await this.matchmakingService.print();
-        if (await this.matchmakingService.getMatchmakingByPlayer(user)) {
-            client.emit('matchmakingCanceled');
+        console.log('user found' + user);
+        if (this.getMatchmakingByUserId(user.id)) {
+            console.log('already in list');
+            client.emit('already in list');
             return null;
         }
-        const instance = this.getInstanceByPlayerSocket(user.socketId);
-        if (instance) {
-            instance.handlePlayerDisconnect(
-                this.server.sockets.sockets.get(user.socketId),
-            );
+        if (this.getPracticeInstanceByUserId(user.id)) {
+            console.log('already in practice match');
+            client.emit('already in practice match');
+            return null;
         }
+        if (this.getInstanceByUserId(user.id)) {
+            console.log('already in match');
+            client.emit('already in match');
+            return null;
+        }
+        // const instance = this.getInstanceByPlayerSocket(user.socketId);
+        // if (instance) {
+        //     instance.handlePlayerDisconnect(
+        //         this.server.sockets.sockets.get(user.socketId),
+        //     );
+        // }
         await this.userService.addSocketIdToUser(user, client.id);
         return user;
     }
@@ -116,20 +115,12 @@ export class PongService {
         if (!newPlayer) {
             return;
         }
-        await this.matchmakingService.addPlayer(newPlayer);
-        const length = await this.matchmakingService.length();
-        if (length > 1) {
-            const player1 = await this.matchmakingService.pop();
-            const player2 = await this.matchmakingService.pop();
-            const match = await this.matchesService.createMatch(
-                player1,
-                player2,
-            );
-            this.instances[match.id] = new MatchInstance(
-                this.server,
-                match,
-                this.matchesService,
-            );
+        this.matchmakingList.push(newPlayer);
+        if (this.matchmakingList.length > 1) {
+            const player1 = this.matchmakingList.pop();
+            const player2 = this.matchmakingList.pop();
+            const match = new Match(player1, player2);
+            this.instances[match.id] = new MatchInstance(this.server, match);
             if (client.id == player1.socketId) {
                 this.emitOpponentFound(client, player2.socketId, match.id);
             } else {
@@ -141,7 +132,12 @@ export class PongService {
 
     async handleLeaveMatchmaking(client: Socket): Promise<void> {
         this.logger.log(client.id + ' left the waitlist');
-        await this.matchmakingService.removeBySocket(client.id);
+        this.matchmakingList.splice(
+            this.matchmakingList.indexOf(
+                this.getMatchmakingBySocket(client.id),
+            ),
+            1,
+        );
     }
 
     checkForEndOfMatch(match: Match): void {
@@ -151,7 +147,7 @@ export class PongService {
         }
     }
 
-    checkForEndOfPracticeMatch(practiceMatch: PracticeMatchEntity): void {
+    checkForEndOfPracticeMatch(practiceMatch: PracticeMatch): void {
         if (
             practiceMatch.score1 == practiceMatch.winningCondition ||
             practiceMatch.score2 == practiceMatch.winningCondition
@@ -166,16 +162,12 @@ export class PongService {
     async tick(client: Socket): Promise<void> {
         for (const matchId in this.instances) {
             this.instances[matchId].tick(client);
-            this.checkForEndOfMatch(
-                await this.matchesService.getMatchById(parseInt(matchId, 10)),
-            );
+            this.checkForEndOfMatch(this.instances[matchId].returnMatch());
         }
         for (const practiceMatchId in this.practiceInstance) {
             this.practiceInstance[practiceMatchId].tick(client);
             this.checkForEndOfPracticeMatch(
-                await this.practiceMatchService.getPracticeMatchById(
-                    parseInt(practiceMatchId, 10),
-                ),
+                this.practiceInstance[practiceMatchId].returnPracticeMatch(),
             );
         }
     }
@@ -184,14 +176,38 @@ export class PongService {
         if (!data.matchId && !data.practiceMatchId) {
             return;
         }
-        if (data.practiceMatchId) {
+        if (
+            data.practiceMatchId &&
+            this.practiceInstance[data.practiceMatchId]
+        ) {
             this.practiceInstance[data.practiceMatchId].handleMove(
                 client,
                 data,
             );
             return;
         }
+        if (!this.instances[data.matchId]) {
+            return;
+        }
         this.instances[data.matchId].handleMove(client, data);
+    }
+
+    getMatchmakingBySocket(socketId: string): User {
+        for (const user of this.matchmakingList) {
+            if (user.socketId == socketId) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    getMatchmakingByUserId(userId: number): User {
+        for (const user of this.matchmakingList) {
+            if (user.id == userId) {
+                return user;
+            }
+        }
+        return null;
     }
 
     getInstanceByPlayerSocket(socketId: string): MatchInstance {
@@ -206,7 +222,19 @@ export class PongService {
         return null;
     }
 
-    getPracticeInstanceByPlayerSocket(socketId: string): PracticeMatch {
+    getInstanceByUserId(userId: number): MatchInstance {
+        for (const matchId in this.instances) {
+            if (
+                this.instances[matchId].returnPlayer(1).user.id == userId ||
+                this.instances[matchId].returnPlayer(2).user.id == userId
+            ) {
+                return this.instances[matchId];
+            }
+        }
+        return null;
+    }
+
+    getPracticeInstanceByPlayerSocket(socketId: string): PracticeMatchInstance {
         for (const practiceMatchId in this.practiceInstance) {
             if (
                 this.practiceInstance[practiceMatchId].returnPlayerSocket() ==
@@ -218,16 +246,31 @@ export class PongService {
         return null;
     }
 
+    getPracticeInstanceByUserId(userId: number): PracticeMatchInstance {
+        for (const practiceMatchId in this.practiceInstance) {
+            if (
+                this.practiceInstance[practiceMatchId].returnPlayer().user.id ==
+                userId
+            ) {
+                return this.practiceInstance[practiceMatchId];
+            }
+        }
+        return null;
+    }
+
     async handlePracticeMode(client: Socket, data: any) {
         const player = await this.addSocketIdToUser(data.userId, client);
-        // const player = await this.userService.returnUserBySocketId(client.id);
-        console.log('player >' + player.login + '< wants to practice');
-        const practiceMatch =
-            await this.practiceMatchService.createPracticeMatch(player);
-        this.practiceInstance[practiceMatch.id] = new PracticeMatch(
+        if (!player) {
+            return;
+        }
+        const practiceMatch = new PracticeMatch(
+            player,
+            data.selectedDifficulty,
+            data.score,
+        );
+        this.practiceInstance[practiceMatch.id] = new PracticeMatchInstance(
             this.server,
             practiceMatch,
-            this.practiceMatchService,
         );
         client.emit('practiceMatchCreated', practiceMatch.id, client.id);
         await this.practiceInstance[practiceMatch.id].start(data);

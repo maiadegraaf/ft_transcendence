@@ -8,6 +8,7 @@ import PongGame from '../views/PongGame.vue'
 import TwoFA from '../views/2fa.vue'
 import TwoFACreate from '../views/2fa.create.vue'
 import axios from 'axios'
+import LeaderboardView from "@/views/LeaderboardView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -51,6 +52,11 @@ const router = createRouter({
             path: '/Pong',
             name: 'Pong',
             component: PongGame
+        },
+        {
+            path: '/Leaderboard',
+            name: 'Leaderboard',
+            component: LeaderboardView
         }
     ]
 })
