@@ -112,4 +112,8 @@ export class PracticeMatchInstance {
             volley: this.gameTools.volley,
         });
     }
+
+    returnPlayer() {
+        return this.player;
+    }
 }

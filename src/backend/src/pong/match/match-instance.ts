@@ -131,4 +131,12 @@ export class MatchInstance {
             client,
         );
     }
+
+    returnPlayer(number: number) {
+        if (number == 1) {
+            return this.player1;
+        } else if (number == 2) {
+            return this.player2;
+        }
+    }
 }

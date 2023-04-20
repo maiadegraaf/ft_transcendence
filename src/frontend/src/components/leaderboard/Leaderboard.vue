@@ -161,12 +161,15 @@ export default {
             whitespace: '  '
         }
     },
-    mounted() {
-        const userId = sessionStorage.getItem('user')
+    async mounted() {
+      let userId = 0;
+      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        userId = response.data.id
+      })
         if (userId === null) {
             this.$router.push('/')
         } else {
-            this.currentUser = JSON.parse(userId).user.id
+            this.currentUser = userId
         }
         console.log('Current User: ' + this.currentUser)
         axios.get('http://localhost:8080/api/leaderboard').then((response) => {

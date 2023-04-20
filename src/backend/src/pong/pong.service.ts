@@ -27,7 +27,7 @@ export class PongService {
     async handleConnection(client: Socket, userId: any): Promise<void> {
         // this.logger.log('UserId sent by client: ' + userId);
         // this.logger.log(`Client connected: ${client.id}`);
-        const user = await this.userService.findUserByID(userId);
+        // const user = await this.userService.findUserByID(userId);
         // if (!user) {
         //     this.logger.error('User not found');
         //     return;
@@ -43,8 +43,8 @@ export class PongService {
         //         this.server.sockets.sockets.get(user.socketId),
         //     );
         // }
-        // this.userService.addSocketIdToUser(user, client.id);
-        this.logger.log('User connected: ' + user.login);
+        // await this.userService.addSocketIdToUser(user, client.id);
+        this.logger.log('User connected: ' + userId);
     }
 
     handleDisconnect(client: Socket): void {
@@ -66,11 +66,6 @@ export class PongService {
                 ];
             }
         }
-        // turn off for now
-        // this.playerService.removePlayerBySocket(client.id);
-        // if (!this.playerService.getPlayerBySocket(client.id)) {
-        //     console.log('player removed for ' + client.id);
-        // }
     }
 
     emitOpponentFound(
@@ -88,16 +83,28 @@ export class PongService {
             this.logger.error('User not found');
             return null;
         }
-        if (this.matchmakingList.find((u) => u.id == user.id)) {
-            client.emit('matchmakingCanceled');
+        console.log('user found' + user);
+        if (this.getMatchmakingByUserId(user.id)) {
+            console.log('already in list');
+            client.emit('already in list');
             return null;
         }
-        const instance = this.getInstanceByPlayerSocket(user.socketId);
-        if (instance) {
-            instance.handlePlayerDisconnect(
-                this.server.sockets.sockets.get(user.socketId),
-            );
+        if (this.getPracticeInstanceByUserId(user.id)) {
+            console.log('already in practice match');
+            client.emit('already in practice match');
+            return null;
         }
+        if (this.getInstanceByUserId(user.id)) {
+            console.log('already in match');
+            client.emit('already in match');
+            return null;
+        }
+        // const instance = this.getInstanceByPlayerSocket(user.socketId);
+        // if (instance) {
+        //     instance.handlePlayerDisconnect(
+        //         this.server.sockets.sockets.get(user.socketId),
+        //     );
+        // }
         await this.userService.addSocketIdToUser(user, client.id);
         return user;
     }
@@ -194,11 +201,32 @@ export class PongService {
         return null;
     }
 
+    getMatchmakingByUserId(userId: number): User {
+        for (const user of this.matchmakingList) {
+            if (user.id == userId) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     getInstanceByPlayerSocket(socketId: string): MatchInstance {
         for (const matchId in this.instances) {
             if (
                 this.instances[matchId].returnPlayerSocket(1) == socketId ||
                 this.instances[matchId].returnPlayerSocket(2) == socketId
+            ) {
+                return this.instances[matchId];
+            }
+        }
+        return null;
+    }
+
+    getInstanceByUserId(userId: number): MatchInstance {
+        for (const matchId in this.instances) {
+            if (
+                this.instances[matchId].returnPlayer(1).user.id == userId ||
+                this.instances[matchId].returnPlayer(2).user.id == userId
             ) {
                 return this.instances[matchId];
             }
@@ -218,8 +246,23 @@ export class PongService {
         return null;
     }
 
+    getPracticeInstanceByUserId(userId: number): PracticeMatchInstance {
+        for (const practiceMatchId in this.practiceInstance) {
+            if (
+                this.practiceInstance[practiceMatchId].returnPlayer().user.id ==
+                userId
+            ) {
+                return this.practiceInstance[practiceMatchId];
+            }
+        }
+        return null;
+    }
+
     async handlePracticeMode(client: Socket, data: any) {
         const player = await this.addSocketIdToUser(data.userId, client);
+        if (!player) {
+            return;
+        }
         const practiceMatch = new PracticeMatch(
             player,
             data.selectedDifficulty,

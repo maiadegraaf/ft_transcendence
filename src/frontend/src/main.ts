@@ -24,7 +24,7 @@ app
   .use(router)
   .use(VueCookieNext)
   .use(store)
-    .user(enums)
+    .use(enums)
   .mount('#app')
 
 VueCookieNext.config({ expire: '7d' })

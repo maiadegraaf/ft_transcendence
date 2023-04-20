@@ -110,4 +110,5 @@ export default {
 
 <!--TODO: practice mode prevents the user from playing a match until the practice match is over.-->
 <!--TODO: practice mode prevent multiple matches at the same time-->
-<!--TODO: make the practice mode less buggy when then computer paddle is all the way down and then can't make it to the ball in time and so always looses.-->
+<!--TODO: I think I fixed this?? Keep an eye on it... -> make the practice mode less buggy when then computer paddle is all the way down and then can't make it to the ball in time and so always looses.-->
+<!--TODO: when disconnect lose match.-->
