@@ -15,11 +15,11 @@ import { User } from 'src/user/user.entity';
     imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User])],
     controllers: [ChatController],
     providers: [
-        ChatGateway,
         MessageService,
         ChannelService,
         GroupProfileService,
         UserService,
+        ChatGateway,
     ],
 })
 export class ChatModule {}

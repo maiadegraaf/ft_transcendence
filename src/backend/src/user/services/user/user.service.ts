@@ -1,17 +1,8 @@
-import {
-    HttpException,
-    HttpStatus,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../../../chat/entities/channel.entity';
-// import {Channel} from "../../../chat/entities/channel.entity";
-// import { Post } from 'src/typeorm/entities/Post';
-// import { Profile } from 'src/typeorm/entities/Profile';
-// import { CreateUserParams, CreateUserPostParams, CreateUserProfileParams, UpdateUserParams } from 'src/utils/types';
 
 @Injectable()
 export class UserService {
@@ -20,15 +11,15 @@ export class UserService {
         private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
     ) {}
 
-    findAllUsers() {
-        return this.userRepository.find();
+    async findAllUsers() {
+        return await this.userRepository.find();
         // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
     }
 
     async findUserByID(id: number): Promise<User> {
         const user = await this.userRepository.findOne({ where: { id } });
         if (!user) {
-            return null;
+            throw new NotFoundException('User with ID ${id} not found');
         }
         return user;
     }
@@ -61,6 +52,7 @@ export class UserService {
     }
 
     async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+        console.log(userId);
         return this.userRepository.update(userId, {
             twoFactorAuthenticationSecret: secret,
         });
@@ -73,23 +65,84 @@ export class UserService {
     }
 
     async getChannelsByUserId(userId: number): Promise<any> {
-        const user = await this.findUserByID(userId);
-        // const user = await this.userRepository.findOne(userId, {
-        //   relations: ['channels'],
-        // });
-        // user.channels;
-        console.log(user.channels);
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['channels'],
+        });
+        // console.log('getChannelsByUserId: user' + JSON.stringify(user.channels));
         return user.channels;
-        // const channels = user.find
-        // return user.channels;
+    }
+
+    async getUserNameById(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+        });
+        // console.log('getChannelsByUserId: user' + JSON.stringify(user.channels));
+        return user.login;
     }
 
     async addChannelToUser(channel: Channel, userId: number): Promise<any> {
-        // await this.userRepository.save(channel);
-        const user = await this.getChannelsByUserId(userId);
-        user.channel.push(channel);
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['channels'],
+        });
+        user.channels.push(channel);
         return await this.userRepository.save(user);
-    } // createUser(userDetails: CreateUserParams) {
+    }
+
+    async retrieveUserChannelMessages(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['channels'],
+            select: ['channels'],
+        });
+        if (!user) {
+            return null;
+        }
+        return user.channels;
+    }
+
+    async retrieveUserChannel(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['channels'],
+        });
+        if (!user) {
+            return null;
+        }
+        return user;
+    }
+
+    async getUserByLogin(userLogin: string): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { login: userLogin },
+        });
+        return user;
+    }
+
+    async getUserById(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+        });
+        return user;
+    }
+
+    async addSocketIdToUser(user: User, socketId: string): Promise<any> {
+        if (user.socketId) {
+            // add logic here if user is in a match or waitlist.
+            console.log(
+                'Replacing socketId ' +
+                    user.socketId +
+                    ' with ' +
+                    socketId +
+                    ' for user ' +
+                    user.login,
+            );
+        }
+        user.socketId = socketId;
+        return this.userRepository.save(user);
+    }
+    // createUser(userDetails: CreateUserParams) {
     //     const newUser = this.userRepository.create({ //not async so not need to await
     //         ...userDetails,
     //     });
@@ -123,33 +176,4 @@ export class UserService {
     //     const newPost = this.postRepository.create({ ...createUserPostDetails, user, }); //ensure that it relates to that user
     //     return this.postRepository.save(newPost);
     // }
-
-    async addSocketIdToUser(user: User, socketId: string): Promise<any> {
-        if (user.socketId) {
-            // add logic here if user is in a match or waitlist.
-            console.log(
-                'Replacing socketId ' +
-                    user.socketId +
-                    ' with ' +
-                    socketId +
-                    ' for user ' +
-                    user.login,
-            );
-        }
-        user.socketId = socketId;
-        return this.userRepository.save(user);
-    }
-
-    async returnUserBySocketId(socketId: string): Promise<User> {
-        for (const u of await this.findAllUsers()) {
-            if (u.socketId === socketId) {
-                console.log(
-                    'Found user ' + u.login + ' with socketId ' + socketId,
-                );
-                return u;
-            }
-        }
-
-        // return this.userRepository.findOne({ where: { socketId: socketId } });
-    }
 }

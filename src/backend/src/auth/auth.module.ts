@@ -7,10 +7,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/services/user/user.service';
 import { Repository } from 'typeorm';
+import { SessionSerializer } from './session.serializer';
 
 @Module({
-  imports: [PassportModule, TypeOrmModule.forFeature([User])],
-  providers: [FortyTwoStrategy, AuthService, UserService],
-  controllers: [AuthController],
+    imports: [
+        PassportModule.register({ session: true }),
+        TypeOrmModule.forFeature([User]),
+    ],
+    providers: [FortyTwoStrategy, AuthService, UserService, SessionSerializer],
+    controllers: [AuthController],
 })
 export class AuthModule {}

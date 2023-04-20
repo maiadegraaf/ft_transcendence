@@ -8,6 +8,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import * as express from 'express';
 import * as https from 'https';
 import * as http from 'http';
+import * as passport from 'passport';
 
 async function bootstrap() {
     // const httpsOptions = {
