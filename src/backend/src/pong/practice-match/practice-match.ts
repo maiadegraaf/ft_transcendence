@@ -4,7 +4,7 @@ export enum Difficulty {
     EASY = 'EASY',
     NORMAL = 'NORMAL',
     HARD = 'HARD',
-    IMPOSSIBLE = 'IMPOSSIBLE',
+    EXPERT = 'EXPERT',
 }
 
 export class PracticeMatch {

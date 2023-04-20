@@ -21,7 +21,7 @@
                 <option value="EASY">Easy</option>
                 <option value="NORMAL">Normal</option>
                 <option value="HARD">Hard</option>
-                <option value="IMPOSSIBLE">Impossible</option>
+                <option value="EXPERT">Expert</option>
             </select>
         </label>
         <div class="flex">

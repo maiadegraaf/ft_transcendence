@@ -110,9 +110,9 @@ export class LeaderboardService {
                 player.practiceHardWins += addScore;
                 player.practiceHardPlayed++;
                 break;
-            case Difficulty.IMPOSSIBLE:
-                player.practiceImpossibleWins += addScore;
-                player.practiceImpossiblePlayed++;
+            case Difficulty.EXPERT:
+                player.practiceExpertWins += addScore;
+                player.practiceExpertPlayed++;
                 break;
         }
         return await this.leaderboardRepository.save(player);

@@ -5,11 +5,8 @@ import { Direction, GameState } from '../enums';
 import { Ball } from '../interfaces/ball.interface';
 import { Player } from '../interfaces/player.interface';
 import { Info } from '../interfaces/info.interface';
+import { GameTools } from '../game';
 
-const height = 450;
-const width = 800;
-const max_y = height - 15;
-const min_y = 10;
 const winning_condition = 10;
 
 @Injectable()
@@ -19,26 +16,10 @@ export class MatchInstance {
     private winner = '';
     private readonly match: Match;
     private server: Server;
-    private ball: Ball = {
-        x: width / 2,
-        y: height / 2,
-        dx: Direction.Left,
-        dy: Direction.Up,
-    };
-    private player1: Player = {
-        user: null,
-        x: 20,
-        y: height / 2 - 50,
-        new_y: height / 2 - 50,
-        score: 0,
-    };
-    private player2: Player = {
-        user: null,
-        x: width - 20,
-        y: height / 2 - 50,
-        new_y: height / 2 - 50,
-        score: 0,
-    };
+    private gameTools: GameTools = new GameTools();
+    private ball: Ball = this.gameTools.ball;
+    private player1: Player = this.gameTools.player1;
+    private player2: Player = this.gameTools.player2;
 
     constructor(server: Server, match: Match) {
         this.server = server;
@@ -120,31 +101,6 @@ export class MatchInstance {
             client,
         );
         this.match.updateScore(this.player1.score, this.player2.score);
-        this.player1.score = 0;
-        this.player2.score = 0;
-        this.player1.y = height / 2 - 50;
-        this.player2.y = height / 2 - 50;
-    }
-
-    check_out_of_bounds(player): typeof player {
-        if (player.y > max_y - 100) {
-            player.y = max_y - 100;
-            player.new_y = max_y - 100;
-        } else if (player.y < min_y) {
-            player.y = min_y;
-            player.new_y = min_y;
-        }
-        return player;
-    }
-
-    smooth_movement(player): typeof player {
-        if (player.new_y < player.y) {
-            player.y += -5;
-        } else {
-            player.y += 5;
-        }
-        player = this.check_out_of_bounds(player);
-        return player;
     }
 
     tick(client: Socket): void {
@@ -152,61 +108,14 @@ export class MatchInstance {
             return;
         }
         if (this.player1.score >= winning_condition) {
-            this.end(this.player1.user.login, client);
+            this.end(this.player1.user.login + ' Won!', client);
             return;
         } else if (this.player2.score >= winning_condition) {
-            this.end(this.player2.user.login, client);
+            this.end(this.player2.user.login + ' Won!', client);
             return;
         }
 
-        this.ball.x += this.ball.dx * 5;
-        this.ball.y += this.ball.dy * 5;
-
-        if (this.player1.y != this.player1.new_y) {
-            this.player1 = this.smooth_movement(this.player1);
-        }
-        if (this.player2.y != this.player2.new_y) {
-            this.player2 = this.smooth_movement(this.player2);
-        }
-
-        if (this.ball.y <= 0 || this.ball.y >= max_y - 10) {
-            this.ball.dy *= -1;
-        }
-
-        // check for collision with player 1
-        if (
-            this.ball.x <= 40 &&
-            this.ball.y >= this.player1.y &&
-            this.ball.y <= this.player1.y + 100
-        ) {
-            this.ball.dx *= -1;
-        }
-
-        // check for collision with player 2
-        if (
-            this.ball.x >= width - 60 &&
-            this.ball.y >= this.player2.y &&
-            this.ball.y <= this.player2.y + 100
-        ) {
-            this.ball.dx *= -1;
-        }
-
-        // check for scoring
-        if (this.ball.x <= 35) {
-            this.player2.score++;
-            this.ball.x = width / 2;
-            this.ball.y = height / 2;
-            this.ball.dx = Direction.Left;
-            this.ball.dy = Direction.Up;
-        }
-
-        if (this.ball.x >= width - 38) {
-            this.player1.score++;
-            this.ball.x = width / 2;
-            this.ball.y = height / 2;
-            this.ball.dx = Direction.Right;
-            this.ball.dy = Direction.Down;
-        }
+        this.gameTools.gameLoop(this.player1, this.player2, this.ball, 0);
 
         this.emitToBothPlayers(
             'state',
@@ -217,6 +126,7 @@ export class MatchInstance {
                 gamestate: this.gamestate,
                 winner: this.winner,
                 matchId: this.match.id,
+                volley: this.gameTools.volley,
             },
             client,
         );

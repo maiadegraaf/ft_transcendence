@@ -33,11 +33,11 @@
                 difficulty="Hard"
             />
             <PracticeMatchRow
-                :played="practiceMatchData.practiceImpossiblePlayed"
-                :wins="practiceMatchData.practiceImpossibleWins"
-                :color="impossible"
+                :played="practiceMatchData.practiceExpertPlayed"
+                :wins="practiceMatchData.practiceExpertWins"
+                :color="expert"
                 :whitespace="whitespace"
-                difficulty="Impossible"
+                difficulty="Expert"
             />
         </tbody>
     </table>
@@ -55,7 +55,7 @@ export default {
             easy: '#C9DAF8',
             normal: '#81A9EE',
             hard: '#3A78E4',
-            impossible: '#1942B3'
+            expert: '#1942B3'
         }
     }
 }

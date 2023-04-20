@@ -5,6 +5,7 @@
         :ball="ball"
         :game-over="gameOver"
         :winner="winner"
+        :volley="volley"
     />
 </template>
 
@@ -20,16 +21,17 @@ export default {
             gameOver: false,
             winner: '',
             gamestate: '',
+            volley: 0,
             ball: {
-                x: 400,
-                y: 300
+                x: 390,
+                y: 215
             },
             player1: {
-                y: 250,
+                y: 175,
                 score: 0
             },
             player2: {
-                y: 250,
+                y: 175,
                 score: 0
             },
             info: {
@@ -51,6 +53,7 @@ export default {
                 gamestate: any
                 winner: any
                 matchId: any
+                volley: any
             }) => {
                 if (state.matchId !== this.matchId) {
                     return
@@ -60,6 +63,7 @@ export default {
                 this.player2 = state.player2
                 this.gamestate = state.gamestate
                 this.winner = state.winner
+                this.volley = state.volley
                 if (this.gamestate === 'end') {
                     this.gameOver = true
                 }

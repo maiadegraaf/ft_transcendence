@@ -14,6 +14,7 @@ import { User } from '../user/user.entity';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { Leaderboard } from './leaderboard/leaderboard.entity';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
+import { GameTools } from './game';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
     ],
     controllers: [PongController],
     providers: [
+        GameTools,
         PongGateway,
         PongService,
         Server,

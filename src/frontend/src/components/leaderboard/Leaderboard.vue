@@ -134,8 +134,8 @@ interface PracticeMatchData {
     practiceNormalWins: number
     practiceHardPlayed: number
     practiceHardWins: number
-    practiceImpossiblePlayed: number
-    practiceImpossibleWins: number
+    practiceExpertPlayed: number
+    practiceExpertWins: number
 }
 
 export default {
@@ -154,8 +154,8 @@ export default {
                 practiceNormalWins: 0,
                 practiceHardPlayed: 0,
                 practiceHardWins: 0,
-                practiceImpossiblePlayed: 0,
-                practiceImpossibleWins: 0
+                practiceExpertPlayed: 0,
+                practiceExpertWins: 0
             } as PracticeMatchData,
             currentUser: 0,
             whitespace: '  '
