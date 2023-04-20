@@ -30,7 +30,7 @@ export class PongService {
     async handleConnection(client: Socket, userId: any): Promise<void> {
         // this.logger.log('UserId sent by client: ' + userId);
         // this.logger.log(`Client connected: ${client.id}`);
-        const user = await this.userService.findUserByID(userId);
+        // const user = await this.userService.findUserByID(userId);
         // if (!user) {
         //     this.logger.error('User not found');
         //     return;
@@ -47,7 +47,7 @@ export class PongService {
         //     );
         // }
         // this.userService.addSocketIdToUser(user, client.id);
-        this.logger.log('User connected: ' + user.login);
+        // this.logger.log('User connected: ' + user.login);
     }
 
     handleDisconnect(client: Socket): void {
