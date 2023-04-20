@@ -11,7 +11,7 @@ html {
 }
 
 .btn--error {
-    @apply w-full py-4 bg-amaranth-purple hover:bg-amaranth-purple-darker text-white text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-amaranth-purple hover:border-amaranth-purple transition-all duration-200;
+    @apply w-full py-4 bg-amaranth-purple hover:bg-amaranth-purple-darker text-white text-2xl font-bold rounded-lg cursor-pointer border-solid border-4 border-amaranth-purple hover:border-amaranth-purple transition-all duration-200 ease-in-out;
 }
 
 .h1 {
