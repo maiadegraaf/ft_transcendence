@@ -69,6 +69,11 @@ export const UserChatStore = defineStore('userChannel', {
         },
         async setChannelInView(channelId: number) {
             this.channelInView = channelId
+        },
+        async receivedNewChannel(channel: IChannels) {
+            this.channels?.push(channel)
+            await this.setChannelInView(channel.id)
+            this.socket.emit('joinRoomById', {channelId: channel.id})
         }
     }
 })

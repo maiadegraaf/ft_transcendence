@@ -8,9 +8,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
-// import { User } from '../../users/entities/users.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { GroupProfile } from '../entities/groupProfile.entity';
+import { User } from '../../user/user.entity';
 
 @Injectable()
 export class GroupProfileService {
@@ -21,20 +21,16 @@ export class GroupProfileService {
     ) {}
 
     async createGroupProfile(
-        ownerId: number,
+        owner: User,
         groupName: string,
     ): Promise<GroupProfile> {
         const groupProfile = new GroupProfile();
-        const groupOwner = await this.userService.findUserByID(ownerId);
-        if (!groupProfile.admin.push(groupOwner)) {
-            throw new HttpException(
-                'Could not add group admin to group',
-                HttpStatus.FORBIDDEN,
-            );
-        }
-        groupProfile.owner = groupOwner;
+        groupProfile.owner = owner;
+        groupProfile.admin = [];
+        // groupProfile.blocked = [];
+        // groupProfile.muted = [];
+        groupProfile.admin.push(owner);
         groupProfile.name = groupName;
-        groupProfile.admin.push(groupOwner);
         return await this.groupProfileRepository.save(groupProfile);
     }
 

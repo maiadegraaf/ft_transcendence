@@ -8,6 +8,7 @@
             <h2 class="h2">Channels</h2>
           </div>
           <ChannelList/>
+          <ChannelInput/>
         </div>
         <div class="w-3/4 h-full flex flex-column overflow-hidden">
           <div class="border-buff border-double border-2 rounded-md">
@@ -28,11 +29,12 @@ import Nav from '@/components/Nav.vue'
 import MessageList from '@/components/Chat/MessageList.vue'
 import ChannelList from '@/components/Chat/ChannelList.vue'
 import { UserChatStore} from "@/store/store";
-import type {IMessage} from "@/store/types";
+import type {IMessage, IChannels} from "@/store/types";
 import MessageInput from "@/components/Chat/MessageInput.vue";
+import ChannelInput from "@/components/Chat/ChannelInput.vue";
 
 export default {
-  components: {MessageInput, Nav , MessageList, ChannelList},
+  components: {ChannelInput, MessageInput, Nav , MessageList, ChannelList},
   // The root element of the Vue instance.
   el: '#app',
   // The data object of the Vue instance.
@@ -47,6 +49,9 @@ export default {
   mounted() {
     this.chatStore.socket.on('msgToClient', (message: IMessage) => {
       this.chatStore.receivedMessage(message)
+    })
+    this.chatStore.socket.on('addChannelToClient', (channel: IChannels) => {
+      this.chatStore.receivedNewChannel(channel)
     })
     },
   watch: {

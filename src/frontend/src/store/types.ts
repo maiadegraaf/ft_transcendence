@@ -12,7 +12,7 @@ export interface IMessage {
     id: number
     login: string
   }
-  channel: number
+  channel: number // kan denk ik weg
 }
 
 export interface IProfile {
