@@ -48,8 +48,8 @@ export class Leaderboard {
     practiceHardWins: number;
 
     @Column({ default: 0 })
-    practiceImpossiblePlayed: number;
+    practiceExpertPlayed: number;
 
     @Column({ default: 0 })
-    practiceImpossibleWins: number;
+    practiceExpertWins: number;
 }

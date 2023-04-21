@@ -1,7 +1,6 @@
 import {
-    Column,
     Entity,
-    JoinTable,
+    JoinColumn,
     ManyToMany,
     OneToMany,
     OneToOne,
@@ -19,19 +18,12 @@ export class Channel {
     @OneToMany(() => Message, (msg) => msg.channel)
     messages: Message[];
 
-    @JoinTable()
-    @ManyToMany(() => User, (user) => user.channels)
+    @ManyToMany(() => User, (users) => users.channels)
     users: User[];
 
-    @OneToOne(() => GroupProfile, (profile) => profile.channel)
+    @JoinColumn()
+    @OneToOne(() => GroupProfile, (profile) => profile.channel, {
+        nullable: true,
+    })
     profile: GroupProfile;
-    //
-    // @Column()
-    // type: ChannelEnum;
-    //
-    // @Column()
-    // dmChannel: ChannelEnum;
-
-    // @Column()
-    // name: string;
 }

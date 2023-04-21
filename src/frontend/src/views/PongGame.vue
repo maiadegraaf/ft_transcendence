@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import Pong from '../components/Pong.vue'
+import Pong from '../components/pong/Pong.vue'
 import Nav from '@/components/Nav.vue'
 
 export default {

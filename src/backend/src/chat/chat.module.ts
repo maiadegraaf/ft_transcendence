@@ -17,11 +17,11 @@ import { AvatarService } from 'src/user/services/user/avatar.service';
     imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User, Avatar])],
     controllers: [ChatController],
     providers: [
-        ChatGateway,
         MessageService,
         ChannelService,
         GroupProfileService,
         UserService,
+        ChatGateway,
         AvatarService,
     ],
 })

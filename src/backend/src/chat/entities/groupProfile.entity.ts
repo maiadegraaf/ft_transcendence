@@ -30,6 +30,10 @@ export class GroupProfile {
     @ManyToMany(() => User, (usr) => usr.id)
     blocked: User[];
 
+    @JoinTable()
+    @ManyToMany(() => User, (usr) => usr.id)
+    muted: User[];
+
     @Column()
     name: string;
     // id: number;

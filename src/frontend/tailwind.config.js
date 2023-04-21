@@ -14,7 +14,7 @@ module.exports = {
                 easy: '#C9DAF8',
                 normal: '#81A9EE',
                 hard: '#3A78E4',
-                impossible: '#1942B3'
+                expert: '#1942B3'
             },
             backgroundColor: {
                 default: 'amaranth-purple'
