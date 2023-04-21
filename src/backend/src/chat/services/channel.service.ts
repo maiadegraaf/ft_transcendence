@@ -119,23 +119,32 @@ export class ChannelService {
 
     async newGroupChannel(owner: User, groupName: string): Promise<any> {
         // check if group name is unique || not a username
-        const channel = await this.createChannel();
-        if (!channel) {
+        console.log('group name: ' + groupName);
+        const groupProfile = await this.groupProfileService.newGroupProfile(
+            owner,
+            groupName,
+        );
+        console.log('group profile created: ' + JSON.stringify(groupProfile));
+        if (!groupProfile) {
             throw new HttpException(
-                'could not create channel',
+                'could not create group profile',
                 HttpStatus.FORBIDDEN,
             );
             return;
         }
-        console.log('channel created');
-        const groupProfile = await this.groupProfileService.createGroupProfile(
-            owner,
-            groupName,
-        );
-        console.log('group profile created');
-        channel.users = [];
-        channel.users.push(owner);
-        channel.profile = groupProfile;
-        return await this.channelRepository.save(channel);
+        console.log('group profile created: ' + JSON.stringify(groupProfile));
+        // const channel = await this.createChannel();
+        // if (!channel) {
+        //     throw new HttpException(
+        //         'could not create channel',
+        //         HttpStatus.FORBIDDEN,
+        //     );
+        //     return;
+        // }
+        // console.log('group channel created');
+        // channel.users = [];
+        // channel.users.push(owner);
+        // channel.profile = groupProfile;
+        // return await this.channelRepository.save(channel);
     }
 }

@@ -9,6 +9,7 @@
           </div>
           <ChannelList/>
           <ChannelInput/>
+<!--          <ChannelInput :chat-store="chatStore"/>-->
         </div>
         <div class="w-3/4 h-full flex flex-column overflow-hidden">
           <div class="border-buff border-double border-2 rounded-md">
@@ -38,15 +39,18 @@ export default {
   // The root element of the Vue instance.
   el: '#app',
   // The data object of the Vue instance.
-  setup() {
+    setup() {
     const chatStore = UserChatStore()
-    chatStore.fetchUserData()
-    chatStore.connectSocket()
-    chatStore.loadChannels()
+    // chatStore.setupChatStore()
+      // chatStore.setupChatStore()
+    // chatStore.fetchUserData()
+    // chatStore.connectSocket()
+    // chatStore.loadChannels()
     return { chatStore }
   },
 
-  mounted() {
+  async mounted() {
+    await this.chatStore.setupChatStore()
     this.chatStore.socket.on('msgToClient', (message: IMessage) => {
       this.chatStore.receivedMessage(message)
     })

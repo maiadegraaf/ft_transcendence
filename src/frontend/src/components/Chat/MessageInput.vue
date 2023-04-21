@@ -31,7 +31,9 @@ export default {
         channel: 0,
       }
     },
-  mounted() {
+  async mounted() {
+    await this.chatStore.fetchUserData()
+    await this.chatStore.connectSocket()
     this.sender.id = this.chatStore.userId
     this.sender.login = this.chatStore.name
     console.log(this.$data)

@@ -56,22 +56,31 @@ export class ChatController {
         @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
         try {
+            console.log('param: ' + JSON.stringify(param));
             const user1 = await this.userService.getUserById(param.userId);
-            if (
-                !(await this.channelService.allowedNewDmChannel(
-                    user1,
-                    param.invitee,
-                ))
-            ) {
+            if (!user1) {
                 throw new HttpException(
-                    'invitee not allowed to create new dm channel',
+                    'Could not find user1 by id to create new dm channel',
                     HttpStatus.FORBIDDEN,
                 );
             }
+            // console.log('user1: ' + JSON.stringify(user1));
+            // if (
+            //     !(await this.channelService.allowedNewDmChannel(
+            //         user1,
+            //         param.invitee,
+            //     ))
+            // ) {
+            //     throw new HttpException(
+            //         'invitee not allowed to create new dm channel',
+            //         HttpStatus.FORBIDDEN,
+            //     );
+            // }
+            console.log('invitee allowed to create new dm channel');
             const user2 = await this.userService.getUserByLogin(param.invitee);
-            if (!user1 || !user2) {
+            if (!user2) {
                 throw new HttpException(
-                    'Could not find user to create new dm channel',
+                    'Could not find user2 by invitee to create new dm channel',
                     HttpStatus.FORBIDDEN,
                 );
             }
@@ -79,10 +88,11 @@ export class ChatController {
                 user1,
                 user2,
             );
+            console.log('channel: ' + JSON.stringify(channel));
             await this.chatGateway.emitNewDmChannel(user1, user2, channel);
             return;
-        } catch {
-            this.logger.error('postNewGroupChannel: no new dm channel');
+        } catch (error) {
+            this.logger.error('postNewDMChannel: ' + error);
         }
     }
 
@@ -92,6 +102,7 @@ export class ChatController {
         @Body(new ValidationPipe()) param: CreateGroupChannelDto,
     ): Promise<any> {
         try {
+            console.log('param: ' + JSON.stringify(param));
             const owner = await this.userService.getUserById(param.userId);
             console.log('owner: ' + JSON.stringify(owner));
             if (!owner) {
@@ -104,11 +115,17 @@ export class ChatController {
                 owner,
                 param.groupName,
             );
+            if (!channel) {
+                throw new HttpException(
+                    'Could not create new group channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
             console.log('channel: ' + JSON.stringify(channel));
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
             return;
-        } catch {
-            this.logger.error('postNewGroupChannel: no new group channel');
+        } catch (error) {
+            this.logger.error('postNewGroupChannel: ' + error);
         }
     }
 }

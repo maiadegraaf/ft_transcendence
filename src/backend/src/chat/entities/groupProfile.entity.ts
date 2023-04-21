@@ -1,6 +1,7 @@
 import {
     Column,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
     OneToMany,
@@ -16,15 +17,20 @@ export class GroupProfile {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => Channel, (channel) => channel.profile) // @PrimaryGeneratedColumn()
+    // @JoinColumn()
+    @OneToOne(() => Channel, (channel) => channel.profile, { nullable: true })
     channel: Channel;
+
+    // @JoinColumn()
+    @OneToOne(() => User, (owner) => owner.groupProfile)
+    owner: User;
+
+    @Column({ nullable: true })
+    name: string;
 
     @JoinTable()
     @ManyToMany(() => User, (admin) => admin.groupProfile)
     admin: User[];
-
-    @OneToOne(() => User, (owner) => owner.groupProfile)
-    owner: User;
 
     @JoinTable()
     @ManyToMany(() => User, (usr) => usr.id)
@@ -33,22 +39,4 @@ export class GroupProfile {
     @JoinTable()
     @ManyToMany(() => User, (usr) => usr.id)
     muted: User[];
-
-    @Column()
-    name: string;
-    // id: number;
-    //
-    // @OneToMany(() => Message, (msg) => msg.channel)
-    // messages: Message[];
-    //
-    // @JoinTable()
-    // @ManyToMany(() => User, (usr) => usr.id)
-    // users: User[];
-    // @OneToOne(() => GroupProfile)
-    //
-    // @Column()
-    // type: ChannelEnum;
-    //
-    // @Column()
-    // dmChannel: ChannelEnum;
 }

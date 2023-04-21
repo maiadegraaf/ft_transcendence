@@ -1,19 +1,13 @@
 import {
     Column,
     Entity,
-    JoinColumn,
     JoinTable,
     ManyToMany,
-    OneToMany,
     OneToOne,
     PrimaryColumn,
-    PrimaryGeneratedColumn,
-    RelationOptions,
 } from 'typeorm';
 import { Channel } from '../chat/entities/channel.entity';
 import { GroupProfile } from '../chat/entities/groupProfile.entity';
-// import { Post } from './Post';
-// import { Profile } from './Profile';
 
 @Entity({ name: 'users' })
 export class User {
@@ -40,14 +34,8 @@ export class User {
     @JoinTable()
     channels: Channel[];
 
-    @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
+    @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.owner)
     groupProfile: GroupProfile;
-    // @OneToOne(() => Profile)
-    // @JoinColumn()
-    // profile: Profile;
-
-    // @OneToMany(() => Post, (post) => post.user)
-    // posts: Post[];
 
     @Column({
         default: null,

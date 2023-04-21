@@ -23,8 +23,10 @@ import axios from "axios";
 
 export default {
   name: "ChannelInput",
+  // props: ['chatStore']
   setup() {
     const chatStore = UserChatStore()
+    // chatStore.setupChatStore()
     return { chatStore }
   },
   data(): any {
@@ -35,15 +37,16 @@ export default {
         userName: '',
       }
     },
-  mounted() {
+  async mounted() {
+    await this.chatStore.fetchUserData()
     this.userId = this.chatStore.userId
     this.userName = this.chatStore.name
   },
   methods: {
     dmNewUser(): void {
       // Validates the input before sending the message.
-      if (this.text.length <= 0) {
-        this.text = ''
+      if (this.dmText.length <= 0) {
+        this.dmText = ''
         return
       }
       const param = {
@@ -61,7 +64,7 @@ export default {
       }
       const param = {
         userId: this.userId,
-        channelName: this.groupText,
+        groupName: this.groupText,
       }
       axios.post('/api/chat/group', param)
       this.groupText = ''
