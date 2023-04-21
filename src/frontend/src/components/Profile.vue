@@ -1,3 +1,10 @@
+<!-- TO DO 
+- fix the XML parsing error when avatar image gets uploaded
+- age refreshes automaticaly when avatarfix that p image gets uploaded
+- Stats (such as: wins and losses, ladder level, achievements, and so forth) have to
+be displayed on the user profile -->
+
+
 <template>
     <div>
         <header></header>
@@ -33,6 +40,7 @@ export default {
                 isTwoFactorAuthenticationEnabled: Boolean,
                 accessToken: String,
                 refreshToken: String,
+                newPic: false,
             }
             // user: {
             //     id: 0,
@@ -54,6 +62,7 @@ export default {
     },
     methods: {
         async handleUploadAvatar() {
+            this.user.newPic = true;
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
 
