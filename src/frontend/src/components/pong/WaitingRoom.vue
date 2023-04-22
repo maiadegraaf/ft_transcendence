@@ -14,11 +14,6 @@ export default {
             console.log('Opponent found')
             this.$emit('opponent-found', matchId)
         })
-
-        this.socket.on('matchmakingCanceled', () => {
-            console.log('Matchmaking canceled')
-            this.$emit('matchmaking-error')
-        })
     },
     methods: {
         leaveList() {

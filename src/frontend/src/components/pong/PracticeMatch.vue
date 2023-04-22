@@ -89,7 +89,6 @@ export default {
         })
 
         window.addEventListener('keydown', (event) => {
-            console.log('Key pressed')
             switch (event.keyCode) {
                 case 38: // up arrow key
                     this.info.d = -1
@@ -108,7 +107,5 @@ export default {
 }
 </script>
 
-<!--TODO: practice mode prevents the user from playing a match until the practice match is over.-->
-<!--TODO: practice mode prevent multiple matches at the same time-->
 <!--TODO: I think I fixed this?? Keep an eye on it... -> make the practice mode less buggy when then computer paddle is all the way down and then can't make it to the ball in time and so always looses.-->
 <!--TODO: when disconnect lose match.-->

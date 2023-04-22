@@ -28,7 +28,6 @@
                 :user-id="currentPlayerId"
                 :socket="socket"
                 @leave-matchmaking="leaveMatchmaking"
-                @matchmaking-error="matchmakingError"
                 @opponent-found="opponentFound"
             />
         </div>
@@ -50,7 +49,7 @@ import PracticeMatchConfiguration from '@/components/pong/practiceMatchConfigura
 import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import WaitingRoom from '@/components/pong/WaitingRoom.vue'
 import Match from '@/components/pong/Match.vue'
-import axios from "axios";
+import axios from 'axios'
 interface practiceSettingsInterface {
     score: number
     selectedDifficulty: string
@@ -83,71 +82,28 @@ export default {
         Match,
         ErrorPopUp
     },
-  async mounted() {
-      let userId = 0;
-      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-        userId = response.data.id
-      })
-      // console.log('Session Storage User: ' + userId)
-      if (userId === 0) {
-        this.$router.push('/')
-      } else {
-        this.currentPlayerId = userId
-        console.log('Current player id: ' + this.currentPlayerId)
-        // console.log('Current player id: ' + this.currentPlayerId)
-        this.socket = io('http://localhost:8080', {
-          query: {
-            userId: this.currentPlayerId
-          }
+    async mounted() {
+        let userId = 0
+        await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+            userId = response.data.id
         })
-      }
-
-      this.socket.on('already in list', () => {
-        this.$refs.errorPopUp.show('You are already waiting to join a match.')
-        this.waiting = false
-        this.practiceMode = false
-        this.startPractice = false
-        this.startMatch = false
-      })
-
-      this.socket.on('already in practice match', () => {
-        this.$refs.errorPopUp.show('You are already in a practice match.')
-        this.waiting = false
-        this.practiceMode = false
-        this.startPractice = false
-        this.startMatch = false
-      })
-
-      this.socket.on('already in match', () => {
-        this.$refs.errorPopUp.show('You are already in a match.')
-        this.waiting = false
-        this.practiceMode = false
-        this.startPractice = false
-        this.startMatch = false
-      })
-
-      window.addEventListener('keydown', (event) => {
-        console.log('Key pressed')
-        if (!this.started) {
-          console.log('Game not started')
-          return
+        if (userId === 0) {
+            this.$router.push('/')
+        } else {
+            this.currentPlayerId = userId
+            console.log('Current player id: ' + this.currentPlayerId)
+            // console.log('Current player id: ' + this.currentPlayerId)
+            this.socket = io('http://localhost:8080', {
+                query: {
+                    userId: this.currentPlayerId
+                }
+            })
         }
-        console.log('Game started')
-        switch (event.keyCode) {
-          case 38: // up arrow key
-            this.info.d = -1
-            break
-          case 40: // down arrow key
-            this.info.d = 1
-            break
-        }
-        if (!this.socket) {
-          console.log('Socket not connected')
-          return
-        }
-        console.log('Sending move to socket ' + this.socket.id)
-        this.socket.emit('move', this.info)
-      })
+
+        this.socket.on('MultipleConnections', (msg: string) => {
+            this.$refs.errorPopUp.show('You are already ' + msg)
+            this.reset()
+        })
     },
     beforeUnmount() {
         this.socket.disconnect()
@@ -167,6 +123,7 @@ export default {
             this.practiceMode = false
             this.startedBy = ''
             this.startMatch = false
+            this.waiting = false
         },
         joinMatch() {
             console.log('Joining match...')
@@ -178,6 +135,7 @@ export default {
         },
         matchmakingError() {
             this.$refs.errorPopUp.show('You cannot join a match in multiple tabs or windows.')
+            this.reset()
         },
         opponentFound(matchId: number) {
             this.startedBy = this.currentPlayerId
