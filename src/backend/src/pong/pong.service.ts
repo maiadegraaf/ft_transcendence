@@ -49,22 +49,17 @@ export class PongService {
 
     handleDisconnect(client: Socket): void {
         this.logger.log(`Client disconnected: ${client.id}`);
-        const instance = this.getInstanceByPlayerSocket(client.id);
-        if (instance) {
-            instance.handlePlayerDisconnect(client);
-            delete this.instances[instance.returnMatchId()];
-        } else if (this.getMatchmakingBySocket(client.id)) {
-            this.handleLeaveMatchmaking(client);
-        } else {
-            const practiceInstance = this.getPracticeInstanceByPlayerSocket(
-                client.id,
-            );
-            if (practiceInstance) {
-                practiceInstance.handleDisconnect(client);
-                delete this.practiceInstance[
-                    practiceInstance.returnPracticeMatchId()
-                ];
-            }
+        const m = this.getMatchmakingBySocket(client.id);
+        if (m) {
+            this.matchmakingList.splice(this.matchmakingList.indexOf(m), 1);
+        }
+        const i = this.getInstanceByPlayerSocket(client.id);
+        if (i) {
+            i.handlePlayerDisconnect(client);
+        }
+        const p = this.getPracticeInstanceByPlayerSocket(client.id);
+        if (p) {
+            p.handleDisconnect(client);
         }
     }
 
@@ -123,6 +118,19 @@ export class PongService {
                 this.matchmakingList.pop(),
             );
         }
+    }
+
+    async handleCreateMatch(
+        client: Socket,
+        player1Id: number,
+        player2Id: number,
+    ) {
+        const player1 = await this.userService.findUserByID(player1Id);
+        const player2 = await this.userService.findUserByID(player2Id);
+        if (!player1 || !player2) {
+            return;
+        }
+        this.createMatch(client, player1, player2);
     }
 
     createMatch(client: Socket, player1: User, player2: User): Match {

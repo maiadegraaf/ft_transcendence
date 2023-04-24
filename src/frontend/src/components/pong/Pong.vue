@@ -104,10 +104,15 @@ export default {
             this.$refs.errorPopUp.show('You are already ' + msg)
             this.reset()
         })
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                this.socket.emit('disconnect')
+            }
+        })
     },
     beforeUnmount() {
         this.socket.disconnect()
-        this.$root.$off('reset')
     },
     methods: {
         setPracticeMode() {
