@@ -7,6 +7,7 @@
           <div class="border-buff border-double border-2 rounded-md">
             <h2 class="h2">Channels</h2>
           </div>
+          <ChannelGroup/>
           <ChannelList/>
           <ChannelInput/>
 <!--          <ChannelInput :chat-store="chatStore"/>-->
@@ -33,9 +34,10 @@ import { UserChatStore} from "@/store/store";
 import type {IMessage, IChannels} from "@/store/types";
 import MessageInput from "@/components/Chat/MessageInput.vue";
 import ChannelInput from "@/components/Chat/ChannelInput.vue";
+import ChannelGroup from "@/components/Chat/ChannelGroup.vue";
 
 export default {
-  components: {ChannelInput, MessageInput, Nav , MessageList, ChannelList},
+  components: {ChannelGroup, ChannelInput, MessageInput, Nav , MessageList, ChannelList},
   // The root element of the Vue instance.
   el: '#app',
   // The data object of the Vue instance.

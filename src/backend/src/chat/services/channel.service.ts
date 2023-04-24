@@ -119,18 +119,6 @@ export class ChannelService {
 
     async newGroupChannel(owner: User, groupName: string): Promise<any> {
         // check if groupName is unique
-        const groupProfile = await this.groupProfileService.newGroupProfile(
-            owner,
-            groupName,
-        );
-        if (!groupProfile) {
-            throw new HttpException(
-                'could not create group profile',
-                HttpStatus.FORBIDDEN,
-            );
-            return;
-        }
-        console.log('group profile created: ' + JSON.stringify(groupProfile));
         const channel = await this.createChannel();
         if (!channel) {
             throw new HttpException(
@@ -139,9 +127,43 @@ export class ChannelService {
             );
             return;
         }
+        const groupProfile = await this.groupProfileService.newGroupProfile(
+            owner,
+            groupName,
+            channel,
+        );
+        if (!groupProfile) {
+            await this.channelRepository.remove(channel);
+            throw new HttpException(
+                'could not create group profile',
+                HttpStatus.FORBIDDEN,
+            );
+            return;
+        }
         channel.users = [];
         channel.users.push(owner);
         channel.profile = groupProfile;
         return await this.channelRepository.save(channel);
+    }
+
+    async deleteChannel(channelId: number): Promise<any> {
+        try {
+            const channel = await this.channelRepository.findOne({
+                where: { id: channelId },
+            });
+            if (!channel) {
+                throw new HttpException(
+                    'Channel with ID ${id} not found to delete channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            await this.channelRepository.remove(channel);
+            return;
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

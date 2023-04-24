@@ -4,6 +4,7 @@ import {
     JoinColumn,
     JoinTable,
     ManyToMany,
+    ManyToOne,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
@@ -22,7 +23,7 @@ export class GroupProfile {
     channel: Channel;
 
     @JoinColumn()
-    @OneToOne(() => User, (owner) => owner.groupProfile)
+    @ManyToOne(() => User, (owner) => owner.groupProfile)
     owner: User;
 
     @Column({ nullable: true })

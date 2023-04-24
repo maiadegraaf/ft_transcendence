@@ -23,18 +23,9 @@ export class GroupProfileService {
     async createGroupProfile(): Promise<any> {
         const groupProfile = new GroupProfile();
         return await this.groupProfileRepository.save(groupProfile);
-        // groupProfile.owner = owner;
-        // groupProfile.admin = [];
-        // groupProfile.admin.push(owner);
-        // groupProfile.name = groupName;
-        // console.log(JSON.stringify(groupProfile));
-        // const profile = await this.groupProfileRepository.save(groupProfile);
-        // console.log(JSON.stringify(profile));
-        // return profile;
-        // return await this.groupProfileRepository.save(groupProfile);
     }
 
-    async newGroupProfile(owner: User, groupName: string) {
+    async newGroupProfile(owner: User, groupName: string, channel: Channel) {
         // const groupProfile = new GroupProfile();
         const groupProfile = await this.createGroupProfile();
         if (!groupProfile) {
@@ -44,6 +35,7 @@ export class GroupProfileService {
             );
             return;
         }
+        // groupProfile.channel = channel;
         groupProfile.admin = [];
         groupProfile.admin.push(owner);
         groupProfile.blocked = [];
