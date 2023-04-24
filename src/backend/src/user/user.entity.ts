@@ -30,12 +30,21 @@ export class User {
     @Column({ default: false })
     isTwoFactorAuthenticationEnabled: boolean;
 
-    @ManyToMany(() => Channel, (channel) => channel.users)
     @JoinTable()
+    @ManyToMany(() => Channel, (channel) => channel.users)
     channels: Channel[];
 
     @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.owner)
     groupProfile: GroupProfile;
+
+    @ManyToMany(() => GroupProfile, (group) => group.admin)
+    admin: GroupProfile[];
+
+    @ManyToMany(() => GroupProfile, (group) => group.blocked)
+    blocked: GroupProfile[];
+
+    @ManyToMany(() => GroupProfile, (group) => group.muted)
+    muted: GroupProfile[];
 
     @Column({
         default: null,

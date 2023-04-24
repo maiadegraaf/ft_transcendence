@@ -67,6 +67,14 @@ export default {
         groupName: this.groupText,
       }
       axios.post('/api/chat/group', param)
+          .then((response) => {
+            console.log(response)
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          });
       this.groupText = ''
     },
   }

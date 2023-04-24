@@ -17,11 +17,11 @@ export class GroupProfile {
     @PrimaryGeneratedColumn()
     id: number;
 
-    // @JoinColumn()
+    @JoinColumn()
     @OneToOne(() => Channel, (channel) => channel.profile, { nullable: true })
     channel: Channel;
 
-    // @JoinColumn()
+    @JoinColumn()
     @OneToOne(() => User, (owner) => owner.groupProfile)
     owner: User;
 
@@ -33,10 +33,10 @@ export class GroupProfile {
     admin: User[];
 
     @JoinTable()
-    @ManyToMany(() => User, (usr) => usr.id)
+    @ManyToMany(() => User, (usr) => usr.blocked)
     blocked: User[];
 
     @JoinTable()
-    @ManyToMany(() => User, (usr) => usr.id)
+    @ManyToMany(() => User, (usr) => usr.muted)
     muted: User[];
 }

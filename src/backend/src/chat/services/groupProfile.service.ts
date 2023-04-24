@@ -48,41 +48,9 @@ export class GroupProfileService {
         groupProfile.admin.push(owner);
         groupProfile.blocked = [];
         groupProfile.muted = [];
-        const profile = await this.groupProfileRepository.save(groupProfile);
-        await this.groupProfileRepository.update(profile.id, {
-            name: groupName,
-            owner: owner,
-            channel: null,
-        });
-        // GroupProfile.owner = owner;
-        // GroupProfile.name = groupName;
-        // groupProfile.owner = owner;
-        // groupProfile.name = groupName;
-        // groupProfile.channel = null;
-        // profile.set('owner', owner);
-        // profile.set('name', groupName);
-        // profile.set('channel', null);
-        // const pr = await this.groupProfileRepository.save(profile);
-
-        return profile;
-        // const groupAdmin = [];
-        // groupAdmin.push(owner);
-        // const profile = await this.groupProfileRepository.update(
-        //     groupProfile.id,
-        //     {
-        //         channel: null,
-        //         admin: groupAdmin,
-        //         owner: owner,
-        //         blocked: [],
-        //         muted: [],
-        //         name: groupName,
-        //     },
-        // );
-        // JSON.stringify(profile);
-        // throw new HttpException(
-        //     'could not create group profile',
-        //     HttpStatus.FORBIDDEN,
-        // );
+        groupProfile.name = groupName;
+        groupProfile.owner = owner;
+        return await this.groupProfileRepository.save(groupProfile);
     }
 
     async addAdmin(userId: number, channelId: number): Promise<any> {
