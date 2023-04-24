@@ -20,21 +20,37 @@ export class GroupProfileService {
         private readonly userService: UserService,
     ) {}
 
-    async createGroupProfile(owner: User, groupName: string): Promise<any> {
+    async createGroupProfile(): Promise<any> {
         const groupProfile = new GroupProfile();
-        console.log('created group profile');
-        groupProfile.owner = owner;
+        return await this.groupProfileRepository.save(groupProfile);
+        // groupProfile.owner = owner;
+        // groupProfile.admin = [];
+        // groupProfile.admin.push(owner);
+        // groupProfile.name = groupName;
+        // console.log(JSON.stringify(groupProfile));
+        // const profile = await this.groupProfileRepository.save(groupProfile);
+        // console.log(JSON.stringify(profile));
+        // return profile;
+        // return await this.groupProfileRepository.save(groupProfile);
+    }
+
+    async newGroupProfile(owner: User, groupName: string) {
+        // const groupProfile = new GroupProfile();
+        const groupProfile = await this.createGroupProfile();
+        if (!groupProfile) {
+            throw new HttpException(
+                'could not create group profile',
+                HttpStatus.FORBIDDEN,
+            );
+            return;
+        }
         groupProfile.admin = [];
-        // groupProfile.blocked = [];
-        // groupProfile.muted = [];
-        console.log('test1');
         groupProfile.admin.push(owner);
-        console.log('test2');
+        groupProfile.blocked = [];
+        groupProfile.muted = [];
         groupProfile.name = groupName;
-        console.log('test3');
-        const profile = await this.groupProfileRepository.save(groupProfile);
-        console.log('saved group profile: ' + profile);
-        return profile;
+        groupProfile.owner = owner;
+        return await this.groupProfileRepository.save(groupProfile);
     }
 
     async addAdmin(userId: number, channelId: number): Promise<any> {

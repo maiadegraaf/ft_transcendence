@@ -7,11 +7,11 @@ export default {
         return {
             user: {
                 id: Number,
-                login: String,
-                email: String,
+                login: '',
+                email: '',
                 isTwoFactorAuthenticationEnabled: Boolean,
-                accessToken: String,
-                refreshToken: String,
+                accessToken: '',
+                refreshToken: '',
             }
         }
     },

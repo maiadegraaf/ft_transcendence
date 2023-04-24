@@ -3,7 +3,8 @@ import {VueCookieNext} from "vue-cookie-next";
 import type {Socket} from "socket.io-client";
 import {io} from "socket.io-client";
 import type {IChannels, IMessage} from "@/store/types";
-import {formToJSON} from "axios";
+import axios, {formToJSON} from "axios";
+// import axios from "axios/index";
 
 
 export const UserChatStore = defineStore('userChannel', {
@@ -34,14 +35,27 @@ export const UserChatStore = defineStore('userChannel', {
     },
 
     actions: {
-        fetchUserData() {
-            const userSession = sessionStorage.getItem('user')
-            if (userSession == null) {
-                return false
-            }
-            const user = JSON.parse(userSession).user
+        async setupChatStore() {
+            await this.fetchUserData()
+            this.connectSocket()
+            await this.loadChannels()
+        },
+        async fetchUserData() {
+            const response = await fetch('http://localhost:8080/api/auth/profile')
+            const user = await response.json()
             this.userId = user.id
             this.name = user.login
+            console.log('fetchUserData --> id: ' + this.userId + ' | Login:  ' + this.name)
+            if (this.userId == -1) {
+                return false
+            }
+            // const userSession = sessionStorage.getItem('user')
+            // if (userSession == null) {
+            //     return false
+            // }
+            // const user = JSON.parse(userSession).user
+            // this.userId = user.id
+            // this.name = user.login
             return true
         },
         async loadChannels() {

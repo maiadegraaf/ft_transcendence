@@ -1,19 +1,13 @@
 import {
     Column,
     Entity,
-    JoinColumn,
     JoinTable,
     ManyToMany,
-    OneToMany,
     OneToOne,
     PrimaryColumn,
-    PrimaryGeneratedColumn,
-    RelationOptions,
 } from 'typeorm';
 import { Channel } from '../chat/entities/channel.entity';
 import { GroupProfile } from '../chat/entities/groupProfile.entity';
-// import { Post } from './Post';
-// import { Profile } from './Profile';
 
 @Entity({ name: 'users' })
 export class User {
@@ -36,18 +30,21 @@ export class User {
     @Column({ default: false })
     isTwoFactorAuthenticationEnabled: boolean;
 
-    @ManyToMany(() => Channel, (channel) => channel.users)
     @JoinTable()
+    @ManyToMany(() => Channel, (channel) => channel.users)
     channels: Channel[];
 
-    @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
+    @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.owner)
     groupProfile: GroupProfile;
-    // @OneToOne(() => Profile)
-    // @JoinColumn()
-    // profile: Profile;
 
-    // @OneToMany(() => Post, (post) => post.user)
-    // posts: Post[];
+    @ManyToMany(() => GroupProfile, (group) => group.admin)
+    admin: GroupProfile[];
+
+    @ManyToMany(() => GroupProfile, (group) => group.blocked)
+    blocked: GroupProfile[];
+
+    @ManyToMany(() => GroupProfile, (group) => group.muted)
+    muted: GroupProfile[];
 
     @Column({
         default: null,

@@ -119,8 +119,6 @@ export class ChatGateway
 
     handleConnection(client: Socket, ...args: any[]) {
         const userId = client.handshake.query.userId;
-        // console.log('user connected: with id: ' + userId);
-        // const userName = client.handshake.query.userName;
         this.clientMap.set(parseInt(userId.toString()), client);
         this.logger.log(
             `Client connected to chat: ${client.id} with userId: ${userId}`,

@@ -9,10 +9,14 @@ import {
 import { AuthService } from './auth.service';
 import { FortyTwoAuthGuard } from './auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { UserService } from '../user/services/user/user.service';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private userService: UserService,
+    ) {}
 
     @Get('42')
     @UseGuards(AuthGuard('42'))
@@ -39,6 +43,16 @@ export class AuthController {
     async getProfile(@Req() req) {
         const user = req.session.user;
         return user;
+    }
+
+    @Get('profile/:id')
+    async getProfileFake(@Req() req, @Res() res) {
+        req.session.user = await this.userService.findUserByID(req.params.id);
+        if (req.session.user.isTwoFactorAuthenticationEnabled)
+            res.redirect('/2fa/create');
+        else {
+            res.redirect('/2fa');
+        }
     }
 
     @Get('logout')
