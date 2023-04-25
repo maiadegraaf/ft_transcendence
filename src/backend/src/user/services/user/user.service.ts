@@ -1,4 +1,3 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import {
 	HttpException,
 	HttpStatus,
@@ -143,56 +142,6 @@ export class UserService {
         return user;
     }
 
-    async addSocketIdToUser(user: User, socketId: string): Promise<any> {
-        if (user.socketId) {
-            // add logic here if user is in a match or waitlist.
-            console.log(
-                'Replacing socketId ' +
-                    user.socketId +
-                    ' with ' +
-                    socketId +
-                    ' for user ' +
-                    user.login,
-            );
-        }
-        user.socketId = socketId;
-        return this.userRepository.save(user);
-    }
-    // createUser(userDetails: CreateUserParams) {
-    //     const newUser = this.userRepository.create({ //not async so not need to await
-    //         ...userDetails,
-    //     });
-    //     return this.userRepository.save(newUser); //returns promise so need to await in controller
-    // }
-
-    // '...updateUserDetails' will spread updateUserDatails. I user only updates username/email, only username/email will be updated
-    // If username and email. then username AND email will be updated
-    // updateUser(id: number, updateUserDetails: UpdateUserParams) {
-    //     return this.userRepository.update({ id }, {...updateUserDetails });
-    // }
-
-    // //Hier kan je ook een aparte service voor maken
-    // async createUserProfile(id: number, createUserProfileDetails: CreateUserProfileParams) {
-    //     const user = await this.userRepository.findOneBy({ id });
-    //     if (!user) {
-    //         throw new HttpException('User not found. Cannot create Profile', HttpStatus.BAD_REQUEST,);
-    //     }
-    //     const newProfile = this.profileRepository.create(createUserProfileDetails);
-    //     const savedProfile = await this.profileRepository.save(newProfile);
-    //     user.profile = savedProfile;
-    //     return this.userRepository.save(user);
-    // }
-
-	// async createUserPost(id: number, createUserPostDetails: CreateUserPostParams){
-	//     const user = await this.userRepository.findOneBy({ id }); //could also use findUserByID
-	//     if (!user) {
-	//         throw new HttpException('User not found. Cannot create Profile', HttpStatus.BAD_REQUEST,);
-	//     }
-	//     // const newPost = this.postRepository.create(createUserPostDetails);
-	//     const newPost = this.postRepository.create({ ...createUserPostDetails, user, }); //ensure that it relates to that user
-	//     return this.postRepository.save(newPost);
-	// }
-
 	async addSocketIdToUser(user: User, socketId: string): Promise<any> {
 		if (user.socketId) {
 			// add logic here if user is in a match or waitlist.
@@ -249,7 +198,25 @@ export class UserService {
 
 	async updateUsername(userId: number, username: string): Promise<User> {
 		const user = await this.findUserByID(userId);
+		const existingUser = await this.userRepository.findOne({ where : { login: username } });
+		if (existingUser && existingUser.id !== userId) {
+			throw new HttpException('Username "${username}" is already taken', HttpStatus.CONFLICT);
+		}
 		user.login = username;
 		return this.userRepository.save(user);
 	}
+
+	async findUserByUsername(username: string): Promise<User |  undefined> {
+		return await this.userRepository.findOne({ where: { login: username } });
+	}
+
+	async addFriend(user: User, friend: User): Promise<User> {
+		user.friends.push(friend);
+		return await this.userRepository.save(user);
+	}
+
+	// async findFriends(id: number): Promise<User[]> {
+	// 	const user = await this.findUserByID(id, { relations: ['friends'] });
+	// 	return user.friends;
+	// }
 }

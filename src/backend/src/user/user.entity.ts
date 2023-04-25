@@ -21,7 +21,7 @@ export class User {
     @PrimaryColumn()
     id: number;
 
-    @Column({ nullable: true })
+    @Column({ unique: true })
     login: string; //maybe call it username
 
     // @Column( {nullable: true })
@@ -44,13 +44,6 @@ export class User {
     @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
     groupProfile: GroupProfile;
 
-    // HIER VERDER
-    // @OneToOne(() => Avatar, (avatar) => avatar.user, {
-    //     onDelete: 'CASCADE',
-    // })
-    // @JoinColumn()
-    // avatar: Avatar;
-
     @OneToOne(() => Avatar, (avatar) => avatar.user)
     @JoinColumn()
     avatar: Avatar;
@@ -59,6 +52,10 @@ export class User {
         default: null,
     })
     socketId: string;
+
+    @ManyToMany(() => User, (user) => user.friends)
+    @JoinTable()
+    friends: User[];
 
     // @Column({ default: 100 })
     // rank: number;

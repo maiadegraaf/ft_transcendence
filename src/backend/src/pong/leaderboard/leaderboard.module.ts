@@ -8,6 +8,7 @@ import { PracticeMatch } from '../practice-match/practice-match';
 import { User } from '../../user/user.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { AvatarService } from 'src/user/services/user/avatar.service';
+import { Avatar } from 'src/user/avatar.entity';
 
 @Module({
     imports: [

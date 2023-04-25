@@ -3,11 +3,12 @@ import {
     Controller,
     Delete,
     Get,
+    HttpException,
     Param,
     ParseIntPipe,
     Post,
     Put,
-    Req,
+    Query,
     Res,
     StreamableFile,
     UploadedFile,
@@ -46,13 +47,6 @@ export class UserController {
         return user;
     }
 
-    // @Get(':me')
-    // @UseGuards(FortyTwoAuthGuard)
-    // async findUserByID(@Req() req: Request): Promise<User> {
-    //     const user = await this.userService.findUserByID(req.user.userID);
-    //     return (user);
-    // }
-
     @Get(':id/avatar')
     @UseGuards(FortyTwoAuthGuard)
     async getAvatar(
@@ -83,7 +77,14 @@ export class UserController {
         @Param('id', ParseIntPipe) id: number,
         @Body('username') username: string,
         ): Promise<User> {
-        return this.userService.updateUsername(id, username);
+        try {
+            return await this.userService.updateUsername(id, username);
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus());
+            }
+            throw err;
+        }
     }
 
     @Post()
@@ -99,27 +100,31 @@ export class UserController {
         await this.userService.deleteUser(id);
     }
 
-    // @Put(':id')
-    // async updateUserByID(
-    //     @Param('id', ParseIntPipe) id: number,
-    //     @Body() updateUserDto: UpdateUserDto,
-    // ) {
-    //     await this.userService.updateUser(id, updateUserDto);
-    // }
+    @Get('search')
+    async findUserByUsername(@Query('username') username: string) {
+        const user = await this.userService.findUserByUsername(username);
+        if (!user) {
+            return { message: 'User not found' };
+        }
+        return user;
+    }
 
-    // // Below endpoints should be better if they have their own controller
+    @Post(':id/friends/:friendId')
+    async addFrined(
+        @Param('id') id: number,
+        @Param('friendId') friendId: number,
+    ) {
+        const user = await this.userService.findUserByID(id);
+        const friend = await this.userService.findUserByID(friendId);
 
-    // // Example of ONE-TO-ONE RELATIONSHIP
-    // //typicaly authentication and you get user id with the request.user object
-    // //in stead of pass it in the route, you grep it from the session
-    // //but we are not using sessions yet
-    // @Post(':id/profiles')
-    // createUserProfile(@Param('id', ParseIntPipe) id: number, @Body() CreateUserProfileDto: CreateUserProfileDto) {
-    //     return this.usersService.createUserProfile(id, CreateUserProfileDto);
-    // }
+        if (!user || !friend) {
+            throw new HttpException('User not found', 404);
+        }
+        return await this.userService.addFriend(user, friend);
+    }
 
-    // @Post(':id/posts')
-    // createUserPost(@Param('id', ParseIntPipe) id: number, @Body() CreateUserPostDto: CreateUserPostDto,){
-    //     return this.usersService.createUserPost(id, CreateUserPostDto);
+    // @Get('id/friends')
+    // async getFrineds(@Param('id') id: number) {
+    //     return this.userService.findFriends(id);
     // }
 }
