@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { Channel } from '../chat/entities/channel.entity';
 import { GroupProfile } from '../chat/entities/groupProfile.entity';
+import { Avatar } from './avatar.entity';
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
@@ -20,8 +21,8 @@ export class User {
     @PrimaryColumn()
     id: number;
 
-    @Column({ nullable: true })
-    login: string;
+    @Column({ unique: true })
+    login: string; //maybe call it username
 
     // @Column( {nullable: true })
     @Column({ nullable: true })
@@ -42,15 +43,36 @@ export class User {
 
     @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.admin)
     groupProfile: GroupProfile;
-    // @OneToOne(() => Profile)
-    // @JoinColumn()
-    // profile: Profile;
 
-    // @OneToMany(() => Post, (post) => post.user)
-    // posts: Post[];
+    @OneToOne(() => Avatar, (avatar) => avatar.user)
+    @JoinColumn()
+    avatar: Avatar;
 
     @Column({
         default: null,
     })
     socketId: string;
+
+    @ManyToMany(() => User, (user) => user.friends)
+    @JoinTable()
+    friends: User[];
+
+    // @Column({ default: 100 })
+    // rank: number;
+
+    // @Column('int', { array: true, default: [] })
+    // followed: number[];
+
+    // @Column('int', { array: true, default: [] })
+    // blocked: number[];
+
+    // @Column({ default: Status.OFFLINE })
+    // status: Status;
+
+    // @OneToMany(() => Match, (match) => match.winner)
+    // won: Match[];
+
+    // @OneToMany(() => Match, (match) => match.loser)
+    // lost: Match[];
+
 }
