@@ -36,9 +36,9 @@ export default {
     }
   },
   created() {
-    axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+    axios.get('/api/auth/profile').then((response) => {
        if (response.data.isTwoFactorAuthenticationEnabled == false) {
-        axios.post('http://localhost:8080/api/2fa/generate').then((response) => {
+        axios.post('/api/2fa/generate').then((response) => {
           this.value = response.data.url;
         })
       }
@@ -47,12 +47,12 @@ export default {
   methods: {
     verify() {
       axios
-          .post('http://localhost:8080/api/2fa/verify', {
+          .post('/api/2fa/verify', {
             token: this.token,
           })
           .then((response) => {
             if (response.data)
-              this.$router.push('/Home');
+              this.$router.push('/ChooseUsername');
             else
               this.error = "Wrong Token !"
           })

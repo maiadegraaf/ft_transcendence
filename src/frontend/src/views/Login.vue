@@ -62,11 +62,11 @@ import axios from "axios";
 export default {
     methods: {
         async user(id: number) {
-          await axios.get(`http://localhost:8080/api/auth/profile/${id}`)
-          this.$router.push('/Home');
+          await axios.get(`/api/auth/profile/${id}`)
+          this.$router.push('/ChooseUsername');
         },
         async login42() {
-            window.location.href = 'http://localhost:8080/api/auth/42'
+            window.location.href = '/api/auth/42'
         },
     }
 }

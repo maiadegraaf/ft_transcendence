@@ -14,7 +14,7 @@ export default {
     name: 'Logout',
     methods: {
         destroySession() {
-          axios.get('http://localhost:8080/api/auth/logout');
+          axios.get('/api/auth/logout');
           this.$router.push("/");
         }
     }

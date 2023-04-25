@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         redirectHome() {
-            this.$router.push('/Home')
+            this.$router.push('/ChooseUsername')
         },
         redirectCreate() {
           this.$router.push('/2fa/create')

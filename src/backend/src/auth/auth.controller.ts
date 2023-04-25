@@ -31,7 +31,6 @@ export class AuthController {
         req.session.user = req.user;
         req.session.twoFactorAuthenticationSecret =
             twoFactorAuthenticationSecret;
-        console.log(req.protocol + '://' + req.headers.host);
         if (req.session.user.isTwoFactorAuthenticationEnabled)
             res.redirect(
                 req.protocol + '://' + req.headers.host + '/2fa/create',

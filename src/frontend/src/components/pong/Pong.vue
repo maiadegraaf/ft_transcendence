@@ -85,7 +85,7 @@ export default {
     },
   async mounted() {
       let userId = 0;
-      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+      await axios.get('/api/auth/profile').then((response) => {
         userId = response.data.id
       })
       // console.log('Session Storage User: ' + userId)

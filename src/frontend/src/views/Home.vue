@@ -15,8 +15,8 @@ export default {
             }
         }
     },
-    async mounted() {
-      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+    async created() {
+      await axios.get('/api/auth/profile').then((response) => {
         this.user = response.data
       })
     },
