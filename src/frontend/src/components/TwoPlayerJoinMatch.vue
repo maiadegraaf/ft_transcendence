@@ -1,6 +1,6 @@
 <template>
     <div class="btn" @click="join">Join Match</div>
-    <Match v-if="joined" :socket="socket" :matchId="matchId" />
+    <!--    <Match v-if="joined" :socket="socket" :matchId="matchId" />-->
 </template>
 
 <script lang="ts">
@@ -18,12 +18,11 @@ export default {
         }
     },
     mounted() {
-        this.socket = io('http://localhost:8080')
-
-        this.socket.on('match-created', (matchId: number) => {
-            this.matchId = matchId
-            this.joined = true
-        })
+        // this.socket = io('http://localhost:8080')
+        // this.socket.on('match-created', (matchId: number) => {
+        //     this.matchId = matchId
+        //     this.joined = true
+        // })
     },
     methods: {
         join() {

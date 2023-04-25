@@ -1,6 +1,6 @@
 <template>
     <div
-        class="mx-auto w-[800px] h-[500px] relative border-double border-4 border-buff bg-dark-purple"
+        class="mx-auto w-[800px] h-[500px] relative border-double border-t-4 border-b-4 border-buff bg-dark-purple"
     >
         <div v-if="!gameOver" ref="pongGame">
             <div
