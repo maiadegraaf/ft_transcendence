@@ -15,6 +15,7 @@ import { ChannelService } from './services/channel.service';
 import { UserService } from '../user/services/user/user.service';
 import { CreateDmChannelDto, CreateGroupChannelDto } from './dtos/chat.dtos';
 import { ChatGateway } from './gateway/chat.gateway';
+import { validatePath } from '@nestjs/serve-static/dist/utils/validate-path.util';
 
 @Controller('chat')
 export class ChatController {

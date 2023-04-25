@@ -1,13 +1,16 @@
 <template>
-  <header class="bg-normal w-full min-h-10">
-    <div class="p-3 flex">
-      <div class="flex-1 p-1 bg-white rounded-md">
-        <input v-model="text" placeholder="Add addmin" class="w-full focus:outline-none"
-               @keyup.enter="addAddmin">
-      </div>
-      <button @click="addAddmin" class="rounded-full ml-3 hover:shadow-md">></button>
+<!--  <header class="bg-normal w-full min-h-10">-->
+    <div>
+      <h2> Hallllloooooooooo Test</h2>
     </div>
-  </header>
+<!--    <div class="p-3 flex">-->
+<!--      <div class="flex-1 p-1 bg-white rounded-md">-->
+<!--        <input v-model="text" placeholder="Add addmin" class="w-full focus:outline-none"-->
+<!--               @keyup.enter="addAddmin">-->
+<!--      </div>-->
+<!--      <button @click="addAddmin" class="rounded-full ml-3 hover:shadow-md"> > </button>-->
+<!--    </div>-->
+<!--  </header>-->
 </template>
 
 <script lang="ts">
@@ -20,16 +23,17 @@ export default {
   setup() {
     const chatStore = UserChatStore()
     // chatStore.setupChatStore()
-    return { chatStore }
+    return {chatStore}
   },
   data(): any {
     return {
       text: '',
       userId: 0,
       params: {
+        userId: 0,
         userName: '',
-        groupId : 0,
-        channelId : 0,
+        groupId: 0,
+        channelId: 0,
       },
       userName: '',
       channelId: 0,
@@ -40,11 +44,12 @@ export default {
     await this.chatStore.fetchUserData()
     this.userId = this.chatStore.userId
     this.userName = this.chatStore.name
+    this.params.userId = this.userId
     this.params.channelId = this.channelId
     this.params.groupId = this.groupId
   },
   methods: {
-    addAddmin(): void {
+    addAdmin(): void {
       // Validates the input before sending the message.
       if (this.text.length <= 0) {
         this.text = ''
@@ -155,13 +160,9 @@ export default {
           .catch((error) => {
             console.log(error)
             return
-          });
+          })
       this.text = ''
     },
-  }
+  },
 }
 </script>
-
-<style scoped>
-
-</style>
