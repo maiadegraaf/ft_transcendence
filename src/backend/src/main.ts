@@ -11,12 +11,12 @@ import * as http from 'http';
 import * as passport from 'passport';
 
 async function bootstrap() {
-    // const httpsOptions = {
-    //     key: fs.readFileSync('./secrets/private-key.pem', 'utf-8'),
-    //     cert: fs.readFileSync('./secrets/public-certificate.pem', 'utf-8'),
-    // };
-    // const server = express();
-    const app = await NestFactory.create(AppModule);
+    const httpsOptions = {
+        key: fs.readFileSync('./secrets/private-key.pem', 'utf-8'),
+        cert: fs.readFileSync('./secrets/public-certificate.pem', 'utf-8'),
+    };
+    const server = express();
+    const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
     app.setGlobalPrefix('api'); // New
     app.use(cookieParser()).use(
         session({
@@ -27,11 +27,11 @@ async function bootstrap() {
     );
     await app.init();
 
-    await app.listen(8080);
-    // http.createServer(server).listen(8080);
-    // https.createServer(httpsOptions, server).listen(443);
+    // await app.listen(8080);
+    http.createServer(server).listen(8080);
+    https.createServer(httpsOptions, server).listen(443);
 
-    const logger: Logger = new Logger('BackendMain');
-    logger.log('Application is running on: ' + await app.getUrl());
+    // const logger: Logger = new Logger('BackendMain');
+    // logger.log('Application is running on: ' + await app.getUrl());
 }
 bootstrap();

@@ -271,7 +271,6 @@ export class PongService {
         this.practiceInstance[practiceMatch.id] = new PracticeMatchInstance(
             this.server,
             practiceMatch,
-            this.practiceMatchService,
         );
         client.emit('practiceMatchCreated', practiceMatch.id, client.id);
         await this.practiceInstance[practiceMatch.id].start(data);
