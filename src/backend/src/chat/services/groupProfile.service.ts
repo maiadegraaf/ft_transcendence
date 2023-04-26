@@ -26,7 +26,6 @@ export class GroupProfileService {
     }
 
     async newGroupProfile(owner: User, groupName: string, channel: Channel) {
-        // const groupProfile = new GroupProfile();
         const groupProfile = await this.createGroupProfile();
         if (!groupProfile) {
             throw new HttpException(
@@ -35,7 +34,6 @@ export class GroupProfileService {
             );
             return;
         }
-        // groupProfile.channel = channel;
         groupProfile.admin = [];
         groupProfile.admin.push(owner);
         groupProfile.blocked = [];
@@ -45,14 +43,16 @@ export class GroupProfileService {
         return await this.groupProfileRepository.save(groupProfile);
     }
 
-    async addAdmin(userId: number, channelId: number): Promise<any> {
+    async addAdmin(groupId: number, user: User): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
-            .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: channelId })
-            .leftJoin('group.admin', 'admin')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.admin', 'admin')
             .getOne();
-        const user = await this.userService.findUserByID(userId);
+        // .leftJoinAndSelect('group.channels', 'channels')
+        // .where('channels.id = :id', { id: groupId })
+        // .leftJoin('group.admin', 'admin')
+        // const user = await this.userService.findUserByID(groupId);
         if (!user) {
             throw new HttpException(
                 'Could not find user',
@@ -63,94 +63,59 @@ export class GroupProfileService {
         return await this.groupProfileRepository.save(group);
     }
 
-    async addBlocked(userId: number, channelId: number): Promise<any> {
+    async addBlocked(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: channelId })
+            .where('channels.id = :id', { id: groupId })
             .innerJoin('group.blocked', 'blocked')
             .getOne();
-        const user = await this.userService.findUserByID(userId);
-        if (!user) {
-            throw new HttpException(
-                'Could not find user',
-                HttpStatus.FORBIDDEN,
-            );
-        }
         group.blocked.push(user);
         return await this.groupProfileRepository.save(group);
     }
 
-    async addMute(userId: number, channelId: number): Promise<any> {
+    async addMute(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: channelId })
+            .where('channels.id = :id', { id: groupId })
             .innerJoin('group.muted', 'muted')
             .getOne();
-        const user = await this.userService.findUserByID(userId);
-        if (!user) {
-            throw new HttpException(
-                'Could not find user',
-                HttpStatus.FORBIDDEN,
-            );
-        }
         group.muted.push(user);
         return await this.groupProfileRepository.save(group);
     }
 
-    async deleteAdmin(userId: number, channelId: number): Promise<any> {
+    async deleteAdmin(groupId: number, user: User): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: channelId })
+            .where('channels.id = :id', { id: groupId })
             .innerJoin('group.admin', 'admin')
             .getOne();
-        const user = await this.userService.findUserByID(userId);
-        if (!user) {
-            throw new HttpException(
-                'Could not find user',
-                HttpStatus.FORBIDDEN,
-            );
-        }
         group.admin = group.admin.filter((admin) => admin.id !== user.id);
         return await this.groupProfileRepository.save(group);
     }
 
-    async deleteBlocked(userId: number, channelId: number): Promise<any> {
+    async deleteBlocked(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: channelId })
+            .where('channels.id = :id', { id: groupId })
             .innerJoin('group.blocked', 'blocked')
             .getOne();
-        const user = await this.userService.findUserByID(userId);
-        if (!user) {
-            throw new HttpException(
-                'Could not find user',
-                HttpStatus.FORBIDDEN,
-            );
-        }
         group.blocked = group.blocked.filter(
             (blocked) => blocked.id !== user.id,
         );
         return await this.groupProfileRepository.save(group);
     }
 
-    async deleteMute(userId: number, channelId: number): Promise<any> {
+    async deleteMute(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: channelId })
+            .where('channels.id = :id', { id: groupId })
             .innerJoin('group.muted', 'muted')
             .getOne();
-        const user = await this.userService.findUserByID(userId);
-        if (!user) {
-            throw new HttpException(
-                'Could not find user',
-                HttpStatus.FORBIDDEN,
-            );
-        }
         group.muted = group.muted.filter((muted) => muted.id !== user.id);
         return await this.groupProfileRepository.save(group);
     }

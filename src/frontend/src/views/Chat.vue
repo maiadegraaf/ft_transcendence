@@ -8,21 +8,12 @@
             <h2 class="h2">Channels</h2>
           </div>
           <ChannelGroup/>
-          <ChannelList/>
+          <ChannelList
+           @switch-chat-right-component="changeComponent"/>
           <ChannelInput/>
-<!--          <ChannelInput :chat-store="chatStore"/>-->
         </div>
-        <component :is="currentComponent"></component>
-<!--        <MessageList/>-->
-<!--        <div class="w-3/4 h-full flex flex-column overflow-hidden">-->
-<!--          <div class="border-buff border-double border-2 rounded-md">-->
-<!--            <h2 class="h2">Messages</h2>-->
-<!--          </div>-->
-<!--          <div class="flex-1 w-full bg-dark-purple overflow-hidden">-->
-<!--              <MessageList/>-->
-<!--            </div>-->
-<!--          <MessageInput/>-->
-<!--        </div>-->
+        <component :is="currentComponent" class="w-3/4 h-full flex flex-column overflow-hidden"
+        @switch-chat-right-component="changeComponent"/>
         </div>
       </div>
     </div>
@@ -38,7 +29,6 @@ import ChannelList from '@/components/Chat/ChannelList.vue'
 import ChannelInput from "@/components/Chat/ChannelInput.vue";
 import ChannelGroup from "@/components/Chat/ChannelGroup.vue";
 import GroupSettings from "@/components/Chat/GroupSettings.vue";
-import sharedState from "@/store/sharedState";
 // import { currentComponent } from "@/store/./sharedState"
 export default {
   components: {
@@ -54,20 +44,9 @@ export default {
   // The data object of the Vue instance.
   data(): any {
     return {
-      currentComponent: null,
+      currentComponent: MessageList,
     }
   },
-  // provide() {
-  //   return {
-  //     [busSymbol]: {
-  //       currentComponent: this.$data.currentComponent,
-  //     },
-  //   };
-  // },
-  // inject: {
-  //   bus: busSymbol,
-  // },
-
   setup() {
     const chatStore = UserChatStore()
     return { chatStore }
@@ -76,28 +55,25 @@ export default {
   async mounted() {
     // useProvideBus()
     await this.chatStore.setupChatStore()
+    console.log('channels: ')
+    console.log(this.chatStore.channels)
+    // console.log('channels: ' + JSON.stringify(this.chatStore.channels))
     this.chatStore.socket.on('msgToClient', (message: IMessage) => {
       this.chatStore.receivedMessage(message)
     })
     this.chatStore.socket.on('addChannelToClient', (channel: IChannels) => {
       this.chatStore.receivedNewChannel(channel)
     })
-    sharedState.currentComponent = MessageList;
-    this.currentComponent = sharedState.currentComponent;
-    // const bus = useInjectBus();
-    // this.bus.currentComponent.value = MessageList
-    // this.currentComponent = this.bus.currentComponent
-    // bus.currentComponent.value = MessageList
-    // useProvideBus()
-    // const bus = useInjectBus();
-    // this.currentComponent = this.bus.currentComponent
   },
   watch: {
   },
 
   // The methods of the Vue instance.
   methods: {
-
+    changeComponent(component: any): void {
+      console.log(component);
+      this.currentComponent = component
+    },
   },
   // The created hook of the Vue instance.
   created(): void {

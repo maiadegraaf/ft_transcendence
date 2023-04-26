@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
 import { GroupProfileService } from './groupProfile.service';
 import { User } from '../../user/user.entity';
+import { UserService } from '../../user/services/user/user.service';
 
 @Injectable()
 export class ChannelService {
@@ -11,6 +12,7 @@ export class ChannelService {
         @InjectRepository(Channel)
         private readonly channelRepository: Repository<Channel>,
         private readonly groupProfileService: GroupProfileService,
+        private readonly userService: UserService,
     ) {}
 
     private logger = new Logger('ChannelService');
@@ -68,6 +70,10 @@ export class ChannelService {
             .leftJoin('message.sender', 'sender')
             .addSelect(['sender.id', 'sender.login'])
             .leftJoinAndSelect('channel.profile', 'profile')
+            .leftJoinAndSelect('profile.owner', 'owner')
+            .leftJoinAndSelect('profile.admin', 'admin')
+            .leftJoinAndSelect('profile.muted', 'muted')
+            .leftJoinAndSelect('profile.blocked', 'blocked')
             .orderBy('message.id', 'ASC')
             .getMany();
         if (!channels) {
@@ -159,6 +165,51 @@ export class ChannelService {
             }
             await this.channelRepository.remove(channel);
             return;
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    async addUserToChannel(channelId: number, user: User): Promise<any> {
+        try {
+            const channel = await this.channelRepository.findOne({
+                where: { id: channelId },
+                relations: ['users', 'profile'],
+            });
+            if (!channel) {
+                throw new HttpException(
+                    'Channel with ID ${id} not found to add users',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            channel.users.push(user);
+            return await this.channelRepository.save(channel);
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    async removeUserFromChannel(channelId: number, user: User): Promise<any> {
+        try {
+            const channel = await this.channelRepository.findOne({
+                where: { id: channelId },
+                relations: ['users'],
+            });
+            if (!channel) {
+                throw new HttpException(
+                    'Channel with ID ${id} not found to remove users',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            const idx = channel.users.indexOf(user);
+            channel.users.slice(idx, idx + 1);
+            return await this.channelRepository.save(channel);
         } catch (error) {
             throw new HttpException(
                 error.message,

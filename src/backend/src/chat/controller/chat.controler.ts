@@ -8,13 +8,19 @@ import {
     ValidationPipe,
     HttpException,
     HttpStatus,
+    Delete,
 } from '@nestjs/common';
-import { Channel } from './entities/channel.entity';
-import { MessageService } from './services/message.service';
-import { ChannelService } from './services/channel.service';
-import { UserService } from '../user/services/user/user.service';
-import { CreateDmChannelDto, CreateGroupChannelDto } from './dtos/chat.dtos';
-import { ChatGateway } from './gateway/chat.gateway';
+import { Channel } from '../entities/channel.entity';
+import { MessageService } from '../services/message.service';
+import { ChannelService } from '../services/channel.service';
+import { UserService } from '../../user/services/user/user.service';
+import {
+    addUserToChanelDto,
+    CreateDmChannelDto,
+    CreateGroupChannelDto,
+    GroupUserProfileUpdateDto,
+} from '../dtos/chat.dtos';
+import { ChatGateway } from '../gateway/chat.gateway';
 import { validatePath } from '@nestjs/serve-static/dist/utils/validate-path.util';
 
 @Controller('chat')
@@ -127,6 +133,54 @@ export class ChatController {
             return;
         } catch (error) {
             this.logger.error('postNewGroupChannel: ' + error);
+        }
+    }
+
+    // Post /api/chat/group/user
+    @Post('group/user')
+    async postNewUserToChannel(
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    ): Promise<any> {
+        try {
+            console.log('postNewUserToChannel' + JSON.stringify(param));
+            const user = await this.userService.getUserByLogin(param.userName);
+            if (!user) {
+                throw new HttpException(
+                    'Could not find user to add to group channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            const channel = await this.channelService.addUserToChannel(
+                param.channelId,
+                user,
+            );
+            await this.chatGateway.emitGroupChannelToUser(channel, user);
+        } catch (error) {
+            this.logger.error('postNewUserToChannel: ' + error);
+        }
+    }
+
+    // Delete /api/chat/group/user
+    @Delete('/group/user')
+    async deleteUserFromChannel(
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    ): Promise<any> {
+        try {
+            console.log('deleteUserFromChannel');
+            const user = await this.userService.getUserByLogin(param.userName);
+            if (!user) {
+                throw new HttpException(
+                    'Could not find user to add to group channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            const channel = await this.channelService.removeUserFromChannel(
+                param.channelId,
+                user,
+            );
+            // emit something to user to remove channel from list (maybe update emit)
+        } catch (error) {
+            this.logger.error('deleteUserFromChannel: ' + error);
         }
     }
 }

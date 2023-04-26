@@ -4,7 +4,6 @@
       <h2 class="h2">Messages</h2>
     </div>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
-<!--      <MessageList/>-->
       <div class="max-w-full h-full max-h-full flex flex-column-reverse overflow-y-auto">
         <div v-for="message of chatStore.getChannelInView.slice().reverse()" :key="message.id">
           <div :class="posMessage(message.sender.id) + ' block mb-1 mx-2'">
