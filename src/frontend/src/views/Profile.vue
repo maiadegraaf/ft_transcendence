@@ -9,7 +9,7 @@ be displayed on the user profile -->
 
 <template>
     <Nav />
-    <main class="">
+    <main >
         <div v-if="user" class="flex flex-col mt-16 items-center w-screen">
             <div class="w-60 h-60 text-right relative">
                 <img
@@ -18,21 +18,36 @@ be displayed on the user profile -->
                     alt="Avatar"
                     class="w-full h-full rounded-full object-cover mb-8"
                 />
-                <button @click="handleUploadAvatar" class="w-[30px] bottom-0 right-0 absolute">
-                    <img  class="invert" src="../../public/edit.svg" alt="edit" />
+                <button
+                    @click="handleUploadAvatar"
+                    class="w-[30px] bottom-0 opacity-60 transition-opacity hover:opacity-50 right-0 absolute"
+                >
+                    <img class="invert" src="../../public/edit.svg" alt="edit" />
                 </button>
             </div>
             <div class="flex flex-col">
-              <h2 class="text-blush font-semibold text-5xl mt-5 text-center">{{ user.login }}</h2>
-              <button @click="changeUsername" class="text-sm opacity-60 transition-opacity hover:opacity-50 text-white">change username</button>
+              <div class="flex justify-center items-center mt-5">
+                <h2 class="text-blush font-semibold text-5xl  text-center">{{ user.login }}</h2>
+                <svg class="ml-3" height="20" width="20">
+                  <circle cx="10" cy="10" r="4" stroke="green" stroke-width="3" fill="green" />
+                </svg>
+              </div>
+                <button
+                    @click="changeUsername"
+                    class="text-sm opacity-60 transition-opacity hover:opacity-50 text-white"
+                >
+                    change username
+                </button>
             </div>
         </div>
+        <WinLosses />
     </main>
 </template>
 
 <script lang="ts">
 import axios from 'axios'
 import Nav from '../components/Nav.vue'
+import WinLosses from '@/components/profile/WinLosses.vue'
 
 export default {
     data() {
@@ -49,6 +64,7 @@ export default {
         }
     },
     components: {
+        WinLosses,
         Nav
     },
     async mounted() {
@@ -83,22 +99,20 @@ export default {
                         this.user = { ...this.user }
                         window.location.reload()
                     } catch (error) {
-                      console.log(error)
+                        console.log(error)
                     }
                 }
             })
             fileInput.click()
-
         },
         async changeUsername() {
             const newUsername = prompt('Enter new username')
-            if (newUsername?.trim().length === 0)
-                alert("The username can't be empty !")
+            if (newUsername?.trim().length === 0) alert("The username can't be empty !")
             else {
-              await axios.post('/api/user/username', {
-                username: newUsername
-              })
-              window.location.reload()
+                await axios.post('/api/user/username', {
+                    username: newUsername
+                })
+                window.location.reload()
             }
         }
     }

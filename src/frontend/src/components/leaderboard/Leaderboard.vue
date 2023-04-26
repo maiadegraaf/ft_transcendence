@@ -162,16 +162,9 @@ export default {
         }
     },
     async mounted() {
-        let userId = 0
         await axios.get('/api/auth/profile').then((response) => {
-            userId = response.data.id
+            this.currentUser = response.data.id
         })
-        if (userId === null) {
-            this.$router.push('/')
-        } else {
-            this.currentUser = userId
-        }
-        console.log('Current User: ' + this.currentUser)
         axios.get('/api/leaderboard').then((response) => {
             this.leaderboardData = Array.from(response.data)
         })
