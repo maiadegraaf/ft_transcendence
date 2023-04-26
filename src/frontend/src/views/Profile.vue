@@ -18,6 +18,7 @@ be displayed on the user profile -->
                     class="w-full h-full rounded-full object-cover mb-8"
                 />
                 <button
+                    v-if="isProfileSession"
                     @click="handleUploadAvatar"
                     class="w-[30px] bottom-0 opacity-60 transition-opacity hover:opacity-50 right-0 absolute"
                 >
@@ -32,6 +33,7 @@ be displayed on the user profile -->
                 </svg>
               </div>
                 <button
+                    v-if="isProfileSession"
                     @click="changeUsername"
                     class="text-sm opacity-60 transition-opacity hover:opacity-50 text-white"
                 >
@@ -41,18 +43,27 @@ be displayed on the user profile -->
         </div>
         <WinLosses />
     </main>
+    <main v-else class="flex h-screen justify-center items-center">
+      <h1 class="text-5xl text-blush font-bold ">Profile doesn't exist</h1>
+    </main>
 </template>
 
 <script lang="ts">
 import axios from 'axios'
 import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
+import { UserChatStore } from '@/store/store'
 
 export default {
+  setup() {
+    const chatStore = UserChatStore()
+    return chatStore
+  },
   data() {
         return {
-            doesProfileExist: true,
-            isProfileSession: true,
+            currentUserId: 0,
+            doesProfileExist: false,
+            isProfileSession: false,
             user: {
                 id: 0,
                 login: ' ',
@@ -68,11 +79,18 @@ export default {
         WinLosses,
         Nav
     },
-    async mounted() {
+    async created() {
         try {
-            await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-                this.user = response.data
-            })
+          await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+          this.currentUserId = response.data.id
+          })
+          await axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
+            this.user = response.data
+            this.doesProfileExist = true;
+            console.log(this.$route.params.id)
+            if (this.currentUserId === Number(this.$route.params.id))
+              this.isProfileSession = true;
+          })
         } catch (error) {
             console.log(error)
         }

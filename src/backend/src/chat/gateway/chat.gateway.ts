@@ -96,6 +96,18 @@ export class ChatGateway
         );
     }
 
+    @SubscribeMessage('checkUserOnline')
+    async handleCheckUserOnline(
+        @ConnectedSocket() client: Socket,
+        @Body() payload: { userId: number },
+    ) {
+        if (this.clientMap.has(payload.userId)) {
+            client.emit('userOnline', { userId: payload.userId });
+        } else {
+            client.emit('userOffline', { userId: payload.userId });
+        }
+    }
+
     getClientSocketById(userId: number): Socket {
         if (this.clientMap.has(userId)) {
             return this.clientMap.get(userId);
