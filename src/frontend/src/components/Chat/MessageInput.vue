@@ -11,14 +11,15 @@
 </template>
 
 <script lang="ts">
-import {UserChatStore} from "@/store/store";
-import type {IMessage} from "@/store/types";
+import {useChatStore} from "@/store/channel.store";
+import {useUserStore} from "@/store/user.store";
 
 export default {
   name: "MessageInput",
   setup() {
-    const chatStore = UserChatStore()
-    return { chatStore }
+    const chatStore = useChatStore()
+    const userStore = useUserStore()
+    return { chatStore, userStore }
   },
   data(): any {
       return {
@@ -32,8 +33,8 @@ export default {
       }
     },
   mounted() {
-    this.sender.id = this.chatStore.userId
-    this.sender.login = this.chatStore.name
+    this.sender.id = this.userStore.id
+    this.sender.login = this.userStore.name
     console.log(this.$data)
   },
   methods: {
@@ -41,7 +42,7 @@ export default {
       // Validates the input before sending the message.
       this.channel = this.chatStore.channelInView
       if (this.text.length > 0) {
-        this.chatStore.socket.emit('msgToServer', this.$data)
+        this.userStore.socket.emit('msgToServer', this.$data)
         // Resets the input field.
         this.text = ''
       }

@@ -260,6 +260,7 @@ export class PongService {
 
     async handlePracticeMode(client: Socket, data: any) {
         const player = await this.addSocketIdToUser(data.userId, client);
+        this.logger.log('practice mode');
         if (!player) {
             return;
         }

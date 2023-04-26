@@ -1,5 +1,5 @@
 <template>
-    <div class="h-screen flex justify-center align-center flex-column">
+    <div class="h-screen flex justify-center align-center flex-col">
         <h3 class="text-center text-l text-white font-semibold">If you activate the Two Factor Authentication there is NO COMING BACK!!!<br>Only one chance to save the qrcode <br>|<br>v</h3>
         <button
             @click="redirectCreate()"

@@ -3,7 +3,7 @@
     <div v-for="ch in chatStore.channels" :key="ch.id"
          class="block border-buff cursor-pointer border-double border-2 rounded-md">
       <div class="h-20" @click="toView(ch.id)">
-        <div class="flex flex-column justify-center">
+        <div class="flex flex-col justify-center">
           <div class="font-bold">Join Room : Channel {{ ch.id }}</div>
           <div>{{ lastMessage(ch) }}</div>
         </div>
@@ -13,12 +13,12 @@
 </template>
 
 <script lang="ts">
-import {UserChatStore} from "../../store/store";
+import {useChatStore} from "../../store/channel.store";
 
 export default {
   name: "ChannelList",
   setup() {
-    const chatStore = UserChatStore()
+    const chatStore = useChatStore()
     return { chatStore }
   },
   methods: {

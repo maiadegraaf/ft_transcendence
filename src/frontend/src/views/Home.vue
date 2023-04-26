@@ -1,27 +1,14 @@
 <script lang="ts">
 import Nav from '../components/Nav.vue'
-import axios from "axios";
+import {useUserStore} from "@/store/user.store";
 
 export default {
-    data() {
-        return {
-            user: {
-                id: Number,
-                login: String,
-                email: String,
-                isTwoFactorAuthenticationEnabled: Boolean,
-                accessToken: String,
-                refreshToken: String,
-            }
-        }
-    },
-    async mounted() {
-      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-        this.user = response.data
-      })
-    },
-    components: {
-        Nav
+  components: {
+    Nav
+  },
+  setup() {
+      const user = useUserStore()
+      return { user }
     }
 }
 </script>
@@ -31,8 +18,8 @@ export default {
         <Nav />
         <header></header>
         <main>
-            <div v-if="user">
-                <h1>Welcome, {{ user.login }}</h1>
+            <div>
+                <h1>Welcome, {{ user.name }}</h1>
                 <h1>id: {{ user.id }}</h1>
                 <p>Email: {{ user.email }}</p>
             </div>

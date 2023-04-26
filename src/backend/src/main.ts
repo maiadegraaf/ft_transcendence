@@ -9,6 +9,22 @@ import * as express from 'express';
 import * as https from 'https';
 import * as http from 'http';
 import * as passport from 'passport';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+
+const sessionMiddleware = session({
+    secret: 'my-secret',
+    resave: false,
+    saveUninitialized: false,
+});
+
+class ExpressSessionAdapter extends IoAdapter {
+    createIOServer(port: number, options?: any): any {
+        const server = super.createIOServer(port, options);
+
+        server.engine.use(sessionMiddleware);
+        return server;
+    }
+}
 
 async function bootstrap() {
     // const httpsOptions = {
@@ -16,22 +32,15 @@ async function bootstrap() {
     //     cert: fs.readFileSync('./secrets/public-certificate.pem', 'utf-8'),
     // };
     // const server = express();
+
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix('api'); // New
-    app.use(cookieParser()).use(
-        session({
-            secret: 'my-secret',
-            resave: false,
-            saveUninitialized: false,
-        }),
-    );
+    app.use(sessionMiddleware);
+    app.useWebSocketAdapter(new ExpressSessionAdapter(app));
     await app.init();
-
     await app.listen(8080);
-    // http.createServer(server).listen(8080);
-    // https.createServer(httpsOptions, server).listen(443);
 
     const logger: Logger = new Logger('BackendMain');
-    logger.log('Application is running on: ' + await app.getUrl());
+    logger.log('Application is running on: ' + (await app.getUrl()));
 }
-bootstrap();
+bootstrap().then();

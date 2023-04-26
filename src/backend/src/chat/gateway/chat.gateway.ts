@@ -7,13 +7,15 @@ import {
     OnGatewayDisconnect,
     ConnectedSocket,
 } from '@nestjs/websockets';
-import { Body, Logger, ValidationPipe } from '@nestjs/common';
+import { Body, Logger, UseGuards, ValidationPipe } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { MessageService } from '../services/message.service';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from '../services/channel.service';
 import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
+import { websocketGuard } from '../../auth/auth.guard';
 
+@UseGuards(websocketGuard)
 @WebSocketGateway({
     cors: {
         origin: '*',
@@ -25,7 +27,6 @@ export class ChatGateway
     constructor(
         private readonly messageService: MessageService,
         private readonly userService: UserService,
-        private readonly channelService: ChannelService,
     ) {}
 
     @WebSocketServer()
@@ -107,8 +108,8 @@ export class ChatGateway
         this.logger.log('Init chat');
     }
 
-    handleDisconnect(client: Socket, ...args: any[]) {
-        const userId = client.handshake.query.userId;
+    handleDisconnect(@ConnectedSocket() client: Socket) {
+        const userId = client.request.session.user.id;
         if (this.clientMap.has(parseInt(userId.toString()))) {
             this.clientMap.delete(parseInt(userId.toString()));
             this.logger.log(
@@ -117,13 +118,9 @@ export class ChatGateway
         }
     }
 
-    handleConnection(client: Socket, ...args: any[]) {
-        const userId = client.handshake.query.userId;
-        // console.log('user connected: with id: ' + userId);
-        // const userName = client.handshake.query.userName;
+    handleConnection(@ConnectedSocket() client: Socket) {
+        const userId = client.request.session.user.id;
         this.clientMap.set(parseInt(userId.toString()), client);
-        this.logger.log(
-            `Client connected to chat: ${client.id} with userId: ${userId}`,
-        );
+        this.logger.log(userId + ' connected to chat');
     }
 }

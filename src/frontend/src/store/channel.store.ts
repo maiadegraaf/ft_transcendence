@@ -1,19 +1,13 @@
 import { defineStore } from 'pinia'
-import {VueCookieNext} from "vue-cookie-next";
-import type {Socket} from "socket.io-client";
 import {io} from "socket.io-client";
 import type {IChannels, IMessage} from "@/store/types";
-import {formToJSON} from "axios";
+import {useUserStore} from "@/store/user.store";
 
 
-export const UserChatStore = defineStore('userChannel', {
+export const useChatStore = defineStore('userChannel', {
     state: () => ({
-        title: 'Nestjs Websockets Chat' as string,
-        name: '' as string,
         invite: '' as string,
         channels: [] as IChannels[] | null,
-        socket: null as any | null,
-        userId: -1 as number,
         channelInView: 0 as number,
         joined: false as boolean,
     }),
@@ -34,32 +28,14 @@ export const UserChatStore = defineStore('userChannel', {
     },
 
     actions: {
-        fetchUserData() {
-            const userSession = sessionStorage.getItem('user')
-            if (userSession == null) {
-                return false
-            }
-            const user = JSON.parse(userSession).user
-            this.userId = user.id
-            this.name = user.login
-            return true
-        },
         async loadChannels() {
-            const response = await fetch('http://localhost:8080/api/chat/' + this.userId)
+            const user = useUserStore()
+            const response = await fetch('http://localhost:8080/api/chat/' + user.id)
             this.channels = await response.json()
             if (this.channels == null) { return }
             this.channels.forEach(channel => {
-                this.socket.emit('joinRoomById', {channelId: channel.id})
+                user.socket.emit('joinRoomById', {channelId: channel.id})
             })
-        },
-        connectSocket() {
-            const socket = io('http://localhost:8080', {
-                query: {
-                    userId: this.userId,
-                    name: this.name,
-                }
-            })
-            this.socket = socket
         },
         receivedMessage(message: IMessage) {
             if (this.channels == null) { return }
