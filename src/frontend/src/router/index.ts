@@ -66,7 +66,7 @@ const router = createRouter({
             component: Username
         },
         {
-            path: '/Profile',
+            path: '/Profile/:id',
             name: 'Profile',
             component: Profile
         }

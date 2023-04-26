@@ -9,11 +9,10 @@ be displayed on the user profile -->
 
 <template>
     <Nav />
-    <main >
-        <div v-if="user" class="flex flex-col mt-16 items-center w-screen">
+    <main v-if="doesProfileExist">
+        <div class="flex flex-col mt-16 items-center w-screen">
             <div class="w-60 h-60 text-right relative">
                 <img
-                    v-if="user && user.id"
                     :src="`/api/user/${user.id}/avatar`"
                     alt="Avatar"
                     class="w-full h-full rounded-full object-cover mb-8"
@@ -50,8 +49,10 @@ import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 
 export default {
-    data() {
+  data() {
         return {
+            doesProfileExist: true,
+            isProfileSession: true,
             user: {
                 id: 0,
                 login: ' ',

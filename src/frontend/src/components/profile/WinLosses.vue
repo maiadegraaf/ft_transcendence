@@ -12,25 +12,25 @@
                 <div class="scoreDiv">
                     <h3 class="scoreIdentifier">Rating</h3>
                     <h3 class="score">
-                        {{ leaderboardData.rating }}
+                        {{ scoreData.rating }}
                     </h3>
                 </div>
                 <div class="scoreDiv">
                     <h3 class="scoreIdentifier">Wins</h3>
                     <h3 class="score">
-                        {{ leaderboardData.wins }}
+                        {{ scoreData.wins }}
                     </h3>
                 </div>
                 <div class="scoreDiv">
                     <h3 class="scoreIdentifier">Losses</h3>
                     <h3 class="score">
-                        {{ leaderboardData.losses }}
+                        {{ scoreData.losses }}
                     </h3>
                 </div>
                 <div class="scoreDiv">
                     <h3 class="scoreIdentifier">Win Streak</h3>
                     <h3 class="score">
-                        {{ leaderboardData.winStreak }}
+                        {{ scoreData.winStreak }}
                     </h3>
                 </div>
             </div>
@@ -41,19 +41,17 @@
 <script lang="ts">
 import axios from 'axios'
 
-interface LeaderboardData {
-    rating: number
-    wins: number
-    losses: number
-    winStreak: number
-}
-
 export default {
     name: 'WinLosses',
     data() {
         return {
             currentUserId: 0,
-            leaderboardData: {} as LeaderboardData
+            scoreData: {
+                rating: 0,
+                wins: 0,
+                losses: 0,
+                winStreak: 0
+            }
         }
     },
     async mounted() {
@@ -61,9 +59,9 @@ export default {
             this.currentUserId = response.data.id
         })
         axios.get('/api/leaderboard/' + this.currentUserId).then((response) => {
-            this.leaderboardData = response.data
+            this.scoreData = response.data
         })
-        console.log(this.leaderboardData)
+        console.log(this.scoreData)
     }
 }
 </script>
