@@ -9,8 +9,8 @@ import PongGame from '../views/PongGame.vue'
 import TwoFA from '../views/2fa.vue'
 import TwoFACreate from '../views/2fa.create.vue'
 import axios from 'axios'
-import LeaderboardView from "@/views/LeaderboardView.vue";
-import Username from "@/views/Username.vue";
+import LeaderboardView from '@/views/LeaderboardView.vue'
+import Username from '@/views/Username.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -74,20 +74,17 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  axios.get('/api/auth/profile')
-      .then((response) => {
-            if (response.status == 200 && to.path == '/')
-              next('/Home')
-            if (response.status == 200)
-              next()
-      })
-      .catch((error) => {
-        console.log(error)
-        if (to.path != '/' && to.path != '/2fa/create')
-          next('/')
-        else
-          next()
-      })
-});
+    axios
+        .get('/api/auth/profile')
+        .then((response) => {
+            if (response.status == 200 && to.path == '/') next('/Home')
+            if (response.status == 200) next()
+        })
+        .catch((error) => {
+            console.log(error)
+            if (to.path != '/' && to.path != '/2fa/create') next('/')
+            else next()
+        })
+})
 
 export default router

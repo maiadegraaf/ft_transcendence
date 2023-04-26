@@ -14,8 +14,8 @@ export default {
     name: 'Logout',
     methods: {
         destroySession() {
-          axios.get('/api/auth/logout');
-          this.$router.push("/");
+            axios.get('/api/auth/logout')
+            this.$router.push('/')
         }
     }
 }

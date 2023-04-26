@@ -1,6 +1,6 @@
 <script lang="ts">
 import Nav from '../components/Nav.vue'
-import axios from "axios";
+import axios from 'axios'
 
 export default {
     data() {
@@ -11,14 +11,14 @@ export default {
                 email: '',
                 isTwoFactorAuthenticationEnabled: Boolean,
                 accessToken: '',
-                refreshToken: '',
+                refreshToken: ''
             }
         }
     },
     async created() {
-      await axios.get('/api/auth/profile').then((response) => {
-        this.user = response.data
-      })
+        await axios.get('/api/auth/profile').then((response) => {
+            this.user = response.data
+        })
     },
     components: {
         Nav

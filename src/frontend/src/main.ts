@@ -11,17 +11,13 @@ export default {
     }
 }
 
-import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
-import {createPinia} from "pinia";
+import { createPinia } from 'pinia'
 
 const store = createPinia()
 
 const app = createApp(App)
 
-app
-  .use(router)
-  .use(store)
-  .mount('#app')
+app.use(router).use(store).mount('#app')
 
 VueCookieNext.config({ expire: '7d' })

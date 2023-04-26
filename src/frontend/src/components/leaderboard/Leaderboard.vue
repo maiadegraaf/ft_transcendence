@@ -162,10 +162,10 @@ export default {
         }
     },
     async mounted() {
-      let userId = 0;
-      await axios.get('/api/auth/profile').then((response) => {
-        userId = response.data.id
-      })
+        let userId = 0
+        await axios.get('/api/auth/profile').then((response) => {
+            userId = response.data.id
+        })
         if (userId === null) {
             this.$router.push('/')
         } else {
