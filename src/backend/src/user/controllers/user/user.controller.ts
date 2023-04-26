@@ -129,14 +129,16 @@ export class UserController {
     async addFrined(
         @Param('id') id: number,
         @Param('friendId') friendId: number,
-    ) {
+    ): Promise<{ message: string }> {
         const user = await this.userService.findUserByID(id);
         const friend = await this.userService.findUserByID(friendId);
 
         if (!user || !friend) {
             throw new HttpException('User not found', 404);
         }
-        return await this.userService.addFriend(user, friend);
+        await this.userService.addFriend(user, friend);
+        await this.userService.addFriend(friend, user);
+        return { message: 'Friend added successfully' };
     }
 
     @Get(':id/friends')

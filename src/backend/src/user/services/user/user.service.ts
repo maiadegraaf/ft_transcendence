@@ -212,7 +212,7 @@ export class UserService {
         });
         if (existingUser && existingUser.id !== userId) {
             throw new HttpException(
-                'Username "${username}" is already taken',
+                `Username "${username}" is already taken`,
                 HttpStatus.CONFLICT,
             );
         }
@@ -227,14 +227,17 @@ export class UserService {
     }
 
     async addFriend(user: User, friend: User): Promise<User> {
+		if (!user.friends) {
+			user.friends = [];
+		}
+		// Check if the users are already friends
+		if (user.friends.some(existingFriend => existingFriend.id === friend.id)) {
+			throw new HttpException('Users are already friends', 400);
+		}
         user.friends.push(friend);
         return await this.userRepository.save(user);
     }
 
-    // async findFriends(id: number): Promise<User[]> {
-    // 	const user = await this.findUserByID(id, { relations: ['friends'] });
-    // 	return user.friends;
-    // }
 	// async addFriend(user: User, friend: User): Promise<User> {
 	// 	if (!user.friends) {
 	// 		user.friends = [];
@@ -242,23 +245,21 @@ export class UserService {
 	// 	if (!friend.friends) {
 	// 		friend.friends = [];
 	// 	}
-
-	// 	if (user.friends.some())
-
+	// 	if (user.friends.some(existingFriend => existingFriend.id === friend.id)) {
+	// 		throw new HttpException('Users are already friends', 400); //No exception
+	// 	}
 	// 	user.friends.push(friend);
 	// 	friend.friends.push(user);
 
 	// 	await this.userRepository.save(user);
-	// 	await this.userRepository.save(friend);
-
-	// 	return user;
+	// 	return await this.userRepository.save(friend);
 	//   }
 
-	// async findFriends(id: number): Promise<User[]> {
-	// 	const user = await this.userRepository.findOne({
-	// 		where: { id },
-	// 		relations: ['friends'],
-	// 	});
-	// 	return user.friends;
-	// }
+	async findFriends(id: number): Promise<User[]> {
+		const user = await this.userRepository.findOne({
+			where: { id },
+			relations: ['friends'],
+		});
+		return user.friends;
+	}
 }

@@ -19,11 +19,13 @@
             </div>
         </div>
     </main>
+    <Friends />
 </template>
 
 <script lang="ts">
 import axios from 'axios'
 import Nav from '../components/Nav.vue'
+import Friends from '../components/profile/friends.vue'
 
 export default {
     data() {
@@ -40,7 +42,8 @@ export default {
         }
     },
     components: {
-        Nav
+        Nav,
+        Friends
     },
     async mounted() {
         try {

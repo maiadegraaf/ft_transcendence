@@ -2,12 +2,12 @@
 - fix the XML parsing error when avatar image gets uploaded
 - age refreshes automaticaly when avatarfix that p image gets uploaded
 - Stats (such as: wins and losses, ladder level, achievements, and so forth) have to
-be displayed on the user profile -->
-<!-- - Make a friend list and possible to click on a friend username to show their profile Page
+be displayed on the user profile 
+- Make a friend list and possible to click on a friend username to show their profile Page
 - Need to implement that the username cannot be similar to another user
 - If so, say: "Username already exists, please choose another one" -->
 
-<template>
+<!-- <template>
     <div>
         <header></header>
         <main>
@@ -112,4 +112,4 @@ export default {
         }
     },
 }
-</script>
+</script> --> -->
