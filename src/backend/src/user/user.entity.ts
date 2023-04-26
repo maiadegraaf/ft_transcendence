@@ -53,9 +53,14 @@ export class User {
     })
     socketId: string;
 
-    @ManyToMany(() => User, (user) => user.friends)
+    // @ManyToMany(() => User, (user) => user.friends, { cascade: true })
+    @ManyToMany(() => User, (user) => user.friends, { cascade: ["insert", "update"] })
     @JoinTable()
     friends: User[];
+
+    // @ManyToMany(() => User)
+    // @JoinTable()
+    // friends: User[];
 
     // @Column({ default: 100 })
     // rank: number;
@@ -74,5 +79,4 @@ export class User {
 
     // @OneToMany(() => Match, (match) => match.loser)
     // lost: Match[];
-
 }

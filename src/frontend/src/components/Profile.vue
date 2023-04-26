@@ -7,7 +7,6 @@ be displayed on the user profile -->
 - Need to implement that the username cannot be similar to another user
 - If so, say: "Username already exists, please choose another one" -->
 
-
 <template>
     <div>
         <header></header>
@@ -56,6 +55,10 @@ export default {
             }
         }
     },
+    // setup() {
+    //     const user = useUserStore()
+    //     return { user }
+    // }
     async mounted() {
         try {
             const response = await axios.get('http://localhost:8080/api/auth/profile');

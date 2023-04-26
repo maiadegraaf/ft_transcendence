@@ -200,23 +200,49 @@ export class UserService {
 		const user = await this.findUserByID(userId);
 		const existingUser = await this.userRepository.findOne({ where : { login: username } });
 		if (existingUser && existingUser.id !== userId) {
-			throw new HttpException('Username "${username}" is already taken', HttpStatus.CONFLICT);
+			throw new HttpException(`Username "${username}" is already taken`, HttpStatus.CONFLICT);
 		}
 		user.login = username;
 		return this.userRepository.save(user);
 	}
 
 	async findUserByUsername(username: string): Promise<User |  undefined> {
-		return await this.userRepository.findOne({ where: { login: username } });
+		const user = await this.userRepository.findOne({ where: { login: username } });
+		return user;
 	}
 
 	async addFriend(user: User, friend: User): Promise<User> {
+		if (!user.friends) {
+			user.friends = [];
+		}
 		user.friends.push(friend);
 		return await this.userRepository.save(user);
 	}
 
-	// async findFriends(id: number): Promise<User[]> {
-	// 	const user = await this.findUserByID(id, { relations: ['friends'] });
-	// 	return user.friends;
-	// }
+	// async addFriend(user: User, friend: User): Promise<User> {
+	// 	if (!user.friends) {
+	// 		user.friends = [];
+	// 	}
+	// 	if (!friend.friends) {
+	// 		friend.friends = [];
+	// 	}
+
+	// 	if (user.friends.some())
+	  
+	// 	user.friends.push(friend);
+	// 	friend.friends.push(user);
+	  
+	// 	await this.userRepository.save(user);
+	// 	await this.userRepository.save(friend);
+	  
+	// 	return user;
+	//   }
+
+	async findFriends(id: number): Promise<User[]> {
+		const user = await this.userRepository.findOne({
+			where: { id },
+			relations: ['friends'],
+		});
+		return user.friends;
+	}
 }

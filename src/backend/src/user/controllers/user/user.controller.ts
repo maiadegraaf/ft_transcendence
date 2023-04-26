@@ -100,16 +100,19 @@ export class UserController {
         await this.userService.deleteUser(id);
     }
 
-    @Get('search')
-    async findUserByUsername(@Query('username') username: string) {
-        const user = await this.userService.findUserByUsername(username);
+    @Get('search/:username')
+    @UseGuards(FortyTwoAuthGuard)
+    async findUserByUsername(@Param('username') username: string) {
+        const user = await this.userService.findUserByUsername(username);    
         if (!user) {
-            return { message: 'User not found' };
+            // return { message: 'User not found' };
+            throw new HttpException('User not found', 404);
         }
         return user;
     }
 
     @Post(':id/friends/:friendId')
+    @UseGuards(FortyTwoAuthGuard)
     async addFrined(
         @Param('id') id: number,
         @Param('friendId') friendId: number,
@@ -123,8 +126,10 @@ export class UserController {
         return await this.userService.addFriend(user, friend);
     }
 
-    // @Get('id/friends')
-    // async getFrineds(@Param('id') id: number) {
-    //     return this.userService.findFriends(id);
-    // }
+    @Get(':id/friends')
+    @UseGuards(FortyTwoAuthGuard)
+    async getFrineds(@Param('id') id: number) {
+        console.log(`UserController: Searching for friends of user with id: ${id}`);
+        return this.userService.findFriends(id);
+    }
 }
