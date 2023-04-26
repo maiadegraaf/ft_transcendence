@@ -8,7 +8,7 @@ import {
     ParseIntPipe,
     Post,
     Put,
-    Query,
+    Query, Req,
     Res,
     StreamableFile,
     UploadedFile,
@@ -45,6 +45,19 @@ export class UserController {
     async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
         const user = await this.userService.findUserByID(id);
         return user;
+    }
+
+    @Post('username')
+    @UseGuards(FortyTwoAuthGuard)
+    async changeUsername(
+        @Req() req,
+        @Body('username') username: string,
+    ): Promise<User> {
+        req.session.user.login = username;
+        return await this.userService.changeUsername(
+            req.session.user.id,
+            username,
+        );
     }
 
     @Get(':id/avatar')

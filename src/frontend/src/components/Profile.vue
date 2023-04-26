@@ -13,10 +13,10 @@ be displayed on the user profile -->
         <main>
             <div v-if="user" class="flex flex-col items-center">
                 <h1 class="h1">Profile Page</h1>
-                <img 
-                    v-if="user && user.id" 
-                    :src="`/api/user/${user.id}/avatar`" 
-                    alt="Avatar" 
+                <img
+                    v-if="user && user.id"
+                    :src="`/api/user/${user.id}/avatar`"
+                    alt="Avatar"
                     class="w-60 h-60 rounded-full object-cover mb-8"/>
                 <h2 class="h2" >Welcome, {{ user.login }}</h2>
                 <h2 class="h2">id: {{ user.id }}</h2>
