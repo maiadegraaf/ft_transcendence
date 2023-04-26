@@ -18,7 +18,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly pongService: PongService) {}
 
     @WebSocketServer() server: Server;
-
     handleConnection(@ConnectedSocket() client: Socket): void {
         const userId = client.handshake.query.userId;
         console.log('Client Connected ' + client.id);
