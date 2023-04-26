@@ -16,7 +16,7 @@ be displayed on the user profile -->
                     v-if="user && user.id"
                     :src="`/api/user/${user.id}/avatar`"
                     alt="Avatar"
-                    class="w-full h-full rounded-full object-contain mb-8"
+                    class="w-full h-full rounded-full object-cover mb-8"
                 />
                 <button @click="handleUploadAvatar" class="w-[30px] bottom-0 right-0 absolute">
                     <img  class="invert" src="../../public/edit.svg" alt="edit" />
