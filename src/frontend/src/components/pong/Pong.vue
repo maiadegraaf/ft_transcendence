@@ -84,6 +84,7 @@ export default {
       console.log("Current player id: " + this.currentPlayerId)
 
       if (this.matchId != 0) {
+        console.log("Match id: " + this.matchId)
         this.startedBy = this.userId
         this.startMatch = true
       }
@@ -96,11 +97,17 @@ export default {
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
+                console.log('Disconnecting...')
                 this.socket.emit('disconnect')
             }
         })
     },
-    methods: {
+    beforeRouteLeave(to: any, from: any, next: any) {
+        console.log('Leaving pong game...')
+        this.socket.emit('disconnect')
+        next()
+    },
+  methods: {
         setPracticeMode() {
             this.practiceMode = true
         },

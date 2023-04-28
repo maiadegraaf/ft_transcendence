@@ -30,6 +30,7 @@ export class PongGateway implements OnGatewayDisconnect {
 
     @SubscribeMessage('disconnect')
     handleDisconnectMessage(@ConnectedSocket() client: Socket): void {
+        console.log('Client Disconnected ' + client.id);
         this.pongService.handleDisconnect(client);
     }
 
@@ -54,7 +55,7 @@ export class PongGateway implements OnGatewayDisconnect {
         this.pongService.handleMove(client, data);
     }
 
-    @SubscribeMessage('addSocketToPlayer')
+    @SubscribeMessage('bind')
     handleAddSocketToPlayer(
         @ConnectedSocket() client: Socket,
         @MessageBody() userId: number,
@@ -62,7 +63,7 @@ export class PongGateway implements OnGatewayDisconnect {
         this.pongService.addSocketIdToUser(userId, client);
     }
 
-    @SubscribeMessage('create match')
+    @SubscribeMessage('createMatch')
     handleCreateMatch(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any,

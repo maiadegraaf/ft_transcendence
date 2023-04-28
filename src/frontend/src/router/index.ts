@@ -53,7 +53,8 @@ const router = createRouter({
         {
             path: '/Pong',
             name: 'Pong',
-            component: PongGame
+            component: PongGame,
+            props: true
         },
         {
             path: '/Leaderboard',
