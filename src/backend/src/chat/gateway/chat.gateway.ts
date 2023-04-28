@@ -101,6 +101,7 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
         @Body() payload: { userId: number },
     ) {
+        console.log('checkUserOnline', payload.userId);
         if (this.clientMap.has(payload.userId)) {
             client.emit('userOnline', { userId: payload.userId });
         } else {

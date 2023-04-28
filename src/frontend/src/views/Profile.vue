@@ -29,7 +29,7 @@ be displayed on the user profile -->
               <div class="flex justify-center items-center mt-5">
                 <h2 class="text-blush font-semibold text-5xl  text-center">{{ user.login }}</h2>
                 <svg class="ml-3" height="20" width="20">
-                  <circle cx="10" cy="10" r="4" stroke="green" stroke-width="3" fill="green" />
+                  <circle cx="10" cy="10" r="4" :stroke="isOnline ? 'green' : 'red'" stroke-width="3" :fill="isOnline ? 'green' : 'red'" />
                 </svg>
               </div>
                 <button
@@ -57,10 +57,11 @@ import { UserChatStore } from '@/store/store'
 export default {
   setup() {
     const chatStore = UserChatStore()
-    return chatStore
+    return {chatStore}
   },
   data() {
         return {
+            isOnline: false,
             currentUserId: 0,
             doesProfileExist: false,
             isProfileSession: false,
@@ -79,7 +80,7 @@ export default {
         WinLosses,
         Nav
     },
-    async created() {
+    async mounted() {
         try {
           await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
           this.currentUserId = response.data.id
@@ -87,13 +88,22 @@ export default {
           await axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
             this.user = response.data
             this.doesProfileExist = true;
-            console.log(this.$route.params.id)
             if (this.currentUserId === Number(this.$route.params.id))
               this.isProfileSession = true;
           })
         } catch (error) {
             console.log(error)
         }
+        this.chatStore.socket.emit('checkUserOnline', {
+            userId: this.$route.params.id
+        })
+        this.chatStore.socket.on('userOnline', () => {
+            this.isOnline = true
+        })
+        this.chatStore.socket.on('userOffline', () => {
+            this.isOnline = false
+        })
+        console.log(this.isOnline)
     },
     methods: {
         async handleUploadAvatar() {

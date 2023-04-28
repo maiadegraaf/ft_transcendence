@@ -98,6 +98,7 @@ export default {
                     userId: this.currentPlayerId
                 }
             })
+          console.log('socket id:' + this.socket.id)
         }
 
         this.socket.on('MultipleConnections', (msg: string) => {
