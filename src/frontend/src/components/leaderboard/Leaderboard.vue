@@ -165,12 +165,10 @@ export default {
       await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
         this.currentUser = response.data.id
       })
-        console.log('Current User: ' + this.currentUser)
         axios.get('http://localhost:8080/api/leaderboard').then((response) => {
             this.leaderboardData = Array.from(response.data)
         })
         axios.get('http://localhost:8080/api/leaderboard/id').then((response) => {
-            console.log('http://localhost:8080/api/leaderboard/id')
             this.practiceMatchData = response.data as PracticeMatchData
         })
     },

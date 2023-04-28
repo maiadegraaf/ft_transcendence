@@ -18,13 +18,6 @@
 
                 <router-link
                     class="uppercase font-semibold tracking-wider text-blush hover:text-amaranth-purple px-3 py-2 drop-shadow-2xl"
-                    to="/Authenticated"
-                >
-                    Auth
-                </router-link>
-
-                <router-link
-                    class="uppercase font-semibold tracking-wider text-blush hover:text-amaranth-purple px-3 py-2 drop-shadow-2xl"
                     to="/Pong"
                 >
                     Pong
@@ -35,6 +28,12 @@
                 >
                     Leaderboard
                 </router-link>
+                <router-link
+                    class="uppercase font-semibold tracking-wider text-blush hover:text-amaranth-purple px-3 py-2 drop-shadow-2xl"
+                    :to="{name:'Profile', params:{ id: currentUserId}}"
+                >
+                    Profile
+                </router-link>
             </div>
             <Logout />
         </div>
@@ -42,11 +41,23 @@
 </template>
 
 <script lang="ts">
+import axios from 'axios'
 import Logout from './Logout.vue'
 
 export default {
     name: 'Nav',
-    components: { Logout }
+    components: { Logout },
+    data() {
+      return{
+        currentUserId: 0,
+      }
+    },
+    async mounted() {
+        await axios.get('/api/auth/profile')
+        .then((response) => {
+          this.currentUserId = response.data.id;
+        })
+    }
 }
 </script>
 

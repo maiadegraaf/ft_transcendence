@@ -18,6 +18,7 @@ import { Leaderboard } from './pong/leaderboard/leaderboard.entity';
 import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
 import { TwoFAModule } from './auth/2fa/2fa.module';
 import { PassportModule } from '@nestjs/passport';
+import { Avatar } from './user/avatar.entity';
 
 @Module({
     imports: [
@@ -29,7 +30,7 @@ import { PassportModule } from '@nestjs/passport';
             username: 'pongmaster',
             password: 'ping_pong42',
             database: 'transcendence',
-            entities: [User, Leaderboard, Message, Channel, GroupProfile],
+            entities: [User, Avatar, Leaderboard, Message, Channel, GroupProfile],
             synchronize: true,
         }),
         MatchInstanceModule,

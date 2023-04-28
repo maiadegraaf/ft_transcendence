@@ -1,13 +1,13 @@
 <template>
-  <qr-code-component/>
+    <qr-code-component />
 </template>
 
 <script lang="ts">
-import QrCodeComponent from "@/components/QrCodeComponent.vue";
+import QrCodeComponent from '@/components/QrCodeComponent.vue'
 export default {
-  name: "2fa.create",
-  components: {
-    QrCodeComponent,
-  }
+    name: '2fa.create',
+    components: {
+        QrCodeComponent
+    }
 }
 </script>
