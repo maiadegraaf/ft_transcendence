@@ -25,12 +25,12 @@ export class GroupProfileController {
 
     private logger = new Logger('GroupProfileController');
 
+    // Post /api/chat/group/admin
     @Post('admin')
     async postAdminToGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            console.log('param: ' + JSON.stringify(param));
             const user = await this.userService.getUserByLogin(param.userName);
             if (!user) {
                 throw new HttpException(
@@ -44,6 +44,7 @@ export class GroupProfileController {
         }
     }
 
+    // Delete /api/chat/group/admin
     @Delete('admin')
     async deleteAdminFromGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
@@ -62,6 +63,7 @@ export class GroupProfileController {
         }
     }
 
+    // Post /api/chat/group/muted
     @Post('muted')
     async postMutedToGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
@@ -80,11 +82,13 @@ export class GroupProfileController {
         }
     }
 
+    // Delete /api/chat/group/muted
     @Delete('muted')
     async deleteMutedFromGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
+            console.log('param' + JSON.stringify(param));
             const user = await this.userService.getUserByLogin(param.userName);
             if (!user) {
                 throw new HttpException(
@@ -92,10 +96,14 @@ export class GroupProfileController {
                     HttpStatus.NOT_FOUND,
                 );
             }
+            console.log('Group id:' + param.groupId);
             await this.groupProfileService.deleteMute(user, param.groupId);
-        } catch (error) {}
+        } catch (error) {
+            this.logger.error(error);
+        }
     }
 
+    // Post /api/chat/group/banned
     @Post('banned')
     async postBlockedToGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
@@ -109,9 +117,12 @@ export class GroupProfileController {
                 );
             }
             await this.groupProfileService.addBlocked(user, param.groupId);
-        } catch (error) {}
+        } catch (error) {
+            this.logger.error(error);
+        }
     }
 
+    // Post /api/chat/group/banned
     @Delete('banned')
     async deleteBlockedFromGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
@@ -124,7 +135,10 @@ export class GroupProfileController {
                     HttpStatus.NOT_FOUND,
                 );
             }
+            console.log(user + ' | Group id:' + param.groupId);
             await this.groupProfileService.deleteBlocked(user, param.groupId);
-        } catch (error) {}
+        } catch (error) {
+            this.logger.error(error);
+        }
     }
 }

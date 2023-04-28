@@ -49,16 +49,13 @@ export class GroupProfileService {
             .where('group.id = :id', { id: groupId })
             .leftJoinAndSelect('group.admin', 'admin')
             .getOne();
-        // .leftJoinAndSelect('group.channels', 'channels')
-        // .where('channels.id = :id', { id: groupId })
-        // .leftJoin('group.admin', 'admin')
-        // const user = await this.userService.findUserByID(groupId);
-        if (!user) {
+        if (!group) {
             throw new HttpException(
-                'Could not find user',
+                'Could not find group',
                 HttpStatus.FORBIDDEN,
             );
         }
+        console.log('check group');
         group.admin.push(user);
         return await this.groupProfileRepository.save(group);
     }
@@ -66,9 +63,8 @@ export class GroupProfileService {
     async addBlocked(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
-            .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: groupId })
-            .innerJoin('group.blocked', 'blocked')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.blocked', 'blocked')
             .getOne();
         group.blocked.push(user);
         return await this.groupProfileRepository.save(group);
@@ -77,9 +73,8 @@ export class GroupProfileService {
     async addMute(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
-            .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: groupId })
-            .innerJoin('group.muted', 'muted')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.muted', 'muted')
             .getOne();
         group.muted.push(user);
         return await this.groupProfileRepository.save(group);
@@ -88,9 +83,8 @@ export class GroupProfileService {
     async deleteAdmin(groupId: number, user: User): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
-            .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: groupId })
-            .innerJoin('group.admin', 'admin')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.admin', 'admin')
             .getOne();
         group.admin = group.admin.filter((admin) => admin.id !== user.id);
         return await this.groupProfileRepository.save(group);
@@ -99,9 +93,8 @@ export class GroupProfileService {
     async deleteBlocked(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
-            .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: groupId })
-            .innerJoin('group.blocked', 'blocked')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.blocked', 'blocked')
             .getOne();
         group.blocked = group.blocked.filter(
             (blocked) => blocked.id !== user.id,
@@ -112,10 +105,17 @@ export class GroupProfileService {
     async deleteMute(user: User, groupId: number): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
-            .leftJoinAndSelect('group.channels', 'channels')
-            .where('channels.id = :id', { id: groupId })
-            .innerJoin('group.muted', 'muted')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.muted', 'muted')
             .getOne();
+        console.log('user: ' + JSON.stringify(user) + ' | group: ' + groupId);
+        if (!group) {
+            throw new HttpException(
+                'Could not find group',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        console.log('user: ' + JSON.stringify(user));
         group.muted = group.muted.filter((muted) => muted.id !== user.id);
         return await this.groupProfileRepository.save(group);
     }

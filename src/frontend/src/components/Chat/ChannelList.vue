@@ -48,12 +48,8 @@ export default {
       this.chatStore.setChannelInView(id)
     },
     groupSettings(channelId: number, groupId: number): void {
-      const payload = {
-        channelId: channelId,
-        userId: this.userId,
-        groupId: groupId,
-      }
       this.chatStore.setChannelInView(channelId)
+      this.chatStore.setGroupId(groupId)
       this.$emit('switch-chat-right-component', GroupSettings)
     },
     lastMessage(ch: any): string {

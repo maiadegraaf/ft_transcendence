@@ -82,10 +82,11 @@ export default {
     this.userName = this.chatStore.name
     this.params.userId = this.userId
     this.params.channelId = this.chatStore.channelInView
-    this.params.groupId = this.groupId
+    this.params.groupId = this.chatStore.groupId
   },
   methods: {
     doneGroup(): void {
+      this.chatStore.setGroupId(0)
       this.$emit('switch-chat-right-component', MessageList)
     },
 
@@ -121,7 +122,7 @@ export default {
       this.params.userName = this.userText
       console.log('test username: ' + this.params.userName)
 
-      axios.delete('/api/chat/group/user', this.params)
+      axios.delete('/api/chat/group/user', {data: this.params})
           .then((response) => {
             console.log(response)
             // this.redirectGroupPannel()
@@ -165,15 +166,15 @@ export default {
       this.params.userName = this.adminText
       console.log('test username: ' + this.params.userName)
 
-      // axios.delete('/api/chat/group/admin', JSON.parse(this.params))
-      //     .then((response) => {
-      //       console.log(response)
-      //       // this.redirectGroupPannel()
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //       return
-      //     });
+      axios.delete('/api/chat/group/admin', {data: this.params})
+          .then((response) => {
+            console.log(response)
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          });
       this.adminText = ''
     },
     addMuted(): void {
@@ -185,15 +186,15 @@ export default {
 
       this.params.userName = this.mutedText
       console.log('test username: ' + this.params.userName)
-      // axios.post('/api/chat/group/muted', JSON.parse(this.params))
-      //     .then((response) => {
-      //       console.log(response)
-      //       // this.redirectGroupPannel()
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //       return
-      //     });
+      axios.post('/api/chat/group/muted', this.params)
+          .then((response) => {
+            console.log(response)
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          });
       this.mutedText = ''
     },
     deleteMuted(): void {
@@ -204,17 +205,17 @@ export default {
       }
 
       this.params.userName = this.mutedText
-      console.log('test username: ' + this.params.userName)
+      console.log(this.params)
 
-      // axios.delete('/api/chat/group/muted', JSON.parse(this.params))
-      //     .then((response) => {
-      //       console.log(response)
-      //       // this.redirectGroupPannel()
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //       return
-      //     });
+      axios.delete('/api/chat/group/muted', {data: this.params})
+          .then((response) => {
+            console.log(response)
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          });
       this.mutedText = ''
     },
     addBanned(): void {
@@ -227,15 +228,15 @@ export default {
       this.params.userName = this.bannedText
       console.log('test username: ' + this.params.userName)
       //
-      // axios.post('/api/chat/group/banned', JSON.parse(this.params))
-      //     .then((response) => {
-      //       console.log(response)
-      //       // this.redirectGroupPannel()
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //       return
-      //     });
+      axios.post('/api/chat/group/banned', this.params)
+          .then((response) => {
+            console.log(response)
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          });
       this.bannedText = ''
     },
     deleteBanned(): void {
@@ -247,15 +248,15 @@ export default {
 
       this.params.userName = this.bannedText
       console.log('test username: ' + this.params.userName)
-      // axios.delete('/api/chat/group/banned', JSON.parse(this.params))
-      //     .then((response) => {
-      //       console.log(response)
-      //       // this.redirectGroupPannel()
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //       return
-      //     })
+      axios.delete('/api/chat/group/banned', {data: this.params})
+          .then((response) => {
+            console.log(response)
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          })
       this.bannedText = ''
     },
   },

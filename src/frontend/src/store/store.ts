@@ -17,6 +17,7 @@ export const UserChatStore = defineStore('userChannel', {
         userId: -1 as number,
         channelInView: 0 as number,
         joined: false as boolean,
+        groupId: -1 as number,
     }),
 
     getters: {
@@ -88,6 +89,9 @@ export const UserChatStore = defineStore('userChannel', {
             this.channels?.push(channel)
             await this.setChannelInView(channel.id)
             this.socket.emit('joinRoomById', {channelId: channel.id})
+        },
+        setGroupId(groupId: number) {
+            this.groupId = groupId
         }
     }
 })
