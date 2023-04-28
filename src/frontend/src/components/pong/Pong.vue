@@ -28,7 +28,6 @@
                 :user-id="currentPlayerId"
                 :socket="socket"
                 @leave-matchmaking="leaveMatchmaking"
-                @matchmaking-error="matchmakingError"
                 @opponent-found="opponentFound"
             />
         </div>
@@ -85,10 +84,16 @@ export default {
     },
     async mounted() {
         let userId = 0
+<<<<<<< HEAD
         await axios.get('/api/auth/profile').then((response) => {
             userId = response.data.id
         })
         // console.log('Session Storage User: ' + userId)
+=======
+        await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+            userId = response.data.id
+        })
+>>>>>>> origin/leaderboard_components
         if (userId === 0) {
             this.$router.push('/')
         } else {
@@ -101,6 +106,7 @@ export default {
                 }
             })
         }
+<<<<<<< HEAD
 
         this.socket.on('already in list', () => {
             this.$refs.errorPopUp.show('You are already waiting to join a match.')
@@ -147,11 +153,22 @@ export default {
             }
             console.log('Sending move to socket ' + this.socket.id)
             this.socket.emit('move', this.info)
+=======
+
+        this.socket.on('MultipleConnections', (msg: string) => {
+            this.$refs.errorPopUp.show('You are already ' + msg)
+            this.reset()
+        })
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                this.socket.emit('disconnect')
+            }
+>>>>>>> origin/leaderboard_components
         })
     },
     beforeUnmount() {
         this.socket.disconnect()
-        this.$root.$off('reset')
     },
     methods: {
         setPracticeMode() {
@@ -167,6 +184,7 @@ export default {
             this.practiceMode = false
             this.startedBy = ''
             this.startMatch = false
+            this.waiting = false
         },
         joinMatch() {
             console.log('Joining match...')
@@ -178,6 +196,7 @@ export default {
         },
         matchmakingError() {
             this.$refs.errorPopUp.show('You cannot join a match in multiple tabs or windows.')
+            this.reset()
         },
         opponentFound(matchId: number) {
             this.startedBy = this.currentPlayerId
