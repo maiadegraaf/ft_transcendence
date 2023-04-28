@@ -41,16 +41,14 @@
 </template>
 
 <script lang="ts">
-import io from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
-import { VueCookieNext } from 'vue-cookie-next'
 import ErrorPopUp from '../ErrorPopUp.vue'
 import PracticeMatchConfiguration from '@/components/pong/practiceMatchConfiguration.vue'
 import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import WaitingRoom from '@/components/pong/WaitingRoom.vue'
 import Match from '@/components/pong/Match.vue'
-import axios from 'axios'
-interface practiceSettingsInterface {
+
+export interface practiceSettingsInterface {
     score: number
     selectedDifficulty: string
     userId: string
@@ -58,10 +56,10 @@ interface practiceSettingsInterface {
 
 export default {
     name: 'pongGame',
+    props: ['userId', 'socket', 'matchId'],
     data(): any {
         return {
             currentPlayerId: '',
-            // multipleConnectionsError: false,
             practiceMode: false,
             practiceSettings: {
                 score: 10,
@@ -72,7 +70,6 @@ export default {
             startedBy: '',
             startMatch: false,
             waiting: false,
-            matchId: 0
         }
     },
     components: {
@@ -82,24 +79,16 @@ export default {
         Match,
         ErrorPopUp
     },
-    async mounted() {
-        let userId = 0
-        await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-            userId = response.data.id
-        })
-        if (userId === 0) {
-            this.$router.push('/')
-        } else {
-            this.currentPlayerId = userId
-            console.log('Current player id: ' + this.currentPlayerId)
-            // console.log('Current player id: ' + this.currentPlayerId)
-            this.socket = io('http://localhost:8080', {
-                query: {
-                    userId: this.currentPlayerId
-                }
-            })
-        }
+    created() {
+      this.currentPlayerId = this.userId
+      console.log("Current player id: " + this.currentPlayerId)
 
+      if (this.matchId != 0) {
+        this.startedBy = this.userId
+        this.startMatch = true
+      }
+    },
+  async mounted() {
         this.socket.on('MultipleConnections', (msg: string) => {
             this.$refs.errorPopUp.show('You are already ' + msg)
             this.reset()
@@ -110,9 +99,6 @@ export default {
                 this.socket.emit('disconnect')
             }
         })
-    },
-    beforeUnmount() {
-        this.socket.disconnect()
     },
     methods: {
         setPracticeMode() {

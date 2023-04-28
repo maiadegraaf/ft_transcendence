@@ -14,7 +14,7 @@ import { Info } from '../interfaces/info.interface';
 @WebSocketGateway({
     cors: { origin: '*' },
 })
-export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class PongGateway implements OnGatewayDisconnect {
     constructor(private readonly pongService: PongService) {}
 
     @WebSocketServer() server: Server;
@@ -52,6 +52,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @MessageBody() data: Info,
     ): void {
         this.pongService.handleMove(client, data);
+    }
+
+    @SubscribeMessage('addSocketToPlayer')
+    handleAddSocketToPlayer(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() userId: number,
+    ): void {
+        this.pongService.addSocketIdToUser(userId, client);
     }
 
     @SubscribeMessage('create match')

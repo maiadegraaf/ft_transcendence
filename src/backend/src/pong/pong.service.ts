@@ -94,12 +94,6 @@ export class PongService {
             client.emit('MultipleConnections', 'in a match');
             return null;
         }
-        // const instance = this.getInstanceByPlayerSocket(user.socketId);
-        // if (instance) {
-        //     instance.handlePlayerDisconnect(
-        //         this.server.sockets.sockets.get(user.socketId),
-        //     );
-        // }
         await this.userService.addSocketIdToUser(user, client.id);
         return user;
     }
@@ -274,6 +268,10 @@ export class PongService {
     }
 
     async handlePracticeMode(client: Socket, data: any) {
+        if (!data.userId) {
+            this.logger.log('no user id');
+        }
+        this.logger.log(data.userId + ' joined practice mode');
         const player = await this.addSocketIdToUser(data.userId, client);
         if (!player) {
             return;

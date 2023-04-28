@@ -162,21 +162,15 @@ export default {
         }
     },
     async mounted() {
-      let userId = 0;
       await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-        userId = response.data.id
+        this.currentUser = response.data.id
       })
-        if (userId === null) {
-            this.$router.push('/')
-        } else {
-            this.currentUser = userId
-        }
         console.log('Current User: ' + this.currentUser)
         axios.get('http://localhost:8080/api/leaderboard').then((response) => {
             this.leaderboardData = Array.from(response.data)
         })
-        axios.get('http://localhost:8080/api/leaderboard/' + this.currentUser).then((response) => {
-            console.log('http://localhost:8080/api/leaderboard/' + this.currentUser)
+        axios.get('http://localhost:8080/api/leaderboard/id').then((response) => {
+            console.log('http://localhost:8080/api/leaderboard/id')
             this.practiceMatchData = response.data as PracticeMatchData
         })
     },

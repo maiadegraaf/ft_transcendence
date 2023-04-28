@@ -1,19 +1,45 @@
 <template>
     <body>
         <Nav />
-        <Pong />
+        <Pong v-if="ready" :user-id="userId" :socket="socket" match-id="0"/>
     </body>
 </template>
 
 <script lang="ts">
 import Pong from '../components/pong/Pong.vue'
 import Nav from '@/components/Nav.vue'
+import axios from "axios";
+import type {Socket} from "socket.io-client";
+import io from 'socket.io-client'
+
 
 export default {
     name: 'PongGame',
     components: {
         Nav,
         Pong
+    },
+    data() {
+        return {
+            userId: 0,
+            socket: {} as Socket,
+            ready: false
+        }
+    },
+    async mounted() {
+      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        this.userId = response.data.id
+      })
+      console.log("//PONG GAME//\nUser id: " + this.userId)
+      this.socket = io('http://localhost:8080', {
+        query: {
+          userId: this.userId
+        }
+      })
+      if (this.socket && this.userId != 0) {
+        console.log("Socket connected and user found" + this.userId)
+        this.ready = true
+      }
     }
 }
 </script>
