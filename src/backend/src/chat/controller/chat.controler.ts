@@ -166,7 +166,7 @@ export class ChatController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ): Promise<any> {
         try {
-            console.log('deleteUserFromChannel');
+            console.log('param: ' + JSON.stringify(param));
             const user = await this.userService.getUserByLogin(param.userName);
             if (!user) {
                 throw new HttpException(
@@ -174,10 +174,13 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
+            console.log(JSON.stringify(user));
             const channel = await this.channelService.removeUserFromChannel(
                 param.channelId,
                 user,
             );
+            console.log('channel users: ' + JSON.stringify(channel.users));
+            await this.chatGateway.emitDeleteChannelFromUser(channel, user);
             // emit something to user to remove channel from list (maybe update emit)
         } catch (error) {
             this.logger.error('deleteUserFromChannel: ' + error);

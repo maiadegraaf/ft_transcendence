@@ -196,25 +196,26 @@ export class ChannelService {
     }
 
     async removeUserFromChannel(channelId: number, user: User): Promise<any> {
-        try {
-            const channel = await this.channelRepository.findOne({
-                where: { id: channelId },
-                relations: ['users'],
-            });
-            if (!channel) {
-                throw new HttpException(
-                    'Channel with ID ${id} not found to remove users',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            const idx = channel.users.indexOf(user);
-            channel.users.slice(idx, idx + 1);
-            return await this.channelRepository.save(channel);
-        } catch (error) {
+        const channel = await this.channelRepository.findOne({
+            where: { id: channelId },
+            relations: ['users'],
+        });
+        if (!channel || !channel.users) {
             throw new HttpException(
-                error.message,
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                'Channel with ID ${id} not found to remove users',
+                HttpStatus.FORBIDDEN,
             );
         }
+        console.log('user: ' + JSON.stringify(user));
+        console.log('channel users: ' + JSON.stringify(channel.users));
+        const idx = channel.users.findIndex((u) => u.id === user.id);
+        if (idx === -1) {
+            throw new HttpException(
+                'User not found in channel to remove',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        channel.users.splice(idx, 1);
+        return await this.channelRepository.save(channel);
     }
 }

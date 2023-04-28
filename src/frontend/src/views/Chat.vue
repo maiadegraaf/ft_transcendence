@@ -64,6 +64,9 @@ export default {
     this.chatStore.socket.on('addChannelToClient', (channel: IChannels) => {
       this.chatStore.receivedNewChannel(channel)
     })
+    this.chatStore.socket.on('removeChannelFromClient', (channelId: number) => {
+      this.chatStore.removeChannel(channelId)
+    })
   },
   watch: {
   },

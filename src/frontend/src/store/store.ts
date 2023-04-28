@@ -90,6 +90,15 @@ export const UserChatStore = defineStore('userChannel', {
             await this.setChannelInView(channel.id)
             this.socket.emit('joinRoomById', {channelId: channel.id})
         },
+        async removeChannel(channelID: number) {
+            const index = this.channels?.findIndex((ch) => ch.id === channelID)
+            console.log(channelID)
+            console.log('removeChannelindex: ' + index)
+            if (index && index != -1) {
+                this.channels?.splice(index, 1);
+                this.socket.emit('leaveRoomById', {channelId: channelID})
+            }
+        },
         setGroupId(groupId: number) {
             this.groupId = groupId
         }

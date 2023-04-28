@@ -7,7 +7,13 @@ import {
     OnGatewayDisconnect,
     ConnectedSocket,
 } from '@nestjs/websockets';
-import { Body, Logger, ValidationPipe } from '@nestjs/common';
+import {
+    Body,
+    HttpException,
+    HttpStatus,
+    Logger,
+    ValidationPipe,
+} from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { MessageService } from '../services/message.service';
 import { UserService } from '../../user/services/user/user.service';
@@ -55,6 +61,17 @@ export class ChatGateway
         await client.join('room' + payload.channelId);
         this.logger.log(
             `handleJoinRoomById: ${client.id} joined the room with id: ${payload.channelId}`,
+        );
+    }
+
+    @SubscribeMessage('leaveRoomById')
+    async handleLeaveRoomById(
+        @ConnectedSocket() client: Socket,
+        @Body() payload: { channelId: number },
+    ): Promise<any> {
+        await client.leave('room' + payload.channelId);
+        this.logger.log(
+            `handleLeaveRoomById: ${client.id} left the room with id: ${payload.channelId}`,
         );
     }
 
@@ -167,5 +184,22 @@ export class ChatGateway
             );
             userSocket.emit('addChannelToClient', channelInfo);
         }
+    }
+
+    async emitDeleteChannelFromUser(
+        channel: Channel,
+        user: User,
+    ): Promise<any> {
+        const userSocket = this.getClientSocketById(user.id);
+        if (!userSocket) {
+            throw new HttpException(
+                'User is not connected to chat',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        this.logger.log(
+            'emit deleteChannelFromClient form owner: ' + userSocket.id,
+        );
+        userSocket.emit('removeChannelFromClient', channel.id);
     }
 }
