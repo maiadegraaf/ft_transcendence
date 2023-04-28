@@ -6,12 +6,14 @@ import { Ball } from '../interfaces/ball.interface';
 import { Player } from '../interfaces/player.interface';
 import { Info } from '../interfaces/info.interface';
 import { GameTools } from '../game';
+import { MatchService } from './match.service';
 
 const winning_condition = 10;
 
 @Injectable()
 export class MatchInstance {
     private logger: Logger = new Logger('PongGateway');
+    private matchesService: MatchService;
     private gamestate: GameState = GameState.Start;
     private winner = '';
     private readonly match: Match;
@@ -101,6 +103,7 @@ export class MatchInstance {
             client,
         );
         this.match.updateScore(this.player1.score, this.player2.score);
+        this.matchesService.addMatch(this.match);
     }
 
     tick(client: Socket): void {

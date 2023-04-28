@@ -28,14 +28,14 @@ export default {
         }
     },
     async mounted() {
-      this.userId = this.$route.params.userid
+      this.userId = +this.$route.params.userid
       if (!this.userId) {
         await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
           this.userId = response.data.id
         })
       }
       console.log("//PONG GAME//\nUser id: " + this.userId)
-      this.socket = this.$route.params.socket
+      // this.socket = this.$route.params.socket
       if (!this.socket) {
         this.socket = io('http://localhost:8080', {
           query: {
@@ -43,7 +43,7 @@ export default {
           }
         })
       }
-      this.matchId = this.$route.params.matchid
+      this.matchId = +this.$route.params.matchid
       if (!this.matchId) {
         this.matchId = 0
       }
