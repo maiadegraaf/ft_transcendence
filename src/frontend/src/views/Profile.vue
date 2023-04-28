@@ -26,12 +26,19 @@ be displayed on the user profile -->
                 </button>
             </div>
             <div class="flex flex-col">
-              <div class="flex justify-center items-center mt-5">
-                <h2 class="text-blush font-semibold text-5xl  text-center">{{ user.login }}</h2>
-                <svg class="ml-3" height="20" width="20">
-                  <circle cx="10" cy="10" r="4" :stroke="isOnline ? 'green' : 'red'" stroke-width="3" :fill="isOnline ? 'green' : 'red'" />
-                </svg>
-              </div>
+                <div class="flex justify-center items-center mt-5">
+                    <h2 class="text-blush font-semibold text-5xl text-center">{{ user.login }}</h2>
+                    <svg class="ml-3" height="20" width="20">
+                        <circle
+                            cx="10"
+                            cy="10"
+                            r="4"
+                            :stroke="isOnline ? 'green' : 'red'"
+                            stroke-width="3"
+                            :fill="isOnline ? 'green' : 'red'"
+                        />
+                    </svg>
+                </div>
                 <button
                     v-if="isProfileSession"
                     @click="changeUsername"
@@ -42,9 +49,10 @@ be displayed on the user profile -->
             </div>
         </div>
         <WinLosses />
+        <MatchHistory />
     </main>
     <main v-else class="flex h-screen justify-center items-center">
-      <h1 class="text-5xl text-blush font-bold ">Profile doesn't exist</h1>
+        <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
     </main>
 </template>
 
@@ -53,13 +61,14 @@ import axios from 'axios'
 import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { UserChatStore } from '@/store/store'
+import MatchHistory from '@/components/profile/MatchHistory.vue'
 
 export default {
-  setup() {
-    const chatStore = UserChatStore()
-    return {chatStore}
-  },
-  data() {
+    setup() {
+        const chatStore = UserChatStore()
+        return { chatStore }
+    },
+    data() {
         return {
             isOnline: false,
             currentUserId: 0,
@@ -77,20 +86,23 @@ export default {
         }
     },
     components: {
+        MatchHistory,
         WinLosses,
         Nav
     },
     async mounted() {
         try {
-          await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-          this.currentUserId = response.data.id
-          })
-          await axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
-            this.user = response.data
-            this.doesProfileExist = true;
-            if (this.currentUserId === Number(this.$route.params.id))
-              this.isProfileSession = true;
-          })
+            await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+                this.currentUserId = response.data.id
+            })
+            await axios
+                .get('http://localhost:8080/api/user/' + this.$route.params.id)
+                .then((response) => {
+                    this.user = response.data
+                    this.doesProfileExist = true
+                    if (this.currentUserId === Number(this.$route.params.id))
+                        this.isProfileSession = true
+                })
         } catch (error) {
             console.log(error)
         }
