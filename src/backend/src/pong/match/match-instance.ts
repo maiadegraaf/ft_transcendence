@@ -26,7 +26,7 @@ export class MatchInstance {
         this.match = match;
     }
 
-    async start(): Promise<void> {
+    start(): void {
         this.gamestate = GameState.Playing;
         this.player1.user = this.match.player1;
         this.player2.user = this.match.player2;

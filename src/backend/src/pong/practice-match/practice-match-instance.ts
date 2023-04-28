@@ -43,7 +43,7 @@ export class PracticeMatchInstance {
     }
 
     handleDisconnect(client: Socket): void {
-        this.computer.score = 10;
+        this.computer.score = this.practiceMatch.winningCondition;
         this.end('You lost :(', client);
     }
 
