@@ -10,9 +10,11 @@ import { GroupProfile } from './entities/groupProfile.entity';
 import { GroupProfileService } from './services/groupProfile.service';
 import { UserService } from '../user/services/user/user.service';
 import { User } from 'src/user/user.entity';
+import { Avatar } from 'src/user/avatar.entity';
+import { AvatarService } from 'src/user/services/user/avatar.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User])],
+    imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User, Avatar])],
     controllers: [ChatController],
     providers: [
         MessageService,
@@ -20,6 +22,7 @@ import { User } from 'src/user/user.entity';
         GroupProfileService,
         UserService,
         ChatGateway,
+        AvatarService,
     ],
 })
 export class ChatModule {}

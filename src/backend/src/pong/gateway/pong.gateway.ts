@@ -18,7 +18,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(private readonly pongService: PongService) {}
 
     @WebSocketServer() server: Server;
-
     handleConnection(@ConnectedSocket() client: Socket): void {
         const userId = client.handshake.query.userId;
         console.log('Client Connected ' + client.id);
@@ -26,6 +25,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     handleDisconnect(@ConnectedSocket() client: Socket): void {
+        this.pongService.handleDisconnect(client);
+    }
+
+    @SubscribeMessage('disconnect')
+    handleDisconnectMessage(@ConnectedSocket() client: Socket): void {
         this.pongService.handleDisconnect(client);
     }
 
@@ -48,6 +52,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @MessageBody() data: Info,
     ): void {
         this.pongService.handleMove(client, data);
+    }
+
+    @SubscribeMessage('create match')
+    handleCreateMatch(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any,
+    ): void {
+        this.pongService.handleCreateMatch(client, data.player1, data.player2);
     }
 
     // @SubscribeMessage('start')

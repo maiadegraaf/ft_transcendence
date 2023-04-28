@@ -49,22 +49,17 @@ export class PongService {
 
     handleDisconnect(client: Socket): void {
         this.logger.log(`Client disconnected: ${client.id}`);
-        const instance = this.getInstanceByPlayerSocket(client.id);
-        if (instance) {
-            instance.handlePlayerDisconnect(client);
-            delete this.instances[instance.returnMatchId()];
-        } else if (this.getMatchmakingBySocket(client.id)) {
-            this.handleLeaveMatchmaking(client);
-        } else {
-            const practiceInstance = this.getPracticeInstanceByPlayerSocket(
-                client.id,
-            );
-            if (practiceInstance) {
-                practiceInstance.handleDisconnect(client);
-                delete this.practiceInstance[
-                    practiceInstance.returnPracticeMatchId()
-                ];
-            }
+        const m = this.getMatchmakingBySocket(client.id);
+        if (m) {
+            this.matchmakingList.splice(this.matchmakingList.indexOf(m), 1);
+        }
+        const i = this.getInstanceByPlayerSocket(client.id);
+        if (i) {
+            i.handlePlayerDisconnect(client);
+        }
+        const p = this.getPracticeInstanceByPlayerSocket(client.id);
+        if (p) {
+            p.handleDisconnect(client);
         }
     }
 
@@ -86,17 +81,17 @@ export class PongService {
         console.log('user found' + user);
         if (this.getMatchmakingByUserId(user.id)) {
             console.log('already in list');
-            client.emit('already in list');
+            client.emit('MultipleConnections', 'waiting to join a match');
             return null;
         }
         if (this.getPracticeInstanceByUserId(user.id)) {
             console.log('already in practice match');
-            client.emit('already in practice match');
+            client.emit('MultipleConnections', 'in a practice match');
             return null;
         }
         if (this.getInstanceByUserId(user.id)) {
             console.log('already in match');
-            client.emit('already in match');
+            client.emit('MultipleConnections', 'in a match');
             return null;
         }
         // const instance = this.getInstanceByPlayerSocket(user.socketId);
@@ -117,17 +112,37 @@ export class PongService {
         }
         this.matchmakingList.push(newPlayer);
         if (this.matchmakingList.length > 1) {
-            const player1 = this.matchmakingList.pop();
-            const player2 = this.matchmakingList.pop();
-            const match = new Match(player1, player2);
-            this.instances[match.id] = new MatchInstance(this.server, match);
-            if (client.id == player1.socketId) {
-                this.emitOpponentFound(client, player2.socketId, match.id);
-            } else {
-                this.emitOpponentFound(client, player1.socketId, match.id);
-            }
-            await this.instances[match.id].start();
+            this.createMatch(
+                client,
+                this.matchmakingList.pop(),
+                this.matchmakingList.pop(),
+            );
         }
+    }
+
+    async handleCreateMatch(
+        client: Socket,
+        player1Id: number,
+        player2Id: number,
+    ) {
+        const player1 = await this.userService.findUserByID(player1Id);
+        const player2 = await this.userService.findUserByID(player2Id);
+        if (!player1 || !player2) {
+            return;
+        }
+        this.createMatch(client, player1, player2);
+    }
+
+    createMatch(client: Socket, player1: User, player2: User): Match {
+        const match = new Match(player1, player2);
+        this.instances[match.id] = new MatchInstance(this.server, match);
+        this.instances[match.id].start();
+        if (client.id == player1.socketId) {
+            this.emitOpponentFound(client, player2.socketId, match.id);
+        } else {
+            this.emitOpponentFound(client, player1.socketId, match.id);
+        }
+        return match;
     }
 
     async handleLeaveMatchmaking(client: Socket): Promise<void> {

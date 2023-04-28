@@ -15,6 +15,8 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { Leaderboard } from './leaderboard/leaderboard.entity';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
 import { GameTools } from './game';
+import { AvatarService } from 'src/user/services/user/avatar.service';
+import { Avatar } from 'src/user/avatar.entity';
 
 @Module({
     imports: [
@@ -24,6 +26,7 @@ import { GameTools } from './game';
         TypeOrmModule.forFeature([User]),
         LeaderboardModule,
         TypeOrmModule.forFeature([Leaderboard]),
+        TypeOrmModule.forFeature([Avatar]),
     ],
     controllers: [PongController],
     providers: [
@@ -35,6 +38,7 @@ import { GameTools } from './game';
         PracticeMatch,
         UserService,
         LeaderboardService,
+        AvatarService,
     ],
 })
 export class PongModule {}

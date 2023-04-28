@@ -1,14 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { User } from 'src/user/user.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../../../chat/entities/channel.entity';
+import { Avatar } from 'src/user/avatar.entity';
+import { AvatarService } from './avatar.service';
+// import {Channel} from "../../../chat/entities/channel.entity";
+// import { Post } from 'src/typeorm/entities/Post';
+// import { Profile } from 'src/typeorm/entities/Profile';
+// import { CreateUserParams, CreateUserPostParams, CreateUserProfileParams, UpdateUserParams } from 'src/utils/types';
 
 @Injectable()
 export class UserService {
     constructor(
+        private readonly avatarService: AvatarService,
+
+        @InjectRepository(Avatar)
+        private avatarRepository: Repository<Avatar>,
         @InjectRepository(User)
-        private userRepository: Repository<User>, // @InjectRepository(Profile) private profileRepository: Repository<Profile>, // @InjectRepository(Post) private postRepository: Repository<Post>,
+        private userRepository: Repository<User>,
     ) {}
 
     async findAllUsers() {
@@ -16,8 +31,11 @@ export class UserService {
         // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
     }
 
-    async findUserByID(id: number): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { id } });
+    async findUserByID(id: number, relations = [] as string[]): Promise<User> {
+        const user = await this.userRepository.findOne({
+            where: { id },
+            relations,
+        });
         if (!user) {
             throw new NotFoundException('User with ID ' + id + ' not found');
         }
@@ -32,12 +50,19 @@ export class UserService {
         let user = await this.userRepository.findOne({ where: { id } });
         if (!user) {
             user = await this.userRepository.save({ id, email, login });
+            const avatar = await this.avatarService.createDefaultAvatar(user);
+            user.avatar = avatar;
+            await this.userRepository.save(user);
         }
         return user;
     }
 
-    deleteUser(id: number) {
+    async deleteUser(id: number): Promise<DeleteResult> {
         return this.userRepository.delete({ id });
+    }
+
+    async changeUsername(id: number, newUserName: string): Promise<User> {
+        return await this.userRepository.save({ id, login: newUserName });
     }
 
     async getUserByName(login: string): Promise<any> {
@@ -142,38 +167,72 @@ export class UserService {
         user.socketId = socketId;
         return this.userRepository.save(user);
     }
-    // createUser(userDetails: CreateUserParams) {
-    //     const newUser = this.userRepository.create({ //not async so not need to await
-    //         ...userDetails,
-    //     });
-    //     return this.userRepository.save(newUser); //returns promise so need to await in controller
-    // }
 
-    // '...updateUserDetails' will spread updateUserDatails. I user only updates username/email, only username/email will be updated
-    // If username and email. then username AND email will be updated
-    // updateUser(id: number, updateUserDetails: UpdateUserParams) {
-    //     return this.userRepository.update({ id }, {...updateUserDetails });
-    // }
+    async returnUserBySocketId(socketId: string): Promise<User> {
+        for (const u of await this.findAllUsers()) {
+            if (u.socketId === socketId) {
+                console.log(
+                    'Found user ' + u.login + ' with socketId ' + socketId,
+                );
+                return u;
+            }
+        }
+        // return this.userRepository.findOne({ where: { socketId: socketId } });
+    }
 
-    // //Hier kan je ook een aparte service voor maken
-    // async createUserProfile(id: number, createUserProfileDetails: CreateUserProfileParams) {
-    //     const user = await this.userRepository.findOneBy({ id });
-    //     if (!user) {
-    //         throw new HttpException('User not found. Cannot create Profile', HttpStatus.BAD_REQUEST,);
-    //     }
-    //     const newProfile = this.profileRepository.create(createUserProfileDetails);
-    //     const savedProfile = await this.profileRepository.save(newProfile);
-    //     user.profile = savedProfile;
-    //     return this.userRepository.save(user);
-    // }
+    async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
+        if (!file) {
+            throw new HttpException('File required', HttpStatus.NOT_ACCEPTABLE);
+        }
+        const user: User = await this.findUserByID(userId, ['avatar']);
+        if (user.avatar) {
+            // updatae avatar
+            user.avatar.data = file.buffer;
+            user.avatar.filename = file.originalname;
+            await this.avatarRepository.save(user.avatar);
+        } else {
+            // create avatar
+            const filename = file.originalname;
+            const data = file.buffer;
+            await this.avatarService.createAvatar(filename, data, user);
+        }
+    }
 
-    // async createUserPost(id: number, createUserPostDetails: CreateUserPostParams){
-    //     const user = await this.userRepository.findOneBy({ id }); //could also use findUserByID
-    //     if (!user) {
-    //         throw new HttpException('User not found. Cannot create Profile', HttpStatus.BAD_REQUEST,);
-    //     }
-    //     // const newPost = this.postRepository.create(createUserPostDetails);
-    //     const newPost = this.postRepository.create({ ...createUserPostDetails, user, }); //ensure that it relates to that user
-    //     return this.postRepository.save(newPost);
+    async getAvatar(userId: number): Promise<Avatar> {
+        const user: User = await this.findUserByID(userId, ['avatar']);
+        if (!user.avatar)
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return user.avatar;
+    }
+
+    async updateUsername(userId: number, username: string): Promise<User> {
+        const user = await this.findUserByID(userId);
+        const existingUser = await this.userRepository.findOne({
+            where: { login: username },
+        });
+        if (existingUser && existingUser.id !== userId) {
+            throw new HttpException(
+                'Username "${username}" is already taken',
+                HttpStatus.CONFLICT,
+            );
+        }
+        user.login = username;
+        return this.userRepository.save(user);
+    }
+
+    async findUserByUsername(username: string): Promise<User | undefined> {
+        return await this.userRepository.findOne({
+            where: { login: username },
+        });
+    }
+
+    async addFriend(user: User, friend: User): Promise<User> {
+        user.friends.push(friend);
+        return await this.userRepository.save(user);
+    }
+
+    // async findFriends(id: number): Promise<User[]> {
+    // 	const user = await this.findUserByID(id, { relations: ['friends'] });
+    // 	return user.friends;
     // }
 }
