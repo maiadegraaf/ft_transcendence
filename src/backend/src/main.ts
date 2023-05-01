@@ -6,15 +6,8 @@ import * as session from 'express-session';
 import * as fs from 'fs';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import * as express from 'express';
-import * as https from 'https';
-import * as http from 'http';
-import * as passport from 'passport';
 
 async function bootstrap() {
-    const httpsOptions = {
-        key: fs.readFileSync('./secrets/private-key.pem', 'utf-8'),
-        cert: fs.readFileSync('./secrets/public-certificate.pem', 'utf-8'),
-    };
     const server = express();
     const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
     app.setGlobalPrefix('api'); // New

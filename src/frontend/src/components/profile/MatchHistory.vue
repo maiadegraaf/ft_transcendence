@@ -8,8 +8,8 @@
             >
                 Match History
             </h1>
-          <div v-for="(match, index) in matchHistoryData" class="flex items-center justify-around">
-            <div class="border border-buff rounded-md p-2 flex flex-col justify-center items-center w-1/4 ">
+          <div class="flex items-center justify-around">
+            <div v-for="(match) in matchHistoryData.slice(0, 2)" class="border border-buff rounded-md p-2 flex flex-col justify-center items-center w-1/4 ">
               <h2 class="font-bold text-2xl mb-2">Won</h2>
               <h3 class=" text-center break-all leading-4">
                 {{match.player1}}<br>vs<br>{{ match.player2 }}
@@ -64,9 +64,9 @@ export default {
       matchHistoryData: [] as MatchHistoryData[],
     }
   },
-  mounted()
+  async mounted()
   {
-    axios.get('/api/matchHistory').then((response) => {
+    await axios.get('/api/').then((response) => {
       this.matchHistoryData = Array.from(response.data)
     })
   },
