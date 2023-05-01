@@ -10,7 +10,10 @@ import {
 import { Server, Socket } from 'socket.io';
 import { PongService } from '../pong.service';
 import { Info } from '../interfaces/info.interface';
+import { UseGuards } from '@nestjs/common';
+import { websocketGuard } from '../../auth/auth.guard';
 
+@UseGuards(websocketGuard)
 @WebSocketGateway({
     cors: { origin: '*' },
 })
@@ -19,8 +22,7 @@ export class PongGateway implements OnGatewayDisconnect {
 
     @WebSocketServer() server: Server;
     handleConnection(@ConnectedSocket() client: Socket): void {
-        const userId = client.handshake.query.userId;
-        console.log('Client Connected ' + client.id);
+        const userId = client.request.session.user.id;
         this.pongService.handleConnection(client, userId);
     }
 

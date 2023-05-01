@@ -35,8 +35,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             isTwoFactorAuthenticationEnabled:
                 find.isTwoFactorAuthenticationEnabled,
             twoFactorAuthenticationSecret: find.twoFactorAuthenticationSecret,
-            accessToken: accessToken,
-            refreshToken: refreshToken,
+            // accessToken: accessToken,
+            // refreshToken: refreshToken,
         };
         if ((await this.authService.validateUser(accessToken, id)) == true)
             done(null, user);

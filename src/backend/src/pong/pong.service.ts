@@ -273,6 +273,7 @@ export class PongService {
         }
         this.logger.log(data.userId + ' joined practice mode');
         const player = await this.addSocketIdToUser(data.userId, client);
+        this.logger.log('practice mode');
         if (!player) {
             return;
         }

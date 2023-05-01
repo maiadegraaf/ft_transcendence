@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
@@ -16,5 +16,17 @@ export class FortyTwoAuthGuard extends AuthGuard('42') {
             return true;
         }
         return false;
+    }
+}
+
+@Injectable()
+export class websocketGuard implements CanActivate {
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const request = context.switchToWs().getClient().request;
+        if (request.session) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

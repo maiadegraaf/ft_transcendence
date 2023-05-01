@@ -15,42 +15,43 @@
 </template>
 
 <script lang="ts">
-import { UserChatStore } from '@/store/store'
-import type { IMessage } from '@/store/types'
+import {useChatStore} from "@/store/channel.store";
+import {useUserStore} from "@/store/user.store";
 
 export default {
-    name: 'MessageInput',
-    setup() {
-        const chatStore = UserChatStore()
-        return { chatStore }
+  name: "MessageInput",
+  setup() {
+    const chatStore = useChatStore()
+    const userStore = useUserStore()
+    return { chatStore, userStore }
+  },
+  data(): any {
+      return {
+        id: 0,
+        text: '',
+        sender: {
+          id: 0,
+          login: ''
+        },
+        channel: 0,
+      }
     },
-    data(): any {
-        return {
-            id: 0,
-            text: '',
-            sender: {
-                id: 0,
-                login: ''
-            },
-            channel: 0
-        }
+  mounted() {
+    this.sender.id = this.userStore.id
+    this.sender.login = this.userStore.name
+    console.log(this.$data)
+  },
+  methods: {
+    sendMessage(): void {
+      // Validates the input before sending the message.
+      this.channel = this.chatStore.channelInView
+      if (this.text.length > 0) {
+        this.userStore.socket.emit('msgToServer', this.$data)
+        // Resets the input field.
+        this.text = ''
+      }
     },
-    mounted() {
-        this.sender.id = this.chatStore.userId
-        this.sender.login = this.chatStore.name
-        console.log(this.$data)
-    },
-    methods: {
-        sendMessage(): void {
-            // Validates the input before sending the message.
-            this.channel = this.chatStore.channelInView
-            if (this.text.length > 0) {
-                this.chatStore.socket.emit('msgToServer', this.$data)
-                // Resets the input field.
-                this.text = ''
-            }
-        }
-    }
+  }
 }
 </script>
 
