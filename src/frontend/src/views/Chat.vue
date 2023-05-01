@@ -7,10 +7,10 @@
           <div class="border-buff border-double border-2 rounded-md">
             <h2 class="h2">Channels</h2>
           </div>
-          <ChannelGroup/>
+<!--          <ChannelGroup/>-->
           <ChannelList
            @switch-chat-right-component="changeComponent"/>
-          <ChannelInput/>
+<!--          <ChannelInput/>-->
         </div>
         <component :is="currentComponent" class="w-3/4 h-full flex flex-column overflow-hidden"
         @switch-chat-right-component="changeComponent"/>
@@ -74,7 +74,6 @@ export default {
   // The methods of the Vue instance.
   methods: {
     changeComponent(component: any): void {
-      console.log(component);
       this.currentComponent = component
     },
   },

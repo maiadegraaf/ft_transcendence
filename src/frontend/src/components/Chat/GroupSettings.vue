@@ -4,6 +4,12 @@
     <div class="border-buff border-double border-2 rounded-md">
       <h2 class="h2">Group Settings</h2>
     </div>
+    <div class="border-buff border-2 rounded-md">
+      <h2 class="h2">{{ groupName }}</h2>
+    </div>
+    <div class="flex-1 w-full bg-dark-purple overflow-hidden">
+      <button @click="doneGroup" class="rounded-full ml-3 hover:shadow-md">Go Back</button>
+    </div>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <h2>Users</h2>
       <!--      list of users-->
@@ -74,19 +80,24 @@ export default {
       userName: '',
       channelId: 0,
       groupId: 0,
+      groupName: '',
+      profile: {}
     }
   },
   async mounted() {
     await this.chatStore.fetchUserData()
     this.userId = this.chatStore.userId
     this.userName = this.chatStore.name
+    this.groupName = this.chatStore.groupName
     this.params.userId = this.userId
     this.params.channelId = this.chatStore.channelInView
     this.params.groupId = this.chatStore.groupId
+    this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
   },
   methods: {
     doneGroup(): void {
       this.chatStore.setGroupId(0)
+      this.chatStore.setGroupName('')
       this.$emit('switch-chat-right-component', MessageList)
     },
 
@@ -137,11 +148,10 @@ export default {
 
     addAdmin(): void {
       // Validates the input before sending the message.
-      if (this.adminText.length <= 0) {
+      if (this.adminText.length <= 0 || !this.checkOwner()) {
         this.adminText = ''
         return
       }
-
       this.params.userName = this.adminText
       console.log('test username: ' + this.params.userName)
 
@@ -158,7 +168,7 @@ export default {
     },
     deleteAdmin(): void {
       // Validates the input before sending the message.
-      if (this.adminText.length <= 0) {
+      if (this.adminText.length <= 0 || !this.checkOwner()) {
         this.adminText = ''
         return
       }
@@ -179,7 +189,7 @@ export default {
     },
     addMuted(): void {
       // Validates the input before sending the message.
-      if (this.mutedText.length <= 0) {
+      if (this.mutedText.length <= 0 || !this.checkAdmin()) {
         this.mutedText = ''
         return
       }
@@ -199,8 +209,11 @@ export default {
     },
     deleteMuted(): void {
       // Validates the input before sending the message.
-      if (this.mutedText.length <= 0) {
+      if (this.mutedText.length <= 0 || !this.checkAdmin()) {
         this.mutedText = ''
+        return
+      }
+      if (!this.checkAdmin()) {
         return
       }
 
@@ -220,7 +233,7 @@ export default {
     },
     addBanned(): void {
       // Validates the input before sending the message.
-      if (this.bannedText.length <= 0) {
+      if (this.bannedText.length <= 0 || !this.checkAdmin()) {
         this.bannedText = ''
         return
       }
@@ -241,11 +254,10 @@ export default {
     },
     deleteBanned(): void {
       // Validates the input before sending the message.
-      if (this.bannedText.length <= 0) {
+      if (this.bannedText.length <= 0 || !this.checkAdmin()) {
         this.bannedText = ''
         return
       }
-
       this.params.userName = this.bannedText
       console.log('test username: ' + this.params.userName)
       axios.delete('/api/chat/group/banned', {data: this.params})
@@ -259,6 +271,29 @@ export default {
           })
       this.bannedText = ''
     },
+    checkAdmin(): boolean {
+      if (!this.profile) {
+        return false
+      }
+      console.log(this.profile)
+      const admin = this.profile.admins.login.includes(this.userName)
+      if (admin) {
+        return true
+      }
+      return false
+    },
+    checkOwner(): boolean {
+      if (!this.profile) {
+        return false
+      }
+      console.log(this.profile)
+      if (this.userName != this.profile.owner.login)
+        return false
+      return true
+    },
   },
+  created() {
+
+  }
 }
 </script>

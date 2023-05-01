@@ -2,8 +2,9 @@ import { defineStore } from 'pinia'
 import {VueCookieNext} from "vue-cookie-next";
 import type {Socket} from "socket.io-client";
 import {io} from "socket.io-client";
-import type {IChannels, IMessage} from "@/store/types";
+import type {IChannels, IMessage, IProfile} from "@/store/types";
 import axios, {formToJSON} from "axios";
+import MessageList from "@/components/Chat/MessageList.vue";
 // import axios from "axios/index";
 
 
@@ -16,8 +17,10 @@ export const UserChatStore = defineStore('userChannel', {
         socket: null as any | null,
         userId: -1 as number,
         channelInView: 0 as number,
+        // groupProfile: profile as IProfile | null,
         joined: false as boolean,
         groupId: -1 as number,
+        groupName: '' as string,
     }),
 
     getters: {
@@ -32,6 +35,16 @@ export const UserChatStore = defineStore('userChannel', {
             }
             //console.log(channelIV.messages)
             return channelIV.messages
+        },
+        getProfileByChannelId: (state) => (channelId: number) => {
+            if (state.channels == null) {
+                return null
+            }
+            const chnl = state.channels.find(channel => channel.id === channelId)
+            if (chnl == null || chnl.profile == null) {
+                return null
+            }
+            return chnl.profile
         }
     },
 
@@ -50,13 +63,6 @@ export const UserChatStore = defineStore('userChannel', {
             if (this.userId <= 0) {
                 return false
             }
-            // const userSession = sessionStorage.getItem('user')
-            // if (userSession == null) {
-            //     return false
-            // }
-            // const user = JSON.parse(userSession).user
-            // this.userId = user.id
-            // this.name = user.login
             return true
         },
         async loadChannels() {
@@ -101,6 +107,9 @@ export const UserChatStore = defineStore('userChannel', {
         },
         setGroupId(groupId: number) {
             this.groupId = groupId
+        },
+        setGroupName(groupName: string) {
+            this.groupName = groupName
         }
     }
 })

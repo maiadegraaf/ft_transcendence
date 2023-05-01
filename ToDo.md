@@ -2,7 +2,9 @@
 
 ## Chat
 
-* [ ] testing endpoints for user, admin, banned and muted in groupProfile
+* [x] testing endpoints for user, admin, banned and muted in groupProfile
+* [ ] accessibility for groupProfile by admin owner and user (frontend)
+* [ ] accessibility for groupProfile by admin owner and user (backend)
 * [ ] adding logic to admin, muted and banned in groupProfile
 * [ ] adding time for muted user
 * [ ] owner of group can add or delete admin
@@ -19,3 +21,11 @@
 * [ ] frontend for message list
 * [ ] frontend for channel list
 * [ ] frontend for input for new channels
+* [ ] make frontend pretty for everything
+
+## Chat Bugs
+* [ ] user added to group that is not connected to the 
+server gives a double join room and error on the backend
+* [ ] change the correct view of the channel when new channel is made for the user
+* [ ] if you are in group settings, and you want to access a different
+group setting then the old group setting is still active
