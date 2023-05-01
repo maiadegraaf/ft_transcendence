@@ -47,7 +47,7 @@ export const UserChatStore = defineStore('userChannel', {
             this.userId = user.id
             this.name = user.login
             console.log('fetchUserData --> id: ' + this.userId + ' | Login:  ' + this.name)
-            if (this.userId == -1) {
+            if (this.userId <= 0) {
                 return false
             }
             // const userSession = sessionStorage.getItem('user')
