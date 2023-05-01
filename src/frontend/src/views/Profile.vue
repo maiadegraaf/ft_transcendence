@@ -52,11 +52,11 @@ be displayed on the user profile -->
 import axios from 'axios'
 import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
-import { UserChatStore } from '@/store/store'
+import { useChatStore } from '@/store/channel.store'
 
 export default {
   setup() {
-    const chatStore = UserChatStore()
+    const chatStore = useChatStore()
     return chatStore
   },
   data() {

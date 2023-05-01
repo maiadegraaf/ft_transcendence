@@ -9,7 +9,8 @@
 <script lang="ts">
 import axios from 'axios'
 import {useUserStore} from "@/store/user.store";
-export default {
+import {defineComponent} from "vue";
+export default defineComponent({
     name: 'App',
     components: {},
   setup() {
@@ -28,7 +29,7 @@ export default {
           this.$router.push({path: '/'})
       })
   }
-}
+})
 </script>
 
 <style scoped>

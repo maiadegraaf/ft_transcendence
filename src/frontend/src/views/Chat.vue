@@ -31,8 +31,9 @@ import {useChatStore} from "@/store/channel.store";
 import type {IMessage} from "@/store/types";
 import MessageInput from "@/components/Chat/MessageInput.vue";
 import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
   components: {MessageInput, Nav , MessageList, ChannelList},
   // The root element of the Vue instance.
   el: '#app',
@@ -55,7 +56,7 @@ export default {
     methods: {},
     // The created hook of the Vue instance.
     created(): void {}
-}
+})
 </script>
 
 <style></style>

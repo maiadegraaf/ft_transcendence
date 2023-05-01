@@ -15,7 +15,7 @@ import Console from '@/components/pong/Console.vue'
 export default {
     name: 'Match',
     components: { Console },
-    props: ['matchId', 'socket', 'userId'],
+    props: ['matchId', 'socket'],
     data(): any {
         return {
             gameOver: false,

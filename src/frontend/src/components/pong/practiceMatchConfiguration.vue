@@ -32,6 +32,7 @@
 </template>
 
 <script lang="ts">
+
 interface practiceSettingsInterface {
     score: number
     selectedDifficulty: string
@@ -41,6 +42,7 @@ interface practiceSettingsInterface {
 export default {
     name: 'practiceMatchConfiguration',
     props: ['userId'],
+
     data() {
         return {
             winningScore: 10,

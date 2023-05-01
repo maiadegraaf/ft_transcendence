@@ -12,27 +12,27 @@
         </button>
         <div v-if="practiceMode && !startPractice">
             <practice-match-configuration
-                :user-id="currentPlayerId"
+                :userId="user.id"
                 @start-practice="handleStartPractice"
                 @back="back"
             />
         </div>
-        <div v-if="startPractice && startedBy == currentPlayerId">
-            <practice-match :practice-settings="practiceSettings" :socket="socket" @reset="reset" />
+        <div v-if="startPractice && startedBy == user.id">
+            <practice-match :practice-settings="practiceSettings" :socket="user.socket" @reset="reset" />
         </div>
         <button v-if="!waiting && !practiceMode && !startMatch" @click="joinMatch" class="btn">
             Join Match
         </button>
         <div v-if="waiting">
             <waiting-room
-                :user-id="currentPlayerId"
-                :socket="socket"
+                :socket="user.socket"
+                :userId="user.id"
                 @leave-matchmaking="leaveMatchmaking"
                 @opponent-found="opponentFound"
             />
         </div>
         <div v-if="startMatch">
-            <Match :socket="socket" :match-id="matchId" :user-id="currentPlayerId" @reset="reset" />
+            <Match :socket="user.socket" :match-id="matchId" @reset="reset" />
         </div>
     </div>
     <div>
@@ -41,12 +41,12 @@
 </template>
 
 <script lang="ts">
-import type { Socket } from 'socket.io-client'
 import ErrorPopUp from '../ErrorPopUp.vue'
 import PracticeMatchConfiguration from '@/components/pong/practiceMatchConfiguration.vue'
 import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import WaitingRoom from '@/components/pong/WaitingRoom.vue'
 import Match from '@/components/pong/Match.vue'
+import {useUserStore} from "@/store/user.store";
 
 export interface practiceSettingsInterface {
     score: number
@@ -56,10 +56,15 @@ export interface practiceSettingsInterface {
 
 export default {
     name: 'pongGame',
-    props: ['userId', 'socket', 'matchId'],
+    props: ['matchId'],
+
+    setup() {
+      const user = useUserStore()
+      return { user }
+    },
     data(): any {
         return {
-            currentPlayerId: '',
+            // currentPlayerId: user.id,
             practiceMode: false,
             practiceSettings: {
                 score: 10,
@@ -80,17 +85,17 @@ export default {
         ErrorPopUp
     },
     created() {
-      this.currentPlayerId = this.userId
-      console.log("Current player id: " + this.currentPlayerId)
+      // this.currentPlayerId = this.userId
+      console.log("Current player id: " + this.user.id)
 
       if (this.matchId != 0) {
         console.log("Match id: " + this.matchId)
-        this.startedBy = this.userId
+        this.startedBy = this.user.id
         this.startMatch = true
       }
     },
   async mounted() {
-        this.socket.on('MultipleConnections', (msg: string) => {
+        this.user.socket.on('MultipleConnections', (msg: string) => {
             this.$refs.errorPopUp.show('You are already ' + msg)
             this.reset()
         })
@@ -98,13 +103,13 @@ export default {
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
                 console.log('Disconnecting...')
-                this.socket.emit('disconnect')
+                this.user.socket.emit('disconnect')
             }
         })
     },
     beforeRouteLeave(to: any, from: any, next: any) {
         console.log('Leaving pong game...')
-        this.socket.emit('disconnect')
+        this.user.socket.emit('disconnect')
         next()
     },
   methods: {
@@ -129,14 +134,14 @@ export default {
         },
         leaveMatchmaking() {
             this.waiting = false
-            this.socket.emit('leaveMatchmaking')
+            this.user.socket.emit('leaveMatchmaking')
         },
         matchmakingError() {
             this.$refs.errorPopUp.show('You cannot join a match in multiple tabs or windows.')
             this.reset()
         },
         opponentFound(matchId: number) {
-            this.startedBy = this.currentPlayerId
+            this.startedBy = this.user.id
             this.startMatch = true
             this.waiting = false
             this.matchId = matchId

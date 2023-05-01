@@ -10,8 +10,6 @@
 </template>
 
 <script lang="ts">
-import io from 'socket.io-client'
-import type { Socket } from 'socket.io-client'
 import Console from '@/components/pong/Console.vue'
 
 export default {
