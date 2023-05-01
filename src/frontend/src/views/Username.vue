@@ -3,7 +3,11 @@
         <div class="flex flex-col items-center justify-center">
             <label class="text-5xl mb-8 font-semibold">Choose your username:</label>
             <p class="h-1 mb-4 p-2 font-bold text-blush">{{ error }}</p>
-            <input type="text" v-model="newUserName" class="border rounded mt-3" />
+            <input
+                type="text"
+                v-model="newUserName"
+                class="border rounded mt-3 appearance-none bg-transparent"
+            />
         </div>
         <button
             @click="changeUsername"

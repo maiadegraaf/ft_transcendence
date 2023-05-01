@@ -3,7 +3,7 @@
         <div
             class="flex-1 w-full mx-auto bg-gradient-to-r from-transparent via-transparent to-dark-purple"
         >
-            <router-view />
+            <router-view :key="$route.fullPath" />
         </div>
     </div>
 </template>

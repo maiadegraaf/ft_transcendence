@@ -27,11 +27,6 @@ async function bootstrap() {
     );
     await app.init();
 
-    // await app.listen(8080);
-    http.createServer(server).listen(8080);
-    https.createServer(httpsOptions, server).listen(443);
-
-    // const logger: Logger = new Logger('BackendMain');
-    // logger.log('Application is running on: ' + await app.getUrl());
+    await app.listen(8080);
 }
 bootstrap();
