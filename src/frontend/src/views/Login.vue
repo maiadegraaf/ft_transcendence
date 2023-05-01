@@ -57,8 +57,9 @@
 
 <script lang="ts">
 import axios from 'axios'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     methods: {
         async user(id: number) {
             await axios.get(`/api/auth/profile/${id}`)
@@ -68,5 +69,5 @@ export default {
             window.location.href = '/api/auth/42'
         }
     }
-}
+})
 </script>

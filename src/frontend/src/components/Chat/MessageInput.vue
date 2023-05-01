@@ -17,8 +17,9 @@
 <script lang="ts">
 import {useChatStore} from "@/store/channel.store";
 import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
   name: "MessageInput",
   setup() {
     const chatStore = useChatStore()
@@ -52,7 +53,7 @@ export default {
       }
     },
   }
-}
+})
 </script>
 
 <style scoped></style>

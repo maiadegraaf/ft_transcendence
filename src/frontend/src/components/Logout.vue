@@ -9,8 +9,9 @@
 
 <script lang="ts">
 import axios from 'axios'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     name: 'Logout',
     methods: {
         destroySession() {
@@ -18,7 +19,7 @@ export default {
             this.$router.push('/')
         }
     }
-}
+})
 </script>
 
 <style scoped></style>

@@ -14,8 +14,9 @@
 
 <script lang="ts">
 import {useChatStore} from "../../store/channel.store";
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
   name: "ChannelList",
   setup() {
     const chatStore = useChatStore()
@@ -33,7 +34,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <style scoped></style>

@@ -8,9 +8,10 @@
 <script lang="ts">
 import Pong from '../components/pong/Pong.vue'
 import Nav from '@/components/Nav.vue'
+import {defineComponent} from "vue";
 
 
-export default {
+export default defineComponent({
     name: 'PongGame',
     components: {
         Nav,
@@ -51,5 +52,5 @@ export default {
       //   this.ready = true
       // }
     }
-}
+})
 </script>

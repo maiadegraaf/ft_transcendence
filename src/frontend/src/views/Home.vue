@@ -1,8 +1,9 @@
 <script lang="ts">
 import Nav from '../components/Nav.vue'
 import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
   components: {
     Nav
   },
@@ -10,7 +11,7 @@ export default {
       const user = useUserStore()
       return { user }
     }
-}
+})
 </script>
 
 <template>

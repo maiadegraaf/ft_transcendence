@@ -47,6 +47,7 @@ import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import WaitingRoom from '@/components/pong/WaitingRoom.vue'
 import Match from '@/components/pong/Match.vue'
 import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
 
 export interface practiceSettingsInterface {
     score: number
@@ -54,7 +55,7 @@ export interface practiceSettingsInterface {
     userId: string
 }
 
-export default {
+export default defineComponent({
     name: 'pongGame',
     props: ['matchId'],
 
@@ -150,5 +151,5 @@ export default {
             this.practiceMode = false
         }
     }
-}
+})
 </script>

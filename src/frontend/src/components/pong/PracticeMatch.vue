@@ -11,8 +11,9 @@
 
 <script lang="ts">
 import Console from '@/components/pong/Console.vue'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     name: 'PracticeMatch',
     props: ['practiceSettings', 'socket'],
     data(): any {
@@ -102,7 +103,7 @@ export default {
             this.socket.emit('move', this.info)
         })
     }
-}
+})
 </script>
 
 <!--TODO: I think I fixed this?? Keep an eye on it... -> make the practice mode less buggy when then computer paddle is all the way down and then can't make it to the ball in time and so always looses.-->

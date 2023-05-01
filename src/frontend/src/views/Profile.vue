@@ -53,8 +53,9 @@ import axios from 'axios'
 import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
   setup() {
     const chatStore = useChatStore()
     return chatStore
@@ -135,5 +136,5 @@ export default {
             }
         }
     }
-}
+})
 </script>

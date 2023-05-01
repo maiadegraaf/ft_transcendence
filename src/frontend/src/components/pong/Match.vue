@@ -11,8 +11,9 @@
 
 <script lang="ts">
 import Console from '@/components/pong/Console.vue'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     name: 'Match',
     components: { Console },
     props: ['matchId', 'socket'],
@@ -87,7 +88,7 @@ export default {
             this.socket.emit('move', this.info)
         })
     }
-}
+})
 </script>
 
 <style scoped></style>
