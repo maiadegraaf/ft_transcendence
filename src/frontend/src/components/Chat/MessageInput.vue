@@ -1,17 +1,13 @@
 <template>
-    <footer class="bg-normal w-full min-h-10">
-        <div class="p-3 flex">
-            <div class="flex-1 p-1 bg-white rounded-md">
-                <input
-                    v-model="text"
-                    placeholder="Type a message..."
-                    class="w-full focus:outline-none"
-                    @keyup.enter="sendMessage"
-                />
-            </div>
-            <button @click="sendMessage" class="rounded-full ml-3 hover:shadow-md">></button>
-        </div>
-    </footer>
+  <footer class="bg-normal w-full min-h-10">
+    <div class="p-3 flex">
+      <div class="flex-1 p-1 bg-white rounded-md">
+        <input v-model="text" placeholder="Type a message..." class="w-full focus:outline-none"
+               @keyup.enter="sendMessage">
+      </div>
+      <button @click="sendMessage" class="rounded-full ml-3 hover:shadow-md">></button>
+    </div>
+  </footer>
 </template>
 
 <script lang="ts">
