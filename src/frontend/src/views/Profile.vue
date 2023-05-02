@@ -27,7 +27,7 @@ be displayed on the user profile -->
             </div>
             <div class="flex flex-col">
               <div class="flex justify-center items-center mt-5">
-                <h2 class="text-blush font-semibold text-5xl  text-center">{{ user.login }}</h2>
+                <h2 class="text-blush font-semibold text-5xl  text-center">{{ user.name }}</h2>
                 <svg class="ml-3" height="20" width="20">
                   <circle cx="10" cy="10" r="4" stroke="green" stroke-width="3" fill="green" />
                 </svg>
@@ -54,51 +54,45 @@ import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
 import {defineComponent} from "vue";
+import {useUserStore} from "@/store/user.store";
 
 export default defineComponent({
   setup() {
     const chatStore = useChatStore()
-    return chatStore
+    const user = useUserStore()
+    return {chatStore, user}
   },
   data() {
         return {
             currentUserId: 0,
             doesProfileExist: false,
             isProfileSession: false,
-            user: {
-                id: 0,
-                login: ' ',
-                email: ' ',
-                isTwoFactorAuthenticationEnabled: false,
-                accessToken: ' ',
-                refreshToken: ' ',
-                newPic: false
-            }
         }
     },
     components: {
         WinLosses,
         Nav
     },
-    async created() {
-        try {
-          await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-          this.currentUserId = response.data.id
-          })
-          await axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
-            this.user = response.data
-            this.doesProfileExist = true;
-            console.log(this.$route.params.id)
-            if (this.currentUserId === Number(this.$route.params.id))
-              this.isProfileSession = true;
-          })
-        } catch (error) {
-            console.log(error)
-        }
+    mounted() {
+        // try {
+        //   await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        //   this.currentUserId = response.data.id
+        //   })
+        //   await axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
+        //     this.user = response.data
+        //     this.doesProfileExist = true;
+        //     console.log(this.$route.params.id)
+        //     if (this.currentUserId === Number(this.$route.params.id))
+        //       this.isProfileSession = true;
+        //   })
+        // } catch (error) {
+        //     console.log(error)
+        // }
+      this.doesProfileExist = true;
+      console.log(this.user.id)
     },
     methods: {
         async handleUploadAvatar() {
-            this.user.newPic = true
             const fileInput = document.createElement('input')
             fileInput.type = 'file'
 
