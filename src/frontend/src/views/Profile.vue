@@ -37,7 +37,7 @@
     <main v-else class="flex h-screen justify-center items-center">
       <h1 class="text-5xl text-blush font-bold ">Profile doesn't exist</h1>
     </main>
-    <Friends />
+    <Friends :is-profile-session="isProfileSession"/>
 </template>
 
 <script lang="ts">

@@ -1,6 +1,5 @@
 import {
-    HttpException,
-    HttpStatus,
+    BadRequestException,
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
@@ -182,7 +181,7 @@ export class UserService {
 
     async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
         if (!file) {
-            throw new HttpException('File required', HttpStatus.NOT_ACCEPTABLE);
+            throw new BadRequestException('File required');
         }
         const user: User = await this.findUserByID(userId, ['avatar']);
         if (user.avatar) {
@@ -201,7 +200,7 @@ export class UserService {
     async getAvatar(userId: number): Promise<Avatar> {
         const user: User = await this.findUserByID(userId, ['avatar']);
         if (!user.avatar)
-            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('User not found');
         return user.avatar;
     }
 
@@ -211,9 +210,8 @@ export class UserService {
             where: { login: username },
         });
         if (existingUser && existingUser.id !== userId) {
-            throw new HttpException(
+            throw new BadRequestException(
                 `Username "${username}" is already taken`,
-                HttpStatus.CONFLICT,
             );
         }
         user.login = username;
@@ -226,40 +224,42 @@ export class UserService {
         });
     }
 
-    async addFriend(user: User, friend: User): Promise<User> {
-		if (!user.friends) {
-			user.friends = [];
-		}
-		// Check if the users are already friends
-		if (user.friends.some(existingFriend => existingFriend.id === friend.id)) {
-			throw new HttpException('Users are already friends', 400);
-		}
+    async addFriend(userID: number, friendID: number) {
+		if (userID === friendID) {
+            throw new BadRequestException(`You can't add yourself as a friend`);
+        }
+        const user = await this.userRepository.findOne({
+            where: { id: userID },
+            relations: ['friends'],
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userID} not found`);
+        }
+        const friend = await this.userRepository.findOne({
+            where: { id: friendID },
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (user.friends.map((user) => user.id).includes(friendID)) {
+            throw new BadRequestException(`User with id ${friendID} is already your friend`);
+        }
         user.friends.push(friend);
-        return await this.userRepository.save(user);
+        await this.userRepository.save(user);
+        return user;
     }
-
-	// async addFriend(user: User, friend: User): Promise<User> {
-	// 	if (!user.friends) {
-	// 		user.friends = [];
-	// 	}
-	// 	if (!friend.friends) {
-	// 		friend.friends = [];
-	// 	}
-	// 	if (user.friends.some(existingFriend => existingFriend.id === friend.id)) {
-	// 		throw new HttpException('Users are already friends', 400); //No exception
-	// 	}
-	// 	user.friends.push(friend);
-	// 	friend.friends.push(user);
-
-	// 	await this.userRepository.save(user);
-	// 	return await this.userRepository.save(friend);
-	//   }
-
-	async findFriends(id: number): Promise<User[]> {
+    
+	async findFriends(userID: number) {
 		const user = await this.userRepository.findOne({
-			where: { id },
+			where: { id: userID },
 			relations: ['friends'],
-		});
-		return user.friends;
+		}).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userID} not found`);
+        }
+        return user.friends;
 	}
 }

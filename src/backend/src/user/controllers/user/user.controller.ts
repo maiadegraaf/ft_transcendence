@@ -124,27 +124,41 @@ export class UserController {
         return user;
     }
 
-    @Post(':id/friends/:friendId')
+    @Post('friends/:id')
     @UseGuards(FortyTwoAuthGuard)
-    async addFrined(
-        @Param('id') id: number,
-        @Param('friendId') friendId: number,
-    ): Promise<{ message: string }> {
-        const user = await this.userService.findUserByID(id);
-        const friend = await this.userService.findUserByID(friendId);
+    async addFriend(
+        @Param('id', ParseIntPipe) friendID: number,
+        @Req() req: any,
+    ) {
+        const userID = req.session.user.id;
+        try {
 
-        if (!user || !friend) {
-            throw new HttpException('User not found', 404);
+            console.log(`Checkpoint 1: userID = ${userID}, friendID = ${friendID}`);
+            await this.userService.addFriend(friendID, userID);
+            console.log(`Checkpoint 2: userID = ${userID}, friendID = ${friendID}`);
+            return await this.userService.addFriend(userID, friendID);
+        } catch (error) {
+            console.log(error);
         }
-        await this.userService.addFriend(user, friend);
-        await this.userService.addFriend(friend, user);
-        return { message: 'Friend added successfully' };
     }
 
-    @Get(':id/friends')
+    @Get('/friends')
     @UseGuards(FortyTwoAuthGuard)
-    async getFrineds(@Param('id') id: number) {
-        console.log(`UserController: Searching for friends of user with id: ${id}`);
-        return this.userService.findFriends(id);
+    getFriends(
+        @Req() req: any,
+    ) {
+        const userID = req.session.userID;
+        console.log(`UserController: Searching for friends of user with id: ${userID}`);
+        return this.userService.findFriends(userID);
     }
+
+
+//   @Put('unfriend/:id')
+//   @UseGuards(SessionGuard)
+//   unfriendUser(@Param('id', ParseIntPipe) friend: number, @Req() req: any) {
+//     const userID = req.session.userId;
+//     return this.userService.unfriendUser(Number(userID), Number(friend));
+//   }
+
+
 }

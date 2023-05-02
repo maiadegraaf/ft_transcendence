@@ -53,8 +53,7 @@ export class User {
     })
     socketId: string;
 
-    // @ManyToMany(() => User, (user) => user.friends, { cascade: true })
-    @ManyToMany(() => User, (user) => user.friends, { cascade: ["insert", "update"] })
+    @ManyToMany(() => User)
     @JoinTable()
     friends: User[];
 
