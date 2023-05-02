@@ -3,7 +3,8 @@
 ## Chat
 
 * [x] testing endpoints for user, admin, banned and muted in groupProfile
-* [ ] accessibility for groupProfile by admin owner and user (frontend)
+
+[//]: # (* [ ] accessibility for groupProfile by admin owner and user &#40;frontend&#41;)
 * [ ] accessibility for groupProfile by admin owner and user (backend)
 * [ ] adding logic to admin, muted and banned in groupProfile
 * [ ] adding time for muted user
@@ -22,6 +23,8 @@
 * [ ] frontend for channel list
 * [ ] frontend for input for new channels
 * [ ] make frontend pretty for everything
+* [ ] return values for all endpoints
+* [ ] add error handling for all endpoints
 
 ## Chat Bugs
 * [ ] user added to group that is not connected to the 

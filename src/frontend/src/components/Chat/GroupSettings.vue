@@ -147,7 +147,7 @@ export default {
 
     addAdmin(): void {
       // Validates the input before sending the message.
-      if (this.adminText.length <= 0 || !this.checkOwner()) {
+      if (this.adminText.length <= 0) {
         this.adminText = ''
         return
       }
@@ -167,7 +167,7 @@ export default {
     },
     deleteAdmin(): void {
       // Validates the input before sending the message.
-      if (this.adminText.length <= 0 || !this.checkOwner()) {
+      if (this.adminText.length <= 0) {
         this.adminText = ''
         return
       }
@@ -188,7 +188,7 @@ export default {
     },
     addMuted(): void {
       // Validates the input before sending the message.
-      if (this.mutedText.length <= 0 || !this.checkAdmin()) {
+      if (this.mutedText.length <= 0) {
         this.mutedText = ''
         return
       }
@@ -208,7 +208,7 @@ export default {
     },
     deleteMuted(): void {
       // Validates the input before sending the message.
-      if (this.mutedText.length <= 0 || !this.checkAdmin()) {
+      if (this.mutedText.length <= 0) {
         this.mutedText = ''
         return
       }
@@ -232,7 +232,7 @@ export default {
     },
     addBanned(): void {
       // Validates the input before sending the message.
-      if (this.bannedText.length <= 0 || !this.checkAdmin()) {
+      if (this.bannedText.length <= 0) {
         this.bannedText = ''
         return
       }

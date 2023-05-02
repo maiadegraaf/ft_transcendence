@@ -11,6 +11,7 @@ import { Channel } from '../entities/channel.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { GroupProfile } from '../entities/groupProfile.entity';
 import { User } from '../../user/user.entity';
+import { GroupUserProfileUpdateDto } from '../dtos/chat.dtos';
 
 @Injectable()
 export class GroupProfileService {
@@ -43,80 +44,126 @@ export class GroupProfileService {
         return await this.groupProfileRepository.save(groupProfile);
     }
 
-    async addAdmin(groupId: number, user: User): Promise<any> {
-        const group = await this.groupProfileRepository
-            .createQueryBuilder('group')
-            .where('group.id = :id', { id: groupId })
-            .leftJoinAndSelect('group.admin', 'admin')
-            .getOne();
-        if (!group) {
-            throw new HttpException(
-                'Could not find group',
-                HttpStatus.FORBIDDEN,
-            );
-        }
-        console.log('check group');
+    async addAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
+        const group = await this.ownerCheck(param);
+        const user = await this.userGroupProfileCheck(group, param);
         group.admin.push(user);
         return await this.groupProfileRepository.save(group);
     }
 
-    async addBlocked(user: User, groupId: number): Promise<any> {
-        const group = await this.groupProfileRepository
-            .createQueryBuilder('group')
-            .where('group.id = :id', { id: groupId })
-            .leftJoinAndSelect('group.blocked', 'blocked')
-            .getOne();
+    async addBlocked(param: GroupUserProfileUpdateDto): Promise<any> {
+        const group = await this.adminCheck(param, 'blocked');
+        const user = await this.userGroupProfileCheck(group, param);
         group.blocked.push(user);
         return await this.groupProfileRepository.save(group);
     }
 
-    async addMute(user: User, groupId: number): Promise<any> {
-        const group = await this.groupProfileRepository
-            .createQueryBuilder('group')
-            .where('group.id = :id', { id: groupId })
-            .leftJoinAndSelect('group.muted', 'muted')
-            .getOne();
+    async addMute(param: GroupUserProfileUpdateDto): Promise<any> {
+        const group = await this.adminCheck(param, 'muted');
+        const user = await this.userGroupProfileCheck(group, param);
         group.muted.push(user);
         return await this.groupProfileRepository.save(group);
     }
 
-    async deleteAdmin(groupId: number, user: User): Promise<any> {
-        const group = await this.groupProfileRepository
-            .createQueryBuilder('group')
-            .where('group.id = :id', { id: groupId })
-            .leftJoinAndSelect('group.admin', 'admin')
-            .getOne();
-        group.admin = group.admin.filter((admin) => admin.id !== user.id);
-        return await this.groupProfileRepository.save(group);
-    }
-
-    async deleteBlocked(user: User, groupId: number): Promise<any> {
-        const group = await this.groupProfileRepository
-            .createQueryBuilder('group')
-            .where('group.id = :id', { id: groupId })
-            .leftJoinAndSelect('group.blocked', 'blocked')
-            .getOne();
-        group.blocked = group.blocked.filter(
-            (blocked) => blocked.id !== user.id,
-        );
-        return await this.groupProfileRepository.save(group);
-    }
-
-    async deleteMute(user: User, groupId: number): Promise<any> {
-        const group = await this.groupProfileRepository
-            .createQueryBuilder('group')
-            .where('group.id = :id', { id: groupId })
-            .leftJoinAndSelect('group.muted', 'muted')
-            .getOne();
-        console.log('user: ' + JSON.stringify(user) + ' | group: ' + groupId);
-        if (!group) {
+    async deleteAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
+        const group = await this.ownerCheck(param);
+        const user = await this.userGroupProfileCheck(group, param);
+        const idx = group.admin.findIndex((admin) => admin.id === user.id);
+        if (idx === -1) {
             throw new HttpException(
-                'Could not find group',
+                'admin not in group to delete',
                 HttpStatus.FORBIDDEN,
             );
         }
-        console.log('user: ' + JSON.stringify(user));
-        group.muted = group.muted.filter((muted) => muted.id !== user.id);
+        group.admin.slice(idx, 1);
         return await this.groupProfileRepository.save(group);
+    }
+
+    async deleteBlocked(param: GroupUserProfileUpdateDto): Promise<any> {
+        const group = await this.adminCheck(param, 'blocked');
+        const user = await this.userGroupProfileCheck(group, param);
+        const idx = group.blocked.findIndex(
+            (blocked) => blocked.id === user.id,
+        );
+        if (idx === -1) {
+            throw new HttpException(
+                'admin not in group to delete',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        group.blocked.slice(idx, 1);
+        return await this.groupProfileRepository.save(group);
+    }
+
+    async deleteMute(param: GroupUserProfileUpdateDto): Promise<any> {
+        const group = await this.adminCheck(param, 'muted');
+        const user = await this.userGroupProfileCheck(group, param);
+        const idx = group.muted.findIndex((muted) => muted.id === user.id);
+        if (idx === -1) {
+            throw new HttpException(
+                'admin not in group to delete',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        group.muted.slice(idx, 1);
+        return await this.groupProfileRepository.save(group);
+    }
+
+    async ownerCheck(param: GroupUserProfileUpdateDto): Promise<any> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .where('group.id = :id', { id: param.groupId })
+            .leftJoinAndSelect('group.owner', 'owner')
+            .andWhere('owner.id = :id', { id: param.userId })
+            .leftJoinAndSelect('group.admin', 'admin')
+            .leftJoinAndSelect('group.channel', 'channel')
+            .leftJoinAndSelect('channel.users', 'users')
+            .leftJoinAndSelect('users.login', 'login')
+            .getOne();
+        if (!group) {
+            throw new HttpException(
+                'add find group in addAdmin',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return group;
+    }
+
+    async userGroupProfileCheck(
+        group: GroupProfile,
+        param: GroupUserProfileUpdateDto,
+    ): Promise<any> {
+        const user = group.channel.users.find(
+            (usr) => usr.login === param.userName,
+        );
+        if (!user) {
+            throw new HttpException(
+                'could not find user to add to admin',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return user;
+    }
+
+    async adminCheck(
+        param: GroupUserProfileUpdateDto,
+        type: string,
+    ): Promise<any> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .where('group.id = :id', { id: param.groupId })
+            .leftJoinAndSelect('group.admin', 'admin')
+            .andHaving('admin.id = :userId', { userId: param.userId })
+            .leftJoinAndSelect('group.' + type, type)
+            .leftJoinAndSelect('group.channel', 'channel')
+            .leftJoinAndSelect('channel.users', 'users')
+            .leftJoinAndSelect('users.login', 'login')
+            .getOne();
+        if (!group) {
+            throw new HttpException(
+                'could not find group in adminCheck for ' + type,
+                HttpStatus.FORBIDDEN,
+            );
+        }
     }
 }

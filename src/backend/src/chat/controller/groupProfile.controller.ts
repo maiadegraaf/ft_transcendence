@@ -31,16 +31,10 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'User not found in GroupProfileController',
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-            await this.groupProfileService.addAdmin(param.groupId, user);
+            await this.groupProfileService.addAdmin(param);
         } catch (error) {
             this.logger.error(error);
+            return false;
         }
     }
 
@@ -50,16 +44,10 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'User not found in GroupProfileController',
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-            await this.groupProfileService.deleteAdmin(param.groupId, user);
+            await this.groupProfileService.deleteAdmin(param);
         } catch (error) {
             this.logger.error(error);
+            return false;
         }
     }
 
@@ -69,16 +57,10 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'User not found in GroupProfileController',
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-            await this.groupProfileService.addMute(user, param.groupId);
+            await this.groupProfileService.addMute(param);
         } catch (error) {
             this.logger.error(error);
+            return false;
         }
     }
 
@@ -88,18 +70,10 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            console.log('param' + JSON.stringify(param));
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'User not found in GroupProfileController',
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-            console.log('Group id:' + param.groupId);
-            await this.groupProfileService.deleteMute(user, param.groupId);
+            await this.groupProfileService.deleteMute(param);
         } catch (error) {
             this.logger.error(error);
+            return false;
         }
     }
 
@@ -109,16 +83,10 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'User not found in GroupProfileController',
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-            await this.groupProfileService.addBlocked(user, param.groupId);
+            await this.groupProfileService.addBlocked(param);
         } catch (error) {
             this.logger.error(error);
+            return false;
         }
     }
 
@@ -128,17 +96,10 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'User not found in GroupProfileController',
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-            console.log(user + ' | Group id:' + param.groupId);
-            await this.groupProfileService.deleteBlocked(user, param.groupId);
+            await this.groupProfileService.deleteBlocked(param);
         } catch (error) {
             this.logger.error(error);
+            return false;
         }
     }
 }
