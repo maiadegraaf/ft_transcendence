@@ -30,7 +30,7 @@ export default {
     async mounted() {
       this.userId = +this.$route.params.userid
       if (!this.userId) {
-        await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        await axios.get('/api/auth/profile').then((response) => {
           this.userId = response.data.id
         })
       }
