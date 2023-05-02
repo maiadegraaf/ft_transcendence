@@ -38,8 +38,9 @@
 <script lang="ts">
 import axios from 'axios'
 import QrcodeVue from 'qrcode.vue'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     name: 'qrCodeComponent',
     data() {
         return {
@@ -73,7 +74,7 @@ export default {
     components: {
         QrcodeVue
     }
-}
+})
 </script>
 
 <style scoped></style>

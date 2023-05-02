@@ -49,8 +49,9 @@
 <script lang="ts">
 import axios from 'axios'
 import Logout from './Logout.vue'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     name: 'Nav',
     components: { Logout },
     data() {
@@ -65,7 +66,7 @@ export default {
           this.currentUserId = response.data.id;
         })
     }
-}
+})
 </script>
 
 <style scoped></style>

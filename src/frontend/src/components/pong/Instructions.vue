@@ -16,9 +16,11 @@
 </template>
 
 <script lang="ts">
-export default {
+import {defineComponent} from "vue";
+
+export default defineComponent({
     name: 'Instructions'
-}
+})
 </script>
 
 <style scoped></style>

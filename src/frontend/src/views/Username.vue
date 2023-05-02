@@ -26,8 +26,9 @@
 
 <script>
 import axios from 'axios'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     data() {
         return {
             newUserName: '',
@@ -64,7 +65,7 @@ export default {
             this.user = response.data
         })
     }
-}
+})
 </script>
 
 <style scoped></style>

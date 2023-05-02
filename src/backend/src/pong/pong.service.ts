@@ -44,7 +44,7 @@ export class PongService {
         //     );
         // }
         // await this.userService.addSocketIdToUser(user, client.id);
-        this.logger.log('User connected: ' + userId);
+        this.logger.log('User connected to pong: ' + userId);
     }
 
     handleDisconnect(client: Socket): void {
@@ -273,6 +273,7 @@ export class PongService {
         }
         this.logger.log(data.userId + ' joined practice mode');
         const player = await this.addSocketIdToUser(data.userId, client);
+        this.logger.log('practice mode');
         if (!player) {
             return;
         }

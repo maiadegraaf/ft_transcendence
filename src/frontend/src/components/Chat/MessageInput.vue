@@ -1,57 +1,55 @@
 <template>
-    <footer class="bg-normal w-full min-h-10">
-        <div class="p-3 flex">
-            <div class="flex-1 p-1 bg-white rounded-md">
-                <input
-                    v-model="text"
-                    placeholder="Type a message..."
-                    class="w-full focus:outline-none"
-                    @keyup.enter="sendMessage"
-                />
-            </div>
-            <button @click="sendMessage" class="rounded-full ml-3 hover:shadow-md">></button>
-        </div>
-    </footer>
+  <footer class="bg-normal w-full min-h-10">
+    <div class="p-3 flex">
+      <div class="flex-1 p-1 bg-white rounded-md">
+        <input v-model="text" placeholder="Type a message..." class="w-full text-black focus:outline-none"
+               @keyup.enter="sendMessage">
+      </div>
+      <button @click="sendMessage" class="rounded-full ml-3 hover:shadow-md">></button>
+    </div>
+  </footer>
 </template>
 
 <script lang="ts">
-import { UserChatStore } from '@/store/store'
-import type { IMessage } from '@/store/types'
+import {useChatStore} from "@/store/channel.store";
+import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
 
-export default {
-    name: 'MessageInput',
-    setup() {
-        const chatStore = UserChatStore()
-        return { chatStore }
+export default defineComponent({
+  name: "MessageInput",
+  setup() {
+    const chatStore = useChatStore()
+    const userStore = useUserStore()
+    return { chatStore, userStore }
+  },
+  data(): any {
+      return {
+        id: 0,
+        text: '',
+        sender: {
+          id: 0,
+          login: ''
+        },
+        channel: 0,
+      }
     },
-    data(): any {
-        return {
-            id: 0,
-            text: '',
-            sender: {
-                id: 0,
-                login: ''
-            },
-            channel: 0
-        }
+  mounted() {
+    this.sender.id = this.userStore.id
+    this.sender.login = this.userStore.name
+    console.log(this.$data)
+  },
+  methods: {
+    sendMessage(): void {
+      // Validates the input before sending the message.
+      this.channel = this.chatStore.channelInView
+      if (this.text.length > 0) {
+        this.userStore.socket.emit('msgToServer', this.$data)
+        // Resets the input field.
+        this.text = ''
+      }
     },
-    mounted() {
-        this.sender.id = this.chatStore.userId
-        this.sender.login = this.chatStore.name
-        console.log(this.$data)
-    },
-    methods: {
-        sendMessage(): void {
-            // Validates the input before sending the message.
-            this.channel = this.chatStore.channelInView
-            if (this.text.length > 0) {
-                this.chatStore.socket.emit('msgToServer', this.$data)
-                // Resets the input field.
-                this.text = ''
-            }
-        }
-    }
-}
+  }
+})
 </script>
 
 <style scoped></style>

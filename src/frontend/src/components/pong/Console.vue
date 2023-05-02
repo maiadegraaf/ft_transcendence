@@ -34,12 +34,13 @@
 <script lang="ts">
 import GameOver from '@/components/pong/GameOver.vue'
 import Instructions from '@/components/pong/Instructions.vue'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     name: 'Console',
     components: { Instructions, GameOver },
     props: ['player1', 'player2', 'ball', 'gameOver', 'winner', 'volley']
-}
+})
 </script>
 
 <style scoped>

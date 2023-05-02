@@ -1,29 +1,17 @@
 <script lang="ts">
 import Nav from '../components/Nav.vue'
-import axios from 'axios'
+import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
 
-export default {
-    data() {
-        return {
-            user: {
-                id: Number,
-                login: '',
-                email: '',
-                isTwoFactorAuthenticationEnabled: Boolean,
-                accessToken: '',
-                refreshToken: ''
-            }
-        }
-    },
-    async created() {
-        await axios.get('/api/auth/profile').then((response) => {
-            this.user = response.data
-        })
-    },
-    components: {
-        Nav
+export default defineComponent({
+  components: {
+    Nav
+  },
+  setup() {
+      const user = useUserStore()
+      return { user }
     }
-}
+})
 </script>
 
 <template>

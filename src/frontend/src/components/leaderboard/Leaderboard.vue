@@ -115,6 +115,7 @@ import axios from 'axios'
 import io from 'socket.io-client'
 import Overall from '@/components/leaderboard/Overall.vue'
 import PracticeMatchBoard from '@/components/leaderboard/PracticeMatchesBoard.vue'
+import {defineComponent} from "vue";
 
 interface LeaderboardData {
     user: {
@@ -138,7 +139,7 @@ interface PracticeMatchData {
     practiceExpertWins: number
 }
 
-export default {
+export default defineComponent({
     components: {
         Overall,
         PracticeMatchBoard
@@ -181,5 +182,5 @@ export default {
             }
         }
     }
-}
+})
 </script>

@@ -7,7 +7,9 @@
 </template>
 
 <script lang="ts">
-export default {
+import {defineComponent} from "vue";
+
+export default defineComponent({
     name: 'GameOver',
     props: ['winner'],
     methods: {
@@ -20,7 +22,7 @@ export default {
             this.$parent.$emit('reset')
         }
     }
-}
+})
 </script>
 
 <style scoped></style>
