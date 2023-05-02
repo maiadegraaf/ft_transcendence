@@ -18,7 +18,14 @@ export class LeaderboardController {
     @UseGuards(FortyTwoAuthGuard)
     async findLeaderboardEntry(@Req() req): Promise<Leaderboard> {
         const id = req.session.user.id;
-        console.log('id: ', id);
+        return this.leaderboardService.findLeaderboardEntry(
+            await this.userService.findUserByID(id),
+        );
+    }
+    @Get('id/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async findLeaderboardEntryId(@Req() req): Promise<Leaderboard> {
+        const id = req.params.id;
         return this.leaderboardService.findLeaderboardEntry(
             await this.userService.findUserByID(id),
         );

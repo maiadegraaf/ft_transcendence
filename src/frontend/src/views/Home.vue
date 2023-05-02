@@ -19,7 +19,7 @@ export default defineComponent({
         <Nav />
         <main>
             <div v-if="user" class="mt-10 flex flex-col justify-center items-center">
-                <h1 class="text-buff text-5xl font-semibold">Welcome, {{ user.login }}</h1>
+                <h1 class="text-buff text-5xl font-semibold">Welcome, {{ user.name }}</h1>
                 <h2 class="text-buff text-xl opacity-70 font-semibold">Ready to play pong ?</h2>
                 <p class="mt-10 text-buff container mx-auto">
                     Pong is a classic arcade video game that was first released in 1972 by Atari.

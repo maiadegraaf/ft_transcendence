@@ -13,7 +13,7 @@ be displayed on the user profile -->
         <div class="flex flex-col mt-16 items-center w-screen">
             <div class="w-60 h-60 text-right relative">
                 <img
-                    :src="`/api/user/${user.id}/avatar`"
+                    :src="`/api/user/${isProfileSession ? user.id : userData.id}/avatar`"
                     alt="Avatar"
                     class="w-full h-full rounded-full object-cover mb-8"
                 />
@@ -27,7 +27,7 @@ be displayed on the user profile -->
             </div>
             <div class="flex flex-col">
                 <div class="flex justify-center items-center mt-5">
-                    <h2 class="text-blush font-semibold text-5xl text-center">{{ user.login }}</h2>
+                    <h2 class="text-blush font-semibold text-5xl text-center">{{isProfileSession ? user.name : userData.login }}</h2>
                     <svg class="ml-3" height="20" width="20">
                         <circle
                             cx="10"
@@ -63,27 +63,24 @@ import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
 import {defineComponent} from "vue";
 import MatchHistory from '@/components/profile/MatchHistory.vue'
+import {useUserStore} from "@/store/user.store";
 
 
 export default defineComponent({
     setup() {
         const chatStore = useChatStore()
-        return { chatStore }
+        const user = useUserStore()
+        return { chatStore, user }
     },
     data() {
         return {
             isOnline: false,
-            currentUserId: 0,
             doesProfileExist: false,
             isProfileSession: false,
-            user: {
-                id: 0,
-                login: ' ',
-                email: ' ',
-                isTwoFactorAuthenticationEnabled: false,
-                accessToken: ' ',
-                refreshToken: ' ',
-                newPic: false
+            userData: {
+              id: 0,
+              login: '',
+              email: ''
             }
         }
     },
@@ -92,36 +89,30 @@ export default defineComponent({
         WinLosses,
         Nav
     },
-    async mounted() {
-        try {
-            await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-                this.currentUserId = response.data.id
-            })
-            await axios
-                .get('http://localhost:8080/api/user/' + this.$route.params.id)
-                .then((response) => {
-                    this.user = response.data
-                    this.doesProfileExist = true
-                    if (this.currentUserId === Number(this.$route.params.id))
-                        this.isProfileSession = true
-                })
-        } catch (error) {
-            console.log(error)
-        }
-        this.chatStore.socket.emit('checkUserOnline', {
+    mounted() {
+      axios
+        .get('http://localhost:8080/api/user/' + this.$route.params.id)
+        .then((response) => {
+            this.userData = response.data;
+            this.doesProfileExist = true
+            if (this.user.id === Number(this.$route.params.id))
+                this.isProfileSession = true
+        })
+      this.user.socket.emit('checkUserOnline', {
             userId: this.$route.params.id
         })
-        this.chatStore.socket.on('userOnline', () => {
+      this.user.socket.on('userOnline', () => {
+            console.log('user is online')
             this.isOnline = true
         })
-        this.chatStore.socket.on('userOffline', () => {
+      this.user.socket.on('userOffline', () => {
+            console.log('user is offline')
             this.isOnline = false
         })
-        console.log(this.isOnline)
+      console.log(this.isOnline)
     },
     methods: {
         async handleUploadAvatar() {
-            this.user.newPic = true
             const fileInput = document.createElement('input')
             fileInput.type = 'file'
 

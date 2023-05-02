@@ -121,8 +121,7 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
         @Body() payload: { userId: number },
     ) {
-        console.log('checkUserOnline', payload.userId);
-        if (this.clientMap.has(payload.userId)) {
+        if (this.clientMap.has(parseInt(payload.userId.toString()))) {
             client.emit('userOnline', { userId: payload.userId });
         } else {
             client.emit('userOffline', { userId: payload.userId });
@@ -167,8 +166,9 @@ export class ChatGateway
             client.disconnect();
             return;
         }
-        const userId = client.request.session.user.id;
-        this.clientMap.set(parseInt(userId.toString()), client);
+        const userId: number = client.request.session.user.id;
+        this.clientMap.set(userId, client);
+        console.log(this.clientMap.has(userId));
         this.logger.log(userId + ' connected to chat');
         this.logger.log('Chat connected');
     }
