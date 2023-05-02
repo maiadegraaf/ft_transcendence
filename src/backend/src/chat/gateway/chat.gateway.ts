@@ -23,12 +23,12 @@ import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
 
-@UseGuards(websocketGuard)
 @WebSocketGateway({
     cors: {
         origin: '*',
     },
 })
+@UseGuards(websocketGuard)
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -140,6 +140,18 @@ export class ChatGateway
     }
 
     handleDisconnect(@ConnectedSocket() client: Socket) {
+        if (!client.request.session.user) {
+            this.clientMap.forEach((value, key) => {
+                if (value.id === client.id) {
+                    this.clientMap.delete(key);
+                    this.logger.log(
+                        `Client disconnected to chat: ${client.id} with userId: ${key}`,
+                    );
+                }
+            });
+            return;
+        }
+
         const userId = client.request.session.user.id;
         if (this.clientMap.has(parseInt(userId.toString()))) {
             this.clientMap.delete(parseInt(userId.toString()));
@@ -150,9 +162,14 @@ export class ChatGateway
     }
 
     handleConnection(@ConnectedSocket() client: Socket) {
+        if (!client.request.session.user) {
+            client.disconnect();
+            return;
+        }
         const userId = client.request.session.user.id;
         this.clientMap.set(parseInt(userId.toString()), client);
         this.logger.log(userId + ' connected to chat');
+        this.logger.log('Chat connected');
     }
 
     async emitNewDmChannel(

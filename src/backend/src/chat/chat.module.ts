@@ -15,9 +15,15 @@ import { AvatarService } from 'src/user/services/user/avatar.service';
 import { GroupProfileController } from 'src/chat/controller/GroupProfile.controller';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User, Avatar])],
-    controllers: [ChatController],
-    imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User])],
+    imports: [
+        TypeOrmModule.forFeature([
+            Message,
+            Channel,
+            GroupProfile,
+            User,
+            Avatar,
+        ]),
+    ],
     controllers: [ChatController, GroupProfileController],
     providers: [
         MessageService,

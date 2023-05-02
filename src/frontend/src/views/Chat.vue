@@ -2,18 +2,16 @@
   <div class="absolute flex flex-col w-screen h-screen max-h-screen">
     <Nav/>
     <div class="flex-1 overflow-hidden">
-      <div class="max-w-5xl w-full box-border h-full mx-auto pb-10 flex">
+      <div class="max-w-screen-2xl w-full box-border h-full mx-auto pb-10 flex">
         <div class="w-1/4 h-full flex flex-col">
-          <div class="border-buff border-double border-2 rounded-md">
-            <h2 class="h2">Channels</h2>
-          </div>
+          <ChannelHeader @switch-chat-right-component="changeComponent"/>
 <!--          <ChannelGroup/>-->
-          <ChannelList
-           @switch-chat-right-component="changeComponent"/>
+          <ChannelList/>
 <!--          <ChannelInput/>-->
         </div>
-        <component :is="currentComponent" class="w-3/4 h-full flex flex-column overflow-hidden"
-        @switch-chat-right-component="changeComponent"/>
+        <div class="w-3/4 h-full flex flex-col overflow-hidden">
+          <component :is="currentComponent" @switch-chat-right-component="changeComponent"/>
+        </div>
         </div>
       </div>
     </div>
@@ -27,13 +25,15 @@ import ChannelInput from "@/components/Chat/ChannelInput.vue";
 import ChannelGroup from "@/components/Chat/ChannelGroup.vue";
 import GroupSettings from "@/components/Chat/GroupSettings.vue";
 import {useChatStore} from "@/store/channel.store";
-import type {IMessage, IChannels} from "@/store/types";
+import type {IMessage, IChannels} from "@/types/types";
 import MessageInput from "@/components/Chat/MessageInput.vue";
 import {useUserStore} from "@/store/user.store";
 import {defineComponent} from "vue";
+import ChannelHeader from "@/components/Chat/ChannelHeader.vue";
 
 export default defineComponent({
   components: {
+    ChannelHeader,
     ChannelGroup,
     ChannelInput,
     Nav,
@@ -52,7 +52,6 @@ export default defineComponent({
   setup() {
     const chatStore = useChatStore()
     const userStore = useUserStore()
-    chatStore.loadChannels()
     return { chatStore, userStore }
   },
 

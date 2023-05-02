@@ -11,14 +11,14 @@
 </template>
 
 <script lang="ts">
-import {UserChatStore} from "../../store/store";
+import {useChatStore} from "../../store/channel.store";
 import axios from "axios";
 
 export default {
   name: "ChannelInput",
   // props: ['chatStore']
   setup() {
-    const chatStore = UserChatStore()
+    const chatStore = useChatStore()
     // chatStore.setupChatStore()
     return { chatStore }
   },

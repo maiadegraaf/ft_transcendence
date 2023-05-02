@@ -1,7 +1,7 @@
 export interface IChannels {
   id: number
   messages: IMessage[]
-  profile: IProfile | null | any
+  profile: IProfile | null
   name: string
 }
 

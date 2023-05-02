@@ -44,7 +44,7 @@ export class PongService {
         //     );
         // }
         // await this.userService.addSocketIdToUser(user, client.id);
-        this.logger.log('User connected: ' + userId);
+        this.logger.log('User connected to pong: ' + userId);
     }
 
     handleDisconnect(client: Socket): void {

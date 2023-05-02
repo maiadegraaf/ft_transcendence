@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
 import {io} from "socket.io-client";
-import type {IChannels, IMessage} from "@/store/types";
+import type {IChannels, IMessage} from "@/types/types";
 import {useUserStore} from "@/store/user.store";
-import type {IChannels, IMessage, IProfile} from "@/store/types";
 import axios, {formToJSON} from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
 // import axios from "axios/index";
@@ -40,7 +39,7 @@ export const useChatStore = defineStore('userChannel', {
                 return null
             }
             return chnl.profile
-        }
+        },
     },
 
     actions: {
@@ -63,17 +62,19 @@ export const useChatStore = defineStore('userChannel', {
             this.channelInView = channelId
         },
         async receivedNewChannel(channel: IChannels) {
+            const user = useUserStore()
             this.channels?.push(channel)
             await this.setChannelInView(channel.id)
-            this.socket.emit('joinRoomById', {channelId: channel.id})
+            user.socket.emit('joinRoomById', {channelId: channel.id})
         },
         async removeChannel(channelID: number) {
+            const user = useUserStore()
             const index = this.channels?.findIndex((ch) => ch.id === channelID)
             console.log(channelID)
             console.log('removeChannelindex: ' + index)
             if (index && index != -1) {
                 this.channels?.splice(index, 1);
-                this.socket.emit('leaveRoomById', {channelId: channelID})
+                user.socket.emit('leaveRoomById', {channelId: channelID})
             }
         },
         setGroupId(groupId: number) {

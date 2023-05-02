@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import {UserChatStore} from "../../store/store";
+import {useChatStore} from "../../store/channel.store";
 import axios from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
 
@@ -26,7 +26,7 @@ export default {
   name: "NewChannel",
   // props: ['chatStore']
   setup() {
-    const chatStore = UserChatStore()
+    const chatStore = useChatStore()
     // chatStore.setupChatStore()
     return { chatStore }
   },
@@ -90,5 +90,9 @@ export default {
 </script>
 
 <style scoped>
+
+input {
+  color: black;
+}
 
 </style>

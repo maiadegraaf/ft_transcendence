@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import axios from "axios";
 import {io} from "socket.io-client";
+import {useChatStore} from "@/store/channel.store";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
@@ -18,7 +19,8 @@ export const useUserStore = defineStore('user', {
                 this.id = response.data.id
             })
             const socket = await io('http://localhost:8080')
-                this.socket = socket
+            this.socket = socket
+            await useChatStore().loadChannels()
             },
         }
 })

@@ -1,14 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as cookieParser from 'cookie-parser';
 import { Logger } from '@nestjs/common';
 import * as session from 'express-session';
-import * as fs from 'fs';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
-import * as https from 'https';
-import * as http from 'http';
-import * as passport from 'passport';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 
 const sessionMiddleware = session({
@@ -27,7 +20,6 @@ class ExpressSessionAdapter extends IoAdapter {
 }
 
 async function bootstrap() {
-
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix('api'); // New
     app.use(sessionMiddleware);

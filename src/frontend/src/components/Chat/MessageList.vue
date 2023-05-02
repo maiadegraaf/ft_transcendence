@@ -1,8 +1,7 @@
 <template>
-  <div class="w-3/4 h-full flex flex-column overflow-hidden">
-    <div class="border-buff border-double border-2 rounded-md">
+    <header class="border-buff border border-1 rounded-r-md flex h-16">
       <h2 class="h2">Messages</h2>
-    </div>
+    </header>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <div class="max-w-full h-full max-h-full flex flex-col-reverse overflow-y-auto">
         <div v-for="message of chatStore.getChannelInView.slice().reverse()" :key="message.id">
@@ -13,7 +12,6 @@
       </div>
     </div>
     <MessageInput/>
-  </div>
 </template>
 
 <script lang="ts">

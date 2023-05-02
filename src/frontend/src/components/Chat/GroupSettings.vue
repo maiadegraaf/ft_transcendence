@@ -1,6 +1,6 @@
 <template>
 <!--  <header class="bg-normal w-full min-h-10">-->
-  <div class="w-3/4 h-full flex flex-column overflow-hidden">
+  <div class="w-3/4 h-full flex flex-col overflow-hidden">
     <div class="border-buff border-double border-2 rounded-md">
       <h2 class="h2">Group Settings</h2>
     </div>
@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import {UserChatStore} from "../../store/store";
+import {useChatStore} from "../../store/channel.store";
 import axios from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
 
@@ -60,8 +60,7 @@ export default {
   name: "GroupSettings",
   // props: ['chatStore']
   setup() {
-    const chatStore = UserChatStore()
-    // chatStore.setupChatStore()
+    const chatStore = useChatStore()
     return {chatStore}
   },
   data(): any {
