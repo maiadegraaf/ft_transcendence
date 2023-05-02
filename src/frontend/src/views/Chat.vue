@@ -6,7 +6,7 @@
         <div class="w-1/4 h-full flex flex-col">
           <ChannelHeader @switch-chat-right-component="changeComponent"/>
 <!--          <ChannelGroup/>-->
-          <ChannelList/>
+          <ChannelList @switch-chat-right-component="changeComponent"/>
 <!--          <ChannelInput/>-->
         </div>
         <div class="w-3/4 h-full flex flex-col overflow-hidden">
@@ -59,20 +59,20 @@ export default defineComponent({
     this.userStore.socket.on('msgToClient', (message: IMessage) => {
       this.chatStore.receivedMessage(message)
     })
-    this.chatStore.socket.on('addChannelToClient', (channel: IChannels) => {
+    this.userStore.socket.on('addChannelToClient', (channel: IChannels) => {
       this.chatStore.receivedNewChannel(channel)
     })
-    this.chatStore.socket.on('removeChannelFromClient', (channelId: number) => {
+    this.userStore.socket.on('removeChannelFromClient', (channelId: number) => {
       this.chatStore.removeChannel(channelId)
     })
   },
   watch: {
   },
-
   // The methods of the Vue instance.
   methods: {
     changeComponent(component: any): void {
       this.currentComponent = component
+      console.log("Komen wij hier??")
     },
   },
   // The created hook of the Vue instance.

@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-screen w-screen bg-dark-purple font-mono">
         <div class="flex-1 w-full mx-auto bg-gradient-to-r from-transparent via-transparent to-dark-purple">
-            <router-view :key="$route.fullPath" />
+            <router-view v-if="userStore.id !== 0 || $route.path ==='/'" :key="$route.fullPath" />
         </div>
     </div>
 </template>
@@ -17,7 +17,7 @@ export default defineComponent({
       const userStore = useUserStore()
       return { userStore }
   },
-    created() {
+    beforeCreate() {
         axios.get('/api/auth/profile').then((res) => {
            if (res.status === 200) {
              this.userStore.loadUser()
