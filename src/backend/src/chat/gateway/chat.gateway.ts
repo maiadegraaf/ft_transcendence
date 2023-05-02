@@ -214,6 +214,7 @@ export class ChatGateway
             );
             userSocket.emit('addChannelToClient', channelInfo);
         }
+        this.logger.error('User is not connected to chat');
     }
 
     async emitDeleteChannelFromUser(

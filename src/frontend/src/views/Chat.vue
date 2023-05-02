@@ -56,6 +56,7 @@ export default defineComponent({
   },
 
   mounted() {
+    this.userStore.loadUser()
     this.userStore.socket.on('msgToClient', (message: IMessage) => {
       this.chatStore.receivedMessage(message)
     })
@@ -65,6 +66,7 @@ export default defineComponent({
     this.userStore.socket.on('removeChannelFromClient', (channelId: number) => {
       this.chatStore.removeChannel(channelId)
     })
+
   },
   watch: {
   },

@@ -19,6 +19,7 @@
 
 <script lang="ts">
 import {useChatStore} from "../../store/channel.store";
+import {useUserStore} from "@/store/user.store";
 import axios from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
 
@@ -26,9 +27,10 @@ export default {
   name: "NewChannel",
   // props: ['chatStore']
   setup() {
+    const user = useUserStore()
     const chatStore = useChatStore()
     // chatStore.setupChatStore()
-    return { chatStore }
+    return { chatStore, user }
   },
   data(): any {
     return {
@@ -39,9 +41,8 @@ export default {
     }
   },
   async mounted() {
-    await this.chatStore.fetchUserData()
-    this.userId = this.chatStore.userId
-    this.userName = this.chatStore.name
+    this.userId = this.user.id
+    this.userName = this.user.name
   },
   methods: {
     dmNewUser(): void {

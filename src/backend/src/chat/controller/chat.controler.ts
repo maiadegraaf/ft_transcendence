@@ -110,8 +110,10 @@ export class ChatController {
     ): Promise<any> {
         try {
             console.log('param: ' + JSON.stringify(param));
+            // not safe user by id
             const owner = await this.userService.getUserById(param.userId);
-            console.log('owner: ' + JSON.stringify(owner));
+            console.log('owner: ');
+            console.log(owner);
             if (!owner) {
                 throw new HttpException(
                     'Could not find user to create new group channel',
@@ -128,7 +130,8 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log('channel: ' + JSON.stringify(channel));
+            console.log('channel: ');
+            console.log(channel);
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
             return;
         } catch (error) {
@@ -155,6 +158,7 @@ export class ChatController {
                 user,
             );
             await this.chatGateway.emitGroupChannelToUser(channel, user);
+            console.log(channel);
         } catch (error) {
             this.logger.error('postNewUserToChannel: ' + error);
         }

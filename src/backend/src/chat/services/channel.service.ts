@@ -132,6 +132,8 @@ export class ChannelService {
 
     async newGroupChannel(owner: User, groupName: string): Promise<any> {
         // check if groupName is unique
+        console.log('user');
+        console.log(owner);
         const channel = await this.createChannel();
         if (!channel) {
             throw new HttpException(
@@ -153,6 +155,8 @@ export class ChannelService {
             );
             return;
         }
+        console.log('groupProfile');
+        console.log(groupProfile);
         channel.users = [];
         channel.users.push(owner);
         channel.profile = groupProfile;

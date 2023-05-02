@@ -110,22 +110,33 @@ export class GroupProfileService {
     }
 
     async ownerCheck(param: GroupUserProfileUpdateDto): Promise<any> {
+        console.log('param: ');
+        console.log(param);
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .where('group.id = :id', { id: param.groupId })
             .leftJoinAndSelect('group.owner', 'owner')
-            .andWhere('owner.id = :id', { id: param.userId })
             .leftJoinAndSelect('group.admin', 'admin')
             .leftJoinAndSelect('group.channel', 'channel')
             .leftJoinAndSelect('channel.users', 'users')
-            .leftJoinAndSelect('users.login', 'login')
+            // .leftJoinAndSelect('users.login', 'login')
             .getOne();
         if (!group) {
             throw new HttpException(
-                'add find group in addAdmin',
+                'could not find group due to wrong id',
                 HttpStatus.FORBIDDEN,
             );
         }
+        console.log('group: ');
+        console.log(group);
+        if (group.owner.id !== param.userId) {
+            throw new HttpException(
+                'user is not owner of group',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        console.log('group: ');
+        console.log(group);
         return group;
     }
 
@@ -153,11 +164,9 @@ export class GroupProfileService {
             .createQueryBuilder('group')
             .where('group.id = :id', { id: param.groupId })
             .leftJoinAndSelect('group.admin', 'admin')
-            .andHaving('admin.id = :userId', { userId: param.userId })
             .leftJoinAndSelect('group.' + type, type)
             .leftJoinAndSelect('group.channel', 'channel')
             .leftJoinAndSelect('channel.users', 'users')
-            .leftJoinAndSelect('users.login', 'login')
             .getOne();
         if (!group) {
             throw new HttpException(
@@ -165,5 +174,13 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
+        if (!group.admin.find((admin) => admin.id === param.userId)) {
+            throw new HttpException(
+                'user is not an admin in group',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        console.log('group: ');
+        console.log(group);
     }
 }

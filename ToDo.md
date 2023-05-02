@@ -32,3 +32,5 @@ server gives a double join room and error on the backend
 * [ ] change the correct view of the channel when new channel is made for the user
 * [ ] if you are in group settings, and you want to access a different
 group setting then the old group setting is still active
+* [ ] userById not safe
+* [ ] socket with emitGroupChannelToUser is not found

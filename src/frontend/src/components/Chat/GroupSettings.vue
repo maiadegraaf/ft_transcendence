@@ -63,8 +63,8 @@ export default defineComponent({
   // props: ['chatStore']
   setup() {
     const chatStore = useChatStore()
-    const user = useUserStore()
-    return {chatStore, user}
+    const userStore = useUserStore()
+    return {chatStore, userStore}
   },
   data(): any {
     return {
@@ -72,7 +72,6 @@ export default defineComponent({
       mutedText: '',
       bannedText: '',
       userText: '',
-      userId: 0,
       params: {
         userId: 0,
         userName: '',
@@ -83,19 +82,20 @@ export default defineComponent({
       channelId: 0,
       groupId: 0,
       groupName: '',
+      // user: {},
       // profile: {}
     }
   },
   async mounted() {
     // await this.chatStore.fetchUserData()
-    this.userId = this.user.userId
-    this.userName = this.user.name
+    // await this.userStore.loadUser()
+    this.userName = this.userStore.name
     this.groupName = this.chatStore.groupName
-    this.params.userId = this.userId
+    this.params.userId = this.userStore.id
     this.params.channelId = this.chatStore.channelInView
     this.params.groupId = this.chatStore.groupId
     // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-    console.log(this.params)
+    // console.log(this.params)
   },
   methods: {
     doneGroup(): void {
@@ -156,7 +156,7 @@ export default defineComponent({
         return
       }
       this.params.userName = this.adminText
-      console.log('test username: ' + this.params.userName)
+      console.log(this.params)
 
       axios.post('/api/chat/group/admin', this.params)
           .then((response) => {
