@@ -59,7 +59,7 @@ export default defineComponent({
         await axios.get('/api/auth/profile').then((response) => {
             this.currentUserId = response.data.id
         })
-        axios.get('/api/leaderboard/' + this.currentUserId).then((response) => {
+        await axios.get('/api/leaderboard/id/' + this.$route.params.id ).then((response) => {
             this.scoreData = response.data
         })
         console.log(this.scoreData)
