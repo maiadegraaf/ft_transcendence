@@ -13,7 +13,7 @@ be displayed on the user profile -->
         <div class="flex flex-col mt-16 items-center w-screen">
             <div class="w-60 h-60 text-right relative">
                 <img
-                    :src="`/api/user/${user.id}/avatar`"
+                    :src="`/api/user/${isProfileSession ? user.id : userData.id}/avatar`"
                     alt="Avatar"
                     class="w-full h-full rounded-full object-cover mb-8"
                 />
@@ -26,12 +26,19 @@ be displayed on the user profile -->
                 </button>
             </div>
             <div class="flex flex-col">
-              <div class="flex justify-center items-center mt-5">
-                <h2 class="text-blush font-semibold text-5xl  text-center">{{ user.name }}</h2>
-                <svg class="ml-3" height="20" width="20">
-                  <circle cx="10" cy="10" r="4" stroke="green" stroke-width="3" fill="green" />
-                </svg>
-              </div>
+                <div class="flex justify-center items-center mt-5">
+                    <h2 class="text-blush font-semibold text-5xl text-center">{{isProfileSession ? user.name : userData.login }}</h2>
+                    <svg class="ml-3" height="20" width="20">
+                        <circle
+                            cx="10"
+                            cy="10"
+                            r="4"
+                            :stroke="isOnline ? 'green' : 'red'"
+                            stroke-width="3"
+                            :fill="isOnline ? 'green' : 'red'"
+                        />
+                    </svg>
+                </div>
                 <button
                     v-if="isProfileSession"
                     @click="changeUsername"
@@ -42,9 +49,10 @@ be displayed on the user profile -->
             </div>
         </div>
         <WinLosses />
+        <MatchHistory />
     </main>
     <main v-else class="flex h-screen justify-center items-center">
-      <h1 class="text-5xl text-blush font-bold ">Profile doesn't exist</h1>
+        <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
     </main>
 </template>
 
@@ -54,42 +62,55 @@ import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
 import {defineComponent} from "vue";
+import MatchHistory from '@/components/profile/MatchHistory.vue'
 import {useUserStore} from "@/store/user.store";
 
+
 export default defineComponent({
-  setup() {
-    const chatStore = useChatStore()
-    const user = useUserStore()
-    return {chatStore, user}
-  },
-  data() {
+    setup() {
+        const chatStore = useChatStore()
+        const user = useUserStore()
+        return { chatStore, user }
+    },
+    data() {
         return {
-            currentUserId: 0,
+            isOnline: false,
             doesProfileExist: false,
             isProfileSession: false,
+            userData: {
+              id: 0,
+              login: '',
+              email: ''
+            }
         }
     },
     components: {
+        MatchHistory,
         WinLosses,
         Nav
     },
     mounted() {
-        // try {
-        //   await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-        //   this.currentUserId = response.data.id
-        //   })
-        //   await axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
-        //     this.user = response.data
-        //     this.doesProfileExist = true;
-        //     console.log(this.$route.params.id)
-        //     if (this.currentUserId === Number(this.$route.params.id))
-        //       this.isProfileSession = true;
-        //   })
-        // } catch (error) {
-        //     console.log(error)
-        // }
-      this.doesProfileExist = true;
-      console.log(this.user.id)
+      axios
+        .get('http://localhost:8080/api/user/' + this.$route.params.id)
+        .then((response) => {
+            this.userData = response.data;
+            this.doesProfileExist = true
+            if (this.user.id === Number(this.$route.params.id)) {
+              this.isProfileSession = true
+            }
+        })
+      this.user.socket.emit('checkUserOnline', {
+            userId: this.$route.params.id
+        })
+      this.user.socket.on('userOnline', () => {
+            console.log('user is online')
+            this.isOnline = true
+        })
+      this.user.socket.on('userOffline', () => {
+            console.log('user is offline')
+            this.isOnline = false
+        })
+      console.log(this.isOnline)
     },
     methods: {
         async handleUploadAvatar() {

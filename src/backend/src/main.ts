@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 import { Logger } from '@nestjs/common';
 import * as session from 'express-session';
 import { IoAdapter } from '@nestjs/platform-socket.io';
@@ -25,6 +26,7 @@ async function bootstrap() {
     app.use(sessionMiddleware);
     app.useWebSocketAdapter(new ExpressSessionAdapter(app));
     await app.init();
+
     await app.listen(8080);
 
     const logger: Logger = new Logger('BackendMain');

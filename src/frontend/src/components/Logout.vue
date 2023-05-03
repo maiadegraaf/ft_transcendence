@@ -10,12 +10,18 @@
 <script lang="ts">
 import axios from 'axios'
 import {defineComponent} from "vue";
+import {useUserStore} from "@/store/user.store";
 
 export default defineComponent({
+    setup() {
+        const user = useUserStore()
+        return { user }
+    },
     name: 'Logout',
     methods: {
         destroySession() {
             axios.get('/api/auth/logout')
+            this.user.socket.disconnect()
             this.$router.push('/')
         }
     }

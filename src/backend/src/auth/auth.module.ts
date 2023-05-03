@@ -16,7 +16,13 @@ import { Avatar } from 'src/user/avatar.entity';
         PassportModule.register({ session: true }),
         TypeOrmModule.forFeature([User, Avatar]),
     ],
-    providers: [FortyTwoStrategy, AuthService, UserService, SessionSerializer, AvatarService],
+    providers: [
+        FortyTwoStrategy,
+        AuthService,
+        UserService,
+        SessionSerializer,
+        AvatarService,
+    ],
     controllers: [AuthController],
 })
 export class AuthModule {}

@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', {
             })
             const socket = await io('http://localhost:8080')
             this.socket = socket
-            await useChatStore().loadChannels()
+            useChatStore().loadChannels().then()
             },
         }
 })
