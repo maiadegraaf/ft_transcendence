@@ -69,7 +69,7 @@ export class ChannelService {
             .leftJoinAndSelect('channel.messages', 'message')
             .leftJoin('channel.users', 'members')
             .addSelect(['members.id', 'members.login'])
-            .where('members.id != :id', { id: userId })
+            // .where('members.id != :id', { id: userId })
             .leftJoin('message.sender', 'sender')
             .addSelect(['sender.id', 'sender.login'])
             .leftJoinAndSelect('channel.profile', 'profile')
@@ -86,6 +86,7 @@ export class ChannelService {
         if (!channels) {
             return;
         }
+        console.log(channels);
         for (const ch of channels) {
             ch['name'] = await this.getChannelName(ch.id, userId);
         }
@@ -132,6 +133,8 @@ export class ChannelService {
 
     async newGroupChannel(owner: User, groupName: string): Promise<any> {
         // check if groupName is unique
+        console.log('user');
+        console.log(owner);
         const channel = await this.createChannel();
         if (!channel) {
             throw new HttpException(
@@ -146,16 +149,14 @@ export class ChannelService {
             channel,
         );
         if (!groupProfile) {
-            await this.channelRepository.remove(channel);
             throw new HttpException(
-                'could not create group profile',
+                'Could not create new group profile',
                 HttpStatus.FORBIDDEN,
             );
-            return;
         }
+        channel.profile = groupProfile;
         channel.users = [];
         channel.users.push(owner);
-        channel.profile = groupProfile;
         return await this.channelRepository.save(channel);
     }
 

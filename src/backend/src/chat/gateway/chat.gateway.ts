@@ -177,6 +177,8 @@ export class ChatGateway
         user2: User,
         channel: Channel,
     ): Promise<any> {
+        // ole.log('profile');
+        // console.log(profile); cons
         const channelInfo = {
             id: channel.id,
             messages: [],
