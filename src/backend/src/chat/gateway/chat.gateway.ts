@@ -201,21 +201,17 @@ export class ChatGateway
         }
     }
 
-    async emitGroupChannelToUser(
-        channel: Channel,
-        user: User,
-        profile: GroupProfile,
-    ): Promise<any> {
+    async emitGroupChannelToUser(channel: Channel, user: User): Promise<any> {
         const channelInfo = {
             id: channel.id,
             messages: [],
-            profile: profile,
-            name: profile.name,
+            profile: channel.profile,
+            name: channel.profile.name,
         };
         const userSocket = this.getClientSocketById(user.id);
         if (userSocket) {
             this.logger.log(
-                'emit addChannelToClient form owner: ' + userSocket.id,
+                'emit addChannelToClient to user: ' + userSocket.id,
             );
             userSocket.emit('addChannelToClient', channelInfo);
         }

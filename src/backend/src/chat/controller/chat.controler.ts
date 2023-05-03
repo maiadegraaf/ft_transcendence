@@ -130,13 +130,7 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log('channel 2: ');
-            console.log(channel);
-            await this.chatGateway.emitGroupChannelToUser(
-                channel,
-                owner,
-                channel.groupProfile,
-            );
+            await this.chatGateway.emitGroupChannelToUser(channel, owner);
             return;
         } catch (error) {
             this.logger.error('postNewGroupChannel: ' + error);
@@ -161,12 +155,7 @@ export class ChatController {
                 param.channelId,
                 user,
             );
-            await this.chatGateway.emitGroupChannelToUser(
-                channel,
-                user,
-                channel.profile,
-            );
-            console.log(channel);
+            await this.chatGateway.emitGroupChannelToUser(channel, user);
         } catch (error) {
             this.logger.error('postNewUserToChannel: ' + error);
         }
