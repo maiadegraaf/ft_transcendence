@@ -46,13 +46,14 @@
               </h3>
             </div>
           </div>
-          <button @click="showMore = !showMore" class=" pt-4 hover:opacity-60 opacity-transition">see more...</button>
+          <button v-if="matchHistoryData.length > 2" @click="showMore = !showMore" class=" pt-4 hover:opacity-60 opacity-transition">{{showMore ? "see less" : "see more..." }}</button>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import axios from 'axios'
+import { defineComponent } from 'vue'
 
 interface User {
   id: number
@@ -67,7 +68,7 @@ interface MatchHistoryData {
   player2Score: number
 }
 
-export default {
+export default defineComponent({
   data() {
     return {
       matchHistoryData: [] as MatchHistoryData[],
@@ -94,12 +95,12 @@ export default {
   },
   async mounted()
   {
-    await axios.get('/api').then((response) => {
+    await axios.get('/api/match').then((response) => {
       this.matchHistoryData = Array.from(response.data)
     })
   },
   name: 'MatchHistory'
-}
+})
 </script>
 
 <style scoped>

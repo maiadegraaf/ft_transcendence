@@ -12,13 +12,13 @@ export const useUserStore = defineStore('user', {
     }),
 
     actions: {
-        loadUser() {
-            axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        async loadUser() {
+            await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
                 this.name = response.data.login
                 this.email = response.data.email
                 this.id = response.data.id
             })
-            const socket = io('http://localhost:8080')
+            const socket = await io('http://localhost:8080')
             this.socket = socket
             useChatStore().loadChannels().then()
             },
