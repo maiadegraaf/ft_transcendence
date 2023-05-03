@@ -5,7 +5,8 @@
         <img class="rounded-full w-16" :src="`api/user/94748/avatar`" alt="avatar">
       </div>
       <div class="flex flex-col w-full pl-3">
-        <div class="font-bold">DM | {{ ch.name }} | {{ ch.id }}</div>
+        <div v-if="ch.profile" class="font-bold">Group | {{ ch.name }} | {{ ch.id }}</div>
+        <div v-else class="font-bold">DM | {{ ch.name }} | {{ ch.id }}</div>
         <div>{{ lastMessage }}</div>
       </div>
     </div>

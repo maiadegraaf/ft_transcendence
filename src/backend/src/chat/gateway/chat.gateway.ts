@@ -53,7 +53,7 @@ export class ChatGateway
         payload.id = message.id;
         this.server.to('room' + payload.channel).emit('msgToClient', payload);
         this.logger.log(
-            `createMessage: message send by ${payload.sender.login} in channel ${payload.channel}`,
+            `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
         );
     }
 
@@ -203,18 +203,27 @@ export class ChatGateway
     }
 
     async emitGroupChannelToUser(channel: Channel, user: User): Promise<any> {
+        const msg = channel.messages ?? [];
         const channelInfo = {
             id: channel.id,
-            messages: [],
-            profile: channel.profile,
+            messages: msg,
+            profile: {
+                name: channel.profile.name,
+                id: channel.profile.id,
+            },
             name: channel.profile.name,
         };
+        console.log('test');
         const userSocket = this.getClientSocketById(user.id);
         if (userSocket) {
             this.logger.log(
                 'emit addChannelToClient to user: ' + userSocket.id,
             );
+            console.log('test2');
             userSocket.emit('addChannelToClient', channelInfo);
+            console.log('test3');
+
+            return;
         }
         this.logger.error('User is not connected to chat');
     }

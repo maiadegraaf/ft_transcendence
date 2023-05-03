@@ -297,3 +297,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+input {
+  color: black;
+}
+</style>

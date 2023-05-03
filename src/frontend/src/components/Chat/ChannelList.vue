@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 w-full bg-dark-purple flex flex-col">
     <div v-for="ch in chatStore.channels" :key="ch.id" class="block border-buff cursor-pointer border-b-2">
-      <ChannelTile :ch="ch" @switch-chat-right-component="Test"/>
+      <ChannelTile :ch="ch" @switch-chat-right-component="passTrough"/>
     </div>
   </div>
 </template>
@@ -23,9 +23,8 @@ export default defineComponent({
     return { chatStore }
   },
   methods: {
-    Test(): void {
-      console.log('test')
-      this.$emit('switch-chat-right-component', GroupSettings)
+    passTrough(component: any): void {
+      this.$emit('switch-chat-right-component', component)
     }
   }
 })

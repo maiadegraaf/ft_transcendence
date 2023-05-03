@@ -131,6 +131,7 @@ export class ChatController {
                 );
             }
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
+            console.log('test4');
             return;
         } catch (error) {
             this.logger.error('postNewGroupChannel: ' + error);
