@@ -59,7 +59,8 @@ export default defineComponent({
     name: 'pongGame',
     props: ['matchId'],
 
-    setup() {
+
+  setup() {
       const user = useUserStore()
       return { user }
     },

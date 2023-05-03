@@ -19,16 +19,16 @@
 
 <script lang="ts">
 import {useChatStore} from "../../store/channel.store";
-import {useUserStore} from "@/store/user.store";
 import axios from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
+import {useUserStore} from "@/store/user.store";
 
 export default {
   name: "NewChannel",
   // props: ['chatStore']
   setup() {
-    const user = useUserStore()
     const chatStore = useChatStore()
+    const user = useUserStore()
     // chatStore.setupChatStore()
     return { chatStore, user }
   },
@@ -36,13 +36,9 @@ export default {
     return {
       dmText: '',
       groupText: '',
-      userId: 0,
-      userName: '',
     }
   },
   async mounted() {
-    this.userId = this.user.id
-    this.userName = this.user.name
   },
   methods: {
     dmNewUser(): void {
@@ -52,7 +48,7 @@ export default {
         return
       }
       const param = {
-        userId: this.userId,
+        userId: this.user.id,
         invitee: this.dmText,
       }
       axios.post('/api/chat/dm', param)
@@ -67,7 +63,7 @@ export default {
         return
       }
       const param = {
-        userId: this.userId,
+        userId: this.user.id,
         groupName: this.groupText,
       }
       axios.post('/api/chat/group', param)
