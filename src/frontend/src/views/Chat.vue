@@ -5,9 +5,7 @@
       <div class="max-w-screen-2xl w-full box-border h-full mx-auto pb-10 flex">
         <div class="w-1/4 h-full flex flex-col">
           <ChannelHeader @switch-chat-right-component="changeComponent"/>
-<!--          <ChannelGroup/>-->
           <ChannelList @switch-chat-right-component="changeComponent"/>
-<!--          <ChannelInput/>-->
         </div>
         <div class="w-3/4 h-full flex flex-col overflow-hidden">
           <component :is="currentComponent" @switch-chat-right-component="changeComponent"/>
@@ -21,8 +19,6 @@
 import Nav from '@/components/Nav.vue'
 import MessageList from '@/components/Chat/MessageList.vue'
 import ChannelList from '@/components/Chat/ChannelList.vue'
-import ChannelInput from "@/components/Chat/ChannelInput.vue";
-import ChannelGroup from "@/components/Chat/ChannelGroup.vue";
 import GroupSettings from "@/components/Chat/GroupSettings.vue";
 import {useChatStore} from "@/store/channel.store";
 import type {IMessage, IChannels} from "@/types/types";
@@ -34,8 +30,6 @@ import ChannelHeader from "@/components/Chat/ChannelHeader.vue";
 export default defineComponent({
   components: {
     ChannelHeader,
-    ChannelGroup,
-    ChannelInput,
     Nav,
     MessageList,
     ChannelList,
