@@ -95,7 +95,7 @@ export default defineComponent({
         .then((response) => {
             this.userData = response.data;
             this.doesProfileExist = true
-            if (Number(this.user.id) === Number(this.$route.params.id)) {
+            if (this.user.id === Number(this.$route.params.id)) {
               this.isProfileSession = true
             }
         })
