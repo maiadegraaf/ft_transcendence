@@ -6,6 +6,7 @@
             <div v-if="searchResult">
                 <span>{{ searchResult.login }}</span>
                 <button @click="addFriend(searchResult?.id ?? -1)">+</button>
+                <button @click="removeFriend(searchResult?.id ?? -1)">-</button>
             </div>
             <div v-if="searchError">
                 <span>{{ searchError }}</span>
@@ -31,12 +32,6 @@ export default {
             searchError: null as string | null,
         }
     },
-    // props: {
-    //     currentUserId: {
-    //         type: Number,
-    //         required: true,
-    //     },
-    // },
     methods: {
         async addFriend(friendId: number) {
             try {
@@ -51,6 +46,22 @@ export default {
                     this.searchError = error;
                 } else {
                     this.searchError = "Failed to add friend";
+                }
+            }
+        },
+        async removeFriend(friendId: number) {
+            try {
+                await axios.post(`http://localhost:8080/api/user/unfriend/${friendId}`);
+                this.friends = this.friends.filter(friend => friend.id !== friendId);
+                this.searchResult = null;
+                this.searchInput = "";
+                this.searchError = null;
+            } catch (error) {
+                console.error("Failed to remove friend", error);
+                if (typeof error === "string") {
+                    this.searchError = error;
+                } else {
+                    this.searchError = "Failed to remove friend";
                 }
             }
         },

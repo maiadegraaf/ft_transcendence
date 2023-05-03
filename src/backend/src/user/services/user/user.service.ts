@@ -252,14 +252,37 @@ export class UserService {
     
 	async findFriends(userID: number) {
 		const user = await this.userRepository.findOne({
-			where: { id: userID },
+            where: { id: userID },
 			relations: ['friends'],
 		}).catch((err) => {
-            throw new BadRequestException(err.message);
+            throw new BadRequestException(`Error fetching user with id ${userID}: ${err.message}`);
         });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`);
         }
         return user.friends;
 	}
+
+    async removeFriend(userID: number, friendID: number) {
+        const user = await this.userRepository.findOne({
+            where: { id: userID },
+            relations: ['friends'],
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userID} not found`);
+        }
+        const friend = await this.userRepository.findOne({
+            where: { id: friendID },
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (!user.friends.map((user) => user.id).includes(friendID)) {
+            throw new BadRequestException(`User with id ${friendID} is not your friend`);
+        }
+        user.friends = user.friends.filter((user) => user.id !== friendID);
+        await this.userRepository.save(user);
+        return user;
+    }
 }

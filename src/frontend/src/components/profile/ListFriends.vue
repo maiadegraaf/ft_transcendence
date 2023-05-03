@@ -1,10 +1,11 @@
 <template>
-    <!-- MISTAKE HERE, LOOP USING ARRAY -->
     <div class="friends-list">
-        <div v-for="friend in friends" :key="friend.id" class="friend-row flex items-center">
-            <img :src="`/api/user/${friend.id}/avatar`" alt="Avatar" class="w-10 h-10 rounded-full object-cover mr-4" />
-            <h3 class="text-lg">{{ friend.login }}</h3>
-        </div>
+        <h2 class="text-2xl font-bold mb-4">Friends</h2>
+        <ul>
+            <li v-for="friend in friendList" :key="friend.id">
+                {{ friend.username  }}
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -17,6 +18,12 @@ interface User {
     login: string;
 }
 
+interface FriendList {
+    id: number;
+    username: string;
+    isOnline: boolean;
+    // avatarURL: string;
+}
 
 export default {
     data() {
@@ -27,6 +34,10 @@ export default {
     props: {
         isProfileSession: {
             type: Boolean,
+            required: true,
+        },
+        friendList: {
+            type: Array as () => FriendList[],
             required: true,
         },
     },
@@ -48,4 +59,3 @@ export default {
     margin-bottom: 1rem;
 }
 </style>
-  

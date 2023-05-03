@@ -39,7 +39,19 @@ export class UserController {
         const users = await this.userService.findAllUsers();
         return users;
     }
-
+    
+    @Get('/friends')
+    @UseGuards(FortyTwoAuthGuard)
+    async getFriends(
+        @Req() req: any,
+    ) {
+        console.log(`test`);
+        const userID = req.session.user.id;
+        console.log(`userID: ${userID}`);
+        console.log(`UserController: Searching for friends of user with id: ${userID}`);
+        return await this.userService.findFriends(userID);
+    }
+    
     @Get(':id')
     @UseGuards(FortyTwoAuthGuard)
     async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
@@ -132,33 +144,27 @@ export class UserController {
     ) {
         const userID = req.session.user.id;
         try {
-
-            console.log(`Checkpoint 1: userID = ${userID}, friendID = ${friendID}`);
-            await this.userService.addFriend(friendID, userID);
-            console.log(`Checkpoint 2: userID = ${userID}, friendID = ${friendID}`);
-            return await this.userService.addFriend(userID, friendID);
+            await this.userService.addFriend(userID, friendID);
+            return await this.userService.addFriend(friendID, userID);
         } catch (error) {
             console.log(error);
         }
     }
 
-    @Get('/friends')
+
+    @Post('unfriend/:id')
     @UseGuards(FortyTwoAuthGuard)
-    getFriends(
+    async removeFriend(
+        @Param('id', ParseIntPipe) friendID: number,
         @Req() req: any,
     ) {
-        const userID = req.session.userID;
-        console.log(`UserController: Searching for friends of user with id: ${userID}`);
-        return this.userService.findFriends(userID);
+        const userID = req.session.user.id;
+        try {
+            await this.userService.removeFriend(userID, friendID);
+            return await this.userService.removeFriend(friendID, userID);
+        } catch (error) {
+            console.log(error);
+        }
     }
-
-
-//   @Put('unfriend/:id')
-//   @UseGuards(SessionGuard)
-//   unfriendUser(@Param('id', ParseIntPipe) friend: number, @Req() req: any) {
-//     const userID = req.session.userId;
-//     return this.userService.unfriendUser(Number(userID), Number(friend));
-//   }
-
 
 }
