@@ -51,9 +51,11 @@ export const useChatStore = defineStore('userChannel', {
         },
         receivedMessage(message: IMessage) {
             if (this.channels == null) { return }
-            const channel = this.channels.find(channel => channel.id === message.channel)
+            const channelIndex: number = this.channels.findIndex(channel => channel.id === message.channel)
+            const channel: IChannels | undefined = this.channels[channelIndex]
             if (channel) { channel.messages.push(message);}
-
+            this.channels.unshift(channel as IChannels)
+            this.channels.splice(channelIndex + 1, 1)
         },
         async setChannelInView(channelId: number) {
             this.channelInView = channelId
@@ -67,8 +69,6 @@ export const useChatStore = defineStore('userChannel', {
         async removeChannel(channelID: number) {
             const user = useUserStore()
             const index = this.channels?.findIndex((ch) => ch.id === channelID)
-            console.log(channelID)
-            console.log('removeChannelindex: ' + index)
             if (index && index != -1) {
                 this.channels?.splice(index, 1);
                 user.socket.emit('leaveRoomById', {channelId: channelID})
@@ -79,6 +79,14 @@ export const useChatStore = defineStore('userChannel', {
         },
         setGroupName(groupName: string) {
             this.groupName = groupName
+        },
+        logOut() {
+            this.invite = ''
+            this.channels = null
+            this.channelInView = 0
+            this.joined = false
+            this.groupId = -1
+            this.groupName = ''
         }
     }
 })

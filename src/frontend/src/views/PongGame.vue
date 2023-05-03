@@ -1,7 +1,7 @@
 <template>
     <body>
         <Nav />
-        <Pong v-if="ready" match-id="0"/>
+        <Pong v-if="ready" :match-id-prop="matchId"/>
     </body>
 </template>
 
@@ -21,7 +21,7 @@ export default defineComponent({
         return {
             // userId: 0,
             // socket: {} as Socket,
-            matchId: 0,
+            matchId: 0 as number,
             ready: false
         }
     },

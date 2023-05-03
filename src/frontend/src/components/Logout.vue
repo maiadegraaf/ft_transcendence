@@ -11,17 +11,21 @@
 import axios from 'axios'
 import {defineComponent} from "vue";
 import {useUserStore} from "@/store/user.store";
+import {useChatStore} from "@/store/channel.store";
 
 export default defineComponent({
     setup() {
         const user = useUserStore()
-        return { user }
+        const chat = useChatStore()
+        return { user, chat }
     },
     name: 'Logout',
     methods: {
         destroySession() {
             axios.get('/api/auth/logout')
             this.user.socket.disconnect()
+            this.chat.logOut()
+            this.user.logOut()
             this.$router.push('/')
         }
     }

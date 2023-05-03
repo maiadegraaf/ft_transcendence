@@ -38,7 +38,7 @@ export class ChatController {
     @Get('/:id')
     async getUserChannels(@Param('id') id: number): Promise<Channel[]> {
         this.logger.log(
-            'getChannelMessages: messages found from channel: ' + id,
+            'getChannelMessages: messages found for user: ' + id,
         );
         return this.channelService.getUserChannels(id);
     }

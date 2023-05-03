@@ -57,7 +57,7 @@ export interface practiceSettingsInterface {
 
 export default defineComponent({
     name: 'pongGame',
-    props: ['matchId'],
+    props: ['matchIdProp'],
 
 
   setup() {
@@ -77,6 +77,7 @@ export default defineComponent({
             startedBy: '',
             startMatch: false,
             waiting: false,
+            matchId: this.matchIdProp
         }
     },
     components: {
@@ -97,7 +98,8 @@ export default defineComponent({
       }
     },
   async mounted() {
-        this.user.socket.on('MultipleConnections', (msg: string) => {
+
+      this.user.socket.on('MultipleConnections', (msg: string) => {
             this.$refs.errorPopUp.show('You are already ' + msg)
             this.reset()
         })
@@ -143,10 +145,11 @@ export default defineComponent({
             this.reset()
         },
         opponentFound(matchId: number) {
-            this.startedBy = this.user.id
-            this.startMatch = true
-            this.waiting = false
+            console.log(matchId)
             this.matchId = matchId
+            this.startedBy = this.user.id
+            this.waiting = false
+            this.startMatch = true
         },
         back() {
             this.practiceMode = false

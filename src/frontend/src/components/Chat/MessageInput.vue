@@ -1,11 +1,11 @@
 <template>
-  <footer class="bg-normal w-full min-h-10">
+  <footer class="bg-dark-purple border-buff border w-full min-h-10">
     <div class="p-3 flex">
       <div class="flex-1 p-1 bg-white rounded-md">
         <input v-model="text" placeholder="Type a message..." class="w-full text-black focus:outline-none"
                @keyup.enter="sendMessage">
       </div>
-      <button @click="sendMessage" class="rounded-full ml-3 hover:shadow-md">></button>
+      <button @click="sendMessage" class="ml-3"><PaperAirplaneIcon class="h-8 w-8 text-buff"/></button>
     </div>
   </footer>
 </template>
@@ -13,10 +13,14 @@
 <script lang="ts">
 import {useChatStore} from "@/store/channel.store";
 import {useUserStore} from "@/store/user.store";
+import { PaperAirplaneIcon } from "@heroicons/vue/24/outline";
 import {defineComponent} from "vue";
 
 export default defineComponent({
   name: "MessageInput",
+  components: {
+    PaperAirplaneIcon
+  },
   setup() {
     const chatStore = useChatStore()
     const userStore = useUserStore()
