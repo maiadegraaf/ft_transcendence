@@ -46,7 +46,7 @@
               </h3>
             </div>
           </div>
-          <button v-if="matchHistoryData.length > 2" @click="showMore = !showMore" class=" pt-4 hover:opacity-60 opacity-transition">{{showMore ? "see less" : "see more..." }}</button>
+          <button v-if="matchHistoryData.length > 3" @click="showMore = !showMore" class=" pt-4 hover:opacity-60 opacity-transition">{{showMore ? "see less" : "see more..." }}</button>
         </div>
     </div>
 </template>
@@ -95,7 +95,7 @@ export default defineComponent({
   },
   async mounted()
   {
-    await axios.get('/api/match').then((response) => {
+    await axios.get('/api').then((response) => {
       this.matchHistoryData = Array.from(response.data)
     })
   },
