@@ -55,13 +55,16 @@
 import {useChatStore} from "../../store/channel.store";
 import axios from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
+import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
   name: "GroupSettings",
   // props: ['chatStore']
   setup() {
     const chatStore = useChatStore()
-    return {chatStore}
+    const user = useUserStore()
+    return {chatStore, user}
   },
   data(): any {
     return {
@@ -80,18 +83,19 @@ export default {
       channelId: 0,
       groupId: 0,
       groupName: '',
-      profile: {}
+      // profile: {}
     }
   },
   async mounted() {
-    await this.chatStore.fetchUserData()
-    this.userId = this.chatStore.userId
-    this.userName = this.chatStore.name
+    // await this.chatStore.fetchUserData()
+    this.userId = this.user.userId
+    this.userName = this.user.name
     this.groupName = this.chatStore.groupName
     this.params.userId = this.userId
     this.params.channelId = this.chatStore.channelInView
     this.params.groupId = this.chatStore.groupId
-    this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
+    // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
+    console.log(this.params)
   },
   methods: {
     doneGroup(): void {
@@ -147,7 +151,7 @@ export default {
 
     addAdmin(): void {
       // Validates the input before sending the message.
-      if (this.adminText.length <= 0 || !this.checkOwner()) {
+      if (this.adminText.length <= 0) {
         this.adminText = ''
         return
       }
@@ -167,7 +171,7 @@ export default {
     },
     deleteAdmin(): void {
       // Validates the input before sending the message.
-      if (this.adminText.length <= 0 || !this.checkOwner()) {
+      if (this.adminText.length <= 0) {
         this.adminText = ''
         return
       }
@@ -188,7 +192,7 @@ export default {
     },
     addMuted(): void {
       // Validates the input before sending the message.
-      if (this.mutedText.length <= 0 || !this.checkAdmin()) {
+      if (this.mutedText.length <= 0) {
         this.mutedText = ''
         return
       }
@@ -208,11 +212,8 @@ export default {
     },
     deleteMuted(): void {
       // Validates the input before sending the message.
-      if (this.mutedText.length <= 0 || !this.checkAdmin()) {
+      if (this.mutedText.length <= 0) {
         this.mutedText = ''
-        return
-      }
-      if (!this.checkAdmin()) {
         return
       }
 
@@ -232,7 +233,7 @@ export default {
     },
     addBanned(): void {
       // Validates the input before sending the message.
-      if (this.bannedText.length <= 0 || !this.checkAdmin()) {
+      if (this.bannedText.length <= 0) {
         this.bannedText = ''
         return
       }
@@ -253,7 +254,7 @@ export default {
     },
     deleteBanned(): void {
       // Validates the input before sending the message.
-      if (this.bannedText.length <= 0 || !this.checkAdmin()) {
+      if (this.bannedText.length <= 0) {
         this.bannedText = ''
         return
       }
@@ -270,29 +271,29 @@ export default {
           })
       this.bannedText = ''
     },
-    checkAdmin(): boolean {
-      if (!this.profile) {
-        return false
-      }
-      console.log(this.profile)
-      const admin = this.profile.admins.login.includes(this.userName)
-      if (admin) {
-        return true
-      }
-      return false
-    },
-    checkOwner(): boolean {
-      if (!this.profile) {
-        return false
-      }
-      console.log(this.profile)
-      if (this.userName != this.profile.owner.login)
-        return false
-      return true
-    },
+    // checkAdmin(): boolean {
+    //   if (!this.profile) {
+    //     return false
+    //   }
+    //   console.log(this.profile)
+    //   const admin = this.profile.admins.login.includes(this.userName)
+    //   if (admin) {
+    //     return true
+    //   }
+    //   return false
+    // },
+    // checkOwner(): boolean {
+    //   if (!this.profile) {
+    //     return false
+    //   }
+    //   console.log(this.profile)
+    //   if (this.userName != this.profile.owner.login)
+    //     return false
+    //   return true
+    // },
   },
   created() {
 
   }
-}
+})
 </script>

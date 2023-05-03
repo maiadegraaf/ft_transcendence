@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia'
-import {io} from "socket.io-client";
 import type {IChannels, IMessage} from "@/types/types";
 import {useUserStore} from "@/store/user.store";
-import axios, {formToJSON} from "axios";
-import MessageList from "@/components/Chat/MessageList.vue";
-// import axios from "axios/index";
+
 
 
 export const useChatStore = defineStore('userChannel', {
