@@ -95,9 +95,9 @@ export default defineComponent({
         .then((response) => {
             this.userData = response.data;
             this.doesProfileExist = true
-          console.log(this.user.id)
-            if (this.user.id === Number(this.$route.params.id))
-                this.isProfileSession = true
+            if (Number(this.user.id) === Number(this.$route.params.id)) {
+              this.isProfileSession = true
+            }
         })
       this.user.socket.emit('checkUserOnline', {
             userId: this.$route.params.id
