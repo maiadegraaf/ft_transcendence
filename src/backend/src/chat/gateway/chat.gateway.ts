@@ -22,6 +22,7 @@ import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
+import { GroupProfile } from '../entities/groupProfile.entity';
 
 @WebSocketGateway({
     cors: {
@@ -129,8 +130,8 @@ export class ChatGateway
     }
 
     getClientSocketById(userId: number): Socket {
-        if (this.clientMap.has(userId)) {
-            return this.clientMap.get(userId);
+        if (this.clientMap.has(parseInt(userId.toString()))) {
+            return this.clientMap.get(parseInt(userId.toString()));
         }
         return null;
     }
@@ -200,12 +201,16 @@ export class ChatGateway
         }
     }
 
-    async emitGroupChannelToUser(channel: Channel, user: User): Promise<any> {
+    async emitGroupChannelToUser(
+        channel: Channel,
+        user: User,
+        profile: GroupProfile,
+    ): Promise<any> {
         const channelInfo = {
             id: channel.id,
             messages: [],
-            profile: channel.profile,
-            name: channel.profile.name,
+            profile: profile,
+            name: profile.name,
         };
         const userSocket = this.getClientSocketById(user.id);
         if (userSocket) {

@@ -73,19 +73,20 @@ export class ChannelService {
             .leftJoin('message.sender', 'sender')
             .addSelect(['sender.id', 'sender.login'])
             .leftJoinAndSelect('channel.profile', 'profile')
-            .leftJoin('profile.owner', 'owner')
-            .addSelect(['owner.id', 'owner.login'])
-            .leftJoin('profile.admin', 'admin')
-            .addSelect(['admin.id', 'admin.login'])
-            .leftJoin('profile.muted', 'muted')
-            .addSelect(['muted.id', 'muted.login'])
-            .leftJoin('profile.blocked', 'blocked')
-            .addSelect(['blocked.id', 'blocked.login'])
-            .orderBy('message.id', 'ASC')
+            // .leftJoin('profile.owner', 'owner')
+            // .addSelect(['owner.id', 'owner.login'])
+            // .leftJoin('profile.admin', 'admin')
+            // .addSelect(['admin.id', 'admin.login'])
+            // .leftJoin    ('profile.muted', 'muted')
+            // .addSelect(['muted.id', 'muted.login'])
+            // .leftJoin('profile.blocked', 'blocked')
+            // .addSelect(['blocked.id', 'blocked.login'])
+            // .orderBy('message.id', 'ASC')
             .getMany();
         if (!channels) {
             return;
         }
+        console.log(channels);
         for (const ch of channels) {
             ch['name'] = await this.getChannelName(ch.id, userId);
         }
@@ -148,18 +149,14 @@ export class ChannelService {
             channel,
         );
         if (!groupProfile) {
-            await this.channelRepository.remove(channel);
             throw new HttpException(
-                'could not create group profile',
+                'Could not create new group profile',
                 HttpStatus.FORBIDDEN,
             );
-            return;
         }
-        console.log('groupProfile');
-        console.log(groupProfile);
+        channel.profile = groupProfile;
         channel.users = [];
         channel.users.push(owner);
-        channel.profile = groupProfile;
         return await this.channelRepository.save(channel);
     }
 

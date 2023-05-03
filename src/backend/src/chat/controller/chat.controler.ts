@@ -22,6 +22,7 @@ import {
 } from '../dtos/chat.dtos';
 import { ChatGateway } from '../gateway/chat.gateway';
 import { validatePath } from '@nestjs/serve-static/dist/utils/validate-path.util';
+import { GroupProfileService } from '../services/groupProfile.service';
 
 @Controller('chat')
 export class ChatController {
@@ -30,6 +31,7 @@ export class ChatController {
         private readonly messageService: MessageService,
         private readonly userService: UserService,
         private readonly chatGateway: ChatGateway,
+        private readonly groupProfileService: GroupProfileService,
     ) {}
 
     private logger = new Logger('ChatController');
@@ -112,8 +114,6 @@ export class ChatController {
             console.log('param: ' + JSON.stringify(param));
             // not safe user by id
             const owner = await this.userService.getUserById(param.userId);
-            console.log('owner: ');
-            console.log(owner);
             if (!owner) {
                 throw new HttpException(
                     'Could not find user to create new group channel',
@@ -130,9 +130,13 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log('channel: ');
+            console.log('channel 2: ');
             console.log(channel);
-            await this.chatGateway.emitGroupChannelToUser(channel, owner);
+            await this.chatGateway.emitGroupChannelToUser(
+                channel,
+                owner,
+                channel.groupProfile,
+            );
             return;
         } catch (error) {
             this.logger.error('postNewGroupChannel: ' + error);
@@ -157,7 +161,11 @@ export class ChatController {
                 param.channelId,
                 user,
             );
-            await this.chatGateway.emitGroupChannelToUser(channel, user);
+            await this.chatGateway.emitGroupChannelToUser(
+                channel,
+                user,
+                channel.profile,
+            );
             console.log(channel);
         } catch (error) {
             this.logger.error('postNewUserToChannel: ' + error);

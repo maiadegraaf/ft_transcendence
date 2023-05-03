@@ -2,7 +2,7 @@
 
 ## Chat
 
-* [x] testing endpoints for user, admin, banned and muted in groupProfile
+* [ ] testing endpoints for user, admin, banned and muted in groupProfile
 
 [//]: # (* [ ] accessibility for groupProfile by admin owner and user &#40;frontend&#41;)
 * [ ] accessibility for groupProfile by admin owner and user (backend)

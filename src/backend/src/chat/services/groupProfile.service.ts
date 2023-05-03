@@ -35,6 +35,7 @@ export class GroupProfileService {
             );
             return;
         }
+        groupProfile.channel = channel;
         groupProfile.admin = [];
         groupProfile.admin.push(owner);
         groupProfile.blocked = [];
