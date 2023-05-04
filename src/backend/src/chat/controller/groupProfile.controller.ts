@@ -31,6 +31,8 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
+            console.log('param: ');
+            console.log(param);
             await this.groupProfileService.addAdmin(param);
         } catch (error) {
             this.logger.error(error);

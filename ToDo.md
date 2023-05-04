@@ -11,6 +11,8 @@
 * [ ] owner of group can add or delete admin
 * [ ] admin can kick ban or mute users
 * [ ] search list for groupProfile
+* [ ] leave group
+* [ ] pass the owner role to next admin or user
 * [ ] frontend for admin page and user page for groupProfile
 * [ ] setting up channels for public, private or protected
 * [ ] sending invite for channels

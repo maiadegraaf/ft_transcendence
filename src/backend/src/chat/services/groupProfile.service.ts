@@ -48,6 +48,9 @@ export class GroupProfileService {
     async addAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
         const group = await this.ownerCheck(param);
         const user = await this.userGroupProfileCheck(group, param);
+        if (group.admin.find((admin) => admin.id === user.id)) {
+            throw new HttpException('user already admin', HttpStatus.FORBIDDEN);
+        }
         group.admin.push(user);
         return await this.groupProfileRepository.save(group);
     }
@@ -128,8 +131,6 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        console.log('group: ');
-        console.log(group);
         if (group.owner.id !== param.userId) {
             throw new HttpException(
                 'user is not owner of group',
@@ -183,5 +184,23 @@ export class GroupProfileService {
         }
         console.log('group: ');
         console.log(group);
+    }
+
+    async isBanned(user: User, groupId: number): Promise<boolean> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.blocked', 'blocked')
+            .getOne();
+        if (!group) {
+            throw new HttpException(
+                'could not find group in isBanned',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        if (group.blocked.find((blocked) => blocked.id === user.id)) {
+            return true;
+        }
+        return false;
     }
 }

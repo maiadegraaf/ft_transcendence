@@ -32,9 +32,7 @@ import { User } from '../../user/user.entity';
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-    constructor(
-        private readonly messageService: MessageService,
-    ) {}
+    constructor(private readonly messageService: MessageService) {}
 
     @WebSocketServer()
     server: Server;
@@ -78,7 +76,6 @@ export class ChatGateway
             );
         }
     }
-
 
     @SubscribeMessage('msgToServer')
     async handleMessage(

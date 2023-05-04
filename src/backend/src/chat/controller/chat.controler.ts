@@ -39,9 +39,7 @@ export class ChatController {
     // Get /api/chat/${id}
     @Get('/:id')
     async getUserChannels(@Param('id') id: number): Promise<Channel[]> {
-        this.logger.log(
-            'getChannelMessages: messages found for user: ' + id,
-        );
+        this.logger.log('getChannelMessages: messages found for user: ' + id);
         return this.channelService.getUserChannels(id);
     }
 
@@ -149,6 +147,12 @@ export class ChatController {
             if (!user) {
                 throw new HttpException(
                     'Could not find user to add to group channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            if (await this.groupProfileService.isBanned(user, param.groupId)) {
+                throw new HttpException(
+                    'User is banned from group',
                     HttpStatus.FORBIDDEN,
                 );
             }

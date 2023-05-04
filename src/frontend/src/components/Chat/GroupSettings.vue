@@ -271,26 +271,6 @@ export default defineComponent({
           })
       this.bannedText = ''
     },
-    // checkAdmin(): boolean {
-    //   if (!this.profile) {
-    //     return false
-    //   }
-    //   console.log(this.profile)
-    //   const admin = this.profile.admins.login.includes(this.userName)
-    //   if (admin) {
-    //     return true
-    //   }
-    //   return false
-    // },
-    // checkOwner(): boolean {
-    //   if (!this.profile) {
-    //     return false
-    //   }
-    //   console.log(this.profile)
-    //   if (this.userName != this.profile.owner.login)
-    //     return false
-    //   return true
-    // },
   },
   created() {
 
