@@ -9,6 +9,7 @@ import { Difficulty, PracticeMatch } from './practice-match/practice-match';
 import { UserService } from '../user/services/user/user.service';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
 import { PracticeMatchModule } from './practice-match/practice-match.module';
+import {MatchService} from "./match/match.service";
 
 @Injectable()
 export class PongService {
@@ -129,7 +130,7 @@ export class PongService {
 
     createMatch(client: Socket, player1: User, player2: User): Match {
         const match = new Match(player1, player2);
-        this.instances[match.id] = new MatchInstance(this.server, match);
+        this.instances[match.id] = new MatchInstance(match);
         this.instances[match.id].start();
         if (client.id == player1.socketId) {
             this.emitOpponentFound(client, player2.socketId, match.id);

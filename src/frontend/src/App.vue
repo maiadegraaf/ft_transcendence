@@ -18,14 +18,14 @@ export default defineComponent({
       const userStore = useUserStore()
       return { userStore }
   },
-  beforeCreate() {
-    axios.get('/api/auth/profile').then((res) => {
-      if (res.status === 200) {
-        this.userStore.loadUser()
-        if (this.$route.path === '/') {
-          this.$router.push({path: '/home'})
-        }
-      }
+    beforeCreate() {
+        axios.get('/api/auth/profile').then((res) => {
+           if (res.status === 200) {
+             this.userStore.loadUser()
+             if (this.$route.path === '/') {
+               this.$router.push({path: '/home'})
+             }
+           }
       }).catch((err) => {
           this.$router.push({path: '/'})
       })

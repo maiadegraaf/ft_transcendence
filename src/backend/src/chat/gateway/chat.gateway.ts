@@ -22,7 +22,6 @@ import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
-import { GroupProfile } from '../entities/groupProfile.entity';
 
 @WebSocketGateway({
     cors: {
@@ -35,7 +34,6 @@ export class ChatGateway
 {
     constructor(
         private readonly messageService: MessageService,
-        private readonly userService: UserService,
     ) {}
 
     @WebSocketServer()
@@ -43,6 +41,44 @@ export class ChatGateway
 
     private readonly clientMap: Map<number, Socket> = new Map<number, Socket>();
     private logger: Logger = new Logger('ChatGateway');
+
+    afterInit(server: Server) {
+        this.logger.log('Init chat');
+    }
+
+    handleConnection(@ConnectedSocket() client: Socket) {
+        if (!client.request.session.user) {
+            client.disconnect();
+            return;
+        }
+        const userId: number = client.request.session.user.id;
+        this.clientMap.set(userId, client);
+        console.log(this.clientMap.has(userId));
+        this.logger.log(userId + ' connected to chat with id: ' + client.id);
+    }
+
+    handleDisconnect(@ConnectedSocket() client: Socket) {
+        if (!client.request.session.user) {
+            this.clientMap.forEach((value, key) => {
+                if (value.id === client.id) {
+                    this.clientMap.delete(key);
+                    this.logger.log(
+                        `Client disconnected to chat: ${client.id} with userId: ${key}`,
+                    );
+                }
+            });
+            return;
+        }
+
+        const userId = client.request.session.user.id;
+        if (this.clientMap.has(parseInt(userId.toString()))) {
+            this.clientMap.delete(parseInt(userId.toString()));
+            this.logger.log(
+                `Client disconnected to chat: ${client.id} with userId: ${userId}`,
+            );
+        }
+    }
+
 
     @SubscribeMessage('msgToServer')
     async handleMessage(
@@ -79,44 +115,6 @@ export class ChatGateway
         );
     }
 
-    @SubscribeMessage('joinRoom')
-    async handleJoinRoom(
-        @ConnectedSocket() client: Socket,
-        @Body(new ValidationPipe()) payload: JoinRoomDto,
-    ): Promise<any> {
-        await client.join('room' + payload.channelId);
-        const userName = await this.userService.getUserNameById(payload.userId);
-        this.server.to('room' + payload.channelId).emit('msgToClient', {
-            id: -1,
-            sender: payload.userId,
-            senderName: userName,
-            channel: payload.channelId,
-            text: `${payload.userName} (${payload.userId}) has joined the room with channel id: ${payload.channelId}`,
-        });
-        this.logger.log(
-            `handleJoinRoom: ${client.id} joined the room with id: ${payload.channelId}`,
-        );
-    }
-
-    @SubscribeMessage('leaveRoom')
-    async handleLeaveRoom(
-        @ConnectedSocket() client: Socket,
-        @Body(new ValidationPipe()) payload: JoinRoomDto,
-    ) {
-        await client.leave('room' + payload.channelId);
-        const userName = await this.userService.getUserNameById(payload.userId);
-        this.server.to('room' + payload.channelId).emit('msgToClient', {
-            id: -1,
-            sender: payload.userId,
-            senderName: userName,
-            channel: payload.channelId,
-            text: `${payload.userName} (${payload.userId}) has left the room with channel id: ${payload.channelId}`,
-        });
-        this.logger.log(
-            `handleLeaveRoom: ${client.id} left the room with id: ${payload.channelId}`,
-        );
-    }
-
     @SubscribeMessage('checkUserOnline')
     async handleCheckUserOnline(
         @ConnectedSocket() client: Socket,
@@ -130,48 +128,11 @@ export class ChatGateway
     }
 
     getClientSocketById(userId: number): Socket {
-        if (this.clientMap.has(parseInt(userId.toString()))) {
-            return this.clientMap.get(parseInt(userId.toString()));
+        console.log(this.clientMap.keys());
+        if (this.clientMap.has(userId)) {
+            return this.clientMap.get(userId);
         }
         return null;
-    }
-
-    afterInit(server: Server) {
-        this.logger.log('Init chat');
-    }
-
-    handleDisconnect(@ConnectedSocket() client: Socket) {
-        if (!client.request.session.user) {
-            this.clientMap.forEach((value, key) => {
-                if (value.id === client.id) {
-                    this.clientMap.delete(key);
-                    this.logger.log(
-                        `Client disconnected to chat: ${client.id} with userId: ${key}`,
-                    );
-                }
-            });
-            return;
-        }
-
-        const userId = client.request.session.user.id;
-        if (this.clientMap.has(parseInt(userId.toString()))) {
-            this.clientMap.delete(parseInt(userId.toString()));
-            this.logger.log(
-                `Client disconnected to chat: ${client.id} with userId: ${userId}`,
-            );
-        }
-    }
-
-    handleConnection(@ConnectedSocket() client: Socket) {
-        if (!client.request.session.user) {
-            client.disconnect();
-            return;
-        }
-        const userId: number = client.request.session.user.id;
-        this.clientMap.set(userId, client);
-        console.log(this.clientMap.has(userId));
-        this.logger.log(userId + ' connected to chat');
-        this.logger.log('Chat connected');
     }
 
     async emitNewDmChannel(
@@ -219,10 +180,7 @@ export class ChatGateway
             this.logger.log(
                 'emit addChannelToClient to user: ' + userSocket.id,
             );
-            console.log('test2');
             userSocket.emit('addChannelToClient', channelInfo);
-            console.log('test3');
-
             return;
         }
         this.logger.error('User is not connected to chat');

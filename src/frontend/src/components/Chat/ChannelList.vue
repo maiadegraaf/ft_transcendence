@@ -10,7 +10,6 @@
 import {useChatStore} from "@/store/channel.store";
 import {defineComponent} from "vue";
 import ChannelTile from "@/components/Chat/ChannelTile.vue";
-import GroupSettings from "@/components/Chat/GroupSettings.vue";
 
 
 export default defineComponent({

@@ -12,13 +12,13 @@ export class ChannelService {
         @InjectRepository(Channel)
         private readonly channelRepository: Repository<Channel>,
         private readonly groupProfileService: GroupProfileService,
-        private readonly userService: UserService,
     ) {}
 
     private logger = new Logger('ChannelService');
 
     async createChannel(): Promise<Channel> {
         const channel = new Channel();
+        console.log('channel', channel.id);
         return await this.channelRepository.save(channel);
     }
 
