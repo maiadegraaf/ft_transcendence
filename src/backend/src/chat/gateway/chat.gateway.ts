@@ -194,9 +194,65 @@ export class ChatGateway
                 HttpStatus.FORBIDDEN,
             );
         }
+        userSocket.emit('removeChannelFromClient', channel.id);
         this.logger.log(
             'emit deleteChannelFromClient form owner: ' + userSocket.id,
         );
-        userSocket.emit('removeChannelFromClient', channel.id);
+    }
+
+    async emitAddAdminToChannel(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server.to('room' + info.channelId).emit('addAdminToChannel', info);
+        this.logger.log('emitAddAdminToChannel for user: ' + info.user.id);
+    }
+
+    async emitRemoveAdminFromChannel(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server
+            .to('room' + info.channelId)
+            .emit('removeAdminFromChannel', info);
+        this.logger.log('emitRemoveAdminFromChannel for user: ' + info.user.id);
+    }
+
+    async emitAddMutedToChannelToUser(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server.to('room' + info.channelId).emit('addMutedToChannel', info);
+        this.logger.log(
+            'emitAddMutedToChannelToUser for user: ' + info.user.id,
+        );
+    }
+
+    async emitRemoveMutedFromChannelToUser(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server
+            .to('room' + info.channelId)
+            .emit('removeMutedFromChannel', info);
+        this.logger.log(
+            'emitRemoveMutedFromChannelToUser for user: ' + info.user.id,
+        );
     }
 }

@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 import axios from "axios";
 import {io} from "socket.io-client";
 import {useChatStore} from "@/store/channel.store";
-import type {IChannels, IMessage} from "@/types/types";
+import type {IChannels, IMessage, IUser} from "@/types/types";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
@@ -38,6 +38,22 @@ export const useUserStore = defineStore('user', {
                 console.log("Channel removed request!")
                 chatStore.removeChannel(channelId)
             })
+            this.socket.on('addAdminToChannel', (channelId: number, user: IUser) => {
+                chatStore.addAdminToChannel(channelId, user)
+                console.log("Admin added to channel!")
+            })
+            this.socket.on('removeAdminFromChannel', (channelId: number, user: IUser) => {
+                chatStore.removeAdminFromChannel(channelId, user)
+                console.log("Admin removed from channel!")
+            })
+            this.socket.on('addMutedToChannel', (channelId: number, user: IUser) => {
+                chatStore.addMutedToChannel(channelId, user)
+                console.log("Muted added to channel!")
+            })
+            this.socket.on('removeMutedFromChannel', (channelId: number, user: IUser) => {
+                chatStore.removeMutedFromChannel(channelId, user)
+                console.log("Muted removed from channel!")
+            })
         },
         logOut() {
             this.socket = null
@@ -45,5 +61,5 @@ export const useUserStore = defineStore('user', {
             this.email = ''
             this.id = 0
         }
-        }
+    }
 })

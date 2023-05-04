@@ -52,21 +52,38 @@ export class GroupProfileService {
             throw new HttpException('user already admin', HttpStatus.FORBIDDEN);
         }
         group.admin.push(user);
-        return await this.groupProfileRepository.save(group);
+        const info = {
+            channelId: group.channel.id,
+            user: {
+                id: user.id,
+                login: user.login,
+            },
+        };
+        await this.groupProfileRepository.save(group);
+        return info;
     }
 
     async addBlocked(param: GroupUserProfileUpdateDto): Promise<any> {
         const group = await this.adminCheck(param, 'blocked');
         const user = await this.userGroupProfileCheck(group, param);
         group.blocked.push(user);
-        return await this.groupProfileRepository.save(group);
+        await this.groupProfileRepository.save(group);
+        return user;
     }
 
     async addMute(param: GroupUserProfileUpdateDto): Promise<any> {
         const group = await this.adminCheck(param, 'muted');
         const user = await this.userGroupProfileCheck(group, param);
         group.muted.push(user);
-        return await this.groupProfileRepository.save(group);
+        const info = {
+            channelId: group.channel.id,
+            user: {
+                id: user.id,
+                login: user.login,
+            },
+        };
+        await this.groupProfileRepository.save(group);
+        return info;
     }
 
     async deleteAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
@@ -79,8 +96,16 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        group.admin.slice(idx, 1);
-        return await this.groupProfileRepository.save(group);
+        group.admin.splice(idx, 1);
+        const info = {
+            channelId: group.channel.id,
+            user: {
+                id: user.id,
+                login: user.login,
+            },
+        };
+        await this.groupProfileRepository.save(group);
+        return info;
     }
 
     async deleteBlocked(param: GroupUserProfileUpdateDto): Promise<any> {
@@ -95,7 +120,7 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        group.blocked.slice(idx, 1);
+        group.blocked.splice(idx, 1);
         return await this.groupProfileRepository.save(group);
     }
 
@@ -109,13 +134,19 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        group.muted.slice(idx, 1);
-        return await this.groupProfileRepository.save(group);
+        group.muted.splice(idx, 1);
+        const info = {
+            channelId: group.channel.id,
+            user: {
+                id: user.id,
+                login: user.login,
+            },
+        };
+        await this.groupProfileRepository.save(group);
+        return info;
     }
 
     async ownerCheck(param: GroupUserProfileUpdateDto): Promise<any> {
-        console.log('param: ');
-        console.log(param);
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .where('group.id = :id', { id: param.groupId })
@@ -123,7 +154,6 @@ export class GroupProfileService {
             .leftJoinAndSelect('group.admin', 'admin')
             .leftJoinAndSelect('group.channel', 'channel')
             .leftJoinAndSelect('channel.users', 'users')
-            // .leftJoinAndSelect('users.login', 'login')
             .getOne();
         if (!group) {
             throw new HttpException(
@@ -137,8 +167,6 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        console.log('group: ');
-        console.log(group);
         return group;
     }
 
@@ -182,11 +210,10 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        console.log('group: ');
-        console.log(group);
+        return group;
     }
 
-    async isBanned(user: User, groupId: number): Promise<boolean> {
+    async isBlocked(userId: number, groupId: number): Promise<boolean> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .where('group.id = :id', { id: groupId })
@@ -194,11 +221,11 @@ export class GroupProfileService {
             .getOne();
         if (!group) {
             throw new HttpException(
-                'could not find group in isBanned',
+                'could not find group in isBlocked',
                 HttpStatus.FORBIDDEN,
             );
         }
-        if (group.blocked.find((blocked) => blocked.id === user.id)) {
+        if (group.blocked.find((blocked) => blocked.id === userId)) {
             return true;
         }
         return false;

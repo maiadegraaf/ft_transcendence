@@ -13,6 +13,7 @@ import { User } from 'src/user/user.entity';
 import { Avatar } from 'src/user/avatar.entity';
 import { AvatarService } from 'src/user/services/user/avatar.service';
 import { GroupProfileController } from 'src/chat/controller/GroupProfile.controller';
+import { GroupProfileGateway } from './gateway/group-profile.gateway';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { GroupProfileController } from 'src/chat/controller/GroupProfile.control
         UserService,
         ChatGateway,
         AvatarService,
+        GroupProfileGateway,
     ],
 })
 export class ChatModule {}

@@ -25,15 +25,72 @@ export class GroupProfileController {
 
     private logger = new Logger('GroupProfileController');
 
+    // Post /api/chat/group/user
+    @Post('user')
+    async postNewUserToChannel(
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    ): Promise<any> {
+        try {
+            console.log('postNewUserToChannel' + JSON.stringify(param));
+            const user = await this.userService.getUserByLogin(param.userName);
+            if (!user) {
+                throw new HttpException(
+                    'Could not find user to add to group channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            if (
+                await this.groupProfileService.isBlocked(user.id, param.groupId)
+            ) {
+                throw new HttpException(
+                    'User is banned from group',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            const channel = await this.channelService.addUserToChannel(
+                param.channelId,
+                user,
+            );
+            await this.chatGateway.emitGroupChannelToUser(channel, user);
+        } catch (error) {
+            this.logger.error('postNewUserToChannel: ' + error);
+        }
+    }
+
+    // Delete /api/chat/group/user
+    @Delete('user')
+    async deleteUserFromChannel(
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    ): Promise<any> {
+        try {
+            const user = await this.userService.getUserByLogin(param.userName);
+            if (!user) {
+                throw new HttpException(
+                    'Could not find user to add to group channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            console.log(JSON.stringify(user));
+            const channel = await this.channelService.removeUserFromChannel(
+                param.channelId,
+                user,
+            );
+            await this.chatGateway.emitDeleteChannelFromUser(channel, user);
+            // emit something to user to remove channel from list (maybe update emit)
+        } catch (error) {
+            this.logger.error('deleteUserFromChannel: ' + error);
+        }
+    }
+
     // Post /api/chat/group/admin
     @Post('admin')
     async postAdminToGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            console.log('param: ');
-            console.log(param);
-            await this.groupProfileService.addAdmin(param);
+            const info = await this.groupProfileService.addAdmin(param);
+            await this.chatGateway.emitRemoveAdminFromChannel(info);
+            this.logger.log('postAdminToGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
             return false;
@@ -46,7 +103,9 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            await this.groupProfileService.deleteAdmin(param);
+            const info = await this.groupProfileService.deleteAdmin(param);
+            await this.chatGateway.emitAddAdminToChannel(info);
+            this.logger.log('deleteAdminFromGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
             return false;
@@ -59,7 +118,9 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            await this.groupProfileService.addMute(param);
+            const info = await this.groupProfileService.addMute(param);
+            await this.chatGateway.emitAddMutedToChannelToUser(info);
+            this.logger.log('postMutedToGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
             return false;
@@ -72,7 +133,9 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            await this.groupProfileService.deleteMute(param);
+            const info = await this.groupProfileService.deleteMute(param);
+            await this.chatGateway.emitRemoveMutedFromChannelToUser(info);
+            this.logger.log('deleteMutedFromGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
             return false;
@@ -85,7 +148,13 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            await this.groupProfileService.addBlocked(param);
+            const user = await this.groupProfileService.addBlocked(param);
+            const channel = await this.channelService.removeUserFromChannel(
+                param.channelId,
+                user,
+            );
+            await this.chatGateway.emitDeleteChannelFromUser(channel, user);
+            this.logger.log('postBlockedToGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
             return false;
@@ -99,6 +168,7 @@ export class GroupProfileController {
     ) {
         try {
             await this.groupProfileService.deleteBlocked(param);
+            this.logger.log('deleteBlockedFromGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
             return false;

@@ -10,6 +10,16 @@
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <button @click="doneGroup" class="rounded-full ml-3 hover:shadow-md">Go Back</button>
     </div>
+<!--    insert code here-->
+    <div class="bg-dark-purple p-4 rounded-md overflow-y-auto max-h-64">
+      <h2 class="h2">Users</h2>
+      <ul>
+        <li v-for="(user, index) in channelUsers" :key="index" class="py-1">
+          {{ user.login }} {{ getRole(user) }}
+        </li>
+      </ul>
+    </div>
+
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <h2>Users</h2>
       <!--      list of users-->
@@ -57,6 +67,7 @@ import axios from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
 import {useUserStore} from "@/store/user.store";
 import {defineComponent} from "vue";
+import type {IUser} from "@/types/types";
 
 export default defineComponent({
   name: "GroupSettings",
@@ -82,20 +93,20 @@ export default defineComponent({
       channelId: 0,
       groupId: 0,
       groupName: '',
-      // user: {},
-      // profile: {}
+      profile: {},
+      channelUsers: [],
     }
   },
   async mounted() {
-    // await this.chatStore.fetchUserData()
-    // await this.userStore.loadUser()
     this.userName = this.userStore.name
     this.groupName = this.chatStore.groupName
     this.params.userId = this.userStore.id
     this.params.channelId = this.chatStore.channelInView
     this.params.groupId = this.chatStore.groupId
-    // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-    // console.log(this.params)
+    this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
+    this.channelUsers = this.chatStore.getChannelUsersByChannelId(this.chatStore.channelInView)
+    console.log(this.channelUsers)
+    console.log(this.profile)
   },
   methods: {
     doneGroup(): void {
@@ -270,6 +281,21 @@ export default defineComponent({
             return
           })
       this.bannedText = ''
+    },
+    getRole(user: IUser): string {
+      let str = ''
+      if (this.profile) {
+        if (this.profile.owner.id === user.id) {
+          str += ' | (Owner)'
+        }
+        if (this.profile.admin.find((adm) => adm.id === user.id)) {
+          str +=  ' | (Admin)'
+        }
+        if (this.profile.muted.find((mtd) => mtd.id === user.id)) {
+          str +=  ' | (Muted)';
+        }
+      }
+      return str;
     },
   },
   created() {

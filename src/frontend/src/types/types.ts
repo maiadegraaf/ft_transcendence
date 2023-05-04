@@ -16,6 +16,10 @@ export interface IMessage {
 export interface IProfile {
     name: string
     id: number
+    owner: IUser
+    admin: IUser[]
+    muted: IUser[]
+    blocked: IUser[]
 }
 
 export interface IUser {

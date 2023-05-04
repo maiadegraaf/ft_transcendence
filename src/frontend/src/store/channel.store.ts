@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type {IChannels, IMessage} from "@/types/types";
+import type {IChannels, IMessage, IUser} from "@/types/types";
 import {useUserStore} from "@/store/user.store";
 
 
@@ -37,6 +37,26 @@ export const useChatStore = defineStore('userChannel', {
             }
             return chnl.profile
         },
+        getChannelProfileByChannelId: (state) => (channelId: number) => {
+            if (state.channels == null) {
+                return null
+            }
+            const chnl = state.channels.find(channel => channel.id === channelId)
+            if (chnl == null || chnl.profile == null) {
+                return null
+            }
+            return chnl.profile
+        },
+        getChannelUsersByChannelId: (state) => (channelId: number) => {
+            if (state.channels == null) {
+                return null
+            }
+            const chnl = state.channels.find(channel => channel.id === channelId)
+            if (chnl == null || chnl.profile == null) {
+                return null
+            }
+            return chnl.users
+        }
     },
 
     actions: {
@@ -73,6 +93,26 @@ export const useChatStore = defineStore('userChannel', {
                 this.channels?.splice(index, 1);
                 user.socket.emit('leaveRoomById', {channelId: channelID})
             }
+        },
+        addAdminToChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.admin.push(user)
+        },
+        removeAdminFromChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.admin.splice(
+                this.channels?.find(channel => channel.id === channelId)?.profile?.admin.findIndex(
+                    admin => admin.id === user.id
+                ) as number, 1
+            )
+        },
+        addMutedToChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.muted.push(user)
+        },
+        removeMutedFromChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.muted.splice(
+                this.channels?.find(channel => channel.id === channelId)?.profile?.muted.findIndex(
+                    muted => muted.id === user.id
+                ) as number, 1
+            )
         },
         setGroupId(groupId: number) {
             this.groupId = groupId
