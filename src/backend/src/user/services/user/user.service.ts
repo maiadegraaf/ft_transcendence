@@ -49,11 +49,10 @@ export class UserService {
     ): Promise<User> {
         let user = await this.userRepository.findOne({ where: { id } });
         if (!user) {
-            user = await this.userRepository.save({ id, email, login });
             const avatar = await this.avatarService.createDefaultAvatar(user);
-            user.avatar = avatar;
-            await this.userRepository.save(user);
+            user = await this.userRepository.save({ id, email, login, avatar });
         }
+        user = await this.userRepository.findOne({ where: { id } });
         return user;
     }
 

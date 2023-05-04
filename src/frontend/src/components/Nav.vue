@@ -18,7 +18,13 @@
 
                 <router-link
                     class="uppercase font-semibold tracking-wider text-blush hover:text-amaranth-purple px-3 py-2 drop-shadow-2xl"
-                    to="/Pong"
+                    :to="{
+                      name:'Pong',
+                      params:{
+                        userId: currentUserId,
+                        matchId: matchId
+                      }
+                    }"
                 >
                     Pong
                 </router-link>
@@ -43,13 +49,15 @@
 <script lang="ts">
 import axios from 'axios'
 import Logout from './Logout.vue'
+import {defineComponent} from "vue";
 
-export default {
+export default defineComponent({
     name: 'Nav',
     components: { Logout },
     data() {
       return{
         currentUserId: 0,
+        matchId: 0
       }
     },
     async mounted() {
@@ -58,7 +66,7 @@ export default {
           this.currentUserId = response.data.id;
         })
     }
-}
+})
 </script>
 
 <style scoped></style>

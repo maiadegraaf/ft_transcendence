@@ -1,25 +1,17 @@
 <template>
-    <div class="absolute flex flex-col w-screen h-screen max-h-screen">
-        <Nav />
-        <div class="flex-1 overflow-hidden">
-            <div class="max-w-5xl w-full box-border h-full mx-auto pb-10 flex">
-                <div class="w-1/4 h-full flex flex-col">
-                    <div class="border-buff border-double border-2 rounded-md">
-                        <h2 class="h2">Channels</h2>
-                    </div>
-                    <ChannelList />
-                </div>
-                <div class="w-3/4 h-full flex flex-col overflow-hidden">
-                    <div class="border-buff border-double border-2 rounded-md">
-                        <h2 class="h2">Messages</h2>
-                    </div>
-                    <div class="flex-1 w-full bg-dark-purple overflow-hidden">
-                        <MessageList />
-                    </div>
-                    <MessageInput />
-                </div>
-            </div>
+  <div class="absolute flex flex-col w-screen h-screen max-h-screen">
+    <Nav/>
+    <div class="flex-1 overflow-hidden">
+      <div class="max-w-screen-2xl w-full box-border h-full mx-auto pb-10 flex">
+        <div class="w-1/4 h-full flex flex-col">
+          <ChannelHeader @switch-chat-right-component="changeComponent"/>
+          <ChannelList @switch-chat-right-component="changeComponent"/>
         </div>
+        <div class="w-3/4 h-full flex flex-col overflow-hidden">
+          <component :is="currentComponent" @switch-chat-right-component="changeComponent"/>
+        </div>
+        </div>
+      </div>
     </div>
 </template>
 
@@ -27,35 +19,62 @@
 import Nav from '@/components/Nav.vue'
 import MessageList from '@/components/Chat/MessageList.vue'
 import ChannelList from '@/components/Chat/ChannelList.vue'
-import { UserChatStore } from '@/store/store'
-import type { IMessage } from '@/store/types'
-import MessageInput from '@/components/Chat/MessageInput.vue'
+import GroupSettings from "@/components/Chat/GroupSettings.vue";
+import {useChatStore} from "@/store/channel.store";
+import type {IMessage, IChannels} from "@/types/types";
+import MessageInput from "@/components/Chat/MessageInput.vue";
+import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
+import ChannelHeader from "@/components/Chat/ChannelHeader.vue";
 
-export default {
-    components: { MessageInput, Nav, MessageList, ChannelList },
-    // The root element of the Vue instance.
-    el: '#app',
-    // The data object of the Vue instance.
-    setup() {
-        const chatStore = UserChatStore()
-        chatStore.fetchUserData()
-        chatStore.connectSocket()
-        chatStore.loadChannels()
-        return { chatStore }
+export default defineComponent({
+  components: {
+    ChannelHeader,
+    Nav,
+    MessageList,
+    ChannelList,
+    GroupSettings
+  },
+  // The root element of the Vue instance.
+  el: '#app',
+  // The data object of the Vue instance.
+  data(): any {
+    return {
+      currentComponent: MessageList,
+    }
+  },
+  setup() {
+    const chatStore = useChatStore()
+    const userStore = useUserStore()
+    return { chatStore, userStore }
+  },
+
+  mounted() {
+    // this.userStore.socket.on('msgToClient', (message: IMessage) => {
+    //   console.log("Message recieved!")
+    //   this.chatStore.receivedMessage(message)
+    // })
+    // this.userStore.socket.on('addChannelToClient', (channel: IChannels) => {
+    //   console.log("Channel recieved!")
+    //   this.chatStore.receivedNewChannel(channel)
+    // })
+    // this.userStore.socket.on('removeChannelFromClient', (channelId: number) => {
+    //   console.log("Channel removed request!")
+    //   this.chatStore.removeChannel(channelId)
+    // })
+  },
+  watch: {
+  },
+  // The methods of the Vue instance.
+  methods: {
+    changeComponent(component: any): void {
+      this.currentComponent = component
     },
-
-    mounted() {
-        this.chatStore.socket.on('msgToClient', (message: IMessage) => {
-            this.chatStore.receivedMessage(message)
-        })
-    },
-    watch: {},
-
-    // The methods of the Vue instance.
-    methods: {},
-    // The created hook of the Vue instance.
-    created(): void {}
-}
+  },
+  // The created hook of the Vue instance.
+  created(): void {
+  }
+})
 </script>
 
 <style></style>

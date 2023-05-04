@@ -115,6 +115,7 @@ import axios from 'axios'
 import io from 'socket.io-client'
 import Overall from '@/components/leaderboard/Overall.vue'
 import PracticeMatchBoard from '@/components/leaderboard/PracticeMatchesBoard.vue'
+import {defineComponent} from "vue";
 
 interface LeaderboardData {
     user: {
@@ -138,7 +139,7 @@ interface PracticeMatchData {
     practiceExpertWins: number
 }
 
-export default {
+export default defineComponent({
     components: {
         Overall,
         PracticeMatchBoard
@@ -162,14 +163,13 @@ export default {
         }
     },
     async mounted() {
-        await axios.get('/api/auth/profile').then((response) => {
-            this.currentUser = response.data.id
-        })
-        axios.get('/api/leaderboard').then((response) => {
+      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+        this.currentUser = response.data.id
+      })
+        axios.get('http://localhost:8080/api/leaderboard').then((response) => {
             this.leaderboardData = Array.from(response.data)
         })
-        axios.get('/api/leaderboard/' + this.currentUser).then((response) => {
-            console.log('http://localhost:8080/api/leaderboard/' + this.currentUser)
+        axios.get('http://localhost:8080/api/leaderboard/id').then((response) => {
             this.practiceMatchData = response.data as PracticeMatchData
         })
     },
@@ -182,5 +182,5 @@ export default {
             }
         }
     }
-}
+})
 </script>

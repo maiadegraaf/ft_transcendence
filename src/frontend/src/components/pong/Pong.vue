@@ -12,27 +12,27 @@
         </button>
         <div v-if="practiceMode && !startPractice">
             <practice-match-configuration
-                :user-id="currentPlayerId"
+                :userId="user.id"
                 @start-practice="handleStartPractice"
                 @back="back"
             />
         </div>
-        <div v-if="startPractice && startedBy == currentPlayerId">
-            <practice-match :practice-settings="practiceSettings" :socket="socket" @reset="reset" />
+        <div v-if="startPractice && startedBy == user.id">
+            <practice-match :practice-settings="practiceSettings" :socket="user.socket" @reset="reset" />
         </div>
         <button v-if="!waiting && !practiceMode && !startMatch" @click="joinMatch" class="btn">
             Join Match
         </button>
         <div v-if="waiting">
             <waiting-room
-                :user-id="currentPlayerId"
-                :socket="socket"
+                :socket="user.socket"
+                :userId="user.id"
                 @leave-matchmaking="leaveMatchmaking"
                 @opponent-found="opponentFound"
             />
         </div>
         <div v-if="startMatch">
-            <Match :socket="socket" :match-id="matchId" :user-id="currentPlayerId" @reset="reset" />
+            <Match :socket="user.socket" :match-id="matchId" @reset="reset" />
         </div>
     </div>
     <div>
@@ -41,27 +41,32 @@
 </template>
 
 <script lang="ts">
-import io from 'socket.io-client'
-import type { Socket } from 'socket.io-client'
-import { VueCookieNext } from 'vue-cookie-next'
 import ErrorPopUp from '../ErrorPopUp.vue'
 import PracticeMatchConfiguration from '@/components/pong/practiceMatchConfiguration.vue'
 import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import WaitingRoom from '@/components/pong/WaitingRoom.vue'
 import Match from '@/components/pong/Match.vue'
-import axios from 'axios'
-interface practiceSettingsInterface {
+import {useUserStore} from "@/store/user.store";
+import {defineComponent} from "vue";
+
+export interface practiceSettingsInterface {
     score: number
     selectedDifficulty: string
     userId: string
 }
 
-export default {
+export default defineComponent({
     name: 'pongGame',
+    props: ['matchIdProp'],
+
+
+  setup() {
+      const user = useUserStore()
+      return { user }
+    },
     data(): any {
         return {
-            currentPlayerId: '',
-            // multipleConnectionsError: false,
+            // currentPlayerId: user.id,
             practiceMode: false,
             practiceSettings: {
                 score: 10,
@@ -72,7 +77,7 @@ export default {
             startedBy: '',
             startMatch: false,
             waiting: false,
-            matchId: 0
+            matchId: this.matchIdProp
         }
     },
     components: {
@@ -82,39 +87,36 @@ export default {
         Match,
         ErrorPopUp
     },
-    async mounted() {
-        let userId = 0
-        await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-            userId = response.data.id
-        })
-        if (userId === 0) {
-            this.$router.push('/')
-        } else {
-            this.currentPlayerId = userId
-            console.log('Current player id: ' + this.currentPlayerId)
-            // console.log('Current player id: ' + this.currentPlayerId)
-            this.socket = io('http://localhost:8080', {
-                query: {
-                    userId: this.currentPlayerId
-                }
-            })
-        }
+    created() {
+      // this.currentPlayerId = this.userId
+      console.log("Current player id: " + this.user.id)
 
-        this.socket.on('MultipleConnections', (msg: string) => {
+      if (this.matchId != 0) {
+        console.log("Match id: " + this.matchId)
+        this.startedBy = this.user.id
+        this.startMatch = true
+      }
+    },
+  async mounted() {
+
+      this.user.socket.on('MultipleConnections', (msg: string) => {
             this.$refs.errorPopUp.show('You are already ' + msg)
             this.reset()
         })
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
-                this.socket.emit('disconnect')
+                console.log('Disconnecting...')
+                this.user.socket.emit('disconnect')
             }
         })
     },
-    beforeUnmount() {
-        this.socket.disconnect()
+    beforeRouteLeave(to: any, from: any, next: any) {
+        console.log('Leaving pong game...')
+        this.user.socket.emit('disconnect')
+        next()
     },
-    methods: {
+  methods: {
         setPracticeMode() {
             this.practiceMode = true
         },
@@ -136,21 +138,22 @@ export default {
         },
         leaveMatchmaking() {
             this.waiting = false
-            this.socket.emit('leaveMatchmaking')
+            this.user.socket.emit('leaveMatchmaking')
         },
         matchmakingError() {
             this.$refs.errorPopUp.show('You cannot join a match in multiple tabs or windows.')
             this.reset()
         },
         opponentFound(matchId: number) {
-            this.startedBy = this.currentPlayerId
-            this.startMatch = true
-            this.waiting = false
+            console.log(matchId)
             this.matchId = matchId
+            this.startedBy = this.user.id
+            this.waiting = false
+            this.startMatch = true
         },
         back() {
             this.practiceMode = false
         }
     }
-}
+})
 </script>

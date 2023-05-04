@@ -9,6 +9,7 @@ import { Difficulty, PracticeMatch } from './practice-match/practice-match';
 import { UserService } from '../user/services/user/user.service';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
 import { PracticeMatchModule } from './practice-match/practice-match.module';
+import {MatchService} from "./match/match.service";
 
 @Injectable()
 export class PongService {
@@ -44,7 +45,7 @@ export class PongService {
         //     );
         // }
         // await this.userService.addSocketIdToUser(user, client.id);
-        this.logger.log('User connected: ' + userId);
+        this.logger.log('User connected to pong: ' + userId);
     }
 
     handleDisconnect(client: Socket): void {
@@ -94,12 +95,6 @@ export class PongService {
             client.emit('MultipleConnections', 'in a match');
             return null;
         }
-        // const instance = this.getInstanceByPlayerSocket(user.socketId);
-        // if (instance) {
-        //     instance.handlePlayerDisconnect(
-        //         this.server.sockets.sockets.get(user.socketId),
-        //     );
-        // }
         await this.userService.addSocketIdToUser(user, client.id);
         return user;
     }
@@ -135,7 +130,7 @@ export class PongService {
 
     createMatch(client: Socket, player1: User, player2: User): Match {
         const match = new Match(player1, player2);
-        this.instances[match.id] = new MatchInstance(this.server, match);
+        this.instances[match.id] = new MatchInstance(match);
         this.instances[match.id].start();
         if (client.id == player1.socketId) {
             this.emitOpponentFound(client, player2.socketId, match.id);
@@ -274,7 +269,12 @@ export class PongService {
     }
 
     async handlePracticeMode(client: Socket, data: any) {
+        if (!data.userId) {
+            this.logger.log('no user id');
+        }
+        this.logger.log(data.userId + ' joined practice mode');
         const player = await this.addSocketIdToUser(data.userId, client);
+        this.logger.log('practice mode');
         if (!player) {
             return;
         }
