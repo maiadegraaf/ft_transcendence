@@ -1,16 +1,22 @@
 <template>
     <div class="search-friends">
-        <h2>Search for friends</h2>
-        <div class="search-section">
-            <input type="text" v-model="searchInput" @keyup.enter="searchForUser"/>
+        <div class="flex flex-col items-center justify-center">
+            <label class="text-2xl mb-2 font-semibold">Search new friends by username:</label>
+            <p class="h-1 mb-2 p-2 font-bold text-blush">{{ searchError }}</p>
+            <input 
+                type="text"
+                v-model="searchInput"
+                class="border rounded mt-3 appearance-none bg-transparent"
+                @keyup.enter="searchForUser"
+            />
             <div v-if="searchResult">
                 <span>{{ searchResult.login }}</span>
                 <button @click="addFriend(searchResult?.id ?? -1)">+</button>
                 <button @click="removeFriend(searchResult?.id ?? -1)">-</button>
             </div>
-            <div v-if="searchError">
+            <!-- <div v-if="searchError">
                 <span>{{ searchError }}</span>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>

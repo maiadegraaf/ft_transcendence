@@ -11,7 +11,6 @@
           />
           <div v-if="isProfileSession">
             <SearchFriends />
-            <h3 class="sub1">Check</h3>
           </div>
       </div>
   </div>
@@ -23,11 +22,10 @@ import axios from "axios";
 import SearchFriends from "./SearchFriends.vue";
 import ListFriends from "./ListFriends.vue";
 
-interface FriendList {
+interface Friend {
     id: number;
-    username: string;
-    isOnline: boolean;
-    // avatarURL: string;
+    login: string;
+    // isOnline: boolean;
 }
 
 export default defineComponent({
@@ -44,23 +42,26 @@ export default defineComponent({
     },
     data() {
         return {
-            friendList: [] as FriendList[],
+            friendList: [] as Friend[],
         };
     },
     async mounted() {
-        console.log("Friends component mounted.");
-        await axios.get('/api/user/friends').then((response) => {
-            this.friendList = Array.from(response.data);
-        })
-        .catch((error) => {
-            if (error.response) {
-                console.error('Error1', error.response.data.message);
-            } else if (error.request) {
-                console.error('Error2', error.request);
-            } else {
-                console.error('Error3', error.message);
-            }
-        });
+        if (this.isProfileSession) {
+            await axios.get('/api/user/friends').then((response) => {
+                this.friendList = Array.from(response.data);
+            })
+            .catch((error) => {
+               console.error('Error:', error.message);
+            });
+        } else {
+            const userID = this.$route.params.id;
+            await axios.get(`/api/user/friends/${userID}`).then((response) => {
+                this.friendList = Array.from(response.data);
+            })
+            .catch((error) => {
+               console.error('Error:', error.message);
+            });
+        }
     },
 });
 </script>

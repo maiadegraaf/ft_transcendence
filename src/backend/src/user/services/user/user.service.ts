@@ -250,7 +250,7 @@ export class UserService {
         return user;
     }
     
-	async findFriends(userID: number) {
+	async findFriends(userID: number): Promise<User[]> {
 		const user = await this.userRepository.findOne({
             where: { id: userID },
 			relations: ['friends'],

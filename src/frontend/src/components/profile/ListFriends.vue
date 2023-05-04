@@ -2,8 +2,10 @@
     <div class="friends-list">
         <h2 class="text-2xl font-bold mb-4">Friends</h2>
         <ul>
-            <li v-for="friend in friendList" :key="friend.id">
-                {{ friend.username  }}
+            <li v-for="friend in friendList" :key="friend.id" class="friend-row">
+                <img :src="`/api/user/${friend.id}/avatar`" alt="Avatar" class="avatar">
+                <!-- <span class="friend-name">  {{ friend.login  }}</span> -->
+                <a :href="`/Profile/${friend.id}`" class="friend-name">{{ friend.login }}</a>
             </li>
         </ul>
     </div>
@@ -13,49 +15,50 @@
 <script lang="ts">
 import axios from 'axios';
 
-interface User {
+interface Friend {
     id: number;
     login: string;
-}
-
-interface FriendList {
-    id: number;
-    username: string;
-    isOnline: boolean;
-    // avatarURL: string;
+    // isOnline: boolean;
 }
 
 export default {
-    data() {
-        return {
-            friends: [] as User[],
-        };
-    },
     props: {
         isProfileSession: {
             type: Boolean,
             required: true,
         },
         friendList: {
-            type: Array as () => FriendList[],
+            type: Array as () => Friend[],
             required: true,
         },
     },
-    async created() {
-        try {
-            const response = await axios.get(
-                `http://localhost:8080/api/user/friends`
-            );
-            this.friends = response.data;
-        } catch (error) {
-            console.log(error);
-        }
+    data() {
+        return {};
     },
 };
 </script>
   
 <style scoped>
-.friend-row:not(:last-child) {
+.friend-row {
     margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.friend-row:last-child {
+    margin-bottom: 0;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.friend-name {
+    flex-grow: 1;
+    text-align: left;
 }
 </style>

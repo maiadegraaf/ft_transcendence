@@ -45,11 +45,21 @@ export class UserController {
     async getFriends(
         @Req() req: any,
     ) {
-        console.log(`test`);
         const userID = req.session.user.id;
-        console.log(`userID: ${userID}`);
-        console.log(`UserController: Searching for friends of user with id: ${userID}`);
-        return await this.userService.findFriends(userID);
+        const Friends = await this.userService.findFriends(userID);
+        Friends.forEach(user => console.log(user.login));
+        return Friends;
+    }
+
+    @Get('/friends/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async getFriendsById(
+        @Param('id', ParseIntPipe) userID: number,
+    ) {
+        // const userID = req.session.user.id;
+        const Friends = await this.userService.findFriends(userID);
+        Friends.forEach(user => console.log(user.login));
+        return Friends;
     }
     
     @Get(':id')
@@ -92,8 +102,9 @@ export class UserController {
     async updateAvatar(
         @UploadedFile() file: Express.Multer.File, 
         @Param('id', ParseIntPipe) id: number,
-        ): Promise<void> {
+        ): Promise<any> {
         await this.userService.setAvatar(id, file);
+        return { status: 'success', message: 'Avatar updated successfully' };
     }
 
     @Put(':id/username')
