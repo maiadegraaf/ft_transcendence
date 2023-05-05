@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../../user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PracticeMatch, Difficulty } from '../practice-match/practice-match';
 import { Match } from './match';
 import { Matches } from './match.entity';
 

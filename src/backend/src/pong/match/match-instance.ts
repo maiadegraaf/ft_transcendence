@@ -13,7 +13,7 @@ const winning_condition = 10;
 @Injectable()
 export class MatchInstance {
     private logger: Logger = new Logger('PongGateway');
-    private matchesService: MatchService;
+    private readonly matchesService: MatchService;
     private gamestate: GameState = GameState.Start;
     private winner = '';
     private readonly match: Match;
@@ -23,8 +23,9 @@ export class MatchInstance {
     private player1: Player = this.gameTools.player1;
     private player2: Player = this.gameTools.player2;
 
-    constructor(server: Server, match: Match) {
-        this.server = server;
+    constructor(
+      match: Match,
+      ) {
         this.match = match;
     }
 

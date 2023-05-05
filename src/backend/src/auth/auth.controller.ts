@@ -50,7 +50,7 @@ export class AuthController {
     @Get('profile/:id')
     async getProfileFake(@Req() req, @Res() res) {
         const user = await this.userService.findOrCreateUser(
-            Number(req.params.id),
+            req.params.id as number,
             'user' + req.params.id + '@gmail.com',
             'user' + req.params.id,
         );
