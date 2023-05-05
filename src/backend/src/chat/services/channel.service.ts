@@ -5,6 +5,7 @@ import { Channel } from '../entities/channel.entity';
 import { GroupProfileService } from './groupProfile.service';
 import { User } from '../../user/user.entity';
 import { UserService } from '../../user/services/user/user.service';
+import { MessageDto } from '../dtos/chat.dtos';
 
 @Injectable()
 export class ChannelService {
@@ -224,5 +225,32 @@ export class ChannelService {
         }
         channel.users.splice(idx, 1);
         return await this.channelRepository.save(channel);
+    }
+
+    async isSenderValidatedReturnChannel(payload: MessageDto): Promise<any> {
+        const channel = await this.channelRepository
+            .createQueryBuilder('channel')
+            .where('channel.id = :id', { id: payload.channel })
+            .leftJoinAndSelect('channel.profile', 'profile')
+            .leftJoinAndSelect('profile.muted', 'muted')
+            .getOne();
+        if (!channel) {
+            throw new HttpException(
+                'isSenderValidatedReturnChannel: Channel not found to validate sender',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        if (!channel.profile) {
+            return channel;
+        }
+        if (channel.profile.muted.find((u) => u.id === payload.sender.id)) {
+            throw new HttpException(
+                'isSenderValidatedReturnChannel: Sender with id' +
+                    payload.sender.id +
+                    ' is muted',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return channel;
     }
 }

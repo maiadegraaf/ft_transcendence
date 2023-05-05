@@ -27,11 +27,11 @@ export const useUserStore = defineStore('user', {
         async listen() {
             const chatStore = useChatStore()
             this.socket.on('msgToClient', (message: IMessage) => {
-                console.log("Message recieved!")
+                console.log("Message received!")
                 chatStore.receivedMessage(message)
             })
             this.socket.on('addChannelToClient', (channel: IChannels) => {
-                console.log("Channel recieved!")
+                console.log("Channel received!")
                 chatStore.receivedNewChannel(channel)
             })
             this.socket.on('removeChannelFromClient', (channelId: number) => {
@@ -45,13 +45,16 @@ export const useUserStore = defineStore('user', {
             this.socket.on('removeAdminFromChannel', (channelId: number, user: IUser) => {
                 chatStore.removeAdminFromChannel(channelId, user)
                 console.log("Admin removed from channel!")
+                console.log(chatStore.channels)
             })
             this.socket.on('addMutedToChannel', (channelId: number, user: IUser) => {
                 chatStore.addMutedToChannel(channelId, user)
                 console.log("Muted added to channel!")
+                console.log(chatStore.channels)
             })
             this.socket.on('removeMutedFromChannel', (channelId: number, user: IUser) => {
                 chatStore.removeMutedFromChannel(channelId, user)
+                console.log(chatStore.channels)
                 console.log("Muted removed from channel!")
             })
         },

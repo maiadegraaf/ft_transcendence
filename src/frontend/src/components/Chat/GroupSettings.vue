@@ -10,16 +10,7 @@
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <button @click="doneGroup" class="rounded-full ml-3 hover:shadow-md">Go Back</button>
     </div>
-<!--    insert code here-->
-    <div class="bg-dark-purple p-4 rounded-md overflow-y-auto max-h-64">
-      <h2 class="h2">Users</h2>
-      <ul>
-        <li v-for="(user, index) in channelUsers" :key="index" class="py-1">
-          {{ user.login }} {{ getRole(user) }}
-        </li>
-      </ul>
-    </div>
-
+    <GroupSettingUserList/>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <h2>Users</h2>
       <!--      list of users-->
@@ -68,9 +59,11 @@ import MessageList from "@/components/Chat/MessageList.vue";
 import {useUserStore} from "@/store/user.store";
 import {defineComponent} from "vue";
 import type {IUser} from "@/types/types";
+import GroupSettingUserList from "@/components/Chat/GroupSettingUserList.vue";
 
 export default defineComponent({
   name: "GroupSettings",
+  components: {GroupSettingUserList},
   // props: ['chatStore']
   setup() {
     const chatStore = useChatStore()
@@ -90,11 +83,7 @@ export default defineComponent({
         channelId: 0,
       },
       userName: '',
-      channelId: 0,
-      groupId: 0,
       groupName: '',
-      profile: {},
-      channelUsers: [],
     }
   },
   async mounted() {
@@ -103,10 +92,9 @@ export default defineComponent({
     this.params.userId = this.userStore.id
     this.params.channelId = this.chatStore.channelInView
     this.params.groupId = this.chatStore.groupId
-    this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-    this.channelUsers = this.chatStore.getChannelUsersByChannelId(this.chatStore.channelInView)
-    console.log(this.channelUsers)
-    console.log(this.profile)
+    // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
+    // console.log(this.channelUsers)
+    // console.log(this.profile)
   },
   methods: {
     doneGroup(): void {
@@ -282,21 +270,23 @@ export default defineComponent({
           })
       this.bannedText = ''
     },
-    getRole(user: IUser): string {
-      let str = ''
-      if (this.profile) {
-        if (this.profile.owner.id === user.id) {
-          str += ' | (Owner)'
-        }
-        if (this.profile.admin.find((adm) => adm.id === user.id)) {
-          str +=  ' | (Admin)'
-        }
-        if (this.profile.muted.find((mtd) => mtd.id === user.id)) {
-          str +=  ' | (Muted)';
-        }
-      }
-      return str;
-    },
+    // getRole(user: IUser): string {
+    //   let str = ''
+    //
+    //   const profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
+    //   if (profile) {
+    //     if (profile.owner.id === user.id) {
+    //       str += ' | (Owner)'
+    //     }
+    //     if (profile.admin.find((adm) => adm.id === user.id)) {
+    //       str +=  ' | (Admin)'
+    //     }
+    //     if (profile.muted.find((mtd) => mtd.id === user.id)) {
+    //       str +=  ' | (Muted)';
+    //     }
+    //   }
+    //   return str;
+    // },
   },
   created() {
 

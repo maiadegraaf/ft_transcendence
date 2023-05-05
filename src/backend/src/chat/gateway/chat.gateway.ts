@@ -82,12 +82,24 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
         @Body(new ValidationPipe()) payload: MessageDto,
     ): Promise<any> {
-        const message = await this.messageService.createMessage(payload);
-        payload.id = message.id;
-        this.server.to('room' + payload.channel).emit('msgToClient', payload);
-        this.logger.log(
-            `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
-        );
+        try {
+            const message = await this.messageService.createMessage(payload);
+            if (!message) {
+                throw new HttpException(
+                    'handleMessage: message could not be created',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            payload.id = message.id;
+            this.server
+                .to('room' + payload.channel)
+                .emit('msgToClient', payload);
+            this.logger.log(
+                `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
+            );
+        } catch (error) {
+            this.logger.error(error);
+        }
     }
 
     @SubscribeMessage('joinRoomById')
