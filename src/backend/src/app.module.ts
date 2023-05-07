@@ -7,6 +7,7 @@ import { join } from 'path';
 // import { Avatar } from 'src/user/entities/avatar.entity';
 import { Message } from './chat/entities/message.entity';
 import { User } from './user/user.entity';
+import { Matches } from './pong/match/match.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { Channel } from './chat/entities/channel.entity';
@@ -30,7 +31,15 @@ import { Avatar } from './user/avatar.entity';
             username: 'pongmaster',
             password: 'ping_pong42',
             database: 'transcendence',
-            entities: [User, Avatar, Leaderboard, Message, Channel, GroupProfile],
+            entities: [
+                User,
+                Avatar,
+                Leaderboard,
+                Message,
+                Channel,
+                GroupProfile,
+                Matches,
+            ],
             synchronize: true,
         }),
         MatchInstanceModule,
