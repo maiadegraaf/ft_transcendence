@@ -48,7 +48,7 @@ export class MatchService {
                 player1: true,
                 player2: true,
             },
-            where: [{ player1: player }, { player2: player }],
+            where: [{ player1: {id: player.id} }, { player2: {id: player.id} }],
         });
     }
 
