@@ -1,50 +1,50 @@
 <template>
-    <div class="flex flex-col justify-center items-center mt-16">
+    <div class="flex flex-col justify-center items-center my-16">
         <div
-            class="border-double text-center border-4 text-buff relative border-buff rounded-md w-[50vw] min-w-[600px] pt-10 p-4"
+            class="border-double text-center border-4  relative border-buff rounded-md w-[50vw] min-w-[600px] pt-10 p-4"
         >
             <h1
                 class="text-2xl font-bold text-white absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-dark-purple rounded-md border-2 border-buff px-4 py-2"
             >
                 Match History
             </h1>
-          <div class="grid grid-cols-3 gap-6 px-2 grid-rows-1">
-<!--            <div v-for="(match, index) in (showMore ? matchHistoryData.slice(0, 3) : matchHistoryData)" :key="index" :class="won ? 'text-blush border-blush' : ''" class="border border-buff rounded-md p-2 flex flex-col justify-center items-center  h-">-->
-<!--              <h2 class="font-bold text-2xl mb-2">{{ wonOrLost(match) }}</h2>-->
-<!--              <h3 class=" text-center break-all leading-4">-->
-<!--                {{match.player1}}<br>vs<br>{{ match.player2 }}-->
+          <div class="grid grid-cols-3 gap-6 px-2 grid-rows-1 text-buff">
+            <div v-for="(match, index) in (showMore ? matchHistoryData : matchHistoryData.slice(0, 3))" :key="index" :class="whoWonTrue(match) ? 'text-blush border-blush' : 'text-buff border-buff'" class="border rounded-md p-2 flex flex-col justify-center items-center">
+              <h2 class="font-bold text-2xl mb-2">{{ wonOrLost(match) }}</h2>
+              <h3 class=" text-center break-all leading-4">
+                {{match.player1.login}}<br>vs<br>{{ match.player2.login }}
+              </h3>
+              <h3 class="font-semibold mt-2">
+                {{ match.player1Score}} - {{ match.player2Score }}
+              </h3>
+            </div>
+<!--            <div class="border text-blush border-blush rounded-md p-2 flex flex-col justify-center items-center  ">-->
+<!--              <h2 class="font-bold text-2xl mb-2">Lost</h2>-->
+<!--              <h3 class=" text-center break-all leading-4 ">-->
+<!--                Alfred<br>vs<br>Storm-->
 <!--              </h3>-->
 <!--              <h3 class="font-semibold mt-2">-->
-<!--                {{ match.player1Score}} - {{ match.player2Score }}-->
+<!--                10 - 4-->
 <!--              </h3>-->
 <!--            </div>-->
-            <div class="border text-blush border-blush rounded-md p-2 flex flex-col justify-center items-center  ">
-              <h2 class="font-bold text-2xl mb-2">Lost</h2>
-              <h3 class=" text-center break-all leading-4 ">
-                Alfred<br>vs<br>Storm
-              </h3>
-              <h3 class="font-semibold mt-2">
-                10 - 4
-              </h3>
-            </div>
-            <div class="border border-buff rounded-md p-2 flex flex-col justify-center items-center  ">
-              <h2 class="font-bold text-2xl mb-2">Won</h2>
-              <h3 class=" text-center break-all leading-4">
-                Alfred<br>vs<br>Maia
-              </h3>
-              <h3 class="font-semibold mt-2">
-                10 - 5
-              </h3>
-            </div>
-            <div class="border border-buff rounded-md p-2 flex flex-col justify-center items-center  ">
-              <h2 class="font-bold text-2xl mb-2">Won</h2>
-              <h3 class=" text-center break-all leading-4">
-                Alfred<br>vs<br>Maia
-              </h3>
-              <h3 class="font-semibold mt-2">
-                10 - 5
-              </h3>
-            </div>
+<!--            <div class="border border-buff rounded-md p-2 flex flex-col justify-center items-center  ">-->
+<!--              <h2 class="font-bold text-2xl mb-2">Won</h2>-->
+<!--              <h3 class=" text-center break-all leading-4">-->
+<!--                Alfred<br>vs<br>Maia-->
+<!--              </h3>-->
+<!--              <h3 class="font-semibold mt-2">-->
+<!--                10 - 5-->
+<!--              </h3>-->
+<!--            </div>-->
+<!--            <div class="border border-buff rounded-md p-2 flex flex-col justify-center items-center  ">-->
+<!--              <h2 class="font-bold text-2xl mb-2">Won</h2>-->
+<!--              <h3 class=" text-center break-all leading-4">-->
+<!--                Alfred<br>vs<br>Maia-->
+<!--              </h3>-->
+<!--              <h3 class="font-semibold mt-2">-->
+<!--                10 - 5-->
+<!--              </h3>-->
+<!--            </div>-->
           </div>
           <button v-if="matchHistoryData.length > 3" @click="showMore = !showMore" class=" pt-4 hover:opacity-60 opacity-transition">{{showMore ? "see less" : "see more..." }}</button>
         </div>
@@ -84,6 +84,13 @@ export default defineComponent({
         return matchData.player2
       }
     },
+    whoWonTrue(matchData: MatchHistoryData): Boolean {
+      if (matchData.player1.id == Number(this.$route.params.id)) {
+          return matchData.player2Score > matchData.player1Score;
+      } else {
+          return matchData.player1Score > matchData.player2Score;
+      }
+    },
     wonOrLost(matchData: MatchHistoryData): string {
       if (this.whoWon(matchData).id == Number(this.$route.params.id) ) {
         this.won = true;
@@ -95,7 +102,7 @@ export default defineComponent({
   },
   async mounted()
   {
-    await axios.get('/api').then((response) => {
+    await axios.get('/api/match').then((response) => {
       this.matchHistoryData = Array.from(response.data)
     })
   },

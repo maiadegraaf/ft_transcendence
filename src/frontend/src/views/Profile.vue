@@ -10,7 +10,7 @@ be displayed on the user profile -->
 <template>
     <Nav />
     <main v-if="doesProfileExist">
-        <div class="flex flex-col mt-16 items-center w-screen">
+        <div class="flex flex-col mt-16 items-center">
             <div class="w-60 h-60 text-right relative">
                 <img
                     :src="`/api/user/${isProfileSession ? user.id : userData.id}/avatar`"
