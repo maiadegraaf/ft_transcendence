@@ -19,8 +19,6 @@ export class MatchController {
     @Get(':id')
     async findMatchesByUserId(@Req() req): Promise<Matches[]> {
         const user = await this.userService.findUserByID(req.params.id);
-        console.log(user);
-        console.log(req.session.user as User);
         return this.matchService.findMatchesByPlayer(user);
     }
 

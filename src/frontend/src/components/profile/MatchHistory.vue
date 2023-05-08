@@ -9,7 +9,7 @@
                 Match History
             </h1>
           <div class="grid grid-cols-3 gap-6 px-2 grid-rows-1 text-buff">
-            <div v-for="(match, index) in (showMore ? matchHistoryData : matchHistoryData.slice(0, 3))" :key="index" :class="whoWonTrue(match) ? 'text-blush border-blush' : 'text-buff border-buff'" class="border rounded-md p-2 flex flex-col justify-center items-center">
+            <div v-for="(match, index) in (showMore ? matchHistoryData : matchHistoryData.slice(0, 3))" v-on:click="sendToProfileOpponent(match)" :key="index" :class="whoWonTrue(match) ? 'text-blush border-blush' : 'text-buff border-buff'" class="cursor-pointer border rounded-md p-2 flex flex-col justify-center items-center">
               <h2 class="font-bold text-2xl mb-2">{{ wonOrLost(match) }}</h2>
               <h3 class=" text-center break-all leading-4">
                 {{match.player1.login}}<br>vs<br>{{ match.player2.login }}
@@ -18,33 +18,6 @@
                 {{ match.player1Score}} - {{ match.player2Score }}
               </h3>
             </div>
-<!--            <div class="border text-blush border-blush rounded-md p-2 flex flex-col justify-center items-center  ">-->
-<!--              <h2 class="font-bold text-2xl mb-2">Lost</h2>-->
-<!--              <h3 class=" text-center break-all leading-4 ">-->
-<!--                Alfred<br>vs<br>Storm-->
-<!--              </h3>-->
-<!--              <h3 class="font-semibold mt-2">-->
-<!--                10 - 4-->
-<!--              </h3>-->
-<!--            </div>-->
-<!--            <div class="border border-buff rounded-md p-2 flex flex-col justify-center items-center  ">-->
-<!--              <h2 class="font-bold text-2xl mb-2">Won</h2>-->
-<!--              <h3 class=" text-center break-all leading-4">-->
-<!--                Alfred<br>vs<br>Maia-->
-<!--              </h3>-->
-<!--              <h3 class="font-semibold mt-2">-->
-<!--                10 - 5-->
-<!--              </h3>-->
-<!--            </div>-->
-<!--            <div class="border border-buff rounded-md p-2 flex flex-col justify-center items-center  ">-->
-<!--              <h2 class="font-bold text-2xl mb-2">Won</h2>-->
-<!--              <h3 class=" text-center break-all leading-4">-->
-<!--                Alfred<br>vs<br>Maia-->
-<!--              </h3>-->
-<!--              <h3 class="font-semibold mt-2">-->
-<!--                10 - 5-->
-<!--              </h3>-->
-<!--            </div>-->
           </div>
           <button v-if="matchHistoryData.length > 3" @click="showMore = !showMore" class=" pt-4 hover:opacity-60 opacity-transition">{{showMore ? "see less" : "see more..." }}</button>
         </div>
@@ -97,6 +70,14 @@ export default defineComponent({
         return 'Won'
       } else {
         return 'Lost'
+      }
+    },
+    sendToProfileOpponent(matchData: MatchHistoryData): void {
+        console.log(matchData)
+      if (matchData.player1.id == Number(this.$route.params.id) ) {
+        this.$router.push('/profile/' + matchData.player2.id)
+      } else {
+        this.$router.push('/profile/' + matchData.player1.id)
       }
     }
   },
