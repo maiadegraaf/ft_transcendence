@@ -50,17 +50,13 @@ export class AuthController {
     @Get('profile/:id')
     async getProfileFake(@Req() req, @Res() res) {
         const user = await this.userService.findOrCreateUser(
-            Number(req.params.id),
+            req.params.id as number,
             'user' + req.params.id + '@gmail.com',
             'user' + req.params.id,
         );
         req.session.user = user;
         console.log(req.session.user);
-        if (req.session.user.isTwoFactorAuthenticationEnabled)
-            res.redirect('/2fa/create');
-        else {
-            res.redirect('/2fa');
-        }
+        res.status(HttpStatus.OK).end();
     }
 
     @Get('logout')

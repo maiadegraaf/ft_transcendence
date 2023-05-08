@@ -1,12 +1,12 @@
 <template>
-  <div class="h-20 px-2 py-3 flex" >
+  <div class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }" >
     <div class="flex w-full" @click="toView(ch.id)">
       <div class="h-full">
-        <img class="rounded-full w-16" :src="`api/user/94748/avatar`" alt="avatar">
+        <img class="rounded-full w-16" :src="`api/user/${avatarId}/avatar`" alt="avatar">
       </div>
       <div class="flex flex-col w-full pl-3">
-        <div class="font-bold">DM | {{ ch.name }} | {{ ch.id }}</div>
-        <div>{{ lastMessage }}</div>
+        <div class="font-bold">{{ ch.name }} | {{ ch.id }}</div>
+        <div class="text-xs">{{ lastMessage }}</div>
       </div>
     </div>
     <div v-if="ch.profile">
@@ -23,6 +23,8 @@ import MessageList from "@/components/Chat/MessageList.vue";
 import GroupSettings from "@/components/Chat/GroupSettings.vue";
 import {useChatStore} from "@/store/channel.store";
 import {Cog6ToothIcon} from "@heroicons/vue/24/outline";
+import {useUserStore} from "@/store/user.store";
+import type {IUser} from "@/types/types";
 
 export default defineComponent({
   name: "ChannelTile",
@@ -32,15 +34,31 @@ export default defineComponent({
   },
   setup() {
     const chatStore = useChatStore()
-    return { chatStore }
+    const userId = useUserStore().id
+    return { chatStore, userId }
+  },
+  data() {
+    return {
+      avatarId: 0 as number,
+    }
+  },
+  mounted() {
+    this.ch.users.forEach((user: IUser) => {
+      if (user.id !== this.userId) {
+        this.avatarId = user.id
+      }
+    })
   },
   computed: {
     lastMessage(): string {
         if (this.ch.messages.length > 0) {
-          return this.ch.messages[this.ch.messages.length - 1].content
+          return this.ch.messages[this.ch.messages.length - 1].text
         }
         return 'No messages'
-      }
+    },
+    isActive(): boolean {
+      return this.chatStore.channelInView === this.ch.id
+    }
   },
   methods: {
     toView(id: number): void {
@@ -51,7 +69,6 @@ export default defineComponent({
       this.chatStore.setChannelInView(channelId)
       this.chatStore.setGroupId(groupId)
       this.chatStore.setGroupName(groupName)
-      console.log(this.chatStore.groupId)
       this.$emit('switch-chat-right-component', GroupSettings)
     },
   }

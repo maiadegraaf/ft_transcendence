@@ -5,10 +5,10 @@ import { Match } from './match/match';
 import { MatchInstance } from './match/match-instance';
 import { Info } from './interfaces/info.interface';
 import { PracticeMatchInstance } from './practice-match/practice-match-instance';
-import { Difficulty, PracticeMatch } from './practice-match/practice-match';
+import { PracticeMatch } from './practice-match/practice-match';
 import { UserService } from '../user/services/user/user.service';
 import { LeaderboardService } from './leaderboard/leaderboard.service';
-import { PracticeMatchModule } from './practice-match/practice-match.module';
+import { MatchService } from './match/match.service';
 
 @Injectable()
 export class PongService {
@@ -22,6 +22,7 @@ export class PongService {
         private practiceMatchService: PracticeMatch,
         private userService: UserService,
         private leaderboardService: LeaderboardService,
+        private matchService: MatchService,
     ) {}
 
     async handleConnection(client: Socket, userId: any): Promise<void> {
@@ -129,7 +130,7 @@ export class PongService {
 
     createMatch(client: Socket, player1: User, player2: User): Match {
         const match = new Match(player1, player2);
-        this.instances[match.id] = new MatchInstance(this.server, match);
+        this.instances[match.id] = new MatchInstance(match);
         this.instances[match.id].start();
         if (client.id == player1.socketId) {
             this.emitOpponentFound(client, player2.socketId, match.id);
@@ -152,6 +153,7 @@ export class PongService {
     checkForEndOfMatch(match: Match): void {
         if (match.score1 == 10 || match.score2 == 10) {
             this.leaderboardService.addMatchToLeaderboard(match);
+            this.matchService.addMatch(match);
             delete this.instances[match.id];
         }
     }

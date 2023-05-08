@@ -18,10 +18,10 @@ import { Avatar } from 'src/user/avatar.entity';
         TypeOrmModule.forFeature([Avatar]),
     ],
     providers: [
+        MatchService,
         MatchInstance,
         Server,
         Match,
-        MatchService,
         UserService,
         AvatarService,
     ],

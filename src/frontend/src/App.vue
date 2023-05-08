@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-screen w-screen bg-dark-purple font-mono">
         <div class="flex-1 w-full mx-auto bg-gradient-to-r from-transparent via-transparent to-dark-purple">
-            <router-view v-if="userStore.socket || $route.path === '/'" :key="$route.fullPath" />
+            <router-view v-if="userStore.socket || $route.path ==='/'" :key="$route.fullPath" />
         </div>
     </div>
 </template>
@@ -10,6 +10,7 @@
 import axios from 'axios'
 import {useUserStore} from "@/store/user.store";
 import {defineComponent} from "vue";
+
 export default defineComponent({
     name: 'App',
     components: {},
@@ -17,14 +18,14 @@ export default defineComponent({
       const userStore = useUserStore()
       return { userStore }
   },
-  beforeCreate() {
-    axios.get('/api/auth/profile').then((res) => {
-      if (res.status === 200) {
-        this.userStore.loadUser()
-        if (this.$route.path === '/') {
-          this.$router.push({path: '/home'})
-        }
-      }
+    beforeCreate() {
+        axios.get('/api/auth/profile').then((res) => {
+           if (res.status === 200) {
+             this.userStore.loadUser()
+             if (this.$route.path === '/') {
+               this.$router.push({path: '/home'})
+             }
+           }
       }).catch((err) => {
           this.$router.push({path: '/'})
       })

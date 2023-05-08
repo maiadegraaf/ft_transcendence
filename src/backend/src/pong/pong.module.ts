@@ -17,6 +17,8 @@ import { LeaderboardService } from './leaderboard/leaderboard.service';
 import { GameTools } from './game';
 import { AvatarService } from 'src/user/services/user/avatar.service';
 import { Avatar } from 'src/user/avatar.entity';
+import { MatchService } from './match/match.service';
+import { Matches } from './match/match.entity';
 
 @Module({
     imports: [
@@ -27,9 +29,11 @@ import { Avatar } from 'src/user/avatar.entity';
         LeaderboardModule,
         TypeOrmModule.forFeature([Leaderboard]),
         TypeOrmModule.forFeature([Avatar]),
+        TypeOrmModule.forFeature([Matches]),
     ],
     controllers: [PongController],
     providers: [
+        MatchService,
         GameTools,
         PongGateway,
         PongService,

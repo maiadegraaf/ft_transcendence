@@ -52,6 +52,7 @@ export class UserService {
             const avatar = await this.avatarService.createDefaultAvatar(user);
             user = await this.userRepository.save({ id, email, login, avatar });
         }
+        user = await this.userRepository.findOne({ where: { id } });
         return user;
     }
 
