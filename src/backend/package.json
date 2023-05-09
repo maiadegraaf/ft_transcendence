@@ -55,7 +55,8 @@
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "speakeasy": "^2.0.0",
-    "typeorm": "^0.3.12"
+    "typeorm": "^0.3.12",
+    "vue-instant": "^1.0.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.3.0",

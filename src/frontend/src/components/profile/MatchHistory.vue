@@ -19,6 +19,10 @@
               </h3>
             </div>
           </div>
+          <div v-if="matchHistoryData.length == 0" class=" flex flex-col justify-center items-center">
+            <h3 class=" text-3xl font-semibold">No matchs!!</h3>
+            <a class="hover:opacity-60 transition-opacity" href="/Pong">Play a game</a>
+          </div>
           <button v-if="matchHistoryData.length > 3" @click="showMore = !showMore" class=" pt-4 hover:opacity-60 opacity-transition">{{showMore ? "see less" : "see more..." }}</button>
         </div>
     </div>
