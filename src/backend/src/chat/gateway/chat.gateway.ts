@@ -32,9 +32,7 @@ import { User } from '../../user/user.entity';
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-    constructor(
-        private readonly messageService: MessageService,
-    ) {}
+    constructor(private readonly messageService: MessageService) {}
 
     @WebSocketServer()
     server: Server;
@@ -79,18 +77,29 @@ export class ChatGateway
         }
     }
 
-
     @SubscribeMessage('msgToServer')
     async handleMessage(
         @ConnectedSocket() client: Socket,
         @Body(new ValidationPipe()) payload: MessageDto,
     ): Promise<any> {
-        const message = await this.messageService.createMessage(payload);
-        payload.id = message.id;
-        this.server.to('room' + payload.channel).emit('msgToClient', payload);
-        this.logger.log(
-            `createMessage: message send by ${payload.sender.login} in channel ${payload.channel}`,
-        );
+        try {
+            const message = await this.messageService.createMessage(payload);
+            if (!message) {
+                throw new HttpException(
+                    'handleMessage: message could not be created',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            payload.id = message.id;
+            this.server
+                .to('room' + payload.channel)
+                .emit('msgToClient', payload);
+            this.logger.log(
+                `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
+            );
+        } catch (error) {
+            this.logger.error(error);
+        }
     }
 
     @SubscribeMessage('joinRoomById')
@@ -164,19 +173,26 @@ export class ChatGateway
     }
 
     async emitGroupChannelToUser(channel: Channel, user: User): Promise<any> {
+        const msg = channel.messages ?? [];
         const channelInfo = {
             id: channel.id,
-            messages: [],
-            profile: channel.profile,
+            messages: msg,
+            profile: {
+                name: channel.profile.name,
+                id: channel.profile.id,
+            },
             name: channel.profile.name,
         };
+        console.log('test');
         const userSocket = this.getClientSocketById(user.id);
         if (userSocket) {
             this.logger.log(
-                'emit addChannelToClient form owner: ' + userSocket.id,
+                'emit addChannelToClient to user: ' + userSocket.id,
             );
             userSocket.emit('addChannelToClient', channelInfo);
+            return;
         }
+        this.logger.error('User is not connected to chat');
     }
 
     async emitDeleteChannelFromUser(
@@ -190,47 +206,65 @@ export class ChatGateway
                 HttpStatus.FORBIDDEN,
             );
         }
+        userSocket.emit('removeChannelFromClient', channel.id);
         this.logger.log(
             'emit deleteChannelFromClient form owner: ' + userSocket.id,
         );
-        userSocket.emit('removeChannelFromClient', channel.id);
     }
 
-    // @SubscribeMessage('joinRoom')
-    // async handleJoinRoom(
-    //     @ConnectedSocket() client: Socket,
-    //     @Body(new ValidationPipe()) payload: JoinRoomDto,
-    // ): Promise<any> {
-    //     await client.join('room' + payload.channelId);
-    //     const userName = await this.userService.getUserNameById(payload.userId);
-    //     this.server.to('room' + payload.channelId).emit('msgToClient', {
-    //         id: -1,
-    //         sender: payload.userId,
-    //         senderName: userName,
-    //         channel: payload.channelId,
-    //         text: `${payload.userName} (${payload.userId}) has joined the room with channel id: ${payload.channelId}`,
-    //     });
-    //     this.logger.log(
-    //         `handleJoinRoom: ${client.id} joined the room with id: ${payload.channelId}`,
-    //     );
-    // }
+    async emitAddAdminToChannel(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server.to('room' + info.channelId).emit('addAdminToChannel', info);
+        this.logger.log('emitAddAdminToChannel for user: ' + info.user.id);
+    }
 
-    // @SubscribeMessage('leaveRoom')
-    // async handleLeaveRoom(
-    //     @ConnectedSocket() client: Socket,
-    //     @Body(new ValidationPipe()) payload: JoinRoomDto,
-    // ) {
-    //     await client.leave('room' + payload.channelId);
-    //     const userName = await this.userService.getUserNameById(payload.userId);
-    //     this.server.to('room' + payload.channelId).emit('msgToClient', {
-    //         id: -1,
-    //         sender: payload.userId,
-    //         senderName: userName,
-    //         channel: payload.channelId,
-    //         text: `${payload.userName} (${payload.userId}) has left the room with channel id: ${payload.channelId}`,
-    //     });
-    //     this.logger.log(
-    //         `handleLeaveRoom: ${client.id} left the room with id: ${payload.channelId}`,
-    //     );
-    // }
+    async emitRemoveAdminFromChannel(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server
+            .to('room' + info.channelId)
+            .emit('removeAdminFromChannel', info);
+        this.logger.log('emitRemoveAdminFromChannel for user: ' + info.user.id);
+    }
+
+    async emitAddMutedToChannelToUser(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server.to('room' + info.channelId).emit('addMutedToChannel', info);
+        this.logger.log(
+            'emitAddMutedToChannelToUser for user: ' + info.user.id,
+        );
+    }
+
+    async emitRemoveMutedFromChannelToUser(info: {
+        channelId: number;
+        user: {
+            id: number;
+            login: string;
+        };
+    }): Promise<any> {
+        console.log(info);
+        this.server
+            .to('room' + info.channelId)
+            .emit('removeMutedFromChannel', info);
+        this.logger.log(
+            'emitRemoveMutedFromChannelToUser for user: ' + info.user.id,
+        );
+    }
 }

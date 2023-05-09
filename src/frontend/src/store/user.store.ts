@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 import axios from "axios";
 import {io} from "socket.io-client";
 import {useChatStore} from "@/store/channel.store";
-import type {IChannels, IMessage} from "@/types/types";
+import type {IChannels, IMessage, IUser} from "@/types/types";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
@@ -28,16 +28,35 @@ export const useUserStore = defineStore('user', {
         async listen() {
             const chatStore = useChatStore()
             this.socket.on('msgToClient', (message: IMessage) => {
-                console.log("Message recieved!")
+                console.log("Message received!")
                 chatStore.receivedMessage(message)
             })
             this.socket.on('addChannelToClient', (channel: IChannels) => {
-                console.log("Channel recieved!")
+                console.log("Channel received!")
                 chatStore.receivedNewChannel(channel)
             })
             this.socket.on('removeChannelFromClient', (channelId: number) => {
                 console.log("Channel removed request!")
                 chatStore.removeChannel(channelId)
+            })
+            this.socket.on('addAdminToChannel', (channelId: number, user: IUser) => {
+                chatStore.addAdminToChannel(channelId, user)
+                console.log("Admin added to channel!")
+            })
+            this.socket.on('removeAdminFromChannel', (channelId: number, user: IUser) => {
+                chatStore.removeAdminFromChannel(channelId, user)
+                console.log("Admin removed from channel!")
+                console.log(chatStore.channels)
+            })
+            this.socket.on('addMutedToChannel', (channelId: number, user: IUser) => {
+                chatStore.addMutedToChannel(channelId, user)
+                console.log("Muted added to channel!")
+                console.log(chatStore.channels)
+            })
+            this.socket.on('removeMutedFromChannel', (channelId: number, user: IUser) => {
+                chatStore.removeMutedFromChannel(channelId, user)
+                console.log(chatStore.channels)
+                console.log("Muted removed from channel!")
             })
         },
 
@@ -47,5 +66,5 @@ export const useUserStore = defineStore('user', {
             this.email = ''
             this.id = 0
         }
-        }
+    }
 })

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type {IChannels, IMessage} from "@/types/types";
+import type {IChannels, IMessage, IUser} from "@/types/types";
 import {useUserStore} from "@/store/user.store";
 
 
@@ -37,6 +37,50 @@ export const useChatStore = defineStore('userChannel', {
             }
             return chnl.profile
         },
+        getChannelProfileByChannelId: (state) => (channelId: number) => {
+            if (state.channels == null) {
+                return null
+            }
+            const chnl = state.channels.find(channel => channel.id === channelId)
+            if (chnl == null || chnl.profile == null) {
+                return null
+            }
+            return chnl.profile
+        },
+        getChannelUsersByChannelId: (state) => (channelId: number) => {
+            if (state.channels == null) {
+                return null
+            }
+            const chnl = state.channels.find(channel => channel.id === channelId)
+            if (chnl == null || chnl.profile == null) {
+                return null
+            }
+            return chnl.users
+        },
+        getRole: (state) => (user: IUser) => {
+            // werkt voor geen meter godverdomme
+            let str = ''
+            if (state.channels == null) {
+                return str
+            }
+            const chnl = state.channels.find(channel => channel.id === state.channelInView)
+            if (chnl == null || chnl.profile == null) {
+                return str
+            }
+            const profile = chnl.profile
+            if (profile) {
+                if (profile.owner.id === user.id) {
+                    str += ' | (Owner)'
+                }
+                if (profile.admin.find((adm) => adm.id === user.id)) {
+                    str +=  ' | (Admin)'
+                }
+                if (profile.muted.find((mtd) => mtd.id === user.id)) {
+                    str +=  ' | (Muted)';
+                }
+            }
+            return str
+        },
     },
 
     actions: {
@@ -73,6 +117,26 @@ export const useChatStore = defineStore('userChannel', {
                 this.channels?.splice(index, 1);
                 user.socket.emit('leaveRoomById', {channelId: channelID})
             }
+        },
+        async addAdminToChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.admin.push(user)
+        },
+        async removeAdminFromChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.admin.splice(
+                this.channels?.find(channel => channel.id === channelId)?.profile?.admin.findIndex(
+                    admin => admin.id === user.id
+                ) as number, 1
+            )
+        },
+        async addMutedToChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.muted.push(user)
+        },
+        async removeMutedFromChannel(channelId: number, user: IUser) {
+            this.channels?.find(channel => channel.id === channelId)?.profile?.muted.splice(
+                this.channels?.find(channel => channel.id === channelId)?.profile?.muted.findIndex(
+                    muted => muted.id === user.id
+                ) as number, 1
+            )
         },
         setGroupId(groupId: number) {
             this.groupId = groupId

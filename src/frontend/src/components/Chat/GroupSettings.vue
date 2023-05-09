@@ -10,6 +10,8 @@
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <button @click="doneGroup" class="rounded-full ml-3 hover:shadow-md">Go Back</button>
     </div>
+<!--    <button @click="deleteGroup" class="rounded-full ml-3 hover:shadow-md">Delete Group</button>-->
+    <GroupSettingUserList/>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <h2>Users</h2>
       <!--      list of users-->
@@ -57,14 +59,17 @@ import axios from "axios";
 import MessageList from "@/components/Chat/MessageList.vue";
 import {useUserStore} from "@/store/user.store";
 import {defineComponent} from "vue";
+import type {IUser} from "@/types/types";
+import GroupSettingUserList from "@/components/Chat/GroupSettingUserList.vue";
 
 export default defineComponent({
   name: "GroupSettings",
+  components: {GroupSettingUserList},
   // props: ['chatStore']
   setup() {
     const chatStore = useChatStore()
-    const user = useUserStore()
-    return {chatStore, user}
+    const userStore = useUserStore()
+    return {chatStore, userStore}
   },
   data(): any {
     return {
@@ -72,7 +77,6 @@ export default defineComponent({
       mutedText: '',
       bannedText: '',
       userText: '',
-      userId: 0,
       params: {
         userId: 0,
         userName: '',
@@ -80,22 +84,18 @@ export default defineComponent({
         channelId: 0,
       },
       userName: '',
-      channelId: 0,
-      groupId: 0,
       groupName: '',
-      // profile: {}
     }
   },
   async mounted() {
-    // await this.chatStore.fetchUserData()
-    this.userId = this.user.userId
-    this.userName = this.user.name
+    this.userName = this.userStore.name
     this.groupName = this.chatStore.groupName
-    this.params.userId = this.userId
+    this.params.userId = this.userStore.id
     this.params.channelId = this.chatStore.channelInView
     this.params.groupId = this.chatStore.groupId
     // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-    console.log(this.params)
+    // console.log(this.channelUsers)
+    // console.log(this.profile)
   },
   methods: {
     doneGroup(): void {
@@ -156,7 +156,7 @@ export default defineComponent({
         return
       }
       this.params.userName = this.adminText
-      console.log('test username: ' + this.params.userName)
+      console.log(this.params)
 
       axios.post('/api/chat/group/admin', this.params)
           .then((response) => {
@@ -271,25 +271,38 @@ export default defineComponent({
           })
       this.bannedText = ''
     },
-    // checkAdmin(): boolean {
-    //   if (!this.profile) {
-    //     return false
+    deleteGroup(): void {
+      this.params.userName = this.userStore.name
+      axios.delete('/api/chat/group', {data: this.params})
+          .then((response) => {
+            console.log(response)
+            if (response.data == true) {
+              this.doneGroup()
+            }
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          })
+    },
+
+    // getRole(user: IUser): string {
+    //   let str = ''
+    //
+    //   const profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
+    //   if (profile) {
+    //     if (profile.owner.id === user.id) {
+    //       str += ' | (Owner)'
+    //     }
+    //     if (profile.admin.find((adm) => adm.id === user.id)) {
+    //       str +=  ' | (Admin)'
+    //     }
+    //     if (profile.muted.find((mtd) => mtd.id === user.id)) {
+    //       str +=  ' | (Muted)';
+    //     }
     //   }
-    //   console.log(this.profile)
-    //   const admin = this.profile.admins.login.includes(this.userName)
-    //   if (admin) {
-    //     return true
-    //   }
-    //   return false
-    // },
-    // checkOwner(): boolean {
-    //   if (!this.profile) {
-    //     return false
-    //   }
-    //   console.log(this.profile)
-    //   if (this.userName != this.profile.owner.login)
-    //     return false
-    //   return true
+    //   return str;
     // },
   },
   created() {
@@ -297,3 +310,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+input {
+  color: black;
+}
+</style>

@@ -22,6 +22,7 @@ import {
 } from '../dtos/chat.dtos';
 import { ChatGateway } from '../gateway/chat.gateway';
 import { validatePath } from '@nestjs/serve-static/dist/utils/validate-path.util';
+import { GroupProfileService } from '../services/groupProfile.service';
 
 @Controller('chat')
 export class ChatController {
@@ -30,6 +31,7 @@ export class ChatController {
         private readonly messageService: MessageService,
         private readonly userService: UserService,
         private readonly chatGateway: ChatGateway,
+        private readonly groupProfileService: GroupProfileService,
     ) {}
 
     private logger = new Logger('ChatController');
@@ -37,9 +39,7 @@ export class ChatController {
     // Get /api/chat/${id}
     @Get('/:id')
     async getUserChannels(@Param('id') id: number): Promise<Channel[]> {
-        this.logger.log(
-            'getChannelMessages: messages found for user: ' + id,
-        );
+        this.logger.log('getChannelMessages: messages found for user: ' + id);
         return this.channelService.getUserChannels(id);
     }
 
@@ -110,8 +110,8 @@ export class ChatController {
     ): Promise<any> {
         try {
             console.log('param: ' + JSON.stringify(param));
+            // not safe user by id
             const owner = await this.userService.getUserById(param.userId);
-            console.log('owner: ' + JSON.stringify(owner));
             if (!owner) {
                 throw new HttpException(
                     'Could not find user to create new group channel',
@@ -128,8 +128,8 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log('channel: ' + JSON.stringify(channel));
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
+            console.log('test4');
             return;
         } catch (error) {
             this.logger.error('postNewGroupChannel: ' + error);
@@ -137,53 +137,116 @@ export class ChatController {
     }
 
     // Post /api/chat/group/user
-    @Post('group/user')
-    async postNewUserToChannel(
-        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
-    ): Promise<any> {
-        try {
-            console.log('postNewUserToChannel' + JSON.stringify(param));
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'Could not find user to add to group channel',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            const channel = await this.channelService.addUserToChannel(
-                param.channelId,
-                user,
-            );
-            await this.chatGateway.emitGroupChannelToUser(channel, user);
-        } catch (error) {
-            this.logger.error('postNewUserToChannel: ' + error);
-        }
-    }
+    // @Post('group/user')
+    // async postNewUserToChannel(
+    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    // ): Promise<any> {
+    //     try {
+    //         console.log('postNewUserToChannel' + JSON.stringify(param));
+    //         const user = await this.userService.getUserByLogin(param.userName);
+    //         if (!user) {
+    //             throw new HttpException(
+    //                 'Could not find user to add to group channel',
+    //                 HttpStatus.FORBIDDEN,
+    //             );
+    //         }
+    //         if (
+    //             await this.groupProfileService.isBlocked(user.id, param.groupId)
+    //         ) {
+    //             throw new HttpException(
+    //                 'User is banned from group',
+    //                 HttpStatus.FORBIDDEN,
+    //             );
+    //         }
+    //         const channel = await this.channelService.addUserToChannel(
+    //             param.channelId,
+    //             user,
+    //         );
+    //         await this.chatGateway.emitGroupChannelToUser(channel, user);
+    //     } catch (error) {
+    //         this.logger.error('postNewUserToChannel: ' + error);
+    //     }
+    // }
 
     // Delete /api/chat/group/user
-    @Delete('/group/user')
-    async deleteUserFromChannel(
-        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
-    ): Promise<any> {
-        try {
-            console.log('param: ' + JSON.stringify(param));
-            const user = await this.userService.getUserByLogin(param.userName);
-            if (!user) {
-                throw new HttpException(
-                    'Could not find user to add to group channel',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            console.log(JSON.stringify(user));
-            const channel = await this.channelService.removeUserFromChannel(
-                param.channelId,
-                user,
-            );
-            console.log('channel users: ' + JSON.stringify(channel.users));
-            await this.chatGateway.emitDeleteChannelFromUser(channel, user);
-            // emit something to user to remove channel from list (maybe update emit)
-        } catch (error) {
-            this.logger.error('deleteUserFromChannel: ' + error);
-        }
-    }
+    // @Delete('/group/user')
+    // async deleteUserFromChannel(
+    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    // ): Promise<any> {
+    //     try {
+    //         const user = await this.userService.getUserByLogin(param.userName);
+    //         if (!user) {
+    //             throw new HttpException(
+    //                 'Could not find user to add to group channel',
+    //                 HttpStatus.FORBIDDEN,
+    //             );
+    //         }
+    //         console.log(JSON.stringify(user));
+    //         const channel = await this.channelService.removeUserFromChannel(
+    //             param.channelId,
+    //             user,
+    //         );
+    //         await this.chatGateway.emitDeleteChannelFromUser(channel, user);
+    //         // emit something to user to remove channel from list (maybe update emit)
+    //     } catch (error) {
+    //         this.logger.error('deleteUserFromChannel: ' + error);
+    //     }
+    // }
+
+    // // Post /api/chat/group/user
+    // @Post('group/user')
+    // async postNewUserToChannel(
+    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    // ): Promise<any> {
+    //     try {
+    //         console.log('postNewUserToChannel' + JSON.stringify(param));
+    //         const user = await this.userService.getUserByLogin(param.userName);
+    //         if (!user) {
+    //             throw new HttpException(
+    //                 'Could not find user to add to group channel',
+    //                 HttpStatus.FORBIDDEN,
+    //             );
+    //         }
+    //         if (await this.groupProfileService.isBlocked(user, param.groupId)) {
+    //             throw new HttpException(
+    //                 'User is banned from group',
+    //                 HttpStatus.FORBIDDEN,
+    //             );
+    //         }
+    //         const channel = await this.channelService.addUserToChannel(
+    //             param.channelId,
+    //             user,
+    //         );
+    //         await this.chatGateway.emitGroupChannelToUser(channel, user);
+    //     } catch (error) {
+    //         this.logger.error('postNewUserToChannel: ' + error);
+    //     }
+    // }
+    //
+    // // Delete /api/chat/group/user
+    // @Delete('/group/user')
+    // async deleteUserFromChannel(
+    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    // ): Promise<any> {
+    //     try {
+    //         console.log('param: ' + JSON.stringify(param));
+    //         const user = await this.userService.getUserByLogin(param.userName);
+    //         if (!user) {
+    //             throw new HttpException(
+    //                 'Could not find user to add to group channel',
+    //                 HttpStatus.FORBIDDEN,
+    //             );
+    //         }
+    //         console.log(JSON.stringify(user));
+    //         const channel = await this.channelService.removeUserFromChannel(
+    //             param.channelId,
+    //             user,
+    //         );
+    //         console.log('channel users: ' + JSON.stringify(channel.users));
+    //         await this.chatGateway.emitDeleteChannelFromUser(channel, user);
+    //         // emit something to user to remove channel from list (maybe update emit)
+    //     } catch (error) {
+    //         this.logger.error('deleteUserFromChannel: ' + error);
+    //     }
+    // }
 }
