@@ -14,9 +14,7 @@ import { authenticator } from 'otplib';
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthenticationController {
-    constructor(
-        private userService: UserService,
-    ) {}
+    constructor(private userService: UserService) {}
 
     @Post('generate')
     async generate2FASecret(
@@ -51,6 +49,7 @@ export class TwoFactorAuthenticationController {
         @Req() req,
         @Body('token') token: string,
     ): Promise<boolean> {
+        console.log('hereeeeee');
         const userFound = await this.userService.findUserByID(
             req.session.user.id,
         );

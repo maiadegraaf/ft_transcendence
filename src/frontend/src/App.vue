@@ -20,13 +20,14 @@ export default defineComponent({
   },
     beforeCreate() {
         axios.get('/api/auth/profile').then((res) => {
-           if (res.status === 200) {
+           if (res.status === 200 ) {
              this.userStore.loadUser()
              if (this.$route.path === '/') {
                this.$router.push({path: '/home'})
              }
            }
       }).catch((err) => {
+        else if (this.$route.path != '/')
           this.$router.push({path: '/'})
       })
   }

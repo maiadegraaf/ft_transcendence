@@ -11,7 +11,6 @@ import TwoFACreate from '../views/2fa.create.vue'
 import axios from 'axios'
 import LeaderboardView from '@/views/LeaderboardView.vue'
 import Username from '@/views/Username.vue'
-import Autocomplete from '@/components/Autocomplete.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -20,11 +19,6 @@ const router = createRouter({
             path: '/Home',
             name: 'Home',
             component: Home
-        },
-        {
-            path: '/search',
-            name: 'search',
-            component: Autocomplete
         },
         {
             path: '/Authenticated',

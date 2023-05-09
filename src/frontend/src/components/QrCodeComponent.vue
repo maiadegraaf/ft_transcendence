@@ -8,7 +8,7 @@
             </h3>
             <qrcode-vue class="text-center" :value="value" :size="size" level="H" />
         </div>
-        <div v-if="!value" class="flex flex-col justify-center items-center">
+        <div v-else class="flex flex-col justify-center items-center">
             <h1 class="text-4xl font-semibold text-center">
                 Enter your 2fa token to enter the website:
             </h1>
@@ -19,7 +19,7 @@
                 <input
                     type="text"
                     v-model="token"
-                    class="border rounded mt-3"
+                    class="border rounded mt-3 bg-transparent"
                     name="token"
                     id="token"
                 />
