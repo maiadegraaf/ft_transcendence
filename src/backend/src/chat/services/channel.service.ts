@@ -185,6 +185,11 @@ export class ChannelService {
         await this.channelRepository.remove(channel);
     }
 
+    async nullifyProfile(channel: Channel): Promise<any> {
+        channel.profile = null;
+        return await this.channelRepository.save(channel);
+    }
+
     async addUserToChannel(channelId: number, user: User): Promise<any> {
         try {
             const channel = await this.channelRepository.findOne({

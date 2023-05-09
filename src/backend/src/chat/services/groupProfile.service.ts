@@ -231,10 +231,12 @@ export class GroupProfileService {
         return false;
     }
 
-    async deleteGroup(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.ownerCheck(param);
-        const channel = group.channel;
+    async deleteGroup(group: GroupProfile): Promise<any> {
         await this.groupProfileRepository.remove(group);
-        return channel;
+    }
+
+    async nullifyChannel(group: GroupProfile): Promise<any> {
+        group.channel = null;
+        return await this.groupProfileRepository.save(group);
     }
 }

@@ -180,7 +180,22 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
     ) {
         try {
-            const channel = await this.groupProfileService.deleteGroup(param);
+            let group = await this.groupProfileService.ownerCheck(param);
+            if (!group.channel) {
+                await this.groupProfileService.deleteGroup(group);
+                throw new HttpException(
+                    'Could not find channel to delete',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            let channel = group.channel;
+            group = await this.groupProfileService.nullifyChannel(group);
+            channel = await this.channelService.nullifyProfile(channel);
+            const users = channel.users;
+            for (const user of users) {
+                await this.chatGateway.emitDeleteChannelFromUser(channel, user);
+            }
+            await this.groupProfileService.deleteGroup(group);
             await this.channelService.deleteChannel(channel);
             this.logger.log('deleteGroup: ' + param.userName);
             return true;

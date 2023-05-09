@@ -271,6 +271,7 @@ export default defineComponent({
           })
       this.bannedText = ''
     },
+
     deleteGroup(): void {
       this.params.userName = this.userStore.name
       axios.delete('/api/chat/group', {data: this.params})
