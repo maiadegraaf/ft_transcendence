@@ -174,4 +174,19 @@ export class GroupProfileController {
             return false;
         }
     }
+
+    @Delete()
+    async deleteGroup(
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    ) {
+        try {
+            const channel = await this.groupProfileService.deleteGroup(param);
+            await this.channelService.deleteChannel(channel);
+            this.logger.log('deleteGroup: ' + param.userName);
+            return true;
+        } catch (error) {
+            this.logger.error(error);
+            return false;
+        }
+    }
 }

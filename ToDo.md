@@ -2,13 +2,13 @@
 
 ## Chat
 
-* [ ] testing endpoints for user, admin, banned and muted in groupProfile
+* [x] testing endpoints for user, admin, banned and muted in groupProfile
 
 [//]: # (* [ ] accessibility for groupProfile by admin owner and user &#40;frontend&#41;)
 * [ ] accessibility for groupProfile by admin owner and user (backend)
 * [ ] adding logic to admin, muted and banned in groupProfile
 * [ ] adding time for muted user
-* [ ] owner of group can add or delete admin
+* [x] owner of group can add or delete admin
 * [ ] admin can kick ban or mute users
 * [ ] search list for groupProfile
 * [ ] leave group

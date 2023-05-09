@@ -159,26 +159,30 @@ export class ChannelService {
         channel.users.push(owner);
         return await this.channelRepository.save(channel);
     }
+    //
+    // async deleteChannel(channelId: number): Promise<any> {
+    //     try {
+    //         const channel = await this.channelRepository.findOne({
+    //             where: { id: channelId },
+    //         });
+    //         if (!channel) {
+    //             throw new HttpException(
+    //                 'Channel with ID ${id} not found to delete channel',
+    //                 HttpStatus.FORBIDDEN,
+    //             );
+    //         }
+    //         await this.channelRepository.remove(channel);
+    //         return;
+    //     } catch (error) {
+    //         throw new HttpException(
+    //             error.message,
+    //             HttpStatus.INTERNAL_SERVER_ERROR,
+    //         );
+    //     }
+    // }
 
-    async deleteChannel(channelId: number): Promise<any> {
-        try {
-            const channel = await this.channelRepository.findOne({
-                where: { id: channelId },
-            });
-            if (!channel) {
-                throw new HttpException(
-                    'Channel with ID ${id} not found to delete channel',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            await this.channelRepository.remove(channel);
-            return;
-        } catch (error) {
-            throw new HttpException(
-                error.message,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-        }
+    async deleteChannel(channel: Channel): Promise<any> {
+        await this.channelRepository.remove(channel);
     }
 
     async addUserToChannel(channelId: number, user: User): Promise<any> {

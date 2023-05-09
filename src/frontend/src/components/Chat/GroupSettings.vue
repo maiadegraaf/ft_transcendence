@@ -10,6 +10,7 @@
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <button @click="doneGroup" class="rounded-full ml-3 hover:shadow-md">Go Back</button>
     </div>
+<!--    <button @click="deleteGroup" class="rounded-full ml-3 hover:shadow-md">Delete Group</button>-->
     <GroupSettingUserList/>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <h2>Users</h2>
@@ -270,6 +271,22 @@ export default defineComponent({
           })
       this.bannedText = ''
     },
+    deleteGroup(): void {
+      this.params.userName = this.userStore.name
+      axios.delete('/api/chat/group', {data: this.params})
+          .then((response) => {
+            console.log(response)
+            if (response.data == true) {
+              this.doneGroup()
+            }
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          })
+    },
+
     // getRole(user: IUser): string {
     //   let str = ''
     //
