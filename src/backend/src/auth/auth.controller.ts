@@ -44,7 +44,6 @@ export class AuthController {
     @UseGuards(FortyTwoAuthGuard)
     async getProfile(@Req() req) {
         const user = req.session.user;
-        console.log(user);
         return user;
     }
 
@@ -57,7 +56,11 @@ export class AuthController {
         );
         req.session.user = user;
         console.log(req.session.user);
-        res.status(HttpStatus.OK).end();
+        if (req.session.user.isTwoFactorAuthenticationEnabled)
+            res.redirect('/2fa/create');
+        else {
+            res.redirect('/2fa');
+        }
     }
 
     @Get('logout')

@@ -10,7 +10,7 @@ be displayed on the user profile -->
 <template>
     <Nav />
     <main v-if="doesProfileExist">
-        <div class="flex flex-col mt-16 items-center w-screen">
+        <div class="flex flex-col mt-16 items-center">
             <div class="w-60 h-60 text-right relative">
                 <img
                     :src="`/api/user/${isProfileSession ? user.id : userData.id}/avatar`"
@@ -95,9 +95,9 @@ export default defineComponent({
         .then((response) => {
             this.userData = response.data;
             this.doesProfileExist = true
-          console.log(this.user.id)
-            if (this.user.id === Number(this.$route.params.id))
-                this.isProfileSession = true
+            if (this.user.id === Number(this.$route.params.id)) {
+              this.isProfileSession = true
+            }
         })
       this.user.socket.emit('checkUserOnline', {
             userId: this.$route.params.id

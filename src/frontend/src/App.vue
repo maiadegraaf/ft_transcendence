@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-screen w-screen bg-dark-purple font-mono">
+    <div class="flex flex-col bg-dark-purple h-screen font-mono">
         <div class="flex-1 w-full mx-auto bg-gradient-to-r from-transparent via-transparent to-dark-purple">
             <router-view v-if="userStore.socket || $route.path ==='/'" :key="$route.fullPath" />
         </div>
