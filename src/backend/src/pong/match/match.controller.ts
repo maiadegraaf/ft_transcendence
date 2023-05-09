@@ -2,6 +2,7 @@ import { Controller, Get, Req } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { Matches } from './match.entity';
 import { UserService } from '../../user/services/user/user.service';
+import {User} from "../../user/user.entity";
 
 @Controller('match')
 export class MatchController {
@@ -13,6 +14,11 @@ export class MatchController {
     @Get()
     async findMatchesByUser(@Req() req): Promise<Matches[]> {
         const user = req.session.user;
+        return this.matchService.findMatchesByPlayer(user);
+    }
+    @Get(':id')
+    async findMatchesByUserId(@Req() req): Promise<Matches[]> {
+        const user = await this.userService.findUserByID(req.params.id);
         return this.matchService.findMatchesByPlayer(user);
     }
 

@@ -13,11 +13,22 @@ export class MatchService {
 
     async addMatch(match: Match) {
         const tmp = new Matches();
+        tmp.id = match.id;
         tmp.player1 = match.player1;
         tmp.player2 = match.player2;
         tmp.player1Score = match.score1;
         tmp.player2Score = match.score2;
-        return await this.MatchRepository.save(tmp);
+        try {
+            const savedMatch = await this.MatchRepository.createQueryBuilder()
+                .insert()
+                .into(Matches)
+                .values(tmp)
+                .execute();
+            return savedMatch.generatedMaps[0] as Matches;
+        } catch (e) {
+            console.log(e);
+            throw new Error('Could not create match');
+        }
     }
 
     async findMatches(): Promise<Matches[]> {
@@ -37,7 +48,7 @@ export class MatchService {
                 player1: true,
                 player2: true,
             },
-            where: [{ player1: player }, { player2: player }],
+            where: [{ player1: {id: player.id} }, { player2: {id: player.id} }],
         });
     }
 

@@ -15,6 +15,7 @@ export const useUserStore = defineStore('user', {
     actions: {
         async loadUser() {
             await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+                console.log(response.data)
                 this.name = response.data.login
                 this.email = response.data.email
                 this.id = response.data.id
@@ -58,6 +59,7 @@ export const useUserStore = defineStore('user', {
                 console.log("Muted removed from channel!")
             })
         },
+
         logOut() {
             this.socket = null
             this.name = ''
