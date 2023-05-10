@@ -81,5 +81,4 @@ export class User {
 
     // @OneToMany(() => Match, (match) => match.loser)
     // lost: Match[];
-
 }

@@ -69,6 +69,9 @@ export default defineComponent({
   methods: {
     changeComponent(component: any): void {
       this.currentComponent = component
+      // if (groupName) {
+      //
+      // }
     },
   },
   // The created hook of the Vue instance.

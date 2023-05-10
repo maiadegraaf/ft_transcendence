@@ -26,3 +26,9 @@ export interface IUser {
     id: number
     login: string
 }
+
+export enum EGroupChannelType {
+    PRIVATE,
+    PUBLIC,
+    PROTECTED,
+}
