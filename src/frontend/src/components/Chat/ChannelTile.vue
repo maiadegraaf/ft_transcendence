@@ -54,7 +54,7 @@ export default defineComponent({
     },
     computed: {
         lastMessage(): string {
-            if (this.ch.messages.length > 0) {
+            if (this.ch.messages?.length > 0) {
                 return this.ch.messages[this.ch.messages.length - 1].text
             }
             return 'No messages'
@@ -70,8 +70,8 @@ export default defineComponent({
         },
         groupSettings(channelId: number, groupId: number, groupName: string): void {
             this.chatStore.setChannelInView(channelId)
-            this.chatStore.setGroupId(groupId)
-            this.chatStore.setGroupName(groupName)
+            // this.chatStore.setGroupId(groupId)
+            // this.chatStore.setGroupName(groupName)
             this.$emit('switch-chat-right-component', GroupSettings)
         }
     }

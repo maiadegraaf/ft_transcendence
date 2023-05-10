@@ -10,7 +10,7 @@ export interface IMessage {
     id: number
     text: string
     sender: IUser
-    channel: number // kan denk ik weg
+    channel: number
 }
 
 export interface IProfile {

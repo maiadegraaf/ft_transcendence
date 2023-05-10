@@ -4,37 +4,35 @@ import { useUserStore } from '@/store/user.store'
 
 export const useChatStore = defineStore('userChannel', {
     state: () => ({
-        invite: '' as string,
         channels: [] as IChannels[] | null,
         channelInView: 0 as number,
-        joined: false as boolean,
-        groupId: -1 as number,
-        groupName: '' as string
     }),
 
     getters: {
-        getChannelInView(state): IMessage[] {
-            //console.log('getChannelInView')
-            if (state.channels == null) {
-                return []
-            }
-            const channelIV = state.channels.find((channel) => channel.id === state.channelInView)
-            if (channelIV == null) {
-                return []
-            }
-            //console.log(channelIV.messages)
+        getChannelInView(state): IChannels | null {
+            const channelIV = state.channels?.find((channel) => channel.id === state.channelInView)
+            if (!channelIV) { return null }
+            return channelIV
+        },
+        getCurrentMessages(): IMessage[] {
+            const channelIV = this.getChannelInView
+            if (channelIV == null) { return [] }
             return channelIV.messages
         },
-        getProfileByChannelId: (state) => (channelId: number) => {
-            if (state.channels == null) {
-                return null
-            }
-            const chnl = state.channels.find((channel) => channel.id === channelId)
-            if (chnl == null || chnl.profile == null) {
-                return null
-            }
-            return chnl.profile
+        getChannelGroupId(): number {
+            const channelIV = this.getChannelInView
+            return channelIV?.profile?.id ?? 0
         },
+        // getProfileByChannelId: (state) => (channelId: number) => {
+        //     if (state.channels == null) {
+        //         return null
+        //     }
+        //     const chnl = state.channels.find((channel) => channel.id === channelId)
+        //     if (chnl == null || chnl.profile == null) {
+        //         return null
+        //     }
+        //     return chnl.profile
+        // },
         getChannelProfileByChannelId: (state) => (channelId: number) => {
             if (state.channels == null) {
                 return null
@@ -91,7 +89,22 @@ export const useChatStore = defineStore('userChannel', {
             }
             this.channels.forEach((channel) => {
                 user.socket.emit('joinRoomById', { channelId: channel.id })
+                this.setChannelName(channel)
             })
+        },
+        setChannelName(channel: IChannels) {
+            const userStore = useUserStore()
+            // console.log(channel)
+            if (channel == null) { return '' }
+            if (channel.profile == null) {
+                if (channel.users[0].id == userStore.id) {
+                    channel.name =  channel.users[1].login
+                } else {
+                    channel.name =  channel.users[0].login
+                }
+            } else {
+                channel.name = channel.profile.name
+            }
         },
         receivedMessage(message: IMessage) {
             if (this.channels == null) {
@@ -150,19 +163,15 @@ export const useChatStore = defineStore('userChannel', {
                     1
                 )
         },
-        setGroupId(groupId: number) {
-            this.groupId = groupId
-        },
-        setGroupName(groupName: string) {
-            this.groupName = groupName
-        },
+        // setGroupId(groupId: number) {
+        //     this.groupId = groupId
+        // },
+        // setGroupName(groupName: string) {
+        //     this.groupName = groupName
+        // },
         logOut() {
-            this.invite = ''
-            this.channels = null
+            this.channels = []
             this.channelInView = 0
-            this.joined = false
-            this.groupId = -1
-            this.groupName = ''
         }
     }
 })

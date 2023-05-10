@@ -4,7 +4,7 @@
     </header>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
         <div class="max-w-full h-full max-h-full flex flex-col-reverse overflow-y-auto">
-            <div v-for="message of chatStore.getChannelInView.slice().reverse()" :key="message.id">
+            <div v-for="message of chatStore.getCurrentMessages.slice().reverse()" :key="message.id">
                 <div :class="posMessage(message.sender.id) + ' block mb-1 mx-2'">
                     <div
                         :class="
