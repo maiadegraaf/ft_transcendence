@@ -242,7 +242,7 @@ export class UserService {
             throw new BadRequestException(err.message);
         });
         if (user.friends.map((user) => user.id).includes(friendID)) {
-            throw new BadRequestException(`User with id ${friendID} is already your friend`);
+            throw new BadRequestException(`${friend.login} is already your friend`);
         }
         user.friends.push(friend);
         await this.userRepository.save(user);
@@ -278,7 +278,7 @@ export class UserService {
             throw new BadRequestException(err.message);
         });
         if (!user.friends.map((user) => user.id).includes(friendID)) {
-            throw new BadRequestException(`User with id ${friendID} is not your friend`);
+            throw new BadRequestException(`Cannot remove ${friend.login}. You are not friends yet.`);
         }
         user.friends = user.friends.filter((user) => user.id !== friendID);
         await this.userRepository.save(user);
