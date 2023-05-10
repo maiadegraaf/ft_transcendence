@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -159,6 +160,7 @@ export class UserController {
             return await this.userService.addFriend(friendID, userID);
         } catch (error) {
             console.log(error);
+            throw new BadRequestException(error.message);
         }
     }
 
