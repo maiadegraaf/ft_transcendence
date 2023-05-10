@@ -1,6 +1,5 @@
 import {
-    HttpException,
-    HttpStatus,
+    BadRequestException,
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
@@ -181,7 +180,7 @@ export class UserService {
 
     async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
         if (!file) {
-            throw new HttpException('File required', HttpStatus.NOT_ACCEPTABLE);
+            throw new BadRequestException('File required');
         }
         const user: User = await this.findUserByID(userId, ['avatar']);
         if (user.avatar) {
@@ -200,7 +199,7 @@ export class UserService {
     async getAvatar(userId: number): Promise<Avatar> {
         const user: User = await this.findUserByID(userId, ['avatar']);
         if (!user.avatar)
-            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('User not found');
         return user.avatar;
     }
 
@@ -210,9 +209,8 @@ export class UserService {
             where: { login: username },
         });
         if (existingUser && existingUser.id !== userId) {
-            throw new HttpException(
-                'Username "${username}" is already taken',
-                HttpStatus.CONFLICT,
+            throw new BadRequestException(
+                `Username "${username}" is already taken`,
             );
         }
         user.login = username;
@@ -225,13 +223,65 @@ export class UserService {
         });
     }
 
-    async addFriend(user: User, friend: User): Promise<User> {
+    async addFriend(userID: number, friendID: number) {
+		if (userID === friendID) {
+            throw new BadRequestException(`You can't add yourself as a friend`);
+        }
+        const user = await this.userRepository.findOne({
+            where: { id: userID },
+            relations: ['friends'],
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userID} not found`);
+        }
+        const friend = await this.userRepository.findOne({
+            where: { id: friendID },
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (user.friends.map((user) => user.id).includes(friendID)) {
+            throw new BadRequestException(`User with id ${friendID} is already your friend`);
+        }
         user.friends.push(friend);
-        return await this.userRepository.save(user);
+        await this.userRepository.save(user);
+        return user;
     }
+    
+	async findFriends(userID: number): Promise<User[]> {
+		const user = await this.userRepository.findOne({
+            where: { id: userID },
+			relations: ['friends'],
+		}).catch((err) => {
+            throw new BadRequestException(`Error fetching user with id ${userID}: ${err.message}`);
+        });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userID} not found`);
+        }
+        return user.friends;
+	}
 
-    // async findFriends(id: number): Promise<User[]> {
-    // 	const user = await this.findUserByID(id, { relations: ['friends'] });
-    // 	return user.friends;
-    // }
+    async removeFriend(userID: number, friendID: number) {
+        const user = await this.userRepository.findOne({
+            where: { id: userID },
+            relations: ['friends'],
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userID} not found`);
+        }
+        const friend = await this.userRepository.findOne({
+            where: { id: friendID },
+        }).catch((err) => {
+            throw new BadRequestException(err.message);
+        });
+        if (!user.friends.map((user) => user.id).includes(friendID)) {
+            throw new BadRequestException(`User with id ${friendID} is not your friend`);
+        }
+        user.friends = user.friends.filter((user) => user.id !== friendID);
+        await this.userRepository.save(user);
+        return user;
+    }
 }

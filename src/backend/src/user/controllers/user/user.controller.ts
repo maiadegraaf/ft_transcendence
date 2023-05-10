@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -39,7 +40,29 @@ export class UserController {
         const users = await this.userService.findAllUsers();
         return users;
     }
+    
+    @Get('/friends')
+    @UseGuards(FortyTwoAuthGuard)
+    async getFriends(
+        @Req() req: any,
+    ) {
+        const userID = req.session.user.id;
+        const Friends = await this.userService.findFriends(userID);
+        Friends.forEach(user => console.log(user.login));
+        return Friends;
+    }
 
+    @Get('/friends/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async getFriendsById(
+        @Param('id', ParseIntPipe) userID: number,
+    ) {
+        // const userID = req.session.user.id;
+        const Friends = await this.userService.findFriends(userID);
+        Friends.forEach(user => console.log(user.login));
+        return Friends;
+    }
+    
     @Get(':id')
     @UseGuards(FortyTwoAuthGuard)
     async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
@@ -80,8 +103,9 @@ export class UserController {
     async updateAvatar(
         @UploadedFile() file: Express.Multer.File, 
         @Param('id', ParseIntPipe) id: number,
-        ): Promise<void> {
+        ): Promise<any> {
         await this.userService.setAvatar(id, file);
+        return { status: 'success', message: 'Avatar updated successfully' };
     }
 
     @Put(':id/username')
@@ -113,31 +137,47 @@ export class UserController {
         await this.userService.deleteUser(id);
     }
 
-    @Get('search')
-    async findUserByUsername(@Query('username') username: string) {
-        const user = await this.userService.findUserByUsername(username);
+    @Get('search/:username')
+    @UseGuards(FortyTwoAuthGuard)
+    async findUserByUsername(@Param('username') username: string) {
+        const user = await this.userService.findUserByUsername(username);    
         if (!user) {
-            return { message: 'User not found' };
+            // return { message: 'User not found' };
+            throw new HttpException('User not found', 404);
         }
         return user;
     }
 
-    @Post(':id/friends/:friendId')
-    async addFrined(
-        @Param('id') id: number,
-        @Param('friendId') friendId: number,
+    @Post('friends/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async addFriend(
+        @Param('id', ParseIntPipe) friendID: number,
+        @Req() req: any,
     ) {
-        const user = await this.userService.findUserByID(id);
-        const friend = await this.userService.findUserByID(friendId);
-
-        if (!user || !friend) {
-            throw new HttpException('User not found', 404);
+        const userID = req.session.user.id;
+        try {
+            await this.userService.addFriend(userID, friendID);
+            return await this.userService.addFriend(friendID, userID);
+        } catch (error) {
+            console.log(error);
+            throw new BadRequestException(error.message);
         }
-        return await this.userService.addFriend(user, friend);
     }
 
-    // @Get('id/friends')
-    // async getFrineds(@Param('id') id: number) {
-    //     return this.userService.findFriends(id);
-    // }
+
+    @Post('unfriend/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async removeFriend(
+        @Param('id', ParseIntPipe) friendID: number,
+        @Req() req: any,
+    ) {
+        const userID = req.session.user.id;
+        try {
+            await this.userService.removeFriend(userID, friendID);
+            return await this.userService.removeFriend(friendID, userID);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 }

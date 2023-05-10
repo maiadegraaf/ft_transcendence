@@ -1,12 +1,3 @@
-<!-- TO DO 
-- fix the XML parsing error when avatar image gets uploaded
-- age refreshes automaticaly when avatarfix that p image gets uploaded
-- Stats (such as: wins and losses, ladder level, achievements, and so forth) have to
-be displayed on the user profile -->
-<!-- - Make a friend list and possible to click on a friend username to show their profile Page
-- Need to implement that the username cannot be similar to another user
-- If so, say: "Username already exists, please choose another one" -->
-
 <template>
     <Nav />
     <main v-if="doesProfileExist">
@@ -56,11 +47,13 @@ be displayed on the user profile -->
     <main v-else class="flex h-screen justify-center items-center">
         <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
     </main>
+    <Friends :is-profile-session="isProfileSession"/>
 </template>
 
 <script lang="ts">
 import axios from 'axios'
 import Nav from '../components/Nav.vue'
+import Friends from '../components/profile/friends.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
 import { defineComponent } from 'vue'
@@ -88,7 +81,8 @@ export default defineComponent({
     components: {
         MatchHistory,
         WinLosses,
-        Nav
+        Nav,
+        Friends
     },
     mounted() {
         axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
