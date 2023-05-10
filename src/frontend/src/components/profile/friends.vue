@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col justify-center items-center mt-16">
-      <div class="border-double border-4 text-buff relative border-buff rounded-md w-[50vw] min-w-[600px] pt-10 p-4">
+      <div class="border-double border-4 text-buff relative border-buff rounded-md w-[50vw] min-w-[600px] pt-10 p-4 bg-dark-purple bg-opacity-60">
         <div v-if="isProfileSession">
           <SearchFriends />
         </div>
@@ -22,15 +22,20 @@ import { defineComponent } from "vue";
 import axios from "axios";
 import SearchFriends from "./SearchFriends.vue";
 import ListFriends from "./ListFriends.vue";
+import {useUserStore} from "@/store/user.store";
 
 interface Friend {
     id: number;
     login: string;
-    // isOnline: boolean;
+    isOnline: boolean;
 }
 
 export default defineComponent({
     name: "Friends",
+    setup() {
+      const user = useUserStore()
+      return { user }
+    },
     props: {
         isProfileSession: {
             type: Boolean,
@@ -46,23 +51,30 @@ export default defineComponent({
             friendList: [] as Friend[],
         };
     },
-    async mounted() {
-        if (this.isProfileSession) {
-            await axios.get('/api/user/friends').then((response) => {
-                this.friendList = Array.from(response.data);
+    async created() {
+        const userID = this.$route.params.id;
+        await axios.get(`/api/user/friends/${userID}`).then((response) => {
+            this.friendList = Array.from(response.data);
+            this.friendList.forEach((friend) => {
+            friend.isOnline = false
+            this.user.socket.emit('checkUserOnline', {
+              userId: friend.id
             })
-            .catch((error) => {
-               console.error('Error:', error.message);
-            });
-        } else {
-            const userID = this.$route.params.id;
-            await axios.get(`/api/user/friends/${userID}`).then((response) => {
-                this.friendList = Array.from(response.data);
+            this.user.socket.on('userOnline', (userId: number) => {
+              console.log(userId)
+              if (userId === friend.id)
+                friend.isOnline = true
             })
-            .catch((error) => {
-               console.error('Error:', error.message);
-            });
-        }
+            this.user.socket.on('userOffline', (userId: number) => {
+              if (userId === friend.id)
+                friend.isOnline = false
+            })
+          });
+        })
+        .catch((error) => {
+           console.error('Error:', error.message);
+        });
+
     },
 });
 </script>

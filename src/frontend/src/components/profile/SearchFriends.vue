@@ -42,21 +42,6 @@ export default defineComponent({
                 window.location.reload();
             } catch (error: any) {
                 if (error.response) {
-                    // request was made, server responded with status code
-                    // that falls out of the range 2xx
-                    this.searchError = error.response.data.message;
-                } else {
-                    // someting happend while setting up the request and triggered an error
-                    this.searchError = `An error occured. Please try again later.`;
-                }
-            }
-        },
-        async removeFriend(friendId: number) {
-            try {
-                await axios.post(`http://localhost:8080/api/user/unfriend/${friendId}`);
-                window.location.reload();
-            } catch (error: any) {
-                if (error.response) {
                     this.searchError = error.response.data.message;
                 } else {
                     this.searchError = `An error occured. Please try again later.`;

@@ -84,7 +84,7 @@ export default defineComponent({
         Nav,
         Friends
     },
-    mounted() {
+    created() {
         axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
             this.userData = response.data
             this.doesProfileExist = true
@@ -95,15 +95,14 @@ export default defineComponent({
         this.user.socket.emit('checkUserOnline', {
             userId: this.$route.params.id
         })
-        this.user.socket.on('userOnline', () => {
-            console.log('user is online')
+        this.user.socket.on('userOnline', (userId: number) => {
+          if (Number(this.$route.params.id) == userId)
             this.isOnline = true
         })
-        this.user.socket.on('userOffline', () => {
-            console.log('user is offline')
+        this.user.socket.on('userOffline', (userId: number) => {
+          if (Number(this.$route.params.id) == userId)
             this.isOnline = false
         })
-        console.log(this.isOnline)
     },
     methods: {
         async handleUploadAvatar() {
