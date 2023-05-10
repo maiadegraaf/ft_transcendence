@@ -34,7 +34,7 @@
 <script lang="ts">
 import GameOver from '@/components/pong/GameOver.vue'
 import Instructions from '@/components/pong/Instructions.vue'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: 'Console',

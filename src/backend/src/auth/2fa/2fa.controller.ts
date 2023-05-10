@@ -49,7 +49,6 @@ export class TwoFactorAuthenticationController {
         @Req() req,
         @Body('token') token: string,
     ): Promise<boolean> {
-        console.log('hereeeeee');
         const userFound = await this.userService.findUserByID(
             req.session.user.id,
         );

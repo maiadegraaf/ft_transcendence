@@ -38,10 +38,15 @@
 <script lang="ts">
 import axios from 'axios'
 import QrcodeVue from 'qrcode.vue'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
+import { useUserStore } from '@/store/user.store'
 
 export default defineComponent({
     name: 'qrCodeComponent',
+    setup() {
+        const userStore = useUserStore()
+        return { userStore }
+    },
     data() {
         return {
             value: '',
@@ -66,8 +71,10 @@ export default defineComponent({
                     token: this.token
                 })
                 .then((response) => {
-                    if (response.data) this.$router.push('/ChooseUsername')
-                    else this.error = 'Wrong Token !'
+                    if (response.data) {
+                        this.userStore.loadUser()
+                        this.$router.push('/ChooseUsername')
+                    } else this.error = 'Wrong Token !'
                 })
         }
     },

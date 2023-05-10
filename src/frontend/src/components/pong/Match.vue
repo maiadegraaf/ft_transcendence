@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import Console from '@/components/pong/Console.vue'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: 'Match',

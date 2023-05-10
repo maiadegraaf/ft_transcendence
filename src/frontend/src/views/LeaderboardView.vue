@@ -8,7 +8,7 @@
 <script lang="ts">
 import Nav from '@/components/Nav.vue'
 import Leaderboard from '@/components/leaderboard/Leaderboard.vue'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: 'LeaderboardView',
