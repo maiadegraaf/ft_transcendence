@@ -40,28 +40,26 @@ export default defineComponent({
             try {
                 await axios.post(`http://localhost:8080/api/user/friends/${friendId}`);
                 window.location.reload();
-            } catch (error) {
-              console.error("Failed to add friend", error);
-              if (typeof error === "string") {
-                this.searchError = error;
-              } else {
-                this.searchError = "Failed to add friend";
-              }
+            } catch (error: any) {
+                if (error.response) {
+                    // request was made, server responded with status code
+                    // that falls out of the range 2xx
+                    this.searchError = error.response.data.message;
+                } else {
+                    // someting happend while setting up the request and triggered an error
+                    this.searchError = `An error occured. Please try again later.`;
+                }
             }
         },
         async removeFriend(friendId: number) {
             try {
                 await axios.post(`http://localhost:8080/api/user/unfriend/${friendId}`);
-                this.friends = this.friends.filter(friend => friend.id !== friendId);
-                this.searchResult = null;
-                this.searchInput = "";
-                this.searchError = null;
-            } catch (error) {
-                console.error("Failed to remove friend", error);
-                if (typeof error === "string") {
-                    this.searchError = error;
+                window.location.reload();
+            } catch (error: any) {
+                if (error.response) {
+                    this.searchError = error.response.data.message;
                 } else {
-                    this.searchError = "Failed to remove friend";
+                    this.searchError = `An error occured. Please try again later.`;
                 }
             }
         },

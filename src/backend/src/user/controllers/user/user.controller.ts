@@ -142,7 +142,6 @@ export class UserController {
     async findUserByUsername(@Param('username') username: string) {
         const user = await this.userService.findUserByUsername(username);    
         if (!user) {
-            // return { message: 'User not found' };
             throw new HttpException('User not found', 404);
         }
         return user;
@@ -160,7 +159,10 @@ export class UserController {
             return await this.userService.addFriend(friendID, userID);
         } catch (error) {
             console.log(error);
-            throw new BadRequestException(error.message);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
         }
     }
 
@@ -177,7 +179,10 @@ export class UserController {
             return await this.userService.removeFriend(friendID, userID);
         } catch (error) {
             console.log(error);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
         }
     }
-
 }
