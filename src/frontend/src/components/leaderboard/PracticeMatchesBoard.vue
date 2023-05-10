@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import PracticeMatchRow from '@/components/leaderboard/PracticeMatchRow.vue'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: 'PracticeMatchesBoard',

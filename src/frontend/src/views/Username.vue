@@ -27,7 +27,7 @@
 
 <script>
 import axios from 'axios'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
     data() {
@@ -56,7 +56,7 @@ export default defineComponent({
                         this.$router.push('/Home')
                     })
                     .catch((error) => {
-                        this.error = "Username already taken ! Or internal error, try again later."
+                        this.error = 'Username already taken ! Or internal error, try again later.'
                     })
             }
         },
@@ -64,8 +64,8 @@ export default defineComponent({
             this.$router.push('/Home')
         }
     },
-    async mounted() {
-        await axios.get('/api/auth/profile').then((response) => {
+    created() {
+        axios.get('/api/auth/profile').then((response) => {
             this.user = response.data
         })
     }

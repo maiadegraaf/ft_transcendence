@@ -8,7 +8,7 @@
             </h3>
             <qrcode-vue class="text-center" :value="value" :size="size" level="H" />
         </div>
-        <div v-if="!value" class="flex flex-col justify-center items-center">
+        <div v-else class="flex flex-col justify-center items-center">
             <h1 class="text-4xl font-semibold text-center">
                 Enter your 2fa token to enter the website:
             </h1>
@@ -19,7 +19,7 @@
                 <input
                     type="text"
                     v-model="token"
-                    class="border rounded mt-3"
+                    class="border rounded mt-3 bg-transparent"
                     name="token"
                     id="token"
                 />
@@ -38,10 +38,15 @@
 <script lang="ts">
 import axios from 'axios'
 import QrcodeVue from 'qrcode.vue'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
+import { useUserStore } from '@/store/user.store'
 
 export default defineComponent({
     name: 'qrCodeComponent',
+    setup() {
+        const userStore = useUserStore()
+        return { userStore }
+    },
     data() {
         return {
             value: '',
@@ -66,8 +71,10 @@ export default defineComponent({
                     token: this.token
                 })
                 .then((response) => {
-                    if (response.data) this.$router.push('/ChooseUsername')
-                    else this.error = 'Wrong Token !'
+                    if (response.data) {
+                        this.userStore.loadUser()
+                        this.$router.push('/ChooseUsername')
+                    } else this.error = 'Wrong Token !'
                 })
         }
     },

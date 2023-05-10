@@ -1,15 +1,15 @@
 <script lang="ts">
 import Nav from '../components/Nav.vue'
-import {useUserStore} from "@/store/user.store";
-import {defineComponent} from "vue";
+import { useUserStore } from '@/store/user.store'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  components: {
-    Nav
-  },
-  setup() {
-      const user = useUserStore()
-      return { user }
+    components: {
+        Nav
+    },
+    setup() {
+        const user = useUserStore()
+        return { user }
     }
 })
 </script>

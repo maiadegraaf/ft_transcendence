@@ -27,7 +27,9 @@ be displayed on the user profile -->
             </div>
             <div class="flex flex-col">
                 <div class="flex justify-center items-center mt-5">
-                    <h2 class="text-blush font-semibold text-5xl text-center">{{isProfileSession ? user.name : userData.login }}</h2>
+                    <h2 class="text-blush font-semibold text-5xl text-center">
+                        {{ isProfileSession ? user.name : userData.login }}
+                    </h2>
                     <svg class="ml-3" height="20" width="20">
                         <circle
                             cx="10"
@@ -61,10 +63,9 @@ import axios from 'axios'
 import Nav from '../components/Nav.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
 import MatchHistory from '@/components/profile/MatchHistory.vue'
-import {useUserStore} from "@/store/user.store";
-
+import { useUserStore } from '@/store/user.store'
 
 export default defineComponent({
     setup() {
@@ -78,9 +79,9 @@ export default defineComponent({
             doesProfileExist: false,
             isProfileSession: false,
             userData: {
-              id: 0,
-              login: '',
-              email: ''
+                id: 0,
+                login: '',
+                email: ''
             }
         }
     },
@@ -90,27 +91,25 @@ export default defineComponent({
         Nav
     },
     mounted() {
-      axios
-        .get('http://localhost:8080/api/user/' + this.$route.params.id)
-        .then((response) => {
-            this.userData = response.data;
+        axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
+            this.userData = response.data
             this.doesProfileExist = true
             if (this.user.id === Number(this.$route.params.id)) {
-              this.isProfileSession = true
+                this.isProfileSession = true
             }
         })
-      this.user.socket.emit('checkUserOnline', {
+        this.user.socket.emit('checkUserOnline', {
             userId: this.$route.params.id
         })
-      this.user.socket.on('userOnline', () => {
+        this.user.socket.on('userOnline', () => {
             console.log('user is online')
             this.isOnline = true
         })
-      this.user.socket.on('userOffline', () => {
+        this.user.socket.on('userOffline', () => {
             console.log('user is offline')
             this.isOnline = false
         })
-      console.log(this.isOnline)
+        console.log(this.isOnline)
     },
     methods: {
         async handleUploadAvatar() {
