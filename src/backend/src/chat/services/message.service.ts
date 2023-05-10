@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { createQueryBuilder, Repository } from 'typeorm';
 import { Message } from '../entities/message.entity';
 import { UserService } from '../../user/services/user/user.service';
 import { ChannelService } from './channel.service';
@@ -17,32 +17,20 @@ export class MessageService {
 
     // add the channel id to this
     async createMessage(payload: MessageDto): Promise<Message> {
-        try {
-            const message = new Message();
-            const sender = await this.userService.findUserByID(
-                payload.sender.id,
+        const message = new Message();
+        const sender = await this.userService.findUserByID(payload.sender.id);
+        if (!sender) {
+            throw new HttpException(
+                'could not find user',
+                HttpStatus.FORBIDDEN,
             );
-            if (!sender) {
-                throw new HttpException(
-                    'could not find user',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            message.sender = sender;
-            const channel = await this.channelService.getChannelById(
-                payload.channel,
-            );
-            if (!channel) {
-                console.log(payload);
-                throw new HttpException(
-                    'could not find user',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            message.channel = channel;
-            message.text = payload.text;
-            return await this.messageRepository.save(message);
-        } catch {}
+        }
+        message.sender = sender;
+        const channel =
+            await this.channelService.isSenderValidatedReturnChannel(payload);
+        message.channel = channel;
+        message.text = payload.text;
+        return await this.messageRepository.save(message);
     }
 
     async getMessageById(messageId: number): Promise<any> {
@@ -52,6 +40,7 @@ export class MessageService {
         });
         return message;
     }
+
     //
     // async getMessagesByChannelID(id: number): Promise<Message[]> {
     //   return await this.messageRepository.find({

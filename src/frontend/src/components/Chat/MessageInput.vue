@@ -1,28 +1,36 @@
 <template>
-    <footer class="bg-normal w-full min-h-10">
+    <footer class="bg-dark-purple border-buff border w-full min-h-10">
         <div class="p-3 flex">
             <div class="flex-1 p-1 bg-white rounded-md">
                 <input
                     v-model="text"
                     placeholder="Type a message..."
-                    class="w-full focus:outline-none"
+                    class="w-full text-black focus:outline-none"
                     @keyup.enter="sendMessage"
                 />
             </div>
-            <button @click="sendMessage" class="rounded-full ml-3 hover:shadow-md">></button>
+            <button @click="sendMessage" class="ml-3">
+                <PaperAirplaneIcon class="h-8 w-8 text-buff" />
+            </button>
         </div>
     </footer>
 </template>
 
 <script lang="ts">
-import { UserChatStore } from '@/store/store'
-import type { IMessage } from '@/store/types'
+import { useChatStore } from '@/store/channel.store'
+import { useUserStore } from '@/store/user.store'
+import { PaperAirplaneIcon } from '@heroicons/vue/24/outline'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
     name: 'MessageInput',
+    components: {
+        PaperAirplaneIcon
+    },
     setup() {
-        const chatStore = UserChatStore()
-        return { chatStore }
+        const chatStore = useChatStore()
+        const userStore = useUserStore()
+        return { chatStore, userStore }
     },
     data(): any {
         return {
@@ -36,8 +44,8 @@ export default {
         }
     },
     mounted() {
-        this.sender.id = this.chatStore.userId
-        this.sender.login = this.chatStore.name
+        this.sender.id = this.userStore.id
+        this.sender.login = this.userStore.name
         console.log(this.$data)
     },
     methods: {
@@ -45,13 +53,13 @@ export default {
             // Validates the input before sending the message.
             this.channel = this.chatStore.channelInView
             if (this.text.length > 0) {
-                this.chatStore.socket.emit('msgToServer', this.$data)
+                this.userStore.socket.emit('msgToServer', this.$data)
                 // Resets the input field.
                 this.text = ''
             }
         }
     }
-}
+})
 </script>
 
 <style scoped></style>

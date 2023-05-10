@@ -6,6 +6,7 @@
             <input
                 type="text"
                 v-model="newUserName"
+                @keyup.enter="changeUsername"
                 class="border rounded mt-3 appearance-none bg-transparent"
             />
         </div>
@@ -26,8 +27,9 @@
 
 <script>
 import axios from 'axios'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
     data() {
         return {
             newUserName: '',
@@ -43,15 +45,18 @@ export default {
         }
     },
     methods: {
-        changeUsername() {
+        async changeUsername() {
             if (this.newUserName.trim().length === 0) this.error = "The username can't be empty !"
             else {
-                axios
+                await axios
                     .post('/api/user/username', {
                         username: this.newUserName
                     })
                     .then((response) => {
                         this.$router.push('/Home')
+                    })
+                    .catch((error) => {
+                        this.error = 'Username already taken ! Or internal error, try again later.'
                     })
             }
         },
@@ -59,12 +64,12 @@ export default {
             this.$router.push('/Home')
         }
     },
-    async mounted() {
-        await axios.get('/api/auth/profile').then((response) => {
+    created() {
+        axios.get('/api/auth/profile').then((response) => {
             this.user = response.data
         })
     }
-}
+})
 </script>
 
 <style scoped></style>

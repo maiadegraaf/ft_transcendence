@@ -14,10 +14,12 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
     name: 'PracticeMatchRow',
     props: ['played', 'wins', 'color', 'whitespace', 'difficulty']
-}
+})
 </script>
 
 <style scoped>

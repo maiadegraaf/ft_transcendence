@@ -7,13 +7,14 @@
 
 <script lang="ts">
 import Nav from '../components/Nav.vue'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
     name: '404',
     components: {
         Nav
     }
-}
+})
 </script>
 
 <style scoped></style>

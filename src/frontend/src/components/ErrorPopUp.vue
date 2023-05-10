@@ -24,7 +24,9 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
     data() {
         return {
             showPopup: false,
@@ -40,5 +42,5 @@ export default {
             this.showPopup = false
         }
     }
-}
+})
 </script>

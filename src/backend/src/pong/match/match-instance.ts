@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { Match } from './match';
-import { Direction, GameState } from '../enums';
+import { GameState } from '../enums';
 import { Ball } from '../interfaces/ball.interface';
 import { Player } from '../interfaces/player.interface';
 import { Info } from '../interfaces/info.interface';
@@ -21,8 +21,7 @@ export class MatchInstance {
     private player1: Player = this.gameTools.player1;
     private player2: Player = this.gameTools.player2;
 
-    constructor(server: Server, match: Match) {
-        this.server = server;
+    constructor(match: Match) {
         this.match = match;
     }
 

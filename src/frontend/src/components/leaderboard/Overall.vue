@@ -27,8 +27,11 @@
                     class="text-dark-purple row-both"
                     :class="currentUser === item.user.id ? 'bg-buff' : 'bg-vista-blue'"
                 >
-                    {{ item.user ? item.user.login : '' }}
+                    <a :href="'/profile/' + item.user.id">
+                        {{ item.user ? item.user.login : '' }}
+                    </a>
                 </td>
+
                 <td>{{ whitespace }}</td>
                 <td
                     class="w-[85px] row-left bg-dark-purple border-t-2 border-b-2 border-l-2 shadow-lg"
@@ -76,10 +79,12 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
     name: 'Overall',
     props: ['leaderboardData', 'currentUser', 'whitespace']
-}
+})
 </script>
 
 <style scoped></style>

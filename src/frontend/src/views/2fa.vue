@@ -19,7 +19,9 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
     name: 'TwoFA',
     created() {},
     methods: {
@@ -30,5 +32,5 @@ export default {
             this.$router.push('/2fa/create')
         }
     }
-}
+})
 </script>

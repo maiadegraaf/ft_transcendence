@@ -45,8 +45,9 @@
 
 <script lang="ts">
 import PracticeMatchRow from '@/components/leaderboard/PracticeMatchRow.vue'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
     name: 'PracticeMatchesBoard',
     components: { PracticeMatchRow },
     props: ['practiceMatchData', 'currentUser', 'whitespace'],
@@ -58,7 +59,7 @@ export default {
             expert: '#1942B3'
         }
     }
-}
+})
 </script>
 
 <style scoped></style>

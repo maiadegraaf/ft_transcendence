@@ -14,9 +14,7 @@ import { authenticator } from 'otplib';
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthenticationController {
-    constructor(
-        private userService: UserService,
-    ) {}
+    constructor(private userService: UserService) {}
 
     @Post('generate')
     async generate2FASecret(

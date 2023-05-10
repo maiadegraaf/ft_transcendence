@@ -10,26 +10,21 @@ import {
 import { Server, Socket } from 'socket.io';
 import { PongService } from '../pong.service';
 import { Info } from '../interfaces/info.interface';
+import { UseGuards } from '@nestjs/common';
+import { websocketGuard } from '../../auth/auth.guard';
 
 @WebSocketGateway({
     cors: { origin: '*' },
 })
-export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
+@UseGuards(websocketGuard)
+export class PongGateway implements OnGatewayDisconnect {
     constructor(private readonly pongService: PongService) {}
 
     @WebSocketServer() server: Server;
-    handleConnection(@ConnectedSocket() client: Socket): void {
-        const userId = client.handshake.query.userId;
-        console.log('Client Connected ' + client.id);
-        this.pongService.handleConnection(client, userId);
-    }
-
-    handleDisconnect(@ConnectedSocket() client: Socket): void {
-        this.pongService.handleDisconnect(client);
-    }
 
     @SubscribeMessage('disconnect')
     handleDisconnectMessage(@ConnectedSocket() client: Socket): void {
+        console.log('Client Disconnected ' + client.id);
         this.pongService.handleDisconnect(client);
     }
 
@@ -54,18 +49,21 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.pongService.handleMove(client, data);
     }
 
-    @SubscribeMessage('create match')
+    @SubscribeMessage('bind')
+    handleAddSocketToPlayer(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() userId: number,
+    ): void {
+        this.pongService.addSocketIdToUser(userId, client);
+    }
+
+    @SubscribeMessage('createMatch')
     handleCreateMatch(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any,
     ): void {
         this.pongService.handleCreateMatch(client, data.player1, data.player2);
     }
-
-    // @SubscribeMessage('start')
-    // handleStart(): void {
-    //     this.pongService.handleStart();
-    // }
 
     @SubscribeMessage('start practice')
     handleStartPractice(
@@ -75,7 +73,21 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.pongService.handlePracticeMode(client, data);
     }
 
+    handleDisconnect(@ConnectedSocket() client: Socket): void {
+        this.pongService.handleDisconnect(client);
+    }
+
     afterInit(@ConnectedSocket() client: Socket): void {
         setInterval(() => this.pongService.tick(client), 1000 / 60);
+    }
+
+    handleConnection(@ConnectedSocket() client: Socket): void {
+        if (!client.request.session.user) {
+            client.disconnect();
+            return;
+        }
+        const userId = client.request.session.user.id;
+        this.pongService.handleConnection(client, userId);
+        console.log('Pong connected');
     }
 }

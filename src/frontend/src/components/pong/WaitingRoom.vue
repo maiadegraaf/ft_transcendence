@@ -4,14 +4,17 @@
 </template>
 
 <script lang="ts">
-export default {
-    props: ['userId', 'socket'],
+import { defineComponent } from 'vue'
+
+export default defineComponent({
     name: 'WaitingRoom',
+    props: ['socket', 'userId'],
     mounted() {
         this.socket.emit('joinMatchmaking', this.userId)
 
         this.socket.on('opponentFound', (matchId: number) => {
             console.log('Opponent found')
+            console.log(matchId)
             this.$emit('opponent-found', matchId)
         })
     },
@@ -21,7 +24,7 @@ export default {
             this.$emit('leave-matchmaking')
         }
     }
-}
+})
 </script>
 
 <style scoped></style>

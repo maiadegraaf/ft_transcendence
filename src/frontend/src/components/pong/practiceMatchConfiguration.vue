@@ -32,15 +32,18 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue'
+
 interface practiceSettingsInterface {
     score: number
     selectedDifficulty: string
     userId: string
 }
 
-export default {
+export default defineComponent({
     name: 'practiceMatchConfiguration',
     props: ['userId'],
+
     data() {
         return {
             winningScore: 10,
@@ -63,7 +66,7 @@ export default {
             this.$emit('back')
         }
     }
-}
+})
 </script>
 
 <style scoped></style>
