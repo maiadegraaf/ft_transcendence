@@ -21,16 +21,8 @@
                     <h2 class="text-blush font-semibold text-5xl text-center">
                         {{ isProfileSession ? user.name : userData.login }}
                     </h2>
-                    <svg class="ml-3" height="20" width="20">
-                        <circle
-                            cx="10"
-                            cy="10"
-                            r="4"
-                            :stroke="isOnline ? 'green' : 'red'"
-                            stroke-width="3"
-                            :fill="isOnline ? 'green' : 'red'"
-                        />
-                    </svg>
+                    <div v-if="isOnline == true" class="ml-4 w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div v-else class="ml-4 w-3 h-3 bg-red-500 rounded-full"></div>
                 </div>
                 <button
                     v-if="isProfileSession"
@@ -46,7 +38,7 @@
         <Friends :is-profile-session="isProfileSession"/>
     </main>
     <main v-else class="flex h-screen justify-center items-center">
-        <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
+      <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
     </main>
 </template>
 
@@ -84,7 +76,7 @@ export default defineComponent({
         Nav,
         Friends
     },
-    mounted() {
+    created() {
         axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
             this.userData = response.data
             this.doesProfileExist = true
@@ -95,15 +87,14 @@ export default defineComponent({
         this.user.socket.emit('checkUserOnline', {
             userId: this.$route.params.id
         })
-        this.user.socket.on('userOnline', () => {
-            console.log('user is online')
+        this.user.socket.on('userOnline', (userId: number) => {
+          if (Number(this.$route.params.id) == userId)
             this.isOnline = true
         })
-        this.user.socket.on('userOffline', () => {
-            console.log('user is offline')
+        this.user.socket.on('userOffline', (userId: number) => {
+          if (Number(this.$route.params.id) == userId)
             this.isOnline = false
         })
-        console.log(this.isOnline)
     },
     methods: {
         async handleUploadAvatar() {

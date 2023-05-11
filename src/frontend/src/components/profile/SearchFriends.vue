@@ -1,35 +1,32 @@
 <template>
     <div class="search-friends">
         <div class="flex flex-col items-center justify-center">
-            <label class="text-2xl mb-2 font-semibold">Search new friends by username:</label>
-            <p class="h-1 mb-2 p-2 font-bold text-blush">{{ searchError }}</p>
+            <label class="text-xl mb-2 font-semibold uppercase">Search new friends by username:</label>
             <input 
                 type="text"
                 v-model="searchInput"
-                class="border rounded mt-3 appearance-none bg-transparent"
+                class="border rounded mt-3 appearance-none bg-transparent "
                 @keyup.enter="searchForUser"
             />
-            <div v-if="searchResult">
-                <span>{{ searchResult.login }}</span>
-                <button @click="addFriend(searchResult?.id ?? -1)">+</button>
-                <button @click="removeFriend(searchResult?.id ?? -1)">-</button>
+            <div class="h-10 flex items-center">
+                <p v-if="searchError" class="font-bold text-blush">{{ searchError }}</p>
+                <span class="pr-3 font-semibold" v-if="searchResult && !searchError">{{ searchResult.login }}</span>
+                <button class="text-xs border rounded-md p-0.5 px-2 border-buff cursor-pointer hover:opacity-60 transition-opacity" v-if="searchResult && !searchError" @click="addFriend(searchResult?.id)">add</button>
             </div>
-            <!-- <div v-if="searchError">
-                <span>{{ searchError }}</span>
-            </div> -->
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
+import {defineComponent} from "vue";
 
 interface User {
     id: number;
     login: string;
 }
 
-export default {
+export default defineComponent({
     data() {
         return {
             friends: [] as User[],
@@ -42,21 +39,6 @@ export default {
         async addFriend(friendId: number) {
             try {
                 await axios.post(`http://localhost:8080/api/user/friends/${friendId}`);
-                window.location.reload();
-            } catch (error: any) {
-                if (error.response) {
-                    // request was made, server responded with status code
-                    // that falls out of the range 2xx
-                    this.searchError = error.response.data.message;
-                } else {
-                    // someting happend while setting up the request and triggered an error
-                    this.searchError = `An error occured. Please try again later.`;
-                }
-            }
-        },
-        async removeFriend(friendId: number) {
-            try {
-                await axios.post(`http://localhost:8080/api/user/unfriend/${friendId}`);
                 window.location.reload();
             } catch (error: any) {
                 if (error.response) {
@@ -82,6 +64,6 @@ export default {
             }
         },
     },
-}
+});
 
 </script>

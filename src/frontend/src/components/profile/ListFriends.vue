@@ -1,27 +1,32 @@
 <template>
-    <div class="friends-list">
-        <h2 class="text-2xl font-bold mb-4">Friends</h2>
+    <div v-if="friendList.length != 0" class="friends-list">
         <ul>
-            <li v-for="friend in friendList" :key="friend.id" class="friend-row">
-                <img :src="`/api/user/${friend.id}/avatar`" alt="Avatar" class="avatar">
-                <!-- <span class="friend-name">  {{ friend.login  }}</span> -->
-                <a :href="`/Profile/${friend.id}`" class="friend-name">{{ friend.login }}</a>
+            <li v-for="friend in friendList" :key="friend.id" class="flex items-center p-2 m-4 border rounded-md border-buff">
+                <img :src="`/api/user/${friend.id}/avatar`" alt="Avatar" class="rounded-full w-12">
+                <a :href="`/Profile/${friend.id}`" class="pl-4 text-xl font-semibold">{{ friend.login }}</a>
+                <div v-if="friend.isOnline == true" class="ml-4 w-3 h-3 bg-green-500 rounded-full"></div>
+                <div v-else class="ml-4 w-3 h-3 bg-red-500 rounded-full"></div>
+                <button v-if="isProfileSession" @click="removeFriend(friend.id)" class="ml-auto border-2 border-blush border-double text-blush font-bold py-2 px-4 rounded hover:opacity-60 transition-opacity">REMOVE</button>
             </li>
         </ul>
+    </div>
+    <div v-else class="text-center m-4">
+        <h1 class="text-3xl text-buff font-bold">No friends :((</h1>
     </div>
 </template>
 
 
 <script lang="ts">
 import axios from 'axios';
+import {defineComponent} from "vue";
 
 interface Friend {
     id: number;
     login: string;
-    // isOnline: boolean;
+    isOnline: boolean;
 }
 
-export default {
+export default defineComponent({
     props: {
         isProfileSession: {
             type: Boolean,
@@ -33,32 +38,24 @@ export default {
         },
     },
     data() {
-        return {};
+        return {
+            searchError: '',
+        };
     },
-};
+  methods: {
+    async removeFriend(friendId: number) {
+      try {
+        await axios.post(`http://localhost:8080/api/user/unfriend/${friendId}`);
+        window.location.reload();
+      } catch (error: any) {
+        if (error.response) {
+          this.searchError = error.response.data.message;
+        } else {
+          this.searchError = `An error occured. Please try again later.`;
+        }
+      }
+    },
+  },
+});
 </script>
-  
-<style scoped>
-.friend-row {
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-}
 
-.friend-row:last-child {
-    margin-bottom: 0;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 1rem;
-    object-fit: cover;
-}
-
-.friend-name {
-    flex-grow: 1;
-    text-align: left;
-}
-</style>

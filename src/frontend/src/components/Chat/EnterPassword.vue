@@ -1,0 +1,82 @@
+<template>
+  <div class="p-3 flex">
+    <button @click="goBack" class="rounded-full ml-3 hover:shadow-md">Go Back</button>
+  </div>
+  <div class="p-3 flex">
+    <div class="flex-1 p-1 bg-white rounded-md">
+      <input v-model="passwordText" placeholder="Enter Password" class="w-full focus:outline-none">
+    </div>
+    <button @click="enterPassword" class="rounded-full ml-3 hover:shadow-md">go</button>
+  </div>
+  <!--  search for existing public group-->
+</template>
+
+<script lang="ts">
+import {useChatStore} from "../../store/channel.store";
+import axios from "axios";
+import MessageList from "@/components/Chat/MessageList.vue";
+import {useUserStore} from "@/store/user.store";
+import { EGroupChannelType } from "@/types/types";
+import {defineComponent} from "vue";
+
+export default defineComponent({
+  name: "EnterPassword",
+  // props: ['chatStore']
+  setup() {
+    const chatStore = useChatStore()
+    const user = useUserStore()
+    // chatStore.setupChatStore()
+    return { chatStore, user }
+  },
+  data(): any {
+    return {
+      passwordText: '',
+    }
+  },
+  async mounted() {
+  },
+  methods: {
+    enterPassword(): void {
+      if (this.passwordText === '') {
+        this.passwordText = ''
+        return
+      }
+      const param = {
+        userId: this.user.id,
+        userName: this.user.name,
+        groupId: this.chatStore.groupId,
+        password: this.passwordText,
+      }
+      console.log('test')
+      console.log(param)
+      axios.post('/api/chat/group/user/password', param)
+        .then((res) => {
+
+          console.log(res)
+          if (res.data === true) {
+            this.$emit('switch-chat-right-component', MessageList)
+          } else {
+            alert('wrong password')
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      this.passwordText = ''
+      this.$emit('switch-chat-right-component', MessageList)
+    },
+    goBack(): void {
+      // leave chat reuqest
+      this.$emit('switch-chat-right-component', MessageList)
+    },
+  }
+})
+</script>
+
+<style scoped>
+
+input {
+  color: black;
+}
+
+</style>

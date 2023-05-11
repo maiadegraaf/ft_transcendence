@@ -45,6 +45,8 @@ export class CreateDmChannelDto {
 export class CreateGroupChannelDto {
     userId: number;
     groupName: string;
+    type: EGroupChannelType;
+    password?: string;
 }
 
 export class addUserToChanelDto {
@@ -57,4 +59,22 @@ export class GroupUserProfileUpdateDto {
     userName: string;
     groupId: number;
     channelId: number;
+}
+
+export class JoinGroupProtectedDto {
+    userId: number;
+    userName: string;
+    groupId: number;
+    password: string;
+}
+
+export class JoinGroupDto {
+    userId: number;
+    groupName: string;
+}
+
+export enum EGroupChannelType {
+    PRIVATE,
+    PUBLIC,
+    PROTECTED,
 }

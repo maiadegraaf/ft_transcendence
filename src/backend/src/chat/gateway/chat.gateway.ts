@@ -130,9 +130,9 @@ export class ChatGateway
         @Body() payload: { userId: number },
     ) {
         if (this.clientMap.has(parseInt(payload.userId.toString()))) {
-            client.emit('userOnline', { userId: payload.userId });
+            client.emit('userOnline', payload.userId);
         } else {
-            client.emit('userOffline', { userId: payload.userId });
+            client.emit('userOffline', payload.userId);
         }
     }
 
@@ -199,17 +199,21 @@ export class ChatGateway
         channel: Channel,
         user: User,
     ): Promise<any> {
-        const userSocket = this.getClientSocketById(user.id);
-        if (!userSocket) {
-            throw new HttpException(
-                'User is not connected to chat',
-                HttpStatus.FORBIDDEN,
+        try {
+            const userSocket = this.getClientSocketById(user.id);
+            if (!userSocket) {
+                throw new HttpException(
+                    'User is not connected to chat',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            userSocket.emit('removeChannelFromClient', channel.id);
+            this.logger.log(
+                'emit deleteChannelFromClient form owner: ' + userSocket.id,
             );
+        } catch (error) {
+            this.logger.error(error);
         }
-        userSocket.emit('removeChannelFromClient', channel.id);
-        this.logger.log(
-            'emit deleteChannelFromClient form owner: ' + userSocket.id,
-        );
     }
 
     async emitAddAdminToChannel(info: {

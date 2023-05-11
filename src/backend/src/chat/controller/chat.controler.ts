@@ -109,7 +109,6 @@ export class ChatController {
         @Body(new ValidationPipe()) param: CreateGroupChannelDto,
     ): Promise<any> {
         try {
-            console.log('param: ' + JSON.stringify(param));
             // not safe user by id
             const owner = await this.userService.getUserById(param.userId);
             if (!owner) {
@@ -121,6 +120,8 @@ export class ChatController {
             const channel = await this.channelService.newGroupChannel(
                 owner,
                 param.groupName,
+                param.type,
+                param.password,
             );
             if (!channel) {
                 throw new HttpException(
@@ -129,124 +130,9 @@ export class ChatController {
                 );
             }
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
-            console.log('test4');
             return;
         } catch (error) {
             this.logger.error('postNewGroupChannel: ' + error);
         }
     }
-
-    // Post /api/chat/group/user
-    // @Post('group/user')
-    // async postNewUserToChannel(
-    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
-    // ): Promise<any> {
-    //     try {
-    //         console.log('postNewUserToChannel' + JSON.stringify(param));
-    //         const user = await this.userService.getUserByLogin(param.userName);
-    //         if (!user) {
-    //             throw new HttpException(
-    //                 'Could not find user to add to group channel',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         if (
-    //             await this.groupProfileService.isBlocked(user.id, param.groupId)
-    //         ) {
-    //             throw new HttpException(
-    //                 'User is banned from group',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         const channel = await this.channelService.addUserToChannel(
-    //             param.channelId,
-    //             user,
-    //         );
-    //         await this.chatGateway.emitGroupChannelToUser(channel, user);
-    //     } catch (error) {
-    //         this.logger.error('postNewUserToChannel: ' + error);
-    //     }
-    // }
-
-    // Delete /api/chat/group/user
-    // @Delete('/group/user')
-    // async deleteUserFromChannel(
-    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
-    // ): Promise<any> {
-    //     try {
-    //         const user = await this.userService.getUserByLogin(param.userName);
-    //         if (!user) {
-    //             throw new HttpException(
-    //                 'Could not find user to add to group channel',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         console.log(JSON.stringify(user));
-    //         const channel = await this.channelService.removeUserFromChannel(
-    //             param.channelId,
-    //             user,
-    //         );
-    //         await this.chatGateway.emitDeleteChannelFromUser(channel, user);
-    //         // emit something to user to remove channel from list (maybe update emit)
-    //     } catch (error) {
-    //         this.logger.error('deleteUserFromChannel: ' + error);
-    //     }
-    // }
-
-    // // Post /api/chat/group/user
-    // @Post('group/user')
-    // async postNewUserToChannel(
-    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
-    // ): Promise<any> {
-    //     try {
-    //         console.log('postNewUserToChannel' + JSON.stringify(param));
-    //         const user = await this.userService.getUserByLogin(param.userName);
-    //         if (!user) {
-    //             throw new HttpException(
-    //                 'Could not find user to add to group channel',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         if (await this.groupProfileService.isBlocked(user, param.groupId)) {
-    //             throw new HttpException(
-    //                 'User is banned from group',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         const channel = await this.channelService.addUserToChannel(
-    //             param.channelId,
-    //             user,
-    //         );
-    //         await this.chatGateway.emitGroupChannelToUser(channel, user);
-    //     } catch (error) {
-    //         this.logger.error('postNewUserToChannel: ' + error);
-    //     }
-    // }
-    //
-    // // Delete /api/chat/group/user
-    // @Delete('/group/user')
-    // async deleteUserFromChannel(
-    //     @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
-    // ): Promise<any> {
-    //     try {
-    //         console.log('param: ' + JSON.stringify(param));
-    //         const user = await this.userService.getUserByLogin(param.userName);
-    //         if (!user) {
-    //             throw new HttpException(
-    //                 'Could not find user to add to group channel',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         console.log(JSON.stringify(user));
-    //         const channel = await this.channelService.removeUserFromChannel(
-    //             param.channelId,
-    //             user,
-    //         );
-    //         console.log('channel users: ' + JSON.stringify(channel.users));
-    //         await this.chatGateway.emitDeleteChannelFromUser(channel, user);
-    //         // emit something to user to remove channel from list (maybe update emit)
-    //     } catch (error) {
-    //         this.logger.error('deleteUserFromChannel: ' + error);
-    //     }
-    // }
 }
