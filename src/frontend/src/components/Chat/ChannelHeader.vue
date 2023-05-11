@@ -1,18 +1,17 @@
 <template>
-    <header class="border-buff border border-1 rounded-l-md flex h-16">
-        <div class="h-full w-full">
+    <div class="text-buff flex h-16 justify-between items-center mb-4">
+        <div class="flex items-center">
             <img
                 :src="`/api/user/${user.id}/avatar`"
                 alt="Avatar"
-                class="w-12 h-12 rounded-full object-cover my-[7px] ml-3"
+                class="w-12 h-12 rounded-full object-cover mx-3"
             />
+            <h3 class="text-xl font-semibold">Chats</h3>
         </div>
-        <div class="h-full">
-            <button class="my-[11px]" @click="newChannel">
-                <PlusIcon class="h-10 w-10 mr-3 text-buff" />
-            </button>
-        </div>
-    </header>
+        <button class="hover:opacity-60 transition-opacity" @click="newChannel">
+            <PlusIcon class="h-8 w-8 mr-3 text-buff" />
+        </button>
+    </div>
 </template>
 
 <script lang="ts">

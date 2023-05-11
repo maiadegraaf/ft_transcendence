@@ -30,5 +30,5 @@ export interface IUser {
 export enum EGroupChannelType {
     PRIVATE,
     PUBLIC,
-    PROTECTED,
+    PROTECTED
 }

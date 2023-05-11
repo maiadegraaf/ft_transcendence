@@ -1,11 +1,12 @@
 <template>
-    <div class="flex-1 bg-dark-purple bg-opacity-60 flex flex-col">
-        <div
-            v-for="ch in chatStore.channels"
-            :key="ch.id"
-            class="block border-buff cursor-pointer border-b-2"
-        >
-            <ChannelTile :ch="ch" @switch-chat-right-component="passTrough" />
+    <div class="bg-dark-purple h-full">
+        <div class="grid grid-cols-1 justify-start">
+            <div v-for="ch in chatStore.channels" :key="ch.id" class="cursor-pointer">
+                <ChannelTile :ch="ch" @switch-chat-right-component="passTrough" />
+                <div class="w-full flex justify-center items-center">
+                    <div class="w-2/3 border-b border-buff opacity-70"></div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

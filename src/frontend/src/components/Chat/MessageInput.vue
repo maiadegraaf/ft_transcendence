@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-dark-purple border-buff border w-full min-h-10">
+    <footer class="bg-dark-purple w-full min-h-10">
         <div class="p-3 flex">
             <div class="flex-1 p-1 bg-white rounded-md">
                 <input

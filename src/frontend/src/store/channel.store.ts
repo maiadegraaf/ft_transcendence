@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
-import type {IChannels, IMessage, IUser} from "@/types/types";
-import {useUserStore} from "@/store/user.store";
-
-
+import type { IChannels, IMessage, IUser } from '@/types/types'
+import { useUserStore } from '@/store/user.store'
 
 export const useChatStore = defineStore('userChannel', {
     state: () => ({
@@ -10,8 +8,10 @@ export const useChatStore = defineStore('userChannel', {
         channels: [] as IChannels[] | null,
         channelInView: 0 as number,
         joined: false as boolean,
+        dmId: -1 as number,
+        dmName: '' as string,
         groupId: -1 as number,
-        groupName: '' as string,
+        groupName: '' as string
     }),
 
     getters: {
@@ -20,7 +20,7 @@ export const useChatStore = defineStore('userChannel', {
             if (state.channels == null) {
                 return []
             }
-            const channelIV = state.channels.find(channel => channel.id === state.channelInView)
+            const channelIV = state.channels.find((channel) => channel.id === state.channelInView)
             if (channelIV == null) {
                 return []
             }
@@ -31,7 +31,7 @@ export const useChatStore = defineStore('userChannel', {
             if (state.channels == null) {
                 return null
             }
-            const chnl = state.channels.find(channel => channel.id === channelId)
+            const chnl = state.channels.find((channel) => channel.id === channelId)
             if (chnl == null || chnl.profile == null) {
                 return null
             }
@@ -41,7 +41,7 @@ export const useChatStore = defineStore('userChannel', {
             if (state.channels == null) {
                 return null
             }
-            const chnl = state.channels.find(channel => channel.id === channelId)
+            const chnl = state.channels.find((channel) => channel.id === channelId)
             if (chnl == null || chnl.profile == null) {
                 return null
             }
@@ -51,7 +51,7 @@ export const useChatStore = defineStore('userChannel', {
             if (state.channels == null) {
                 return null
             }
-            const chnl = state.channels.find(channel => channel.id === channelId)
+            const chnl = state.channels.find((channel) => channel.id === channelId)
             if (chnl == null || chnl.profile == null) {
                 return null
             }
@@ -63,7 +63,7 @@ export const useChatStore = defineStore('userChannel', {
             if (state.channels == null) {
                 return str
             }
-            const chnl = state.channels.find(channel => channel.id === state.channelInView)
+            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
             if (chnl == null || chnl.profile == null) {
                 return str
             }
@@ -73,17 +73,17 @@ export const useChatStore = defineStore('userChannel', {
                     str += ' | (Owner)'
                 }
                 if (profile.admin.find((adm) => adm.id === user.id)) {
-                    str +=  ' | (Admin)'
+                    str += ' | (Admin)'
                 }
                 if (profile.muted.find((mtd) => mtd.id === user.id)) {
-                    str +=  ' | (Muted)';
+                    str += ' | (Muted)'
                 }
             }
             return str
         },
         getGroupId(state): number {
             return state.groupId
-        },
+        }
     },
 
     actions: {
@@ -91,16 +91,25 @@ export const useChatStore = defineStore('userChannel', {
             const user = useUserStore()
             const response = await fetch('http://localhost:8080/api/chat/' + user.id)
             this.channels = await response.json()
-            if (this.channels == null) { return }
-            this.channels.forEach(channel => {
-                user.socket.emit('joinRoomById', {channelId: channel.id})
+            if (this.channels == null) {
+                return
+            }
+            console.log(this.channels)
+            this.channels.forEach((channel) => {
+                user.socket.emit('joinRoomById', { channelId: channel.id })
             })
         },
         receivedMessage(message: IMessage) {
-            if (this.channels == null) { return }
-            const channelIndex: number = this.channels.findIndex(channel => channel.id === message.channel)
+            if (this.channels == null) {
+                return
+            }
+            const channelIndex: number = this.channels.findIndex(
+                (channel) => channel.id === message.channel
+            )
             const channel: IChannels | undefined = this.channels[channelIndex]
-            if (channel) { channel.messages.push(message);}
+            if (channel) {
+                channel.messages.push(message)
+            }
             this.channels.unshift(channel as IChannels)
             this.channels.splice(channelIndex + 1, 1)
         },
@@ -111,41 +120,53 @@ export const useChatStore = defineStore('userChannel', {
             const user = useUserStore()
             this.channels?.push(channel)
             await this.setChannelInView(channel.id)
-            user.socket.emit('joinRoomById', {channelId: channel.id})
+            user.socket.emit('joinRoomById', { channelId: channel.id })
         },
         async removeChannel(channelID: number) {
             const user = useUserStore()
             const index = this.channels?.findIndex((ch) => ch.id === channelID)
             if (index && index != -1) {
-                this.channels?.splice(index, 1);
-                user.socket.emit('leaveRoomById', {channelId: channelID})
+                this.channels?.splice(index, 1)
+                user.socket.emit('leaveRoomById', { channelId: channelID })
             }
         },
         async addAdminToChannel(channelId: number, user: IUser) {
-            this.channels?.find(channel => channel.id === channelId)?.profile?.admin.push(user)
+            this.channels?.find((channel) => channel.id === channelId)?.profile?.admin.push(user)
         },
         async removeAdminFromChannel(channelId: number, user: IUser) {
-            this.channels?.find(channel => channel.id === channelId)?.profile?.admin.splice(
-                this.channels?.find(channel => channel.id === channelId)?.profile?.admin.findIndex(
-                    admin => admin.id === user.id
-                ) as number, 1
-            )
+            this.channels
+                ?.find((channel) => channel.id === channelId)
+                ?.profile?.admin.splice(
+                    this.channels
+                        ?.find((channel) => channel.id === channelId)
+                        ?.profile?.admin.findIndex((admin) => admin.id === user.id) as number,
+                    1
+                )
         },
         async addMutedToChannel(channelId: number, user: IUser) {
-            this.channels?.find(channel => channel.id === channelId)?.profile?.muted.push(user)
+            this.channels?.find((channel) => channel.id === channelId)?.profile?.muted.push(user)
         },
         async removeMutedFromChannel(channelId: number, user: IUser) {
-            this.channels?.find(channel => channel.id === channelId)?.profile?.muted.splice(
-                this.channels?.find(channel => channel.id === channelId)?.profile?.muted.findIndex(
-                    muted => muted.id === user.id
-                ) as number, 1
-            )
+            this.channels
+                ?.find((channel) => channel.id === channelId)
+                ?.profile?.muted.splice(
+                    this.channels
+                        ?.find((channel) => channel.id === channelId)
+                        ?.profile?.muted.findIndex((muted) => muted.id === user.id) as number,
+                    1
+                )
         },
         setGroupId(groupId: number) {
             this.groupId = groupId
         },
         setGroupName(groupName: string) {
             this.groupName = groupName
+        },
+        setDmId(dmId: number) {
+            this.dmId = dmId
+        },
+        setDmName(dmName: string) {
+            this.dmName = dmName
         },
         logOut() {
             this.invite = ''
@@ -154,6 +175,8 @@ export const useChatStore = defineStore('userChannel', {
             this.joined = false
             this.groupId = -1
             this.groupName = ''
+            this.dmId = -1
+            this.dmName = ''
         }
     }
 })

@@ -1,24 +1,30 @@
 <template>
-    <header class="border-buff border border-1 rounded-r-md flex h-16">
-        <h2 class="h2">Messages</h2>
-    </header>
-    <div class="flex-1 w-full bg-dark-purple overflow-hidden">
-        <div class="max-w-full h-full max-h-full flex flex-col-reverse overflow-y-auto">
-            <div v-for="message of chatStore.getChannelInView.slice().reverse()" :key="message.id">
-                <div :class="posMessage(message.sender.id) + ' block mb-1 mx-2'">
-                    <div
-                        :class="
-                            'inline box-border font-bold text-sm p-1 rounded-md ' +
-                            colorMessage(message.sender.id)
-                        "
-                    >
-                        {{ message.text }}
+    <div v-if="chatStore.dmId == -1 && chatStore.dmName.length == 0" class="border-buff flex-col h-full border-double border-t-4 flex justify-center items-center">
+        <h2 class="p-3 text-buff font-semibold text-5xl">Welcome to the chat</h2>
+        <p class="text-buff opacity-70">Start by adding a user/group or select one!</p>
+    </div>
+    <div v-else class="border-buff border-double border-t-4 flex flex-col justify-end items-end h-full">
+        <div class="flex-1 w-full">
+            <div class="max-w-full h-full max-h-full flex flex-col-reverse overflow-y-auto">
+                <div
+                    v-for="message of chatStore.getChannelInView.slice().reverse()"
+                    :key="message.id"
+                >
+                    <div :class="posMessage(message.sender.id) + ' block mb-1 mx-4'">
+                        <div
+                            :class="
+                                'inline box-border text-sm p-1 px-4 rounded-xl text-l ' +
+                                colorMessage(message.sender.id)
+                            "
+                        >
+                            {{ message.text }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <MessageInput />
     </div>
-    <MessageInput />
 </template>
 
 <script lang="ts">
@@ -47,9 +53,9 @@ export default defineComponent({
         },
         colorMessage(senderId: number): string {
             if (senderId == this.userStore.id) {
-                return 'bg-amaranth-purple'
+                return 'bg-blush'
             } else {
-                return 'bg-grey-darken-2'
+                return 'bg-gray-700'
             }
         }
     }
