@@ -115,7 +115,7 @@ import axios from 'axios'
 import io from 'socket.io-client'
 import Overall from '@/components/leaderboard/Overall.vue'
 import PracticeMatchBoard from '@/components/leaderboard/PracticeMatchesBoard.vue'
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue'
 
 interface LeaderboardData {
     user: {
@@ -163,9 +163,9 @@ export default defineComponent({
         }
     },
     async mounted() {
-      await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-        this.currentUser = response.data.id
-      })
+        await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+            this.currentUser = response.data.id
+        })
         axios.get('http://localhost:8080/api/leaderboard').then((response) => {
             this.leaderboardData = Array.from(response.data)
         })

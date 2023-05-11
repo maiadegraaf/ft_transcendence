@@ -57,13 +57,13 @@
 
 <script lang="ts">
 import axios from 'axios'
-import {defineComponent} from "vue";
-import {useUserStore} from "@/store/user.store";
+import { defineComponent } from 'vue'
+import { useUserStore } from '@/store/user.store'
 
 export default defineComponent({
     setup() {
-     const user = useUserStore()
-     return {user}
+        const user = useUserStore()
+        return { user }
     },
     methods: {
         async fakeUser(id: number) {

@@ -9,9 +9,9 @@
 
 <script lang="ts">
 import axios from 'axios'
-import {defineComponent} from "vue";
-import {useUserStore} from "@/store/user.store";
-import {useChatStore} from "@/store/channel.store";
+import { defineComponent } from 'vue'
+import { useUserStore } from '@/store/user.store'
+import { useChatStore } from '@/store/channel.store'
 
 export default defineComponent({
     setup() {

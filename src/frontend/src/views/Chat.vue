@@ -49,34 +49,29 @@ export default defineComponent({
     return { chatStore, userStore }
   },
 
-  mounted() {
-    // this.userStore.socket.on('msgToClient', (message: IMessage) => {
-    //   console.log("Message recieved!")
-    //   this.chatStore.receivedMessage(message)
-    // })
-    // this.userStore.socket.on('addChannelToClient', (channel: IChannels) => {
-    //   console.log("Channel recieved!")
-    //   this.chatStore.receivedNewChannel(channel)
-    // })
-    // this.userStore.socket.on('removeChannelFromClient', (channelId: number) => {
-    //   console.log("Channel removed request!")
-    //   this.chatStore.removeChannel(channelId)
-    // })
-  },
-  watch: {
-  },
-  // The methods of the Vue instance.
-  methods: {
-    changeComponent(component: any): void {
-      this.currentComponent = component
-      // if (groupName) {
-      //
-      // }
+    mounted() {
+        // this.userStore.socket.on('msgToClient', (message: IMessage) => {
+        //   console.log("Message recieved!")
+        //   this.chatStore.receivedMessage(message)
+        // })
+        // this.userStore.socket.on('addChannelToClient', (channel: IChannels) => {
+        //   console.log("Channel recieved!")
+        //   this.chatStore.receivedNewChannel(channel)
+        // })
+        // this.userStore.socket.on('removeChannelFromClient', (channelId: number) => {
+        //   console.log("Channel removed request!")
+        //   this.chatStore.removeChannel(channelId)
+        // })
     },
-  },
-  // The created hook of the Vue instance.
-  created(): void {
-  }
+    watch: {},
+    // The methods of the Vue instance.
+    methods: {
+        changeComponent(component: any): void {
+            this.currentComponent = component
+        }
+    },
+    // The created hook of the Vue instance.
+    created(): void {}
 })
 </script>
 

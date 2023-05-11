@@ -1,16 +1,13 @@
 <template>
-<!--  <input type="text" class="text-black" v-model="searchTerm" placeholder="Search User..">-->
-<!--  <div :key="user.login" v-for="user in searchUsers">-->
-<!--    <a v-if="user" href='"/profile/{{user.id}}'>{{ user.login }}</a>-->
-<!--  </div>-->
-
+    <!--  <input type="text" class="text-black" v-model="searchTerm" placeholder="Search User..">-->
+    <!--  <div :key="user.login" v-for="user in searchUsers">-->
+    <!--    <a v-if="user" href='"/profile/{{user.id}}'>{{ user.login }}</a>-->
+    <!--  </div>-->
 </template>
 
 <!--<script lang="ts">-->
 <!--import axios from 'axios'-->
 <!--import {ref, computed, defineComponent} from 'vue'-->
-
-
 
 <!--export default defineComponent({-->
 <!--  data() {-->

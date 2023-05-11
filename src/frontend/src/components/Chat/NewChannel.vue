@@ -17,12 +17,6 @@
     <button @click="newPublicGroupChannel" class="rounded-full ml-3 hover:shadow-md">Public</button>
     <button @click="newProtectedGroupChannel" class="rounded-full ml-3 hover:shadow-md">Protected</button>
   </div>
-<!--  <div class="p-3 flex">-->
-<!--    <div class="flex-1 p-1 bg-white rounded-md">-->
-<!--      <input v-model="passwordText" placeholder="New Password" class="w-full focus:outline-none">-->
-<!--    </div>-->
-<!--&lt;!&ndash;    <button @click="enterPassword" class="rounded-full ml-3 hover:shadow-md">go</button>&ndash;&gt;-->
-<!--  </div>-->
   <div class="p-3 flex">
     <div class="flex-1 p-1 bg-white rounded-md">
       <input v-model="dmText" placeholder="Dm user ..." class="w-full focus:outline-none">

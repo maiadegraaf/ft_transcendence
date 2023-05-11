@@ -60,9 +60,13 @@ export class User {
     })
     socketId: string;
 
-    @ManyToMany(() => User, (user) => user.friends)
+    @ManyToMany(() => User)
     @JoinTable()
     friends: User[];
+
+    // @ManyToMany(() => User)
+    // @JoinTable()
+    // friends: User[];
 
     // @Column({ default: 100 })
     // rank: number;

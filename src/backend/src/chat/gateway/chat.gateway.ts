@@ -130,9 +130,9 @@ export class ChatGateway
         @Body() payload: { userId: number },
     ) {
         if (this.clientMap.has(parseInt(payload.userId.toString()))) {
-            client.emit('userOnline', { userId: payload.userId });
+            client.emit('userOnline', payload.userId);
         } else {
-            client.emit('userOffline', { userId: payload.userId });
+            client.emit('userOffline', payload.userId);
         }
     }
 

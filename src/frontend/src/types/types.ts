@@ -1,16 +1,16 @@
 export interface IChannels {
-  id: number
-  messages: IMessage[]
-  profile: IProfile | null
-  name: string
-  users: IUser[]
+    id: number
+    messages: IMessage[]
+    profile: IProfile | null
+    name: string
+    users: IUser[]
 }
 
 export interface IMessage {
-  id: number
-  text: string
-  sender: IUser
-  channel: number // kan denk ik weg
+    id: number
+    text: string
+    sender: IUser
+    channel: number // kan denk ik weg
 }
 
 export interface IProfile {

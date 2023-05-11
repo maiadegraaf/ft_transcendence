@@ -18,7 +18,11 @@
             />
         </div>
         <div v-if="startPractice && startedBy == user.id">
-            <practice-match :practice-settings="practiceSettings" :socket="user.socket" @reset="reset" />
+            <practice-match
+                :practice-settings="practiceSettings"
+                :socket="user.socket"
+                @reset="reset"
+            />
         </div>
         <button v-if="!waiting && !practiceMode && !startMatch" @click="joinMatch" class="btn">
             Join Match
@@ -46,8 +50,8 @@ import PracticeMatchConfiguration from '@/components/pong/practiceMatchConfigura
 import PracticeMatch from '@/components/pong/PracticeMatch.vue'
 import WaitingRoom from '@/components/pong/WaitingRoom.vue'
 import Match from '@/components/pong/Match.vue'
-import {useUserStore} from "@/store/user.store";
-import {defineComponent} from "vue";
+import { useUserStore } from '@/store/user.store'
+import { defineComponent } from 'vue'
 
 export interface practiceSettingsInterface {
     score: number
@@ -59,10 +63,9 @@ export default defineComponent({
     name: 'pongGame',
     props: ['matchIdProp'],
 
-
-  setup() {
-      const user = useUserStore()
-      return { user }
+    setup() {
+        const user = useUserStore()
+        return { user }
     },
     data(): any {
         return {
@@ -88,18 +91,17 @@ export default defineComponent({
         ErrorPopUp
     },
     created() {
-      // this.currentPlayerId = this.userId
-      console.log("Current player id: " + this.user.id)
+        // this.currentPlayerId = this.userId
+        console.log('Current player id: ' + this.user.id)
 
-      if (this.matchId != 0) {
-        console.log("Match id: " + this.matchId)
-        this.startedBy = this.user.id
-        this.startMatch = true
-      }
+        if (this.matchId != 0) {
+            console.log('Match id: ' + this.matchId)
+            this.startedBy = this.user.id
+            this.startMatch = true
+        }
     },
-  async mounted() {
-
-      this.user.socket.on('MultipleConnections', (msg: string) => {
+    async mounted() {
+        this.user.socket.on('MultipleConnections', (msg: string) => {
             this.$refs.errorPopUp.show('You are already ' + msg)
             this.reset()
         })
@@ -116,7 +118,7 @@ export default defineComponent({
         this.user.socket.emit('disconnect')
         next()
     },
-  methods: {
+    methods: {
         setPracticeMode() {
             this.practiceMode = true
         },

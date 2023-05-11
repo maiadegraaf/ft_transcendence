@@ -10,13 +10,10 @@ export default {
     }
 }
 
-import {createPinia} from "pinia";
+import { createPinia } from 'pinia'
 
 const store = createPinia()
 
 const app = createApp(App)
 
-app
-  .use(router)
-  .use(store)
-  .mount('#app')
+app.use(router).use(store).mount('#app')
