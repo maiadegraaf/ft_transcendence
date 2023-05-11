@@ -5,7 +5,7 @@ import { Channel } from '../entities/channel.entity';
 import { GroupProfileService } from './groupProfile.service';
 import { User } from '../../user/user.entity';
 import { UserService } from '../../user/services/user/user.service';
-import { MessageDto } from '../dtos/chat.dtos';
+import { EGroupChannelType, MessageDto } from '../dtos/chat.dtos';
 
 @Injectable()
 export class ChannelService {
@@ -131,7 +131,12 @@ export class ChannelService {
         return true;
     }
 
-    async newGroupChannel(owner: User, groupName: string): Promise<any> {
+    async newGroupChannel(
+        owner: User,
+        groupName: string,
+        type: EGroupChannelType,
+        password?: string,
+    ): Promise<any> {
         // check if groupName is unique
         console.log('user');
         console.log(owner);
@@ -147,6 +152,8 @@ export class ChannelService {
             owner,
             groupName,
             channel,
+            type,
+            password,
         );
         if (!groupProfile) {
             throw new HttpException(
@@ -183,6 +190,11 @@ export class ChannelService {
 
     async deleteChannel(channel: Channel): Promise<any> {
         await this.channelRepository.remove(channel);
+    }
+
+    async nullifyProfile(channel: Channel): Promise<any> {
+        channel.profile = null;
+        return await this.channelRepository.save(channel);
     }
 
     async addUserToChannel(channelId: number, user: User): Promise<any> {
