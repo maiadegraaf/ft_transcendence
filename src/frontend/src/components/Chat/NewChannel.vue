@@ -23,7 +23,6 @@
     </div>
     <button @click="dmNewUser" class="rounded-full ml-3 hover:shadow-md">dm user</button>
   </div>
-<!--  search for existing public group-->
 </template>
 
 <script lang="ts">

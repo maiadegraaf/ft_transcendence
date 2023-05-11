@@ -88,6 +88,7 @@ export class ChannelService {
         }
         console.log(channels);
         for (const ch of channels) {
+            // something here to filter out the messages
             ch['name'] = await this.getChannelName(ch.id, userId);
         }
         return channels;
@@ -268,5 +269,29 @@ export class ChannelService {
             );
         }
         return channel;
+    }
+
+    async getBlockedList(param: MessageDto): Promise<any> {
+        const channel = await this.channelRepository
+            .createQueryBuilder('channel')
+            .where('channel.id = :id', { id: param.channel })
+            .leftJoinAndSelect('channel.users', 'users')
+            .leftJoin('users.blockedUsers', 'blockedUsers')
+            .andWhere((qb) =>
+                qb
+                    .where('blockedUsers.id != :userId', {
+                        userId: param.sender.id,
+                    })
+                    .orWhere('blockedUsers.id IS NULL'),
+            )
+            .getOne();
+        console.log(channel);
+        if (!channel) {
+            throw new HttpException(
+                'getBlockedList: Channel not found to get blocked list',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return channel.users;
     }
 }

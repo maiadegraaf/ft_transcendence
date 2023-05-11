@@ -22,6 +22,7 @@ import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
+import { ChannelService } from '../services/channel.service';
 
 @WebSocketGateway({
     cors: {
@@ -32,7 +33,10 @@ import { User } from '../../user/user.entity';
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-    constructor(private readonly messageService: MessageService) {}
+    constructor(
+        private readonly messageService: MessageService,
+        private readonly channelService: ChannelService,
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -91,9 +95,16 @@ export class ChatGateway
                 );
             }
             payload.id = message.id;
-            this.server
-                .to('room' + payload.channel)
-                .emit('msgToClient', payload);
+            const users = await this.channelService.getBlockedList(payload);
+            users.forEach((user) => {
+                const socket = this.clientMap.get(user.id);
+                if (socket) {
+                    this.server.to(socket.id).emit('msgToClient', payload);
+                }
+            });
+            // this.server
+            //     .to('room' + payload.channel)
+            //     .emit('msgToClient', payload);
             this.logger.log(
                 `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
             );
