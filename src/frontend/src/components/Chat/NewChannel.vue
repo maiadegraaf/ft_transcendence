@@ -17,12 +17,12 @@
     <button @click="newPublicGroupChannel" class="rounded-full ml-3 hover:shadow-md">Public</button>
     <button @click="newProtectedGroupChannel" class="rounded-full ml-3 hover:shadow-md">Protected</button>
   </div>
-  <div class="p-3 flex">
-    <div class="flex-1 p-1 bg-white rounded-md">
-      <input v-model="passwordText" placeholder="New Password" class="w-full focus:outline-none">
-    </div>
-    <button @click="enterPassword" class="rounded-full ml-3 hover:shadow-md">go</button>
-  </div>
+<!--  <div class="p-3 flex">-->
+<!--    <div class="flex-1 p-1 bg-white rounded-md">-->
+<!--      <input v-model="passwordText" placeholder="New Password" class="w-full focus:outline-none">-->
+<!--    </div>-->
+<!--&lt;!&ndash;    <button @click="enterPassword" class="rounded-full ml-3 hover:shadow-md">go</button>&ndash;&gt;-->
+<!--  </div>-->
   <div class="p-3 flex">
     <div class="flex-1 p-1 bg-white rounded-md">
       <input v-model="dmText" placeholder="Dm user ..." class="w-full focus:outline-none">
@@ -40,6 +40,7 @@ import {useUserStore} from "@/store/user.store";
 import { EGroupChannelType } from "@/types/types";
 import {defineComponent} from "vue";
 import SetPassword from "@/components/Chat/SetPassword.vue";
+import EnterPassword from "@/components/Chat/EnterPassword.vue";
 
 export default defineComponent({
   name: "NewChannel",
@@ -55,7 +56,7 @@ export default defineComponent({
       dmText: '',
       groupText: '',
       joinGroupText: '',
-      passwordText: '',
+      // passwordText: '',
     }
   },
   async mounted() {
@@ -91,10 +92,11 @@ export default defineComponent({
             if (!response.data) {
               this.$emit('switch-chat-right-component', MessageList)
             }
-            this.chatStore.setGroupId(response.data.id)
+            this.chatStore.setGroupId(response.data.groupId)
+            console.log('groupId: ', response.data.groupId)
             if (response.data.type == EGroupChannelType.PROTECTED) {
               console.log('kamaan')
-              this.$emit('switch-chat-right-component', SetPassword)
+              this.$emit('switch-chat-right-component', EnterPassword)
               this.joinGroupText = ''
               return
             }
@@ -106,9 +108,6 @@ export default defineComponent({
             this.$emit('switch-chat-right-component', MessageList)
             return
           });
-      // console.log("door el join")
-      // this.joinGroupText = ''
-      // this.$emit('switch-chat-right-component', MessageList)
     },
     newPrivateGroupChannel(): void {
       // Validates the input before sending the message.
@@ -165,29 +164,8 @@ export default defineComponent({
         this.groupText = ''
         return
       }
-    },
-    enterPassword(): void {
-      if (this.passwordText.length <= 0 || this.groupText.length <= 0) {
-        this.passwordText = ''
-        this.groupText = ''
-        return
-      }
-      const param = {
-        userId: this.user.id,
-        groupName: this.groupText,
-        type: EGroupChannelType.PROTECTED,
-        password: this.passwordText,
-      }
-      axios.post('/api/chat/group', param)
-          .then((response) => {
-            console.log(response)
-            // this.redirectGroupPannel()
-          })
-          .catch((error) => {
-            console.log(error)
-            return
-          });
-      this.passwordText = ''
+      this.chatStore.setGroupName(this.groupText)
+      this.$emit('switch-chat-right-component', SetPassword)
       this.groupText = ''
     },
     goBack(): void {

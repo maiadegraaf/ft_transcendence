@@ -81,6 +81,9 @@ export const useChatStore = defineStore('userChannel', {
             }
             return str
         },
+        getGroupId(state): number {
+            return state.groupId
+        },
     },
 
     actions: {

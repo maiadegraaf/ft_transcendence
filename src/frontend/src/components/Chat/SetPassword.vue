@@ -4,9 +4,9 @@
   </div>
   <div class="p-3 flex">
     <div class="flex-1 p-1 bg-white rounded-md">
-      <input v-model="passwordText" placeholder="New Password" class="w-full focus:outline-none">
+      <input v-model="passwordText" placeholder="Set New Password" class="w-full focus:outline-none">
     </div>
-    <button @click="enterPassword" class="rounded-full ml-3 hover:shadow-md">go</button>
+    <button @click="setPassword" class="rounded-full ml-3 hover:shadow-md">go</button>
   </div>
   <!--  search for existing public group-->
 </template>
@@ -36,29 +36,29 @@ export default defineComponent({
   async mounted() {
   },
   methods: {
-    enterPassword(): void {
-      if (this.passwordText === '') {
+    setPassword(): void {
+      if (this.passwordText.length <= 0 ) {
         this.passwordText = ''
+        this.groupText = ''
         return
       }
       const param = {
-        userId: this.user.userId,
-        userName: this.user.userName,
-        groupId: this.chatStore.groupId,
+        userId: this.user.id,
+        groupName: this.chatStore.groupName,
+        type: EGroupChannelType.PROTECTED,
         password: this.passwordText,
       }
-      axios.post('/api/chat/group/user/password', param)
-        .then((res) => {
-          if (res.data === true) {
-            this.$emit('switch-chat-right-component', MessageList)
-          } else {
-            alert('wrong password')
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      axios.post('/api/chat/group', param)
+          .then((response) => {
+            console.log(response)
+            // this.redirectGroupPannel()
+          })
+          .catch((error) => {
+            console.log(error)
+            return
+          });
       this.passwordText = ''
+      this.chatStore.setGroupName('')
       this.$emit('switch-chat-right-component', MessageList)
     },
     goBack(): void {

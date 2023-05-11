@@ -1,5 +1,5 @@
 <template>
-<!--  create a scrolling list-->
+  <!--  create a scrolling list-->
   <div class="bg-dark-purple p-4 rounded-md overflow-y-auto max-h-64">
     <h2 class="h2">Users</h2>
     <ul>

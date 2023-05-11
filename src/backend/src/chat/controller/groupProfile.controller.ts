@@ -90,6 +90,8 @@ export class GroupProfileController {
                     HttpStatus.FORBIDDEN,
                 );
             }
+            console.log('param: ');
+            console.log(param);
             if (
                 await this.groupProfileService.isBlocked(user.id, param.groupId)
             ) {
