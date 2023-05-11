@@ -12,9 +12,6 @@ export class Avatar {
     @Column({ type: "bytea", nullable: true })
     data: Buffer;
 
-    // HIER VERDER
-    
-    // @OneToOne(() => User, (user) => user.avatar)
     @OneToOne(() => User, (user) => user.avatar, { onDelete: 'CASCADE' })
     @JoinColumn()
     user: User;
