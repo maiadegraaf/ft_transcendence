@@ -1,8 +1,7 @@
 <template>
-  <div class="absolute flex flex-col w-screen h-screen max-h-screen">
     <Nav/>
-    <div class="flex-1 overflow-hidden">
-      <div class="max-w-screen-2xl w-full box-border h-full mx-auto pb-10 flex">
+    <div class="flex-1 overflow-hidden h-3/4">
+      <div class="max-w-screen-2xl w-full box-border h-full mx-auto flex">
         <div class="w-1/4 h-full flex flex-col">
           <ChannelHeader @switch-chat-right-component="changeComponent"/>
           <ChannelList @switch-chat-right-component="changeComponent"/>
@@ -12,7 +11,6 @@
         </div>
         </div>
       </div>
-    </div>
 </template>
 
 <script lang="ts">

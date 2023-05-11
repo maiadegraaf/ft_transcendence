@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-1 bg-dark-purple flex flex-col">
+    <div class="flex-1 bg-dark-purple bg-opacity-60 flex flex-col">
         <div
             v-for="ch in chatStore.channels"
             :key="ch.id"
