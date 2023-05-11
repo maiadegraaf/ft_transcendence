@@ -21,16 +21,8 @@
                     <h2 class="text-blush font-semibold text-5xl text-center">
                         {{ isProfileSession ? user.name : userData.login }}
                     </h2>
-                    <svg class="ml-3" height="20" width="20">
-                        <circle
-                            cx="10"
-                            cy="10"
-                            r="4"
-                            :stroke="isOnline ? 'green' : 'red'"
-                            stroke-width="3"
-                            :fill="isOnline ? 'green' : 'red'"
-                        />
-                    </svg>
+                    <div v-if="isOnline == true" class="ml-4 w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div v-else class="ml-4 w-3 h-3 bg-red-500 rounded-full"></div>
                 </div>
                 <button
                     v-if="isProfileSession"

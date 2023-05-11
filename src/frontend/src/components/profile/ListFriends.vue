@@ -1,5 +1,5 @@
 <template>
-    <div class="friends-list">
+    <div v-if="friendList.length != 0" class="friends-list">
         <ul>
             <li v-for="friend in friendList" :key="friend.id" class="flex items-center p-2 m-4 border rounded-md border-buff">
                 <img :src="`/api/user/${friend.id}/avatar`" alt="Avatar" class="rounded-full w-12">
@@ -9,6 +9,9 @@
                 <button v-if="isProfileSession" @click="removeFriend(friend.id)" class="ml-auto border-2 border-blush border-double text-blush font-bold py-2 px-4 rounded hover:opacity-60 transition-opacity">REMOVE</button>
             </li>
         </ul>
+    </div>
+    <div v-else class="text-center m-4">
+        <h1 class="text-3xl text-buff font-bold">No friends :((</h1>
     </div>
 </template>
 
