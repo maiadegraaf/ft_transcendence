@@ -13,6 +13,9 @@
 <!--    <button @click="deleteGroup" class="rounded-full ml-3 hover:shadow-md">Delete Group</button>-->
     <GroupSettingUserList/>
     <div class="flex-1 w-full bg-dark-purple overflow-hidden">
+      <button @click="leaveGroup" class="rounded-full ml-3 hover:shadow-md">Leave Group</button>
+    </div>
+    <div class="flex-1 w-full bg-dark-purple overflow-hidden">
       <h2>Users</h2>
       <!--      list of users-->
       <input v-model="userText" placeholder="enter user name" class="w-full focus:outline-none">
@@ -271,7 +274,6 @@ export default defineComponent({
           })
       this.bannedText = ''
     },
-
     deleteGroup(): void {
       this.params.userName = this.userStore.name
       axios.delete('/api/chat/group', {data: this.params})
@@ -287,24 +289,19 @@ export default defineComponent({
             return
           })
     },
+    leaveGroup(): void {
+      this.params.userName = this.userStore.name
+      axios.delete('/api/chat/group/leave', {data: this.params})
+          .then((response) => {
+            console.log(response)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      this.$emit('switch-chat-right-component', MessageList)
 
-    // getRole(user: IUser): string {
-    //   let str = ''
-    //
-    //   const profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-    //   if (profile) {
-    //     if (profile.owner.id === user.id) {
-    //       str += ' | (Owner)'
-    //     }
-    //     if (profile.admin.find((adm) => adm.id === user.id)) {
-    //       str +=  ' | (Admin)'
-    //     }
-    //     if (profile.muted.find((mtd) => mtd.id === user.id)) {
-    //       str +=  ' | (Muted)';
-    //     }
-    //   }
-    //   return str;
-    // },
+      // this.doneGroup()
+    },
   },
   created() {
 

@@ -16,6 +16,7 @@ import {
     GroupUserProfileUpdateDto,
 } from '../dtos/chat.dtos';
 import * as bcrypt from 'bcryptjs';
+import { promises } from 'dns';
 
 @Injectable()
 export class GroupProfileService {
@@ -57,6 +58,25 @@ export class GroupProfileService {
         groupProfile.owner = owner;
         groupProfile.type = type;
         return await this.groupProfileRepository.save(groupProfile);
+    }
+
+    async getGroupProfileById(groupId: number): Promise<any> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .where('group.id = :id', { id: groupId })
+            .leftJoin('group.owner', 'owner')
+            .addSelect('owner.id')
+            .leftJoinAndSelect('group.channel', 'channel')
+            .leftJoinAndSelect('group.admin', 'admin')
+            .leftJoinAndSelect('group.blocked', 'blocked')
+            .leftJoinAndSelect('group.muted', 'muted')
+            .leftJoinAndSelect('channel.users', 'users')
+            .getOne();
+        console.log('test');
+        if (!group) {
+            throw new NotFoundException('group profile not found');
+        }
+        return group;
     }
 
     async addAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
@@ -336,5 +356,26 @@ export class GroupProfileService {
             throw new HttpException('wrong password', HttpStatus.FORBIDDEN);
         }
         return group;
+    }
+
+    async reassignOwner(group: GroupProfile, userId: number): Promise<boolean> {
+        let newOwner = group.admin.find((admin) => admin.id !== userId);
+        if (!newOwner) {
+            newOwner = group.channel.users.find((user) => user.id !== userId);
+            if (!newOwner) {
+                return false;
+            }
+        }
+        console.log('newOwner: ', newOwner);
+        group.owner = newOwner;
+        await this.groupProfileRepository.save(group);
+        return true;
+    }
+
+    async removeRoles(group: GroupProfile, userId: number): Promise<any> {
+        group.admin.filter((admin) => admin.id !== userId);
+        // group.blocked.filter((blocked) => blocked.id !== userId);
+        // group.muted.filter((muted) => muted.id !== userId);
+        return await this.groupProfileRepository.save(group);
     }
 }

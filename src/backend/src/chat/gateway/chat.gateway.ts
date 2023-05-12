@@ -220,7 +220,10 @@ export class ChatGateway
             }
             userSocket.emit('removeChannelFromClient', channel.id);
             this.logger.log(
-                'emit deleteChannelFromClient form owner: ' + userSocket.id,
+                'emit deleteChannelFromClient form owner: ' +
+                    userSocket.id +
+                    ' with userId: ' +
+                    user.id,
             );
         } catch (error) {
             this.logger.error(error);
