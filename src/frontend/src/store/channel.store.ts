@@ -70,13 +70,13 @@ export const useChatStore = defineStore('userChannel', {
             const profile = chnl.profile
             if (profile) {
                 if (profile.owner.id === user.id) {
-                    str += ' | (Owner)'
+                    str += ' Owner'
                 }
                 if (profile.admin.find((adm) => adm.id === user.id)) {
-                    str += ' | (Admin)'
+                    str += ' Admin'
                 }
                 if (profile.muted.find((mtd) => mtd.id === user.id)) {
-                    str += ' | (Muted)'
+                    str += ' Muted'
                 }
             }
             return str

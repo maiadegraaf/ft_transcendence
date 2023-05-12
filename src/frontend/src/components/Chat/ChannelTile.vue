@@ -2,7 +2,7 @@
     <div v-if="ch.profile" class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }">
         <div class="flex w-full" @click="toView(ch.id, null, ch.name)">
             <img
-                class="rounded-full w-14 aspect-square"
+                class="rounded-full w-14 object-cover aspect-square"
                 :src="`api/user/${avatarId}/avatar`"
                 alt="avatar"
             />
@@ -23,7 +23,7 @@
     <div v-else class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }">
         <div class="flex w-full" @click="toView(ch.id, ch.users, ch.name)">
             <img
-                class="rounded-full w-14 aspect-square"
+                class="rounded-full w-14 object-cover aspect-square"
                 :src="`api/user/${avatarId}/avatar`"
                 alt="avatar"
             />
