@@ -365,6 +365,7 @@ export class GroupProfileService {
             if (!newOwner) {
                 return false;
             }
+            group.admin.push(newOwner);
         }
         console.log('newOwner: ', newOwner);
         group.owner = newOwner;

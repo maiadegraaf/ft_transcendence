@@ -317,12 +317,7 @@ export class GroupProfileController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log('test2');
-            console.log(group);
             let channel = group.channel;
-            console.log(
-                'test3 + ' + param.userId + ': owner: id: ' + group.owner.id,
-            );
             if (group.owner.id == param.userId) {
                 if (
                     !(await this.groupProfileService.reassignOwner(
@@ -330,31 +325,25 @@ export class GroupProfileController {
                         param.userId,
                     ))
                 ) {
-                    console.log('test3.5');
                     group = await this.groupProfileService.nullifyChannel(
                         group,
                     );
                     channel = await this.channelService.nullifyProfile(channel);
-                    console.log('test3.6');
                     await this.groupProfileService.deleteGroup(group);
                     await this.chatGateway.emitDeleteChannelFromUser(
                         channel,
                         user,
                     );
                     await this.channelService.deleteChannel(channel);
-                    console.log('test3.7');
                     return true;
                 }
             }
-            console.log('test4');
-            console.log(group);
             group = await this.groupProfileService.removeRoles(
                 group,
                 param.userId,
             );
-            console.log(group);
             channel = await this.channelService.removeUserFromChannel(
-                channel.id,
+                group.channel.id,
                 user,
             );
             await this.chatGateway.emitDeleteChannelFromUser(channel, user);
