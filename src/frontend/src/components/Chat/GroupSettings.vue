@@ -8,7 +8,7 @@
             <span class="w-8"></span>
         </div>
         <GroupSettingUserList />
-        <div class="flex-1 w-full overflow-hidden">
+        <!-- <div class="flex-1 w-full overflow-hidden">
             <h2>Users</h2>
             <input
                 v-model="userText"
@@ -18,6 +18,30 @@
             <button @click="addUser">add user</button>
             <div></div>
             <button @click="deleteUser">delete user</button>
+        </div> -->
+        <div class="flex flex-col items-center justify-center">
+            <label class="text-xl mb-2 font-semibold uppercase">
+                Add new groupmembers by username:
+            </label>
+            <input
+                type="text"
+                v-model="userText"
+                class="border rounded mt-3 appearance-none bg-transparent"
+                @keyup.enter="searchForUser"
+            />
+            <div class="h-10 flex items-center">
+                <p v-if="searchError" class="font-bold text-blush">{{ searchError }}</p>
+                <span class="pr-3 font-semibold" v-if="searchResult && !searchError">{{
+                    searchResult.login
+                }}</span>
+                <button
+                    class="text-xs border rounded-md p-0.5 px-2 border-buff cursor-pointer hover:opacity-60 transition-opacity"
+                    v-if="searchResult && !searchError"
+                    @click="addUser"
+                >
+                    add
+                </button>
+            </div>
         </div>
 
         <footer class="bg-normal w-full min-h-10">
@@ -36,8 +60,13 @@ import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import type { IUser } from '@/types/types'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
-
 import GroupSettingUserList from '@/components/Chat/GroupSettingUserList.vue'
+import { userInfo } from 'os'
+
+interface User {
+    id: number
+    login: string
+}
 
 export default defineComponent({
     name: 'GroupSettings',
@@ -61,7 +90,10 @@ export default defineComponent({
                 channelId: 0
             },
             userName: '',
-            groupName: ''
+            groupName: '',
+            // searchInput: '',
+            searchError: '',
+            searchResult: null as User | null
         }
     },
     async mounted() {
@@ -145,6 +177,24 @@ export default defineComponent({
                     console.log(error)
                     return
                 })
+        },
+
+        async searchForUser() {
+            this.searchError = null
+            if (!this.userText) {
+                this.searchResult = null
+                return
+            }
+            try {
+                const response = await axios.get(
+                    `http://localhost:8080/api/user/search/${this.userText}`
+                )
+                this.searchResult = response.data
+                this.searchError = null
+            } catch (error) {
+                this.searchResult = null
+                this.searchError = `No user found with username "${this.userText}"`
+            }
         }
 
         // getRole(user: IUser): string {
