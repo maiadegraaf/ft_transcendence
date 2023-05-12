@@ -1,24 +1,67 @@
 <template>
-    <header class="border-buff border border-1 rounded-r-md flex h-16">
-        <h2 class="h2">Messages</h2>
-    </header>
-    <div class="flex-1 w-full bg-dark-purple overflow-hidden">
-        <div class="max-w-full h-full max-h-full flex flex-col-reverse overflow-y-auto">
-            <div v-for="message of chatStore.getChannelInView.slice().reverse()" :key="message.id">
-                <div :class="posMessage(message.sender.id) + ' block mb-1 mx-2'">
-                    <div
-                        :class="
-                            'inline box-border font-bold text-sm p-1 rounded-md ' +
-                            colorMessage(message.sender.id)
-                        "
-                    >
-                        {{ message.text }}
+    <div
+        v-if="chatStore.dmId == -1 && chatStore.dmName.length == 0"
+        class="text-center border-buff flex-col h-full border-double border-t-4 flex justify-center items-center"
+    >
+        <h2 class="p-3 text-buff font-semibold text-5xl">Welcome to the chat</h2>
+        <p class="text-buff opacity-70">Start by adding a user/group or select one!</p>
+    </div>
+    <div
+        v-else
+        class="border-buff border-double border-t-4 flex flex-col justify-end items-end h-full"
+    >
+        <div
+            class="flex max-h-full h-full flex-col w-full justify-between overflow-auto scrollbar-hide"
+        >
+            <div class="p-4 bg-dark-purple fixed w-full flex items-center z-10">
+                <img
+                    v-if="chatStore.dmId != -1"
+                    @click="$router.push('/profile/' + chatStore.dmId)"
+                    class="rounded-full w-10 aspect-square object-cover mr-3 cursor-pointer"
+                    :src="`api/user/${chatStore.dmId}/avatar`"
+                    alt="avatar"
+                />
+                <h2 class="text-buff font-semibold text-xl">
+                    {{ chatStore.dmName }}
+                </h2>
+            </div>
+            <div></div>
+            <div class="flex flex-col-reverse overflow-x-hidden mt-20">
+                <div
+                    v-for="(message, index) of chatStore.getChannelInView.slice().reverse()"
+                    :key="index"
+                >
+                    <div class="" :class="posMessage(message.sender.id) + ' flex-col mb-1 mx-4'">
+                        <div v-if="chatStore.getChannelInView.slice().reverse()[index + 1]">
+                            <span
+                                v-if="
+                                    message.sender.id !=
+                                    chatStore.getChannelInView.slice().reverse()[index + 1].sender
+                                        .id
+                                "
+                                class="text-xs opacity-60 pb-1 pr-1"
+                                >{{ message.sender.login }}</span
+                            >
+                        </div>
+                        <div v-else>
+                            <span class="text-xs opacity-60 pb-1 pr-1">{{
+                                message.sender.login
+                            }}</span>
+                        </div>
+                        <div
+                            :class="
+                                'inline break-all box-border text-sm p-1 px-4 rounded-xl text-l ' +
+                                colorMessage(message.sender.id)
+                            "
+                        >
+                            {{ message.text }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <MessageInput />
     </div>
-    <MessageInput />
 </template>
 
 <script lang="ts">
@@ -40,20 +83,30 @@ export default defineComponent({
     methods: {
         posMessage(senderId: number): string {
             if (senderId == this.userStore.id) {
-                return 'flex justify-end'
+                return 'flex items-end'
             } else {
-                return 'flex justify-start'
+                return 'flex items-start'
             }
         },
         colorMessage(senderId: number): string {
             if (senderId == this.userStore.id) {
-                return 'bg-amaranth-purple'
+                return 'bg-blush'
             } else {
-                return 'bg-grey-darken-2'
+                return 'bg-gray-700'
             }
         }
     }
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+</style>

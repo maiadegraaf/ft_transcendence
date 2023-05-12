@@ -21,7 +21,10 @@
                     <h2 class="text-blush font-semibold text-5xl text-center">
                         {{ isProfileSession ? user.name : userData.login }}
                     </h2>
-                    <div v-if="isOnline == true" class="ml-4 w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div
+                        v-if="isOnline == true"
+                        class="ml-4 w-3 h-3 bg-green-500 rounded-full"
+                    ></div>
                     <div v-else class="ml-4 w-3 h-3 bg-red-500 rounded-full"></div>
                 </div>
                 <button
@@ -35,10 +38,10 @@
         </div>
         <WinLosses />
         <MatchHistory />
-        <Friends :is-profile-session="isProfileSession"/>
+        <Friends :is-profile-session="isProfileSession" />
     </main>
     <main v-else class="flex h-screen justify-center items-center">
-      <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
+        <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
     </main>
 </template>
 
@@ -88,12 +91,10 @@ export default defineComponent({
             userId: this.$route.params.id
         })
         this.user.socket.on('userOnline', (userId: number) => {
-          if (Number(this.$route.params.id) == userId)
-            this.isOnline = true
+            if (Number(this.$route.params.id) == userId) this.isOnline = true
         })
         this.user.socket.on('userOffline', (userId: number) => {
-          if (Number(this.$route.params.id) == userId)
-            this.isOnline = false
+            if (Number(this.$route.params.id) == userId) this.isOnline = false
         })
     },
     methods: {
