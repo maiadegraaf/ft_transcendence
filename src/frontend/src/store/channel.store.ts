@@ -90,6 +90,7 @@ export const useChatStore = defineStore('userChannel', {
         async loadChannels() {
             const user = useUserStore()
             const response = await fetch('http://localhost:8080/api/chat/' + user.id)
+            console.log(response)
             this.channels = await response.json()
             if (this.channels == null) {
                 return

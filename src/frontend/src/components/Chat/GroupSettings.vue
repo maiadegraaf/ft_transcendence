@@ -160,8 +160,6 @@ export default defineComponent({
             this.userText = ''
         },
 
-
-
         deleteGroup(): void {
             this.params.userName = this.userStore.name
             axios

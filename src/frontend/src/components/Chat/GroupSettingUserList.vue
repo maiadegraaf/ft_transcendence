@@ -18,18 +18,23 @@
                     class="py-1 px-2 my-2 flex items-center border border-buff rounded-md bg-dark-purple justify-between"
                 >
                     <div class="flex items-center">
-                      <img
-                          class="rounded-full w-8 object-cover mr-3 aspect-square"
-                          :src="`api/user/${user.id}/avatar`"
-                          alt="avatar"
-                      />
-                      <a :href='"/profile/" + user.id'>{{ user.login }}</a>
-                      <p class="pl-2 text-xs opacity-50">{{ chatStore.getRole(user) }}</p>
+                        <img
+                            class="rounded-full w-8 object-cover mr-3 aspect-square"
+                            :src="`api/user/${user.id}/avatar`"
+                            alt="avatar"
+                        />
+                        <a :href="'/profile/' + user.id">{{ user.login }}</a>
+                        <p class="pl-2 text-xs opacity-50">{{ chatStore.getRole(user) }}</p>
                     </div>
                     <div v-if="user.id != userStore.id" class="space-x-4">
-                      <button class="-tracking-2 hover:opacity-60 transition-opacity" @click="addAdmin(user.login)">admin</button>
-                      <button @click="addMuted(user.login)">mute</button>
-                      <button @click="addBanned(user.login)">ban</button>
+                        <button
+                            class="-tracking-2 hover:opacity-60 transition-opacity"
+                            @click="addAdmin(user.login)"
+                        >
+                            admin
+                        </button>
+                        <button @click="addMuted(user.login)">mute</button>
+                        <button @click="addBanned(user.login)">ban</button>
                     </div>
                 </li>
             </ul>
@@ -41,7 +46,7 @@
 import { defineComponent } from 'vue'
 import { useChatStore } from '@/store/channel.store'
 import { useUserStore } from '@/store/user.store'
-import axios from "axios";
+import axios from 'axios'
 
 export default defineComponent({
     name: 'GroupSettingUserList',
@@ -51,102 +56,102 @@ export default defineComponent({
         return { chatStore, userStore }
     },
     data(): any {
-      return {
-        adminText: '',
-        mutedText: '',
-        bannedText: '',
-        userText: '',
-        params: {
-          userId: 0,
-          userName: '',
-          groupId: 0,
-          channelId: 0
-        },
-        userName: '',
-        groupName: ''
-      }
+        return {
+            adminText: '',
+            mutedText: '',
+            bannedText: '',
+            userText: '',
+            params: {
+                userId: 0,
+                userName: '',
+                groupId: 0,
+                channelId: 0
+            },
+            userName: '',
+            groupName: ''
+        }
     },
     async mounted() {
-      this.userName = this.userStore.name
-      this.groupName = this.chatStore.groupName
-      this.params.userId = this.userStore.id
-      this.params.channelId = this.chatStore.channelInView
-      this.params.groupId = this.chatStore.groupId
+        this.userName = this.userStore.name
+        this.groupName = this.chatStore.groupName
+        this.params.userId = this.userStore.id
+        this.params.channelId = this.chatStore.channelInView
+        this.params.groupId = this.chatStore.groupId
     },
     methods: {
-      addAdmin(login: string): void {
-        this.params.userName = login
-        axios
-            .post('/api/chat/group/admin', this.params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-        window.location.reload()
-      },
-      deleteAdmin(login: string): void {
-        axios
-            .delete('/api/chat/group/admin', { data: login})
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
+        addAdmin(login: string): void {
+            this.params.userName = login
+            axios
+                .post('/api/chat/group/admin', this.params)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+            window.location.reload()
+        },
+        deleteAdmin(login: string): void {
+            axios
+                .delete('/api/chat/group/admin', { data: login })
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
 
-      addMuted(login: string): void {
-        this.params.userName = login
-        axios
-            .post('/api/chat/group/muted', this.params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      deleteMuted(login: string): void {
-        this.params.userName = login
-        axios
-            .delete('/api/chat/group/muted', { data: this.params })
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      addBanned(login: string): void {
-        this.params.userName = login
-        axios
-            .post('/api/chat/group/banned', this.params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      // deleteBanned(login: string): void {
-      //   this.params.userName = login
-      //   axios
-      //       .delete('/api/chat/group/banned', { data: this.params })
-      //       .then((response) => {
-      //         console.log(response)
-      //       })
-      //       .catch((error) => {
-      //         console.log(error)
-      //         return
-      //       })
-      // },
+        addMuted(login: string): void {
+            this.params.userName = login
+            axios
+                .post('/api/chat/group/muted', this.params)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
+        deleteMuted(login: string): void {
+            this.params.userName = login
+            axios
+                .delete('/api/chat/group/muted', { data: this.params })
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
+        addBanned(login: string): void {
+            this.params.userName = login
+            axios
+                .post('/api/chat/group/banned', this.params)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        }
+        // deleteBanned(login: string): void {
+        //   this.params.userName = login
+        //   axios
+        //       .delete('/api/chat/group/banned', { data: this.params })
+        //       .then((response) => {
+        //         console.log(response)
+        //       })
+        //       .catch((error) => {
+        //         console.log(error)
+        //         return
+        //       })
+        // },
     }
 })
 </script>
