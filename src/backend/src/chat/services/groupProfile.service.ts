@@ -17,13 +17,15 @@ import {
 } from '../dtos/chat.dtos';
 import * as bcrypt from 'bcryptjs';
 import { promises } from 'dns';
+import { MutedTime } from '../entities/mutedTime.enitity';
 
 @Injectable()
 export class GroupProfileService {
     constructor(
         @InjectRepository(GroupProfile)
         private readonly groupProfileRepository: Repository<GroupProfile>,
-        private readonly userService: UserService,
+        @InjectRepository(MutedTime)
+        private readonly mutedTimeRepository: Repository<MutedTime>,
     ) {}
 
     async createGroupProfile(): Promise<any> {
@@ -116,6 +118,8 @@ export class GroupProfileService {
                 login: user.login,
             },
         };
+        const mt = await this.addMutedTime(user, group);
+        group.mutedTime.push(mt);
         await this.groupProfileRepository.save(group);
         return info;
     }
@@ -176,6 +180,7 @@ export class GroupProfileService {
                 login: user.login,
             },
         };
+        await this.removeMutedTime(user, group);
         await this.groupProfileRepository.save(group);
         return info;
     }
@@ -378,5 +383,47 @@ export class GroupProfileService {
         // group.blocked.filter((blocked) => blocked.id !== userId);
         // group.muted.filter((muted) => muted.id !== userId);
         return await this.groupProfileRepository.save(group);
+    }
+
+    async addMutedTime(user: User, group: GroupProfile): Promise<any> {
+        const mutedTime = new MutedTime();
+        mutedTime.time = new Date();
+        mutedTime.time.setMinutes(mutedTime.time.getMinutes() + 5);
+        mutedTime.user = [];
+        mutedTime.groupProfile = [];
+        mutedTime.user.push(user);
+        mutedTime.groupProfile.push(group);
+        return await this.mutedTimeRepository.save(mutedTime);
+    }
+
+    async removeMutedTime(user: User, group: GroupProfile): Promise<any> {
+        const mutedTime = await this.mutedTimeRepository
+            .createQueryBuilder('mutedTime')
+            .where('mutedTime.user = :user', { user })
+            .andWhere('mutedTime.groupProfile = :group', { group })
+            .getOne();
+        if (!mutedTime) {
+            throw new HttpException(
+                'could not find mutedTime in removeMutedTime',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return await this.mutedTimeRepository.remove(mutedTime);
+    }
+
+    async checkMutedTime(user: User, group: GroupProfile): Promise<boolean> {
+        const mutedTime = await this.mutedTimeRepository
+            .createQueryBuilder('mutedTime')
+            .where('mutedTime.user = :user', { user })
+            .andWhere('mutedTime.groupProfile = :group', { group })
+            .getOne();
+        if (!mutedTime) {
+            return false;
+        }
+        if (mutedTime.time < new Date()) {
+            await this.removeMutedTime(user, group);
+            return false;
+        }
+        return true;
     }
 }

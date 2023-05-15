@@ -20,6 +20,7 @@ import { LeaderboardModule } from './pong/leaderboard/leaderboard.module';
 import { TwoFAModule } from './auth/2fa/2fa.module';
 import { PassportModule } from '@nestjs/passport';
 import { Avatar } from './user/avatar.entity';
+import { MutedTime } from './chat/entities/mutedTime.enitity';
 
 @Module({
     imports: [
@@ -39,6 +40,7 @@ import { Avatar } from './user/avatar.entity';
                 Channel,
                 GroupProfile,
                 Matches,
+                MutedTime,
             ],
             synchronize: true,
         }),
