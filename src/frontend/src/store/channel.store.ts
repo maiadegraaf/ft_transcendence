@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import type {IChannels, IMessage, IProfile, IUser} from '@/types/types'
 import { useUserStore } from '@/store/user.store'
-import profile from "@/views/Profile.vue";
 
 export const useChatStore = defineStore('userChannel', {
     state: () => ({
@@ -9,8 +8,6 @@ export const useChatStore = defineStore('userChannel', {
         channelInView: 0 as number,
         dmId: -1 as number,
         dmName: '' as string,
-        groupId: -1 as number,
-        groupName: '' as string
     }),
 
     getters: {
@@ -30,6 +27,10 @@ export const useChatStore = defineStore('userChannel', {
                 return null
             }
             return chnl.users
+        },
+        getChannelGroupId(): number {
+            const channelIV = this.getChannelInView
+            return channelIV?.profile?.id ?? 0
         },
         getCurrentProfile(): IProfile | null {
             const chnl = this.getChannelInView
@@ -57,7 +58,22 @@ export const useChatStore = defineStore('userChannel', {
             console.log(this.channels)
             this.channels.forEach((channel) => {
                 user.socket.emit('joinRoomById', { channelId: channel.id })
+                this.setChannelName(channel)
             })
+        },
+        setChannelName(channel: IChannels) {
+            const userStore = useUserStore()
+            // console.log(channel)
+            if (channel == null) { return '' }
+            if (channel.profile == null) {
+                if (channel.users[0].id == userStore.id) {
+                    channel.name =  channel.users[1].login
+                } else {
+                    channel.name =  channel.users[0].login
+                }
+            } else {
+                channel.name = channel.profile.name
+            }
         },
         receivedMessage(message: IMessage) {
             if (this.channels == null) {
@@ -123,12 +139,12 @@ export const useChatStore = defineStore('userChannel', {
                     1
                 )
         },
-        setGroupId(groupId: number) {
-            this.groupId = groupId
-        },
-        setGroupName(groupName: string) {
-            this.groupName = groupName
-        },
+        // setGroupId(groupId: number) {
+        //     this.groupId = groupId
+        // },
+        // setGroupName(groupName: string) {
+        //     this.groupName = groupName
+        // },
         setDmId(dmId: number) {
             this.dmId = dmId
         },
@@ -136,12 +152,8 @@ export const useChatStore = defineStore('userChannel', {
             this.dmName = dmName
         },
         logOut() {
-            this.channels = null
+            this.channels = []
             this.channelInView = 0
-            this.groupId = -1
-            this.groupName = ''
-            this.dmId = -1
-            this.dmName = ''
-        },
+        }
     }
 })

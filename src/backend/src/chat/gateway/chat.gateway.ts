@@ -141,7 +141,6 @@ export class ChatGateway
     }
 
     getClientSocketById(userId: number): Socket {
-        console.log(this.clientMap.keys());
         if (this.clientMap.has(userId)) {
             return this.clientMap.get(userId);
         }
@@ -177,26 +176,14 @@ export class ChatGateway
     }
 
     async emitGroupChannelToUser(channel: Channel, user: User): Promise<any> {
-        const msg = channel.messages ?? [];
-        const channelInfo = {
-            id: channel.id,
-            messages: msg,
-            profile: {
-                name: channel.profile.name,
-                id: channel.profile.id,
-            },
-            name: channel.profile.name,
-        };
-        this.server.to('room' + channel.id).emit('addUserToChannel', {
-            channelId: channel.id,
-            user: { id: user.id, login: user.login },
-        });
         const userSocket = this.getClientSocketById(user.id);
         if (userSocket) {
             this.logger.log(
                 'emit addChannelToClient to user: ' + userSocket.id,
             );
-            userSocket.emit('addChannelToClient', channelInfo);
+            console.log(channel);
+            userSocket.emit('addChannelToClient', channel);
+            console.log('done');
             return;
         }
         this.logger.error('User is not connected to chat');

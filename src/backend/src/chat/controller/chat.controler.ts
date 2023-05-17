@@ -117,7 +117,7 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            const channel = await this.channelService.newGroupChannel(
+            let channel = await this.channelService.newGroupChannel(
                 owner,
                 param.groupName,
                 param.type,
@@ -129,7 +129,9 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
+            channel = await this.channelService.getChannelById(channel.id);
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
+            console.log('what is going on here?');
             return;
         } catch (error) {
             this.logger.error('postNewGroupChannel: ' + error);

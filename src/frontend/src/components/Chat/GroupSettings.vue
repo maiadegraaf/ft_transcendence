@@ -95,18 +95,17 @@ export default defineComponent({
         }
     },
     async mounted() {
-        this.groupName = this.chatStore.groupName
+        this.userName = this.userStore.name
+        this.groupName = this.chatStore.getChannelName
         this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.groupId
+        this.params.groupId = this.chatStore.getChannelGroupId
         // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
         // console.log(this.channelUsers)
         // console.log(this.profile)
     },
     methods: {
         doneGroup(): void {
-            this.chatStore.setGroupId(0)
-            this.chatStore.setGroupName('')
             this.$emit('switch-chat-right-component', MessageList)
         },
 
