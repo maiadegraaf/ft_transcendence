@@ -9,7 +9,7 @@
                 <img
                     :src="`/api/user/${friend.id}/avatar`"
                     alt="Avatar"
-                    class="rounded-full w-12"
+                    class="rounded-full w-12 object-cover aspect-square"
                 />
                 <a :href="`/Profile/${friend.id}`" class="pl-4 text-xl font-semibold">{{
                     friend.login

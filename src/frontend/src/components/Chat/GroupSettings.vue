@@ -20,13 +20,13 @@
             <button @click="deleteUser">delete user</button>
         </div> -->
         <div class="flex flex-col pt-10 items-center justify-center">
-            <label class="text-xl text-buff mb-2 font-semibold uppercase">
+            <label class="text-xl text-buff mb-1 font-semibold uppercase">
                 Add new groupmembers by username:
             </label>
             <input
                 type="text"
                 v-model="userText"
-                class="border border-buff rounded mt-3 appearance-none bg-transparent outline-none"
+                class="border p-0.5 border-buff rounded mt-3 appearance-none bg-transparent outline-none"
                 @keyup.enter="searchForUser"
             />
             <div class="h-10 flex items-center text-buff">

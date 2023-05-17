@@ -51,6 +51,7 @@ export class ChatGateway
         }
         const userId: number = client.request.session.user.id;
         this.clientMap.set(userId, client);
+        this.server.to('user:' + userId).emit('userOnline', userId);
         console.log(this.clientMap.has(userId));
         this.logger.log(userId + ' connected to chat with id: ' + client.id);
     }
@@ -60,6 +61,7 @@ export class ChatGateway
             this.clientMap.forEach((value, key) => {
                 if (value.id === client.id) {
                     this.clientMap.delete(key);
+                    this.server.to('user:' + key).emit('userOffline', key);
                     this.logger.log(
                         `Client disconnected to chat: ${client.id} with userId: ${key}`,
                     );
@@ -70,6 +72,7 @@ export class ChatGateway
 
         const userId = client.request.session.user.id;
         if (this.clientMap.has(parseInt(userId.toString()))) {
+            this.server.to('user:' + userId).emit('userOffline', userId);
             this.clientMap.delete(parseInt(userId.toString()));
             this.logger.log(
                 `Client disconnected to chat: ${client.id} with userId: ${userId}`,
@@ -129,6 +132,7 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
         @Body() payload: { userId: number },
     ) {
+        client.join('user:' + payload.userId);
         if (this.clientMap.has(parseInt(payload.userId.toString()))) {
             client.emit('userOnline', payload.userId);
         } else {

@@ -79,7 +79,7 @@ export default defineComponent({
         Nav,
         Friends
     },
-    created() {
+    beforeCreate() {
         axios.get('http://localhost:8080/api/user/' + this.$route.params.id).then((response) => {
             this.userData = response.data
             this.doesProfileExist = true
