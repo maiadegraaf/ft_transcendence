@@ -35,7 +35,6 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: JoinGroupDto,
     ): Promise<any> {
         try {
-            console.log(param);
             const user = await this.userService.getUserById(param.userId);
             if (!user) {
                 throw new HttpException(
@@ -57,13 +56,6 @@ export class GroupProfileController {
                     groupId: group.id,
                     type: group.type,
                 };
-                console.log(
-                    'payload: ' +
-                        JSON.stringify(payload) +
-                        '\ntype: ' +
-                        group.type,
-                );
-                console.log(payload);
                 return payload;
             }
             const channel = await this.channelService.addUserToChannel(
@@ -90,8 +82,6 @@ export class GroupProfileController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log('param: ');
-            console.log(param);
             if (
                 await this.groupProfileService.isBlocked(user.id, param.groupId)
             ) {
@@ -163,7 +153,6 @@ export class GroupProfileController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log(JSON.stringify(user));
             const channel = await this.channelService.removeUserFromChannel(
                 param.channelId,
                 user,

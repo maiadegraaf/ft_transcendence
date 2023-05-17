@@ -79,8 +79,7 @@ export default defineComponent({
     async mounted() {
         this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.groupId
-    },
+        this.params.groupId = this.chatStore.getChannelGroupId    },
     computed: {
       getUsersWithRoles(): IUser[] | null {
           const users = this.chatStore.getCurrentUsers

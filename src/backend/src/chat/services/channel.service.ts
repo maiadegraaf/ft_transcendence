@@ -240,8 +240,6 @@ export class ChannelService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        console.log('user: ' + JSON.stringify(user));
-        console.log('channel users: ' + JSON.stringify(channel.users));
         const idx = channel.users.findIndex((u) => u.id === user.id);
         if (idx === -1) {
             throw new HttpException(

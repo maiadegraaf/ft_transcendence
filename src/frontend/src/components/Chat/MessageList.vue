@@ -1,13 +1,13 @@
 <template>
+<!--    <div-->
+<!--        v-if="chatStore.dmId == -1 && chatStore.dmName.length == 0"-->
+<!--        class="text-center border-buff flex-col h-full border-double border-t-4 flex justify-center items-center"-->
+<!--    >-->
+<!--        <ChatBubbleLeftRightIcon class="h-40 w-40 text-buff mx-auto" />-->
+<!--        <h2 class="p-3 text-buff font-semibold text-5xl">Welcome to the chat</h2>-->
+<!--        <p class="text-buff opacity-70">Start by adding a user/group or select one!</p>-->
+<!--    </div>-->
     <div
-        v-if="chatStore.dmId == -1 && chatStore.dmName.length == 0"
-        class="text-center border-buff flex-col h-full border-double border-t-4 flex justify-center items-center"
-    >
-        <h2 class="p-3 text-buff font-semibold text-5xl">Welcome to the chat</h2>
-        <p class="text-buff opacity-70">Start by adding a user/group or select one!</p>
-    </div>
-    <div
-        v-else
         class="border-buff border-double border-t-4 flex flex-col justify-end items-end h-full"
     >
         <div
@@ -70,10 +70,12 @@ import { useChatStore } from '../../store/channel.store'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import MessageInput from '@/components/Chat/MessageInput.vue'
+import {ChatBubbleLeftRightIcon} from "@heroicons/vue/24/solid";
 
 export default defineComponent({
     components: {
-        MessageInput
+        MessageInput,
+        ChatBubbleLeftRightIcon
     },
     name: 'MessageList',
     setup() {
@@ -96,8 +98,8 @@ export default defineComponent({
                 return 'bg-gray-700'
             }
         },
+      // Testing invite
         acceptInvite(sender: any) {
-          this.userStore.socket.emit('bind', this.userStore.id)
           this.userStore.socket.emit('createMatch', { player1: this.userStore.id, player2: sender.id })
           this.userStore.socket.on('opponentFound', ( matchId: number ) => {
             console.log('Opponent found')

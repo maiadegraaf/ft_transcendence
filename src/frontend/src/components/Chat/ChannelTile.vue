@@ -13,7 +13,7 @@
         </div>
         <div>
             <button
-                @click="groupSettings(ch.id, ch.profile.id, ch.profile.name)"
+                @click="groupSettings(ch.id)"
                 class="rounded-full hover:shadow-md"
             >
                 <Cog6ToothIcon class="h-6 w-6 text-buff" />
@@ -91,7 +91,7 @@ export default defineComponent({
             this.chatStore.setChannelInView(id)
             this.$emit('switch-chat-right-component', MessageList)
         },
-        groupSettings(channelId: number, groupId: number, groupName: string): void {
+        groupSettings(channelId: number): void {
             this.chatStore.setChannelInView(channelId)
             // this.chatStore.setGroupId(groupId)
             // this.chatStore.setGroupName(groupName)

@@ -41,9 +41,6 @@ export const useChatStore = defineStore('userChannel', {
             const profile = chnl.profile;
             return profile
         },
-        getGroupId(state): number {
-            return state.groupId
-        }
     },
 
     actions: {
@@ -94,8 +91,8 @@ export const useChatStore = defineStore('userChannel', {
         },
         async receivedNewChannel(channel: IChannels) {
             const user = useUserStore()
+            this.setChannelName(channel)
             this.channels?.push(channel)
-            await this.setChannelInView(channel.id)
             user.socket.emit('joinRoomById', { channelId: channel.id })
         },
         async removeChannel(channelID: number) {
@@ -139,12 +136,6 @@ export const useChatStore = defineStore('userChannel', {
                     1
                 )
         },
-        // setGroupId(groupId: number) {
-        //     this.groupId = groupId
-        // },
-        // setGroupName(groupName: string) {
-        //     this.groupName = groupName
-        // },
         setDmId(dmId: number) {
             this.dmId = dmId
         },

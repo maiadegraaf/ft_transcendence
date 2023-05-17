@@ -21,6 +21,7 @@ export const useUserStore = defineStore('user', {
             })
             const socket = await io('http://localhost:8080')
             this.socket = socket
+            this.socket.emit('bind', this.id)
             await useChatStore().loadChannels()
             await this.listen()
         },
@@ -32,6 +33,7 @@ export const useUserStore = defineStore('user', {
             })
             this.socket.on('addChannelToClient', (channel: IChannels) => {
                 console.log('Channel received!')
+                console.log(channel)
                 chatStore.receivedNewChannel(channel)
             })
             this.socket.on('removeChannelFromClient', (channelId: number) => {

@@ -24,6 +24,7 @@ import MessageInput from '@/components/Chat/MessageInput.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import ChannelHeader from '@/components/Chat/ChannelHeader.vue'
+import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
 
 export default defineComponent({
     components: {
@@ -38,7 +39,7 @@ export default defineComponent({
     // The data object of the Vue instance.
     data(): any {
         return {
-            currentComponent: MessageList
+            currentComponent: NoChannelSelected
         }
     },
     setup() {
