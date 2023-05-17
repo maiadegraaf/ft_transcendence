@@ -18,7 +18,6 @@
 * [x] sending invite for channels
 * [x] searching for new public channels
 * [x] setting up password for protected channels
-* [ ] time and sender for messages
 * [ ] invite other players for a pong match
 * [x] access user profile from chat or profile
 * [x] frontend for message list
