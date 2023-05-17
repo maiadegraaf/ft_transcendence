@@ -5,25 +5,25 @@
 * [x] testing endpoints for user, admin, banned and muted in groupProfile
 
 [//]: # (* [ ] accessibility for groupProfile by admin owner and user &#40;frontend&#41;)
-* [ ] accessibility for groupProfile by admin owner and user (backend)
-* [ ] adding logic to admin, muted and banned in groupProfile
-* [ ] adding time for muted user
+* [x] accessibility for groupProfile by admin owner and user (backend)
+* [x] adding logic to admin, muted and banned in groupProfile
+* [x] adding time for muted user
 * [x] owner of group can add or delete admin
-* [ ] admin can kick ban or mute users
+* [x] admin can kick ban or mute users
 * [ ] search list for groupProfile
-* [ ] leave group
-* [ ] pass the owner role to next admin or user
-* [ ] frontend for admin page and user page for groupProfile
-* [ ] setting up channels for public, private or protected
-* [ ] sending invite for channels
-* [ ] searching for new public channels
-* [ ] setting up password for protected channels
+* [x] leave group
+* [x] pass the owner role to next admin or user
+* [x] frontend for admin page and user page for groupProfile
+* [x] setting up channels for public, private or protected
+* [x] sending invite for channels
+* [x] searching for new public channels
+* [x] setting up password for protected channels
 * [ ] time and sender for messages
 * [ ] invite other players for a pong match
-* [ ] access user profile from chat or profile
-* [ ] frontend for message list
-* [ ] frontend for channel list
-* [ ] frontend for input for new channels
+* [x] access user profile from chat or profile
+* [x] frontend for message list
+* [x] frontend for channel list
+* [x] frontend for input for new channels
 * [ ] make frontend pretty for everything
 * [ ] return values for all endpoints
 * [ ] add error handling for all endpoints

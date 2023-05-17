@@ -23,6 +23,7 @@ import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
 import { ChannelService } from '../services/channel.service';
+import { GroupProfileService } from '../services/groupProfile.service';
 
 @WebSocketGateway({
     cors: {
@@ -36,6 +37,7 @@ export class ChatGateway
     constructor(
         private readonly messageService: MessageService,
         private readonly channelService: ChannelService,
+        private readonly groupProfileService: GroupProfileService,
     ) {}
 
     @WebSocketServer()
@@ -87,6 +89,17 @@ export class ChatGateway
         @Body(new ValidationPipe()) payload: MessageDto,
     ): Promise<any> {
         try {
+            if (
+                await this.groupProfileService.checkMuted(
+                    payload.sender.id,
+                    payload.channel,
+                )
+            ) {
+                throw new HttpException(
+                    'handleMessage: user is muted',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
             const message = await this.messageService.createMessage(payload);
             if (!message) {
                 throw new HttpException(

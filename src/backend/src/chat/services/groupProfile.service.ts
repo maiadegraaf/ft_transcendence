@@ -119,6 +119,7 @@ export class GroupProfileService {
             },
         };
         const mt = await this.addMutedTime(user, group);
+        group.mutedTime = [];
         group.mutedTime.push(mt);
         await this.groupProfileRepository.save(group);
         return info;
@@ -165,6 +166,19 @@ export class GroupProfileService {
     async deleteMute(param: GroupUserProfileUpdateDto): Promise<any> {
         const group = await this.adminCheck(param, 'muted');
         const user = await this.userGroupProfileCheck(group, param);
+        await this.removeMute(group, user);
+        const info = {
+            channelId: group.channel.id,
+            user: {
+                id: user.id,
+                login: user.login,
+            },
+        };
+        return info;
+    }
+
+    async removeMute(group: GroupProfile, user: User) {
+        await this.removeMutedTime(user, group);
         const idx = group.muted.findIndex((muted) => muted.id === user.id);
         if (idx === -1) {
             throw new HttpException(
@@ -173,16 +187,7 @@ export class GroupProfileService {
             );
         }
         group.muted.splice(idx, 1);
-        const info = {
-            channelId: group.channel.id,
-            user: {
-                id: user.id,
-                login: user.login,
-            },
-        };
-        await this.removeMutedTime(user, group);
         await this.groupProfileRepository.save(group);
-        return info;
     }
 
     async ownerCheck(param: GroupUserProfileUpdateDto): Promise<any> {
@@ -388,7 +393,7 @@ export class GroupProfileService {
     async addMutedTime(user: User, group: GroupProfile): Promise<any> {
         const mutedTime = new MutedTime();
         mutedTime.time = new Date();
-        mutedTime.time.setMinutes(mutedTime.time.getMinutes() + 5);
+        mutedTime.time.setMinutes(mutedTime.time.getMinutes() + 1);
         mutedTime.user = [];
         mutedTime.groupProfile = [];
         mutedTime.user.push(user);
@@ -399,8 +404,12 @@ export class GroupProfileService {
     async removeMutedTime(user: User, group: GroupProfile): Promise<any> {
         const mutedTime = await this.mutedTimeRepository
             .createQueryBuilder('mutedTime')
-            .where('mutedTime.user = :user', { user })
-            .andWhere('mutedTime.groupProfile = :group', { group })
+            .leftJoinAndSelect('mutedTime.user', 'user')
+            .leftJoinAndSelect('mutedTime.groupProfile', 'groupProfile')
+            .where('user.id = :userId', { userId: user.id })
+            .andWhere('groupProfile.id = :groupId', {
+                groupId: group.id,
+            })
             .getOne();
         if (!mutedTime) {
             throw new HttpException(
@@ -411,17 +420,41 @@ export class GroupProfileService {
         return await this.mutedTimeRepository.remove(mutedTime);
     }
 
+    async checkMuted(userId: number, channelId: number): Promise<boolean> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .leftJoinAndSelect('group.channel', 'channel')
+            .leftJoinAndSelect('group.muted', 'muted')
+            .where('channel.id = :channelId', { channelId })
+            .getOne();
+        if (!group) {
+            return false;
+        }
+        const muted = group.muted.find((muted) => muted.id === userId);
+        if (!muted) {
+            return false;
+        }
+        const mutedTime = await this.checkMutedTime(muted, group);
+        if (!mutedTime) {
+            return false;
+        }
+        return true;
+    }
+
     async checkMutedTime(user: User, group: GroupProfile): Promise<boolean> {
         const mutedTime = await this.mutedTimeRepository
             .createQueryBuilder('mutedTime')
-            .where('mutedTime.user = :user', { user })
-            .andWhere('mutedTime.groupProfile = :group', { group })
+            .leftJoinAndSelect('mutedTime.user', 'user')
+            .leftJoinAndSelect('mutedTime.groupProfile', 'groupProfile')
+            .where('user.id = :userId', { userId: user.id })
+            .andWhere('groupProfile.id = :groupId', { groupId: group.id })
+            .addSelect('mutedTime.time')
             .getOne();
         if (!mutedTime) {
             return false;
         }
         if (mutedTime.time < new Date()) {
-            await this.removeMutedTime(user, group);
+            await this.removeMute(group, user);
             return false;
         }
         return true;
