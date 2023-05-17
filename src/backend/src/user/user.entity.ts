@@ -11,6 +11,7 @@ import {
 import { Channel } from '../chat/entities/channel.entity';
 import { GroupProfile } from '../chat/entities/groupProfile.entity';
 import { Avatar } from './avatar.entity';
+import { MutedTime } from '../chat/entities/mutedTime.enitity';
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
@@ -51,6 +52,10 @@ export class User {
     @ManyToMany(() => GroupProfile, (group) => group.muted)
     muted: GroupProfile[];
 
+    @JoinTable()
+    @ManyToMany(() => MutedTime, (mt) => mt.user)
+    mutedTime: MutedTime[];
+
     @OneToOne(() => Avatar, (avatar) => avatar.user)
     @JoinColumn()
     avatar: Avatar;
@@ -63,6 +68,10 @@ export class User {
     @ManyToMany(() => User)
     @JoinTable()
     friends: User[];
+
+    @ManyToMany(() => User)
+    @JoinTable()
+    blockedUsers: User[];
 
     // @ManyToMany(() => User)
     // @JoinTable()

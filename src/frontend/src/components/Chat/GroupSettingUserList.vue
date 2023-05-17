@@ -17,16 +17,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useChatStore } from '@/store/channel.store'
-import { useUserStore } from '@/store/user.store'
+
+import {defineComponent} from "vue";
+import {useChatStore} from "@/store/channel.store";
+import {useUserStore} from "@/store/user.store";
 
 export default defineComponent({
-    name: 'GroupSettingUserList',
-    setup() {
-        const chatStore = useChatStore()
-        const userStore = useUserStore()
-        return { chatStore, userStore }
-    }
+  name: "GroupSettingUserList",
+  setup() {
+    const chatStore = useChatStore()
+    const userStore = useUserStore()
+    return {chatStore, userStore}
+  },
+
 })
 </script>

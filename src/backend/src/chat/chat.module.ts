@@ -14,6 +14,7 @@ import { Avatar } from 'src/user/avatar.entity';
 import { AvatarService } from 'src/user/services/user/avatar.service';
 import { GroupProfileController } from 'src/chat/controller/GroupProfile.controller';
 import { GroupProfileGateway } from './gateway/group-profile.gateway';
+import { MutedTime } from './entities/mutedTime.enitity';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { GroupProfileGateway } from './gateway/group-profile.gateway';
             GroupProfile,
             User,
             Avatar,
+            MutedTime,
         ]),
     ],
     controllers: [ChatController, GroupProfileController],

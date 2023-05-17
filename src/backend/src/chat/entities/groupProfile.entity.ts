@@ -11,6 +11,8 @@ import {
 } from 'typeorm';
 import { Channel } from './channel.entity';
 import { User } from '../../user/user.entity';
+import { EGroupChannelType } from '../dtos/chat.dtos';
+import { MutedTime } from './mutedTime.enitity';
 
 // @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
@@ -40,4 +42,14 @@ export class GroupProfile {
     @JoinTable()
     @ManyToMany(() => User, (usr) => usr.muted)
     muted: User[];
+
+    @JoinTable()
+    @ManyToMany(() => MutedTime, (mt) => mt.groupProfile)
+    mutedTime: MutedTime[];
+
+    @Column({ nullable: true })
+    type: EGroupChannelType;
+
+    @Column({ nullable: true })
+    password: string;
 }

@@ -35,7 +35,7 @@ export const useUserStore = defineStore('user', {
                 chatStore.receivedNewChannel(channel)
             })
             this.socket.on('removeChannelFromClient', (channelId: number) => {
-                console.log('Channel removed request!')
+                console.log('Channel removed request! for channel: ' + channelId)
                 chatStore.removeChannel(channelId)
             })
             this.socket.on('addAdminToChannel', (channelId: number, user: IUser) => {

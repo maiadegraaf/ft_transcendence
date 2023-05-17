@@ -22,6 +22,8 @@ import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
+import { ChannelService } from '../services/channel.service';
+import { GroupProfileService } from '../services/groupProfile.service';
 
 @WebSocketGateway({
     cors: {
@@ -32,7 +34,11 @@ import { User } from '../../user/user.entity';
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-    constructor(private readonly messageService: MessageService) {}
+    constructor(
+        private readonly messageService: MessageService,
+        private readonly channelService: ChannelService,
+        private readonly groupProfileService: GroupProfileService,
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -83,6 +89,17 @@ export class ChatGateway
         @Body(new ValidationPipe()) payload: MessageDto,
     ): Promise<any> {
         try {
+            if (
+                await this.groupProfileService.checkMuted(
+                    payload.sender.id,
+                    payload.channel,
+                )
+            ) {
+                throw new HttpException(
+                    'handleMessage: user is muted',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
             const message = await this.messageService.createMessage(payload);
             if (!message) {
                 throw new HttpException(
@@ -91,9 +108,16 @@ export class ChatGateway
                 );
             }
             payload.id = message.id;
-            this.server
-                .to('room' + payload.channel)
-                .emit('msgToClient', payload);
+            const users = await this.channelService.getBlockedList(payload);
+            users.forEach((user) => {
+                const socket = this.clientMap.get(user.id);
+                if (socket) {
+                    this.server.to(socket.id).emit('msgToClient', payload);
+                }
+            });
+            // this.server
+            //     .to('room' + payload.channel)
+            //     .emit('msgToClient', payload);
             this.logger.log(
                 `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
             );
@@ -199,17 +223,24 @@ export class ChatGateway
         channel: Channel,
         user: User,
     ): Promise<any> {
-        const userSocket = this.getClientSocketById(user.id);
-        if (!userSocket) {
-            throw new HttpException(
-                'User is not connected to chat',
-                HttpStatus.FORBIDDEN,
+        try {
+            const userSocket = this.getClientSocketById(user.id);
+            if (!userSocket) {
+                throw new HttpException(
+                    'User is not connected to chat',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            userSocket.emit('removeChannelFromClient', channel.id);
+            this.logger.log(
+                'emit deleteChannelFromClient form owner: ' +
+                    userSocket.id +
+                    ' with userId: ' +
+                    user.id,
             );
+        } catch (error) {
+            this.logger.error(error);
         }
-        userSocket.emit('removeChannelFromClient', channel.id);
-        this.logger.log(
-            'emit deleteChannelFromClient form owner: ' + userSocket.id,
-        );
     }
 
     async emitAddAdminToChannel(info: {

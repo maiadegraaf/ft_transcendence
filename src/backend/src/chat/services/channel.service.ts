@@ -5,7 +5,7 @@ import { Channel } from '../entities/channel.entity';
 import { GroupProfileService } from './groupProfile.service';
 import { User } from '../../user/user.entity';
 import { UserService } from '../../user/services/user/user.service';
-import { MessageDto } from '../dtos/chat.dtos';
+import { EGroupChannelType, MessageDto } from '../dtos/chat.dtos';
 
 @Injectable()
 export class ChannelService {
@@ -88,6 +88,7 @@ export class ChannelService {
         }
         console.log(channels);
         for (const ch of channels) {
+            // something here to filter out the messages
             ch['name'] = await this.getChannelName(ch.id, userId);
         }
         return channels;
@@ -131,7 +132,12 @@ export class ChannelService {
         return true;
     }
 
-    async newGroupChannel(owner: User, groupName: string): Promise<any> {
+    async newGroupChannel(
+        owner: User,
+        groupName: string,
+        type: EGroupChannelType,
+        password?: string,
+    ): Promise<any> {
         // check if groupName is unique
         console.log('user');
         console.log(owner);
@@ -147,6 +153,8 @@ export class ChannelService {
             owner,
             groupName,
             channel,
+            type,
+            password,
         );
         if (!groupProfile) {
             throw new HttpException(
@@ -183,6 +191,11 @@ export class ChannelService {
 
     async deleteChannel(channel: Channel): Promise<any> {
         await this.channelRepository.remove(channel);
+    }
+
+    async nullifyProfile(channel: Channel): Promise<any> {
+        channel.profile = null;
+        return await this.channelRepository.save(channel);
     }
 
     async addUserToChannel(channelId: number, user: User): Promise<any> {
@@ -256,5 +269,29 @@ export class ChannelService {
             );
         }
         return channel;
+    }
+
+    async getBlockedList(param: MessageDto): Promise<any> {
+        const channel = await this.channelRepository
+            .createQueryBuilder('channel')
+            .where('channel.id = :id', { id: param.channel })
+            .leftJoinAndSelect('channel.users', 'users')
+            .leftJoin('users.blockedUsers', 'blockedUsers')
+            .andWhere((qb) =>
+                qb
+                    .where('blockedUsers.id != :userId', {
+                        userId: param.sender.id,
+                    })
+                    .orWhere('blockedUsers.id IS NULL'),
+            )
+            .getOne();
+        console.log(channel);
+        if (!channel) {
+            throw new HttpException(
+                'getBlockedList: Channel not found to get blocked list',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return channel.users;
     }
 }

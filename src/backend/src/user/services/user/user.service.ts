@@ -198,8 +198,7 @@ export class UserService {
 
     async getAvatar(userId: number): Promise<Avatar> {
         const user: User = await this.findUserByID(userId, ['avatar']);
-        if (!user.avatar)
-            throw new NotFoundException('User not found');
+        if (!user.avatar) throw new NotFoundException('User not found');
         return user.avatar;
     }
 
@@ -224,61 +223,77 @@ export class UserService {
     }
 
     async addFriend(userID: number, friendID: number) {
-		if (userID === friendID) {
+        if (userID === friendID) {
             throw new BadRequestException(`You can't add yourself as a friend`);
         }
-        const user = await this.userRepository.findOne({
-            where: { id: userID },
-            relations: ['friends'],
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userID },
+                relations: ['friends'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`);
         }
-        const friend = await this.userRepository.findOne({
-            where: { id: friendID },
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const friend = await this.userRepository
+            .findOne({
+                where: { id: friendID },
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (user.friends.map((user) => user.id).includes(friendID)) {
-            throw new BadRequestException(`${friend.login} is already your friend`);
+            throw new BadRequestException(
+                `${friend.login} is already your friend`,
+            );
         }
         user.friends.push(friend);
         await this.userRepository.save(user);
         return user;
     }
-    
-	async findFriends(userID: number): Promise<User[]> {
-		const user = await this.userRepository.findOne({
-            where: { id: userID },
-			relations: ['friends'],
-		}).catch((err) => {
-            throw new BadRequestException(`Error fetching user with id ${userID}: ${err.message}`);
-        });
+
+    async findFriends(userID: number): Promise<User[]> {
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userID },
+                relations: ['friends'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(
+                    `Error fetching user with id ${userID}: ${err.message}`,
+                );
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`);
         }
         return user.friends;
-	}
+    }
 
     async removeFriend(userID: number, friendID: number) {
-        const user = await this.userRepository.findOne({
-            where: { id: userID },
-            relations: ['friends'],
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userID },
+                relations: ['friends'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`);
         }
-        const friend = await this.userRepository.findOne({
-            where: { id: friendID },
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const friend = await this.userRepository
+            .findOne({
+                where: { id: friendID },
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user.friends.map((user) => user.id).includes(friendID)) {
-            throw new BadRequestException(`Cannot remove ${friend.login}. You are not friends yet.`);
+            throw new BadRequestException(
+                `Cannot remove ${friend.login}. You are not friends yet.`,
+            );
         }
         user.friends = user.friends.filter((user) => user.id !== friendID);
         await this.userRepository.save(user);
