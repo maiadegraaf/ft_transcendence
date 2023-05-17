@@ -1,3 +1,4 @@
+<script src="../../../../backend/src/pong/gateway/pong.gateway.spec.ts"></script>
 <template>
     <div
         v-if="chatStore.dmId == -1 && chatStore.dmName.length == 0"
