@@ -25,6 +25,9 @@ export interface IProfile {
 export interface IUser {
     id: number
     login: string
+    owner: false
+    admin: false
+    muted: false
 }
 
 export enum EGroupChannelType {

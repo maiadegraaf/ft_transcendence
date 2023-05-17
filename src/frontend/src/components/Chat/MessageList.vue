@@ -28,15 +28,15 @@
             <div></div>
             <div class="flex flex-col-reverse overflow-x-hidden overflow-y-auto no-scrollbar mt-20">
                 <div
-                    v-for="(message, index) of chatStore.getChannelInView.slice().reverse()"
+                    v-for="(message, index) of chatStore.getCurrentMessages.slice().reverse()"
                     :key="index"
                 >
                     <div class="" :class="posMessage(message.sender.id) + ' flex-col mb-1 mx-4'">
-                        <div v-if="chatStore.getChannelInView.slice().reverse()[index + 1]">
+                        <div v-if="chatStore.getCurrentMessages.slice().reverse()[index + 1]">
                             <span
                                 v-if="
                                     message.sender.id !=
-                                    chatStore.getChannelInView.slice().reverse()[index + 1].sender
+                                    chatStore.getCurrentMessages.slice().reverse()[index + 1].sender
                                         .id
                                 "
                                 class="text-xs opacity-60 pb-1 pr-1"
@@ -48,7 +48,8 @@
                                 message.sender.login
                             }}</span>
                         </div>
-                        <div
+                        <div v-if="message.text == 'Invite'" class="text-buff"><button @click="acceptInvite(message.sender)">Invite</button></div>
+                        <div v-else
                             :class="
                                 'inline break-all box-border text-sm p-1 px-4 rounded-xl text-l ' +
                                 colorMessage(message.sender.id)
@@ -94,6 +95,20 @@ export default defineComponent({
             } else {
                 return 'bg-gray-700'
             }
+        },
+        acceptInvite(sender: any) {
+          this.userStore.socket.emit('bind', this.userStore.id)
+          this.userStore.socket.emit('createMatch', { player1: this.userStore.id, player2: sender.id })
+          this.userStore.socket.on('opponentFound', ( matchId: number ) => {
+            console.log('Opponent found')
+            console.log(matchId)
+            this.$router.push({
+              name: 'Pong',
+              params: {
+                matchid: matchId
+              }
+            })
+          })
         }
     }
 })

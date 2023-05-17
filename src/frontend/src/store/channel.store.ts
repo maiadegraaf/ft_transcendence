@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
-import type { IChannels, IMessage, IUser } from '@/types/types'
+import type {IChannels, IMessage, IProfile, IUser} from '@/types/types'
 import { useUserStore } from '@/store/user.store'
+import profile from "@/views/Profile.vue";
 
 export const useChatStore = defineStore('userChannel', {
     state: () => ({
-        invite: '' as string,
         channels: [] as IChannels[] | null,
         channelInView: 0 as number,
-        joined: false as boolean,
         dmId: -1 as number,
         dmName: '' as string,
         groupId: -1 as number,
@@ -15,119 +14,31 @@ export const useChatStore = defineStore('userChannel', {
     }),
 
     getters: {
-        getChannelInView(state): IMessage[] {
-            //console.log('getChannelInView')
-            if (state.channels == null) {
-                return []
-            }
-            const channelIV = state.channels.find((channel) => channel.id === state.channelInView)
-            if (channelIV == null) {
-                return []
-            }
-            //console.log(channelIV.messages)
+        getChannelInView(state): IChannels | null {
+            const channelIV = state.channels?.find((channel) => channel.id === state.channelInView)
+            if (!channelIV) { return null }
+            return channelIV
+        },
+        getCurrentMessages(): IMessage[] {
+            const channelIV = this.getChannelInView
+            if (channelIV == null) { return [] }
             return channelIV.messages
         },
-        getProfileByChannelId: (state) => (channelId: number) => {
-            if (state.channels == null) {
-                return null
-            }
-            const chnl = state.channels.find((channel) => channel.id === channelId)
-            if (chnl == null || chnl.profile == null) {
-                return null
-            }
-            return chnl.profile
-        },
-        getChannelProfileByChannelId: (state) => (channelId: number) => {
-            if (state.channels == null) {
-                return null
-            }
-            const chnl = state.channels.find((channel) => channel.id === channelId)
-            if (chnl == null || chnl.profile == null) {
-                return null
-            }
-            return chnl.profile
-        },
-        getChannelUsersByChannelId: (state) => (channelId: number) => {
-            if (state.channels == null) {
-                return null
-            }
-            const chnl = state.channels.find((channel) => channel.id === channelId)
+        getCurrentUsers(): IUser[] | null {
+            const chnl = this.getChannelInView
             if (chnl == null || chnl.profile == null) {
                 return null
             }
             return chnl.users
         },
-        getRole: (state) => (user: IUser) => {
-            // werkt voor geen meter godverdomme
-            let str = ''
-            if (state.channels == null) {
-                return str
-            }
-            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
+        getCurrentProfile(): IProfile | null {
+            const chnl = this.getChannelInView
             if (chnl == null || chnl.profile == null) {
-                return str
+                return null
             }
-            const profile = chnl.profile
-            if (profile) {
-                if (profile.owner.id === user.id) {
-                    str += ' Owner'
-                }
-                if (profile.admin.find((adm) => adm.id === user.id)) {
-                    str += ' Admin'
-                }
-                if (profile.muted.find((mtd) => mtd.id === user.id)) {
-                    str += ' Muted'
-                }
-            }
-            return str
-        },
-        isAdmin: (state) => (user: IUser) => {
-            if (state.channels == null) {
-                return false
-            }
-            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
-            if (chnl == null || chnl.profile == null) {
-                return false
-            }
-            const profile = chnl.profile
-            if (profile) {
-                if (profile.admin.find((adm) => adm.id === user.id)) {
-                    return true
-                }
-            }
-            return false
-        },
-        isMuted: (state) => (user: IUser) => {
-            if (state.channels == null) {
-                return false
-            }
-            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
-            if (chnl == null || chnl.profile == null) {
-                return false
-            }
-            const profile = chnl.profile
-            if (profile) {
-                if (profile.muted.find((mtd) => mtd.id === user.id)) {
-                    return true
-                }
-            }
-            return false
-        },
-        isOwner: (state) => (user: IUser) => {
-            if (state.channels == null) {
-                return false
-            }
-            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
-            if (chnl == null || chnl.profile == null) {
-                return false
-            }
-            const profile = chnl.profile
-            if (profile) {
-                if (profile.owner.id === user.id) {
-                    return true
-                }
-            }
-            return false
+            console.log('profile changed');
+            const profile = chnl.profile;
+            return profile
         },
         getGroupId(state): number {
             return state.groupId
@@ -179,6 +90,12 @@ export const useChatStore = defineStore('userChannel', {
                 user.socket.emit('leaveRoomById', { channelId: channelID })
             }
         },
+        async addUserToChannel(channelId: number, user: IUser) {
+            this.channels?.find((channel) => channel.id === channelId)?.users.push(user)
+        },
+        async removeUserFromChannel(channelId: number, user: IUser) {
+            this.channels?.find((channel) => channel.id === channelId)?.users?.splice(this.channels?.find((channel) => channel.id === channelId)?.users?.findIndex((u) => u.id === user.id) as number, 1)
+        },
         async addAdminToChannel(channelId: number, user: IUser) {
             this.channels?.find((channel) => channel.id === channelId)?.profile?.admin.push(user)
         },
@@ -194,6 +111,7 @@ export const useChatStore = defineStore('userChannel', {
         },
         async addMutedToChannel(channelId: number, user: IUser) {
             this.channels?.find((channel) => channel.id === channelId)?.profile?.muted.push(user)
+            console.log(this.channels?.find((channel) => channel.id === channelId)?.profile?.muted)
         },
         async removeMutedFromChannel(channelId: number, user: IUser) {
             this.channels
@@ -218,14 +136,12 @@ export const useChatStore = defineStore('userChannel', {
             this.dmName = dmName
         },
         logOut() {
-            this.invite = ''
             this.channels = null
             this.channelInView = 0
-            this.joined = false
             this.groupId = -1
             this.groupName = ''
             this.dmId = -1
             this.dmName = ''
-        }
+        },
     }
 })

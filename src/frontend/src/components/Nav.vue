@@ -22,7 +22,7 @@
                         name: 'Pong',
                         params: {
                             userId: currentUserId,
-                            matchId: matchId
+                            matchid: matchId
                         }
                     }"
                 >

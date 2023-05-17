@@ -63,10 +63,8 @@ import axios from 'axios'
 import MessageList from '@/components/Chat/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
-import type { IUser } from '@/types/types'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import GroupSettingUserList from '@/components/Chat/GroupSettingUserList.vue'
-import { userInfo } from 'os'
 
 interface User {
     id: number
@@ -84,9 +82,6 @@ export default defineComponent({
     },
     data(): any {
         return {
-            adminText: '',
-            mutedText: '',
-            bannedText: '',
             userText: '',
             params: {
                 userId: 0,
@@ -94,15 +89,12 @@ export default defineComponent({
                 groupId: 0,
                 channelId: 0
             },
-            userName: '',
             groupName: '',
-            // searchInput: '',
             searchError: '',
             searchResult: null as User | null
         }
     },
     async mounted() {
-        this.userName = this.userStore.name
         this.groupName = this.chatStore.groupName
         this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
@@ -126,13 +118,10 @@ export default defineComponent({
             }
 
             this.params.userName = this.userText
-            console.log('test username: ' + this.params.userName)
-
             axios
                 .post('/api/chat/group/user', this.params)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)
@@ -140,6 +129,7 @@ export default defineComponent({
                     return
                 })
             this.userText = ''
+          this.searchResult = null
         },
         deleteGroup(): void {
             this.params.userName = this.userStore.name

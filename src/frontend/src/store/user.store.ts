@@ -38,23 +38,29 @@ export const useUserStore = defineStore('user', {
                 console.log('Channel removed request!')
                 chatStore.removeChannel(channelId)
             })
-            this.socket.on('addAdminToChannel', (channelId: number, user: IUser) => {
-                chatStore.addAdminToChannel(channelId, user)
+            this.socket.on('addUserToChannel', (payload: any) => {
+                chatStore.addUserToChannel(payload.channelId, payload.user)
+                console.log('User added to channel!')
+            })
+            this.socket.on('removeUserFromChannel', (payload: any) => {
+                chatStore.removeUserFromChannel(payload.channelId, payload.user)
+                console.log('User removed from channel!')
+            })
+            this.socket.on('addAdminToChannel', (payload: any) => {
+                chatStore.addAdminToChannel(payload.channelId, payload.user)
                 console.log('Admin added to channel!')
             })
-            this.socket.on('removeAdminFromChannel', (channelId: number, user: IUser) => {
-                chatStore.removeAdminFromChannel(channelId, user)
+            this.socket.on('removeAdminFromChannel', (payload: any) => {
+                chatStore.removeAdminFromChannel(payload.channelId, payload.user)
                 console.log('Admin removed from channel!')
-                console.log(chatStore.channels)
+
             })
-            this.socket.on('addMutedToChannel', (channelId: number, user: IUser) => {
-                chatStore.addMutedToChannel(channelId, user)
+            this.socket.on('addMutedToChannel', (payload: any) => {
+                chatStore.addMutedToChannel(payload.channelId, payload.user)
                 console.log('Muted added to channel!')
-                console.log(chatStore.channels)
             })
-            this.socket.on('removeMutedFromChannel', (channelId: number, user: IUser) => {
-                chatStore.removeMutedFromChannel(channelId, user)
-                console.log(chatStore.channels)
+            this.socket.on('removeMutedFromChannel', (payload: any) => {
+                chatStore.removeMutedFromChannel(payload.channelId, payload.user)
                 console.log('Muted removed from channel!')
             })
         },

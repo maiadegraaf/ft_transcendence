@@ -187,7 +187,10 @@ export class ChatGateway
             },
             name: channel.profile.name,
         };
-        console.log('test');
+        this.server.to('room' + channel.id).emit('addUserToChannel', {
+            channelId: channel.id,
+            user: { id: user.id, login: user.login },
+        });
         const userSocket = this.getClientSocketById(user.id);
         if (userSocket) {
             this.logger.log(
@@ -204,6 +207,10 @@ export class ChatGateway
         user: User,
     ): Promise<any> {
         try {
+            this.server.to('room' + channel.id).emit('removeUserFromChannel', {
+                channelId: channel.id,
+                user: { id: user.id, login: user.login },
+            });
             const userSocket = this.getClientSocketById(user.id);
             if (!userSocket) {
                 throw new HttpException(

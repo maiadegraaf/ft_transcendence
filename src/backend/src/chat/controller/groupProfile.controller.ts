@@ -182,7 +182,7 @@ export class GroupProfileController {
     ) {
         try {
             const info = await this.groupProfileService.addAdmin(param);
-            await this.chatGateway.emitRemoveAdminFromChannel(info);
+            await this.chatGateway.emitAddAdminToChannel(info);
             this.logger.log('postAdminToGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
@@ -197,7 +197,7 @@ export class GroupProfileController {
     ) {
         try {
             const info = await this.groupProfileService.deleteAdmin(param);
-            await this.chatGateway.emitAddAdminToChannel(info);
+            await this.chatGateway.emitRemoveAdminFromChannel(info);
             this.logger.log('deleteAdminFromGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
