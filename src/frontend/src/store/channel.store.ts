@@ -81,6 +81,54 @@ export const useChatStore = defineStore('userChannel', {
             }
             return str
         },
+        isAdmin: (state) => (user: IUser) => {
+            if (state.channels == null) {
+                return false
+            }
+            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
+            if (chnl == null || chnl.profile == null) {
+                return false
+            }
+            const profile = chnl.profile
+            if (profile) {
+                if (profile.admin.find((adm) => adm.id === user.id)) {
+                    return true
+                }
+            }
+            return false
+        },
+        isMuted: (state) => (user: IUser) => {
+            if (state.channels == null) {
+                return false
+            }
+            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
+            if (chnl == null || chnl.profile == null) {
+                return false
+            }
+            const profile = chnl.profile
+            if (profile) {
+                if (profile.muted.find((mtd) => mtd.id === user.id)) {
+                    return true
+                }
+            }
+            return false
+        },
+        isOwner: (state) => (user: IUser) => {
+            if (state.channels == null) {
+                return false
+            }
+            const chnl = state.channels.find((channel) => channel.id === state.channelInView)
+            if (chnl == null || chnl.profile == null) {
+                return false
+            }
+            const profile = chnl.profile
+            if (profile) {
+                if (profile.owner.id === user.id) {
+                    return true
+                }
+            }
+            return false
+        },
         getGroupId(state): number {
             return state.groupId
         }

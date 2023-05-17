@@ -19,17 +19,17 @@
             <div></div>
             <button @click="deleteUser">delete user</button>
         </div> -->
-        <div class="flex flex-col items-center justify-center">
-            <label class="text-xl mb-2 font-semibold uppercase">
+        <div class="flex flex-col pt-10 items-center justify-center">
+            <label class="text-xl text-buff mb-2 font-semibold uppercase">
                 Add new groupmembers by username:
             </label>
             <input
                 type="text"
                 v-model="userText"
-                class="border rounded mt-3 appearance-none bg-transparent"
+                class="border border-buff rounded mt-3 appearance-none bg-transparent outline-none"
                 @keyup.enter="searchForUser"
             />
-            <div class="h-10 flex items-center">
+            <div class="h-10 flex items-center text-buff">
                 <p v-if="searchError" class="font-bold text-blush">{{ searchError }}</p>
                 <span class="pr-3 font-semibold" v-if="searchResult && !searchError">{{
                     searchResult.login
@@ -44,11 +44,16 @@
             </div>
         </div>
 
-        <footer class="bg-normal w-full min-h-10">
-            <div class="p-3 flex">
-                <button @click="doneGroup" class="rounded-full">done</button>
+        <div class="w-full min-h-10">
+            <div class="text-center">
+                <button
+                    @click="doneGroup"
+                    class="hover:opacity-70 transition-opacity font-semibold uppercase text-buff border-4 border-double border-buff rounded-md p-2 px-5"
+                >
+                    done
+                </button>
             </div>
-        </footer>
+        </div>
     </div>
 </template>
 
@@ -136,30 +141,6 @@ export default defineComponent({
                 })
             this.userText = ''
         },
-        deleteUser(): void {
-            // Validates the input before sending the message.
-            if (this.userText.length <= 0) {
-                this.userText = ''
-                return
-            }
-
-            this.params.userName = this.userText
-            console.log('test username: ' + this.params.userName)
-
-            axios
-                .delete('/api/chat/group/user', { data: this.params })
-                .then((response) => {
-                    console.log(response)
-                    // this.redirectGroupPannel()
-                })
-                .catch((error) => {
-                    console.log(error)
-                    this.userText = ''
-                    return
-                })
-            this.userText = ''
-        },
-
         deleteGroup(): void {
             this.params.userName = this.userStore.name
             axios
@@ -219,6 +200,6 @@ export default defineComponent({
 
 <style scoped>
 input {
-    color: black;
+    color: white;
 }
 </style>

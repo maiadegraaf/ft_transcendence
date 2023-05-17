@@ -1,6 +1,6 @@
 <template>
     <Nav />
-    <main v-if="doesProfileExist">
+    <main v-if="doesProfileExist" class="pb-16">
         <div class="flex flex-col mt-16 items-center">
             <div class="w-60 h-60 text-right relative">
                 <img

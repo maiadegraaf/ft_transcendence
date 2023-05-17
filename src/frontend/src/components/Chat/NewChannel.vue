@@ -14,51 +14,74 @@
                     placeholder="Join an Existing Group"
                     class="input_new_channel"
                 />
-              <button @click="joinGroup" class="w-full text-buff text-center font-semibold pt-2 uppercase hover:opacity-70 transition-opacity">Join</button>
-            </div>
-            <div class="div_input_new_channel">
-                <input
-                    v-model="groupText"
-                    placeholder="New Group Name"
-                    class="input_new_channel"
-                />
-              <div>
-                <ul class="text-buff">
-                  <li class="flex items-center">
-                    <input type="radio" :value='Form.PRIVATE' id="private" v-model="checkedBox" class="radio_button"  />
-                    <label for="private">Private</label>
-                  </li>
-                  <li class="flex items-center">
-                    <input type="radio" :value='Form.PUBLIC' id="public" v-model="checkedBox"  class="radio_button"/>
-                    <label for="public">Public</label>
-                  </li>
-                  <li class="flex items-center">
-                    <input type="radio" :value='Form.PROTECTED' id="protected" v-model="checkedBox" class="radio_button"/>
-                    <label for="protected">Protected</label>
-                  </li>
-                </ul>
-                <button class="w-full text-buff text-center font-semibold pt-2 uppercase hover:opacity-70 transition-opacity" @click="createGroup">
-                  Create
+                <button
+                    @click="joinGroup"
+                    class="text-buff text-center font-semibold pt-2 uppercase hover:opacity-70 transition-opacity"
+                >
+                    Join
                 </button>
-              </div>
-
-<!--                <button @click="newPrivateGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-<!--                    Private-->
-<!--                </button>-->
-<!--                <button @click="newPublicGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-<!--                    Public-->
-<!--                </button>-->
-<!--                <button @click="newProtectedGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-<!--                    Protected-->
-<!--                </button>-->
             </div>
             <div class="div_input_new_channel">
-                <input
-                    v-model="dmText"
-                    placeholder="Dm user..."
-                    class="input_new_channel"
-                />
-                <button @click="dmNewUser" class="w-full text-buff text-center font-semibold pt-2 uppercase hover:opacity-70 transition-opacity">
+                <input v-model="groupText" placeholder="New Group Name" class="input_new_channel" />
+                <div>
+                    <ul class="text-buff">
+                        <li class="flex items-center">
+                            <input
+                                type="radio"
+                                :value="Form.PRIVATE"
+                                id="private"
+                                v-model="checkedBox"
+                                class="radio_button"
+                            />
+                            <label for="private">Private</label>
+                        </li>
+                        <li class="flex items-center">
+                            <input
+                                type="radio"
+                                :value="Form.PUBLIC"
+                                id="public"
+                                v-model="checkedBox"
+                                class="radio_button"
+                            />
+                            <label for="public">Public</label>
+                        </li>
+                        <li class="flex items-center">
+                            <input
+                                type="radio"
+                                :value="Form.PROTECTED"
+                                id="protected"
+                                v-model="checkedBox"
+                                class="radio_button"
+                            />
+                            <label for="protected">Protected</label>
+                        </li>
+                    </ul>
+                    <div class="w-full text-center">
+                        <button
+                            class="text-buff text-center font-semibold pt-2 uppercase hover:opacity-70 transition-opacity"
+                            @click="createGroup"
+                        >
+                            Create
+                        </button>
+                    </div>
+                </div>
+
+                <!--                <button @click="newPrivateGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
+                <!--                    Private-->
+                <!--                </button>-->
+                <!--                <button @click="newPublicGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
+                <!--                    Public-->
+                <!--                </button>-->
+                <!--                <button @click="newProtectedGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
+                <!--                    Protected-->
+                <!--                </button>-->
+            </div>
+            <div class="div_input_new_channel">
+                <input v-model="dmText" placeholder="Dm user..." class="input_new_channel" />
+                <button
+                    @click="dmNewUser"
+                    class="text-buff text-center font-semibold pt-2 uppercase hover:opacity-70 transition-opacity"
+                >
                     dm user
                 </button>
             </div>
@@ -79,13 +102,12 @@ import SetPassword from '@/components/Chat/SetPassword.vue'
 import EnterPassword from '@/components/Chat/EnterPassword.vue'
 
 const Form = {
-  PRIVATE: 0,
-  PUBLIC: 1,
-  PROTECTED: 2,
-};
+    PRIVATE: 0,
+    PUBLIC: 1,
+    PROTECTED: 2
+}
 
 export default defineComponent({
-
     name: 'NewChannel',
     components: {
         ChevronLeftIcon
@@ -109,14 +131,14 @@ export default defineComponent({
     async mounted() {},
     methods: {
         createGroup(): void {
-          console.log(this.checkedBox)
-          if (this.checkedBox == Form.PRIVATE) {
-            this.newPrivateGroupChannel()
-          } else if (this.checkedBox == Form.PUBLIC) {
-            this.newPublicGroupChannel()
-          } else if (this.checkedBox == Form.PROTECTED) {
-            this.newProtectedGroupChannel()
-          }
+            console.log(this.checkedBox)
+            if (this.checkedBox == Form.PRIVATE) {
+                this.newPrivateGroupChannel()
+            } else if (this.checkedBox == Form.PUBLIC) {
+                this.newPublicGroupChannel()
+            } else if (this.checkedBox == Form.PROTECTED) {
+                this.newProtectedGroupChannel()
+            }
         },
         dmNewUser(): void {
             // Validates the input before sending the message.
@@ -235,7 +257,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .input_new_channel {
     @apply w-3/4 text-white focus:outline-none rounded-md border-buff px-2 py-1 border bg-transparent mt-10 mb-2;
 }
@@ -244,6 +265,6 @@ export default defineComponent({
     @apply w-full flex flex-col items-center justify-center;
 }
 .radio_button {
-    @apply h-4 w-4 mr-2 opacity-70 appearance-none border-double rounded-full border-4 border-buff text-buff transition-all checked:border-solid checked:opacity-100;
+    @apply h-4 w-4 cursor-pointer mr-2 opacity-70 appearance-none border-double rounded-full border-4 border-buff text-buff transition-all checked:border-solid checked:opacity-100;
 }
 </style>

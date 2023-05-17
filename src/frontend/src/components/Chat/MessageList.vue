@@ -26,7 +26,7 @@
                 </h2>
             </div>
             <div></div>
-            <div class="flex flex-col-reverse overflow-x-hidden mt-20">
+            <div class="flex flex-col-reverse overflow-x-hidden overflow-y-auto no-scrollbar mt-20">
                 <div
                     v-for="(message, index) of chatStore.getChannelInView.slice().reverse()"
                     :key="index"
@@ -100,12 +100,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar {
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
     display: none;
 }
 
-/* For IE, Edge and Firefox */
-.scrollbar-hide {
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }

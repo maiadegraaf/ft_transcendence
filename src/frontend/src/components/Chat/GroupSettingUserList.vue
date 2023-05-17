@@ -26,15 +26,26 @@
                         <a :href="'/profile/' + user.id">{{ user.login }}</a>
                         <p class="pl-2 text-xs opacity-50">{{ chatStore.getRole(user) }}</p>
                     </div>
-                    <div v-if="user.id != userStore.id" class="space-x-4">
+                    <div v-if="(chatStore.isAdmin(userStore) || chatStore.isOwner(userStore)) && userStore.id != user.id" class="space-x-4">
                         <button
-                            class="-tracking-2 hover:opacity-60 transition-opacity"
-                            @click="addAdmin(user.login)"
+                            v-if="chatStore.isAdmin(user)"
+                            class="button_role"
+                            @click="deleteAdmin(user.login)"
                         >
+                            unadmin
+                        </button>
+                        <button v-else class="button_role" @click="addAdmin(user.login)">
                             admin
                         </button>
-                        <button @click="addMuted(user.login)">mute</button>
-                        <button @click="addBanned(user.login)">ban</button>
+                      <button class="button_role" v-if="chatStore.isMuted(user)" @click="deleteMuted(user.login)">unmute</button>
+                      <button class="button_role" v-else @click="addMuted(user.login)">mute</button>
+                      <button class="button_role" @click="addBanned(user.login)">ban</button>
+                      <button
+                          @click="deleteUser(user.login)"
+                          class=" text-sm border-blush border-2 border-double text-blush font-bold py-1 px-2 rounded hover:opacity-60 transition-opacity"
+                      >
+                        REMOVE
+                      </button>
                     </div>
                 </li>
             </ul>
@@ -90,7 +101,6 @@ export default defineComponent({
                     console.log(error)
                     return
                 })
-            window.location.reload()
         },
         deleteAdmin(login: string): void {
             axios
@@ -139,7 +149,23 @@ export default defineComponent({
                     console.log(error)
                     return
                 })
-        }
+        },
+      deleteUser(login: string): void {
+
+        this.params.userName = login
+        axios
+            .delete('/api/chat/group/user', { data: this.params })
+            .then((response) => {
+              console.log(response)
+              // this.redirectGroupPannel()
+            })
+            .catch((error) => {
+              console.log(error)
+              this.userText = ''
+              return
+            })
+        this.userText = ''
+      },
         // deleteBanned(login: string): void {
         //   this.params.userName = login
         //   axios
@@ -155,3 +181,9 @@ export default defineComponent({
     }
 })
 </script>
+
+<style scoped>
+.button_role {
+    @apply hover:opacity-60 transition-opacity;
+}
+</style>
