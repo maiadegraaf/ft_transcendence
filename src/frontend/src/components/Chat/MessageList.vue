@@ -21,9 +21,14 @@
                     :src="`api/user/${chatStore.dmId}/avatar`"
                     alt="avatar"
                 />
-                <h2 class="text-buff font-semibold text-xl">
+                <div>
+                  <h2 class="text-buff font-semibold text-xl">
                     {{ chatStore.dmName }}
-                </h2>
+                  </h2>
+                  <Transition name="appear">
+                  <p class="opacity-60 text-xs absolute " v-if="isOnline">online</p>
+                  </Transition>
+                </div>
             </div>
             <div></div>
             <div class="flex flex-col-reverse overflow-x-hidden overflow-y-auto no-scrollbar mt-20">
@@ -75,10 +80,26 @@ export default defineComponent({
         MessageInput
     },
     name: 'MessageList',
+    data() {
+        return {
+            isOnline: false
+        }
+    },
     setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()
         return { chatStore, userStore }
+    },
+    beforeUpdate() {
+      this.userStore.socket.emit('checkUserOnline', {
+        userId: this.chatStore.dmId
+      })
+      this.userStore.socket.on('userOnline', (userId: number) => {
+        if (userId == this.chatStore.dmId) this.isOnline = true
+      })
+      this.userStore.socket.on('userOffline', (userId: number) => {
+        if (userId == this.chatStore.dmId) this.isOnline = false
+      })
     },
     methods: {
         posMessage(senderId: number): string {
@@ -100,6 +121,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.appear-enter-active {
+  transition: opacity 0.3s ease;
+}
+.appear-enter-from {
+  opacity: 0;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
