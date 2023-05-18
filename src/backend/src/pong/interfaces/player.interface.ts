@@ -1,9 +1,9 @@
-import { User } from '../../user/user.entity';
+import { User } from '../../user/user.entity'
 
 export interface Player {
-    user: User;
-    x: number;
-    y: number;
-    new_y: number;
-    score: number;
+    user: User
+    x: number
+    y: number
+    new_y: number
+    score: number
 }

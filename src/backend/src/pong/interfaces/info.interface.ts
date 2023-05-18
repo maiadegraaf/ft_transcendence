@@ -1,7 +1,7 @@
-import { Direction } from '../enums';
+import { Direction } from '../enums'
 
 export interface Info {
-    d: Direction;
-    matchId: number;
-    practiceMatchId: number;
+    d: Direction
+    matchId: number
+    practiceMatchId: number
 }

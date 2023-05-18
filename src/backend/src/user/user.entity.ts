@@ -6,67 +6,67 @@ import {
     JoinColumn,
     OneToMany,
     OneToOne,
-    PrimaryColumn,
-} from 'typeorm';
-import { Channel } from '../chat/entities/channel.entity';
-import { GroupProfile } from '../chat/entities/groupProfile.entity';
-import { Avatar } from './avatar.entity';
+    PrimaryColumn
+} from 'typeorm'
+import { Channel } from '../chat/entities/channel.entity'
+import { GroupProfile } from '../chat/entities/groupProfile.entity'
+import { Avatar } from './avatar.entity'
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
 @Entity({ name: 'users' })
 export class User {
     @PrimaryColumn()
-    id: number;
+    id: number
 
     @Column({ unique: true })
-    login: string; //maybe call it username
+    login: string //maybe call it username
 
     // @Column( {nullable: true })
     @Column({ nullable: true })
-    email: string;
+    email: string
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: Date;
+    createdAt: Date
 
     @Column({ nullable: true })
-    twoFactorAuthenticationSecret?: string;
+    twoFactorAuthenticationSecret?: string
 
     @Column({ default: false })
-    isTwoFactorAuthenticationEnabled: boolean;
+    isTwoFactorAuthenticationEnabled: boolean
 
     @JoinTable()
     @ManyToMany(() => Channel, (channel) => channel.users)
-    channels: Channel[];
+    channels: Channel[]
 
     @OneToOne(() => GroupProfile, (groupProfile) => groupProfile.owner)
-    groupProfile: GroupProfile;
+    groupProfile: GroupProfile
 
     @ManyToMany(() => GroupProfile, (group) => group.admin)
-    admin: GroupProfile[];
+    admin: GroupProfile[]
 
     @ManyToMany(() => GroupProfile, (group) => group.blocked)
-    blocked: GroupProfile[];
+    blocked: GroupProfile[]
 
     @ManyToMany(() => GroupProfile, (group) => group.muted)
-    muted: GroupProfile[];
+    muted: GroupProfile[]
 
     @OneToOne(() => Avatar, (avatar) => avatar.user)
     @JoinColumn()
-    avatar: Avatar;
+    avatar: Avatar
 
     @Column({
-        default: null,
+        default: null
     })
-    socketId: string;
+    socketId: string
 
     @ManyToMany(() => User)
     @JoinTable()
-    friends: User[];
+    friends: User[]
 
     @ManyToMany(() => User)
     @JoinTable()
-    blockedUsers: User[];
+    blockedUsers: User[]
 
     // @ManyToMany(() => User)
     // @JoinTable()

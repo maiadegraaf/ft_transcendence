@@ -8,8 +8,8 @@ import {
     ValidationPipe,
     HttpException,
     HttpStatus,
-    Delete,
-} from '@nestjs/common';
+    Delete, Req
+} from '@nestjs/common'
 import { Channel } from '../entities/channel.entity';
 import { MessageService } from '../services/message.service';
 import { ChannelService } from '../services/channel.service';
@@ -36,11 +36,13 @@ export class ChatController {
 
     private logger = new Logger('ChatController');
 
-    // Get /api/chat/${id}
-    @Get('/:id')
-    async getUserChannels(@Param('id') id: number): Promise<Channel[]> {
+    // Get /api/chat/
+    @Get('/')
+    async getUserChannels(@Req() req): Promise<Channel[]> {
+        const id = req.session.user.id;
         this.logger.log('getChannelMessages: messages found for user: ' + id);
-        return this.channelService.getUserChannels(id);
+        const channels = await this.channelService.getUserChannels(id);
+        return channels;
     }
 
     // Get /api/chat/${id}/channel

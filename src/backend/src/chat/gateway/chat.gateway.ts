@@ -22,6 +22,7 @@ import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
+import { ChannelService } from '../services/channel.service'
 
 @WebSocketGateway({
     cors: {
@@ -32,7 +33,10 @@ import { User } from '../../user/user.entity';
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-    constructor(private readonly messageService: MessageService) {}
+    constructor(
+        private readonly messageService: MessageService,
+        private readonly channelService: ChannelService,
+        ) {}
 
     @WebSocketServer()
     server: Server;
@@ -104,15 +108,16 @@ export class ChatGateway
         }
     }
 
-    @SubscribeMessage('joinRoomById')
-    async handleJoinRoomById(
-        @ConnectedSocket() client: Socket,
-        @Body() payload: { channelId: number },
-    ): Promise<any> {
-        await client.join('room' + payload.channelId);
-        this.logger.log(
-            `handleJoinRoomById: ${client.id} joined the room with id: ${payload.channelId}`,
-        );
+    @SubscribeMessage('joinRooms')
+    async handleJoinRooms(@ConnectedSocket() client: Socket): Promise<any> {
+        const id = client.request.session.user.id;
+        const channels = await this.channelService.getUserChannels(id);
+        channels.forEach((channel) => {
+            client.join('room' + channel.id);
+            this.logger.log(
+                `handleJoinRoomById: ${client.id} joined the room with id: ${channel.id}`,
+            );
+        });;
     }
 
     @SubscribeMessage('leaveRoomById')

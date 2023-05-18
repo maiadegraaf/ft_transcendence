@@ -1,5 +1,5 @@
 <template>
-    <Nav />
+    <NavBar />
     <main v-if="doesProfileExist" class="pb-16">
         <div class="flex flex-col mt-16 items-center">
             <div class="w-60 h-60 text-right relative">
@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import axios from 'axios'
-import Nav from '../components/Nav.vue'
+import NavBar from '../components/NavBar.vue'
 import Friends from '../components/profile/friends.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
@@ -76,7 +76,7 @@ export default defineComponent({
     components: {
         MatchHistory,
         WinLosses,
-        Nav,
+        NavBar,
         Friends
     },
     beforeCreate() {
