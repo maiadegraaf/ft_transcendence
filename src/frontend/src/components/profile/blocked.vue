@@ -52,7 +52,7 @@ export default defineComponent({
     async created() {
         const userID = this.$route.params.id
         await axios
-            .get(`/api/user/friends/${userID}`)
+            .get(`/api/user/block/${userID}`)
             .then((response) => {
                 this.friendList = Array.from(response.data)
                 this.friendList.forEach((friend) => {

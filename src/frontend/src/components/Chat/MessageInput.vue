@@ -1,7 +1,6 @@
 <template>
     <footer class="bg-dark-purple w-full min-h-10">
         <div class="p-3 flex">
-            <button @click="sendInvite" class="text-buff">Invite</button>
             <div class="flex-1 p-1 bg-white rounded-md">
                 <input
                     v-model="text"
@@ -57,28 +56,6 @@ export default defineComponent({
         console.log(this.$data)
     },
     methods: {
-        sendInvite(): void {
-            this.userStore.socket.emit('bind', this.userId)
-            this.userStore.socket.on('MultipleConnections', (msg: string) => {
-                this.$refs.errorPopUp.show('You are already ' + msg)
-                this.reset()
-            })
-            this.userStore.socket.emit('createMatch', {
-                player1: this.userStore.id,
-                player2: this.chatStore.dmId
-            })
-            this.userStore.socket.on('opponentFound', (matchId: number) => {
-                console.log('Opponent found')
-                this.matchId = matchId
-            })
-            // console.log('MatchId: ' + this.matchId)
-            // this.$router.push({
-            //   name: 'Pong',
-            //   params: {
-            //     matchId: this.matchid
-            //   }
-            // })
-        },
         sendMessage(): void {
             // Validates the input before sending the message.
             this.channel = this.chatStore.channelInView

@@ -22,24 +22,17 @@
                 <div class="ml-auto">
                     <button
                         v-if="isProfileSession"
-                        @click="removeFriend(friend.id)"
-                        class="ml-auto mr-3 border-2 border-blush border-double text-blush font-bold py-2 px-4 rounded hover:opacity-60 transition-opacity"
-                    >
-                        REMOVE
-                    </button>
-                    <button
-                        v-if="isProfileSession"
-                        @click=""
+                        @click="unblockUser(friend.id)"
                         class="ml-auto border-2 border-blush border-double text-blush font-bold py-2 px-4 rounded hover:opacity-60 transition-opacity"
                     >
-                        BLOCK
+                        UNBLOCK
                     </button>
                 </div>
             </li>
         </ul>
     </div>
     <div v-else class="text-center m-4">
-        <h1 class="text-3xl text-buff font-bold">No friends :((</h1>
+        <h1 class="text-3xl text-buff font-bold">No Blocked users</h1>
     </div>
 </template>
 
@@ -70,9 +63,9 @@ export default defineComponent({
         }
     },
     methods: {
-        async removeFriend(friendId: number) {
+        async unblockUser(friendId: number) {
             try {
-                await axios.post(`http://localhost:8080/api/user/unfriend/${friendId}`)
+                await axios.post(`http://localhost:8080/api/user/unblock/${friendId}`)
                 window.location.reload()
             } catch (error: any) {
                 if (error.response) {

@@ -29,7 +29,7 @@
                     </button>
                     <button
                         v-if="isProfileSession"
-                        @click=""
+                        @click="blockUser(friend.id)"
                         class="ml-auto border-2 border-blush border-double text-blush font-bold py-2 px-4 rounded hover:opacity-60 transition-opacity"
                     >
                         BLOCK
@@ -72,7 +72,7 @@ export default defineComponent({
     methods: {
         async removeFriend(friendId: number) {
             try {
-                await axios.post(`http://localhost:8080/api/user/unfriend/${friendId}`)
+                await axios.post(`/api/user/unfriend/${friendId}`)
                 window.location.reload()
             } catch (error: any) {
                 if (error.response) {
@@ -81,6 +81,18 @@ export default defineComponent({
                     this.searchError = `An error occured. Please try again later.`
                 }
             }
+        },
+        async blockUser(friendId: number) {
+          try {
+            await axios.post(`/api/user/block/${friendId}`)
+            window.location.reload()
+          } catch (error: any) {
+            if (error.response) {
+              this.searchError = error.response.data.message
+            } else {
+              this.searchError = `An error occured. Please try again later.`
+            }
+          }
         }
     }
 })
