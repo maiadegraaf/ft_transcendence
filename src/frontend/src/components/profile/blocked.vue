@@ -28,7 +28,7 @@ interface Friend {
 }
 
 export default defineComponent({
-    name: 'Friends',
+    name: 'Blocked',
     setup() {
         const user = useUserStore()
         return { user }

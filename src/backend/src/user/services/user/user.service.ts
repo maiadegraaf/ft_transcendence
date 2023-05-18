@@ -394,4 +394,17 @@ export class UserService {
         }
         return user.blockedUsers;
     }
+
+    async getBlockedUsersForUser(userId: number): Promise<any> {
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id = :id', { id: userId })
+            .leftJoin('user.blockedUsers', 'blockedUsers')
+            .addSelect('blockedUsers.id')
+            .getOne();
+        if (!user) {
+            return null;
+        }
+        return user.blockedUsers;
+    }
 }

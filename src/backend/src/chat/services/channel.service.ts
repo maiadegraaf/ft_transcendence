@@ -13,6 +13,7 @@ export class ChannelService {
         @InjectRepository(Channel)
         private readonly channelRepository: Repository<Channel>,
         private readonly groupProfileService: GroupProfileService,
+        private readonly userService: UserService,
     ) {}
 
     private logger = new Logger('ChannelService');
@@ -72,7 +73,6 @@ export class ChannelService {
     }
 
     async getUserChannels(userId: number): Promise<Channel[]> {
-        // const channels = await this.userService.retrieveUserChannelMessages(userId);
         const channels = await this.channelRepository
             .createQueryBuilder('channel')
             .innerJoin('channel.users', 'user')
@@ -96,10 +96,19 @@ export class ChannelService {
         if (!channels) {
             return;
         }
-        // console.log(channels);
-        // for (const ch of channels) {
-        //     ch['name'] = await this.getChannelName(ch.id, userId);
-        // }
+        const blockedUsers = await this.userService.getBlockedUsersForUser(
+            userId,
+        );
+        if (!blockedUsers) {
+            return channels;
+        }
+        for (const channel of channels) {
+            for (const blockedUser of blockedUsers) {
+                channel.messages = channel.messages.filter(
+                    (msg) => msg.sender.id !== blockedUser.id,
+                );
+            }
+        }
         return channels;
     }
 

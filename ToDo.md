@@ -35,3 +35,5 @@ server gives a double join room and error on the backend
 group setting then the old group setting is still active
 * [ ] userById not safe
 * [ ] socket with emitGroupChannelToUser is not found
+* [ ] same name for channels or dms is not allowed
+* [ ] user socket not connected directly when added to group
