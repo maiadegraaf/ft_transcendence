@@ -19,24 +19,34 @@ export class ChannelService {
 
     async createChannel(): Promise<Channel> {
         const channel = new Channel();
-        console.log('channel', channel.id);
         return await this.channelRepository.save(channel);
     }
 
     async getChannelById(channelId: number): Promise<any> {
-        try {
-            const channel = await this.channelRepository.findOne({
-                where: { id: channelId },
-                relations: ['messages', 'messages.sender'],
-            });
-            if (!channel) {
-                throw new HttpException(
-                    'Channel with ID ${id} not found',
-                    HttpStatus.FORBIDDEN,
-                );
-            }
-            return channel;
-        } catch {}
+        const channel = await this.channelRepository
+            .createQueryBuilder('channel')
+            .innerJoin('channel.users', 'user')
+            .where('channel.id = :id', { id: channelId })
+            .leftJoinAndSelect('channel.messages', 'message')
+            .leftJoin('channel.users', 'members')
+            .addSelect(['members.id', 'members.login'])
+            .leftJoin('message.sender', 'sender')
+            .addSelect(['sender.id', 'sender.login'])
+            .leftJoinAndSelect('channel.profile', 'profile')
+            .leftJoin('profile.owner', 'owner')
+            .addSelect(['owner.id', 'owner.login'])
+            .leftJoin('profile.admin', 'admin')
+            .addSelect(['admin.id', 'admin.login'])
+            .leftJoin('profile.muted', 'muted')
+            .addSelect(['muted.id', 'muted.login'])
+            .leftJoin('profile.blocked', 'blocked')
+            .addSelect(['blocked.id', 'blocked.login'])
+            .orderBy('message.id', 'ASC')
+            .getOne();
+        if (!channel) {
+            return;
+        }
+        return channel;
     }
 
     async newDmChannel(user1: User, user2: User): Promise<any> {
@@ -86,10 +96,10 @@ export class ChannelService {
         if (!channels) {
             return;
         }
-        console.log(channels);
-        for (const ch of channels) {
-            ch['name'] = await this.getChannelName(ch.id, userId);
-        }
+        // console.log(channels);
+        // for (const ch of channels) {
+        //     ch['name'] = await this.getChannelName(ch.id, userId);
+        // }
         return channels;
     }
 
@@ -138,8 +148,8 @@ export class ChannelService {
         password?: string,
     ): Promise<any> {
         // check if groupName is unique
-        console.log('user');
-        console.log(owner);
+        // console.log('user');
+        // console.log(owner);
         const channel = await this.createChannel();
         if (!channel) {
             throw new HttpException(
@@ -201,7 +211,7 @@ export class ChannelService {
         try {
             const channel = await this.channelRepository.findOne({
                 where: { id: channelId },
-                relations: ['users', 'profile'],
+                relations: ['users', 'profile', 'messages'],
             });
             if (!channel) {
                 throw new HttpException(
@@ -230,8 +240,6 @@ export class ChannelService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        console.log('user: ' + JSON.stringify(user));
-        console.log('channel users: ' + JSON.stringify(channel.users));
         const idx = channel.users.findIndex((u) => u.id === user.id);
         if (idx === -1) {
             throw new HttpException(
@@ -268,5 +276,29 @@ export class ChannelService {
             );
         }
         return channel;
+    }
+
+    async getBlockedList(param: MessageDto): Promise<any> {
+        const channel = await this.channelRepository
+            .createQueryBuilder('channel')
+            .where('channel.id = :id', { id: param.channel })
+            .leftJoinAndSelect('channel.users', 'users')
+            .leftJoin('users.blockedUsers', 'blockedUsers')
+            .andWhere((qb) =>
+                qb
+                    .where('blockedUsers.id != :userId', {
+                        userId: param.sender.id,
+                    })
+                    .orWhere('blockedUsers.id IS NULL'),
+            )
+            .getOne();
+        console.log(channel);
+        if (!channel) {
+            throw new HttpException(
+                'getBlockedList: Channel not found to get blocked list',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return channel.users;
     }
 }

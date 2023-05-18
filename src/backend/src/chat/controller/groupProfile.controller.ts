@@ -35,7 +35,6 @@ export class GroupProfileController {
         @Body(new ValidationPipe()) param: JoinGroupDto,
     ): Promise<any> {
         try {
-            console.log(param);
             const user = await this.userService.getUserById(param.userId);
             if (!user) {
                 throw new HttpException(
@@ -57,13 +56,6 @@ export class GroupProfileController {
                     groupId: group.id,
                     type: group.type,
                 };
-                console.log(
-                    'payload: ' +
-                        JSON.stringify(payload) +
-                        '\ntype: ' +
-                        group.type,
-                );
-                console.log(payload);
                 return payload;
             }
             const channel = await this.channelService.addUserToChannel(
@@ -90,8 +82,6 @@ export class GroupProfileController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log('param: ');
-            console.log(param);
             if (
                 await this.groupProfileService.isBlocked(user.id, param.groupId)
             ) {
@@ -163,7 +153,6 @@ export class GroupProfileController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            console.log(JSON.stringify(user));
             const channel = await this.channelService.removeUserFromChannel(
                 param.channelId,
                 user,
@@ -182,7 +171,7 @@ export class GroupProfileController {
     ) {
         try {
             const info = await this.groupProfileService.addAdmin(param);
-            await this.chatGateway.emitRemoveAdminFromChannel(info);
+            await this.chatGateway.emitAddAdminToChannel(info);
             this.logger.log('postAdminToGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
@@ -197,7 +186,7 @@ export class GroupProfileController {
     ) {
         try {
             const info = await this.groupProfileService.deleteAdmin(param);
-            await this.chatGateway.emitAddAdminToChannel(info);
+            await this.chatGateway.emitRemoveAdminFromChannel(info);
             this.logger.log('deleteAdminFromGroup: ' + param.userName);
         } catch (error) {
             this.logger.error(error);
@@ -268,6 +257,7 @@ export class GroupProfileController {
         }
     }
 
+    // Delete /api/chat/group
     @Delete()
     async deleteGroup(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
@@ -291,6 +281,61 @@ export class GroupProfileController {
             await this.groupProfileService.deleteGroup(group);
             await this.channelService.deleteChannel(channel);
             this.logger.log('deleteGroup: ' + param.userName);
+            return true;
+        } catch (error) {
+            this.logger.error(error);
+            return false;
+        }
+    }
+
+    // Delete /api/chat/group/leave
+    @Delete('leave')
+    async deleteLeaveGroup(
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    ) {
+        try {
+            let group = await this.groupProfileService.getGroupProfileById(
+                param.groupId,
+            );
+            const user = group.channel.users.find(
+                (user) => user.id === param.userId,
+            );
+            if (!user) {
+                throw new HttpException(
+                    'Could not find user to remove from channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            let channel = group.channel;
+            if (group.owner.id == param.userId) {
+                if (
+                    !(await this.groupProfileService.reassignOwner(
+                        group,
+                        param.userId,
+                    ))
+                ) {
+                    group = await this.groupProfileService.nullifyChannel(
+                        group,
+                    );
+                    channel = await this.channelService.nullifyProfile(channel);
+                    await this.groupProfileService.deleteGroup(group);
+                    await this.chatGateway.emitDeleteChannelFromUser(
+                        channel,
+                        user,
+                    );
+                    await this.channelService.deleteChannel(channel);
+                    return true;
+                }
+            }
+            group = await this.groupProfileService.removeRoles(
+                group,
+                param.userId,
+            );
+            channel = await this.channelService.removeUserFromChannel(
+                group.channel.id,
+                user,
+            );
+            await this.chatGateway.emitDeleteChannelFromUser(channel, user);
             return true;
         } catch (error) {
             this.logger.error(error);

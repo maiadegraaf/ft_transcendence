@@ -171,7 +171,6 @@ export default defineComponent({
                     if (!response.data) {
                         this.$emit('switch-chat-right-component', MessageList)
                     }
-                    this.chatStore.setGroupId(response.data.groupId)
                     console.log('groupId: ', response.data.groupId)
                     if (response.data.type == EGroupChannelType.PROTECTED) {
                         console.log('kamaan')

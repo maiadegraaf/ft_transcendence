@@ -199,8 +199,7 @@ export class UserService {
 
     async getAvatar(userId: number): Promise<Avatar> {
         const user: User = await this.findUserByID(userId, ['avatar']);
-        if (!user.avatar)
-            throw new NotFoundException('User not found');
+        if (!user.avatar) throw new NotFoundException('User not found');
         return user.avatar;
     }
 
@@ -224,100 +223,118 @@ export class UserService {
         });
     }
 
-	async findFriends(userID: number): Promise<User[]> {
-        const user = await this.userRepository.findOne({
-            where: { id: userID },
-			relations: ['friends'],
-		}).catch((err) => {
-            throw new BadRequestException(`Error fetching user with id ${userID}: ${err.message}`);
-        });
+    async findFriends(userID: number): Promise<User[]> {
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userID },
+                relations: ['friends'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(
+                    `Error fetching user with id ${userID}: ${err.message}`,
+                );
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`);
         }
         return user.friends;
-	}
-    
+    }
+
     async addFriend(userID: number, friendID: number): Promise<User> {
         if (userID === friendID) {
             throw new BadRequestException(`You can't add yourself as a friend`);
         }
-        const user = await this.userRepository.findOne({
-            where: { id: userID },
-            relations: ['friends'],
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userID },
+                relations: ['friends'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`);
         }
-        const friend = await this.userRepository.findOne({
-            where: { id: friendID },
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const friend = await this.userRepository
+            .findOne({
+                where: { id: friendID },
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!friend) {
             throw new BadRequestException(`User with id ${friendID} not found`);
         }
         if (user.friends.map((user) => user.id).includes(friendID)) {
-            throw new BadRequestException(`${friend.login} is already your friend`);
+            throw new BadRequestException(
+                `${friend.login} is already your friend`,
+            );
         }
         user.friends.push(friend);
         await this.userRepository.save(user);
         return user;
     }
-    
+
     async removeFriend(userID: number, friendID: number) {
-        if (userID === friendID) {
-            throw new BadRequestException(`You can't remove yourself as a friend`);
-        }
-        const user = await this.userRepository.findOne({
-            where: { id: userID },
-            relations: ['friends'],
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userID },
+                relations: ['friends'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`);
         }
-        const friend = await this.userRepository.findOne({
-            where: { id: friendID },
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
-        if (!friend) {
-            throw new BadRequestException(`User with id ${friendID} not found`);
-        }
+        const friend = await this.userRepository
+            .findOne({
+                where: { id: friendID },
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user.friends.map((user) => user.id).includes(friendID)) {
-            throw new BadRequestException(`Cannot remove ${friend.login}. You are not friends yet.`);
+            throw new BadRequestException(
+                `Cannot remove ${friend.login}. You are not friends yet.`,
+            );
         }
         user.friends = user.friends.filter((user) => user.id !== friendID);
         await this.userRepository.save(user);
         return user;
     }
-    
+
     async blockUser(userId: number, blockedUserId: number): Promise<User> {
         if (userId === blockedUserId) {
             throw new BadRequestException(`You can't block yourself`);
         }
-        const user = await this.userRepository.findOne({
-            where: { id: userId },
-            relations: ['blockedUsers'],
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userId },
+                relations: ['blockedUsers'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userId} not found`);
         }
-        const blockedUser = await this.userRepository.findOne({
-            where: { id: blockedUserId },
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const blockedUser = await this.userRepository
+            .findOne({
+                where: { id: blockedUserId },
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!blockedUser) {
-            throw new BadRequestException(`User with id ${blockedUserId} not found`);
+            throw new BadRequestException(
+                `User with id ${blockedUserId} not found`,
+            );
         }
         if (user.blockedUsers.map((user) => user.id).includes(blockedUserId)) {
-            throw new BadRequestException(`${blockedUser.login} is already blocked`);
+            throw new BadRequestException(
+                `${blockedUser.login} is already blocked`,
+            );
         }
         user.blockedUsers.push(blockedUser);
         await this.userRepository.save(user);
@@ -328,30 +345,53 @@ export class UserService {
         if (userId === blockedUserId) {
             throw new BadRequestException(`You can't unblock yourself`);
         }
-        const user = await this.userRepository.findOne({
-            where: { id: userId },
-            relations: ['blockedUsers'],
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userId },
+                relations: ['blockedUsers'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userId} not found`);
         }
-        const blockedUser = await this.userRepository.findOne({
-            where: { id: blockedUserId },
-        }).catch((err) => {
-            throw new BadRequestException(err.message);
-        });
+        const blockedUser = await this.userRepository
+            .findOne({
+                where: { id: blockedUserId },
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
         if (!blockedUser) {
-            throw new BadRequestException(`User with id ${blockedUserId} not found`);
+            throw new BadRequestException(
+                `User with id ${blockedUserId} not found`,
+            );
         }
         if (!user.blockedUsers.map((user) => user.id).includes(blockedUserId)) {
-            throw new BadRequestException(`${blockedUser.login} is not blocked`);
+            throw new BadRequestException(
+                `${blockedUser.login} is not blocked`,
+            );
         }
         user.blockedUsers = user.blockedUsers.filter(
             (user) => user.id !== blockedUserId,
         );
         await this.userRepository.save(user);
         return user;
+    }
+
+    async getBlockedUsers(userId: number): Promise<User[]> {
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userId },
+                relations: ['blockedUsers'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userId} not found`);
+        }
+        return user.blockedUsers;
     }
 }

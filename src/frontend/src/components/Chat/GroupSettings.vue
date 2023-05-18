@@ -69,10 +69,8 @@ import axios from 'axios'
 import MessageList from '@/components/Chat/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
-import type { IUser } from '@/types/types'
 import { ChevronLeftIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import GroupSettingUserList from '@/components/Chat/GroupSettingUserList.vue'
-import { userInfo } from 'os'
 
 interface User {
     id: number
@@ -90,9 +88,6 @@ export default defineComponent({
     },
     data(): any {
         return {
-            adminText: '',
-            mutedText: '',
-            bannedText: '',
             userText: '',
             params: {
                 userId: 0,
@@ -100,27 +95,23 @@ export default defineComponent({
                 groupId: 0,
                 channelId: 0
             },
-            userName: '',
             groupName: '',
-            // searchInput: '',
             searchError: '',
             searchResult: null as User | null
         }
     },
     async mounted() {
         this.userName = this.userStore.name
-        this.groupName = this.chatStore.groupName
+        this.groupName = this.chatStore.getChannelName
         this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.groupId
+        this.params.groupId = this.chatStore.getChannelGroupId
         // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
         // console.log(this.channelUsers)
         // console.log(this.profile)
     },
     methods: {
         doneGroup(): void {
-            this.chatStore.setGroupId(0)
-            this.chatStore.setGroupName('')
             this.$emit('switch-chat-right-component', MessageList)
         },
 
@@ -132,8 +123,6 @@ export default defineComponent({
             }
 
             this.params.userName = this.userText
-            console.log('test username: ' + this.params.userName)
-
             axios
                 .post('/api/chat/group/user', this.params)
                 .then((response) => {
@@ -146,6 +135,7 @@ export default defineComponent({
                     return
                 })
             this.userText = ''
+          this.searchResult = null
         },
         deleteGroup(): void {
             this.params.userName = this.userStore.name

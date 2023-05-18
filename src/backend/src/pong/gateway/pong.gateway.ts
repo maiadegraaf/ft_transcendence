@@ -1,4 +1,4 @@
-import {
+ import {
     ConnectedSocket,
     MessageBody,
     OnGatewayConnection,
@@ -24,7 +24,6 @@ export class PongGateway implements OnGatewayDisconnect {
 
     @SubscribeMessage('disconnect')
     handleDisconnectMessage(@ConnectedSocket() client: Socket): void {
-        console.log('Client Disconnected ' + client.id);
         this.pongService.handleDisconnect(client);
     }
 
@@ -88,6 +87,5 @@ export class PongGateway implements OnGatewayDisconnect {
         }
         const userId = client.request.session.user.id;
         this.pongService.handleConnection(client, userId);
-        console.log('Pong connected');
     }
 }

@@ -22,6 +22,8 @@ import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
 import { websocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
+import { ChannelService } from '../services/channel.service';
+import { GroupProfileService } from '../services/groupProfile.service';
 
 @WebSocketGateway({
     cors: {
@@ -32,7 +34,11 @@ import { User } from '../../user/user.entity';
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-    constructor(private readonly messageService: MessageService) {}
+    constructor(
+        private readonly messageService: MessageService,
+        private readonly channelService: ChannelService,
+        private readonly groupProfileService: GroupProfileService,
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -52,7 +58,6 @@ export class ChatGateway
         const userId: number = client.request.session.user.id;
         this.clientMap.set(userId, client);
         this.server.to('user:' + userId).emit('userOnline', userId);
-        console.log(this.clientMap.has(userId));
         this.logger.log(userId + ' connected to chat with id: ' + client.id);
     }
 
@@ -86,6 +91,17 @@ export class ChatGateway
         @Body(new ValidationPipe()) payload: MessageDto,
     ): Promise<any> {
         try {
+            if (
+                await this.groupProfileService.checkMuted(
+                    payload.sender.id,
+                    payload.channel,
+                )
+            ) {
+                throw new HttpException(
+                    'handleMessage: user is muted',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
             const message = await this.messageService.createMessage(payload);
             if (!message) {
                 throw new HttpException(
@@ -94,9 +110,16 @@ export class ChatGateway
                 );
             }
             payload.id = message.id;
-            this.server
-                .to('room' + payload.channel)
-                .emit('msgToClient', payload);
+            const users = await this.channelService.getBlockedList(payload);
+            users.forEach((user) => {
+                const socket = this.clientMap.get(user.id);
+                if (socket) {
+                    this.server.to(socket.id).emit('msgToClient', payload);
+                }
+            });
+            // this.server
+            //     .to('room' + payload.channel)
+            //     .emit('msgToClient', payload);
             this.logger.log(
                 `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
             );
@@ -141,7 +164,6 @@ export class ChatGateway
     }
 
     getClientSocketById(userId: number): Socket {
-        console.log(this.clientMap.keys());
         if (this.clientMap.has(userId)) {
             return this.clientMap.get(userId);
         }
@@ -153,47 +175,29 @@ export class ChatGateway
         user2: User,
         channel: Channel,
     ): Promise<any> {
-        const channelInfo = {
-            id: channel.id,
-            messages: [],
-            profile: null,
-            name: user2.login,
-        };
         const user1Socket = this.getClientSocketById(user1.id);
         if (user1Socket) {
             this.logger.log(
                 'emit addChannelToClient form user1: ' + user1Socket.id,
             );
-            user1Socket.emit('addChannelToClient', channelInfo);
+            user1Socket.emit('addChannelToClient', channel);
         }
-        channelInfo.name = user1.login;
         const user2Socket = this.getClientSocketById(user2.id);
         if (user2Socket) {
             this.logger.log(
                 'emit addChannelToClient form user2: ' + user2Socket.id,
             );
-            user2Socket.emit('addChannelToClient', channelInfo);
+            user2Socket.emit('addChannelToClient', channel);
         }
     }
 
     async emitGroupChannelToUser(channel: Channel, user: User): Promise<any> {
-        const msg = channel.messages ?? [];
-        const channelInfo = {
-            id: channel.id,
-            messages: msg,
-            profile: {
-                name: channel.profile.name,
-                id: channel.profile.id,
-            },
-            name: channel.profile.name,
-        };
-        console.log('test');
         const userSocket = this.getClientSocketById(user.id);
         if (userSocket) {
             this.logger.log(
                 'emit addChannelToClient to user: ' + userSocket.id,
             );
-            userSocket.emit('addChannelToClient', channelInfo);
+            userSocket.emit('addChannelToClient', channel);
             return;
         }
         this.logger.error('User is not connected to chat');
@@ -204,6 +208,10 @@ export class ChatGateway
         user: User,
     ): Promise<any> {
         try {
+            this.server.to('room' + channel.id).emit('removeUserFromChannel', {
+                channelId: channel.id,
+                user: { id: user.id, login: user.login },
+            });
             const userSocket = this.getClientSocketById(user.id);
             if (!userSocket) {
                 throw new HttpException(
@@ -213,7 +221,10 @@ export class ChatGateway
             }
             userSocket.emit('removeChannelFromClient', channel.id);
             this.logger.log(
-                'emit deleteChannelFromClient form owner: ' + userSocket.id,
+                'emit deleteChannelFromClient form owner: ' +
+                    userSocket.id +
+                    ' with userId: ' +
+                    user.id,
             );
         } catch (error) {
             this.logger.error(error);
@@ -227,7 +238,6 @@ export class ChatGateway
             login: string;
         };
     }): Promise<any> {
-        console.log(info);
         this.server.to('room' + info.channelId).emit('addAdminToChannel', info);
         this.logger.log('emitAddAdminToChannel for user: ' + info.user.id);
     }
@@ -239,7 +249,6 @@ export class ChatGateway
             login: string;
         };
     }): Promise<any> {
-        console.log(info);
         this.server
             .to('room' + info.channelId)
             .emit('removeAdminFromChannel', info);
@@ -253,7 +262,6 @@ export class ChatGateway
             login: string;
         };
     }): Promise<any> {
-        console.log(info);
         this.server.to('room' + info.channelId).emit('addMutedToChannel', info);
         this.logger.log(
             'emitAddMutedToChannelToUser for user: ' + info.user.id,
@@ -267,7 +275,6 @@ export class ChatGateway
             login: string;
         };
     }): Promise<any> {
-        console.log(info);
         this.server
             .to('room' + info.channelId)
             .emit('removeMutedFromChannel', info);
