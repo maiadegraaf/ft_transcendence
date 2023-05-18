@@ -69,7 +69,7 @@ export class PongService {
         opponentSocketId: string,
         matchId: number,
     ): void {
-        client.emit('opponentFound', matchId, idds);
+        client.emit('opponentFound', matchId);
 
         client.to(opponentSocketId).emit('opponentFound', matchId);
     }

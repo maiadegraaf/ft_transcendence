@@ -1,28 +1,28 @@
 <template>
-  <div class="w-full h-full flex border-buff border-double border-t-4 flex-col">
-    <div class="flex justify-between p-4">
-      <button @click="goBack" class="hover:opacity-60 transition-opacity">
-        <ChevronLeftIcon class="h-8 w-8 text-buff" />
-      </button>
-      <h2 class="text-buff text-2xl font-semibold uppercase">Set Password</h2>
-      <span class="w-8"></span>
+    <div class="w-full h-full flex border-buff border-double border-t-4 flex-col">
+        <div class="flex justify-between p-4">
+            <button @click="goBack" class="hover:opacity-60 transition-opacity">
+                <ChevronLeftIcon class="h-8 w-8 text-buff" />
+            </button>
+            <h2 class="text-buff text-2xl font-semibold uppercase">Set Password</h2>
+            <span class="w-8"></span>
+        </div>
+        <div class="flex flex-col justify-center items-center">
+            <input
+                v-model="passwordText"
+                type="password"
+                placeholder="Password"
+                class="w-1/2 !text-white focus:outline-none rounded-md border-buff px-2 py-1 border bg-transparent my-10"
+            />
+            <button
+                @click="enterPassword"
+                class="font-semibold text-2xl text-buff hover:opacity-60 transition-opacity rounded-full ml-3 hover:shadow-md"
+            >
+                GO
+            </button>
+        </div>
     </div>
-    <div class="flex flex-col justify-center items-center">
-      <input
-          v-model="passwordText"
-          type="password"
-          placeholder="Password"
-          class="w-1/2 !text-white focus:outline-none rounded-md border-buff px-2 py-1 border bg-transparent my-10"
-      />
-      <button
-          @click="enterPassword"
-          class="font-semibold text-2xl text-buff hover:opacity-60 transition-opacity rounded-full ml-3 hover:shadow-md"
-      >
-        GO
-      </button>
-    </div>
-  </div>
-  <!--  search for existing public group-->
+    <!--  search for existing public group-->
 </template>
 
 <script lang="ts">

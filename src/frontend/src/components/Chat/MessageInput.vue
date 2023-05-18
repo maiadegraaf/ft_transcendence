@@ -9,10 +9,13 @@
                     @keyup.enter="sendMessage"
                 />
             </div>
-            <button @click="sendInvite" class="ml-3 text-buff hover:opacity-60 transition-all font-semibold">
-              Invite
+            <button
+                @click="sendInvite"
+                class="ml-3 text-buff hover:opacity-60 transition-all font-semibold"
+            >
+                Invite
             </button>
-            <button @click="sendMessage" class="ml-3 hover:opacity-60 transition-all ">
+            <button @click="sendMessage" class="ml-3 hover:opacity-60 transition-all">
                 <PaperAirplaneIcon class="h-8 w-8 text-buff" />
             </button>
         </div>
@@ -54,26 +57,26 @@ export default defineComponent({
     },
     methods: {
         sendInvite(): void {
-          this.userStore.socket.emit('bind', this.userId)
-          this.userStore.socket.on('MultipleConnections', (msg: string) => {
-            this.$refs.errorPopUp.show('You are already ' + msg)
-            this.reset()
-          })
-          this.userStore.socket.emit('createMatch', {
-            player1: this.userStore.id,
-            player2: this.chatStore.dmId
-          })
-          this.userStore.socket.on('opponentFound', (matchId: number) => {
-            console.log('Opponent found')
-            this.matchId = matchId
-          })
-          // console.log('MatchId: ' + this.matchId)
-          // this.$router.push({
-          //   name: 'Pong',
-          //   params: {
-          //     matchId: this.matchid
-          //   }
-          // })
+            this.userStore.socket.emit('bind', this.userId)
+            this.userStore.socket.on('MultipleConnections', (msg: string) => {
+                this.$refs.errorPopUp.show('You are already ' + msg)
+                this.reset()
+            })
+            this.userStore.socket.emit('createMatch', {
+                player1: this.userStore.id,
+                player2: this.chatStore.dmId
+            })
+            this.userStore.socket.on('opponentFound', (matchId: number) => {
+                console.log('Opponent found')
+                this.matchId = matchId
+            })
+            // console.log('MatchId: ' + this.matchId)
+            // this.$router.push({
+            //   name: 'Pong',
+            //   params: {
+            //     matchId: this.matchid
+            //   }
+            // })
         },
         sendMessage(): void {
             // Validates the input before sending the message.

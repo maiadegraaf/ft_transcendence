@@ -1,4 +1,3 @@
-<script src="../../../../backend/src/pong/gateway/pong.gateway.spec.ts"></script>
 <template>
     <div
         v-if="chatStore.dmId == -1 && chatStore.dmName.length == 0"
@@ -23,12 +22,12 @@
                     alt="avatar"
                 />
                 <div>
-                  <h2 class="text-buff font-semibold text-xl">
-                    {{ chatStore.dmName }}
-                  </h2>
-                  <Transition name="appear">
-                  <p class="opacity-60 text-xs absolute " v-if="isOnline">online</p>
-                  </Transition>
+                    <h2 class="text-buff font-semibold text-xl">
+                        {{ chatStore.dmName }}
+                    </h2>
+                    <Transition name="appear">
+                        <p class="opacity-60 text-xs absolute" v-if="isOnline">online</p>
+                    </Transition>
                 </div>
             </div>
             <div></div>
@@ -92,15 +91,15 @@ export default defineComponent({
         return { chatStore, userStore }
     },
     beforeUpdate() {
-      this.userStore.socket.emit('checkUserOnline', {
-        userId: this.chatStore.dmId
-      })
-      this.userStore.socket.on('userOnline', (userId: number) => {
-        if (userId == this.chatStore.dmId) this.isOnline = true
-      })
-      this.userStore.socket.on('userOffline', (userId: number) => {
-        if (userId == this.chatStore.dmId) this.isOnline = false
-      })
+        this.userStore.socket.emit('checkUserOnline', {
+            userId: this.chatStore.dmId
+        })
+        this.userStore.socket.on('userOnline', (userId: number) => {
+            if (userId == this.chatStore.dmId) this.isOnline = true
+        })
+        this.userStore.socket.on('userOffline', (userId: number) => {
+            if (userId == this.chatStore.dmId) this.isOnline = false
+        })
     },
     methods: {
         posMessage(senderId: number): string {
@@ -123,10 +122,10 @@ export default defineComponent({
 
 <style scoped>
 .appear-enter-active {
-  transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
 }
 .appear-enter-from {
-  opacity: 0;
+    opacity: 0;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

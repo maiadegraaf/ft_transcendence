@@ -10,7 +10,7 @@
                 class="hover:opacity-60 transition-opacity text-buff font-semibold"
                 alt="Delete Group"
             >
-                <TrashIcon class="h-8 w-8 text-buff"/>
+                <TrashIcon class="h-8 w-8 text-buff" />
             </button>
         </div>
         <GroupSettingUserList />
