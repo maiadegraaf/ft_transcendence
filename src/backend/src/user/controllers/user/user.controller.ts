@@ -166,7 +166,6 @@ export class UserController {
         }
     }
 
-
     @Post('unfriend/:id')
     @UseGuards(FortyTwoAuthGuard)
     async removeFriend(
@@ -185,4 +184,43 @@ export class UserController {
             throw error;
         }
     }
+
+    @Post('block/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async blockUser(
+        @Param('id', ParseIntPipe) friendID: number,
+        @Req() req: any,
+    ) {
+        const userID = req.session.user.id;
+        try {
+            await this.userService.blockUser(userID, friendID);
+            return await this.userService.blockUser(friendID, userID);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
+        }
+    }
+
+    @Post('unblock/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async unblockUser(
+        @Param('id', ParseIntPipe) friendID: number,
+        @Req() req: any,
+    ) {
+        const userID = req.session.user.id;
+        try {
+            await this.userService.unblockUser(userID, friendID);
+            return await this.userService.unblockUser(friendID, userID);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
+        }
+    }
+
 }

@@ -55,7 +55,6 @@ export class AuthController {
             'user' + req.params.id,
         );
         req.session.user = user;
-        console.log(req.session.user);
         if (req.session.user.isTwoFactorAuthenticationEnabled)
             res.redirect('/2fa/create');
         else {

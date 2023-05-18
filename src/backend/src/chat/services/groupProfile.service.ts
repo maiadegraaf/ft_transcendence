@@ -263,8 +263,6 @@ export class GroupProfileService {
             .where('group.id = :id', { id: groupId })
             .leftJoinAndSelect('group.blocked', 'blocked')
             .getOne();
-        console.log('userId: ', userId);
-        console.log('groupId: ', groupId);
         if (!group) {
             throw new HttpException(
                 'could not find group in isBlocked',

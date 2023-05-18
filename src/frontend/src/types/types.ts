@@ -10,7 +10,7 @@ export interface IMessage {
     id: number
     text: string
     sender: IUser
-    channel: number // kan denk ik weg
+    channel: number
 }
 
 export interface IProfile {
@@ -25,10 +25,13 @@ export interface IProfile {
 export interface IUser {
     id: number
     login: string
+    owner: false
+    admin: false
+    muted: false
 }
 
 export enum EGroupChannelType {
     PRIVATE,
     PUBLIC,
-    PROTECTED,
+    PROTECTED
 }

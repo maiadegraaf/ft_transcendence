@@ -120,8 +120,6 @@ export class LeaderboardService {
 
     async addPracticeMatchToLeaderboard(practiceMatch: PracticeMatch) {
         const player = await this.findLeaderboardEntry(practiceMatch.player);
-        console.log('player', player);
-        console.log('practiceMatch', practiceMatch);
         if (practiceMatch.score1 == practiceMatch.winningCondition) {
             await this.assignPracticeMatchType(
                 practiceMatch.difficulty,

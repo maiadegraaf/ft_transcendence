@@ -17,7 +17,7 @@ export default defineComponent({
 <template>
     <div>
         <Nav />
-        <main>
+        <main class="pb-16">
             <div v-if="user" class="mt-10 flex flex-col justify-center items-center">
                 <h1 class="text-buff text-5xl font-semibold">Welcome, {{ user.name }}</h1>
                 <h2 class="text-buff text-xl opacity-70 font-semibold">Ready to play pong ?</h2>
