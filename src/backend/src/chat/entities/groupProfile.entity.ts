@@ -7,12 +7,12 @@ import {
     ManyToOne,
     OneToMany,
     OneToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Channel } from './channel.entity';
-import { User } from '../../user/user.entity';
-import { EGroupChannelType } from '../dtos/chat.dtos';
-import { MutedTime } from './mutedTime.enitity';
+    PrimaryGeneratedColumn
+} from 'typeorm'
+import { Channel } from './channel.entity'
+import { User } from '../../user/user.entity'
+import { EGroupChannelType } from '../dtos/chat.dtos'
+import { MutedTime } from './mutedTime.enitity'
 
 // @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
@@ -45,7 +45,7 @@ export class GroupProfile {
 
     @JoinTable()
     @ManyToMany(() => MutedTime, (mt) => mt.groupProfile)
-    mutedTime: MutedTime[];
+    mutedTime: MutedTime[]
 
     @Column({ nullable: true })
     type: EGroupChannelType

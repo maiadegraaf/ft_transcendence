@@ -265,21 +265,21 @@ export class UserService {
         const user = await this.userRepository
             .findOne({
                 where: { id: userID },
-                relations: ['friends'],
+                relations: ['friends']
             })
             .catch((err) => {
-                throw new BadRequestException(err.message);
-            });
+                throw new BadRequestException(err.message)
+            })
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`)
         }
         const friend = await this.userRepository
             .findOne({
-                where: { id: friendID },
+                where: { id: friendID }
             })
             .catch((err) => {
-                throw new BadRequestException(err.message);
-            });
+                throw new BadRequestException(err.message)
+            })
         if (!user.friends.map((user) => user.id).includes(friendID)) {
             throw new BadRequestException(`Cannot remove ${friend.login}. You are not friends yet.`)
         }
@@ -358,15 +358,15 @@ export class UserService {
         const user = await this.userRepository
             .findOne({
                 where: { id: userId },
-                relations: ['blockedUsers'],
+                relations: ['blockedUsers']
             })
             .catch((err) => {
-                throw new BadRequestException(err.message);
-            });
+                throw new BadRequestException(err.message)
+            })
         if (!user) {
-            throw new BadRequestException(`User with id ${userId} not found`);
+            throw new BadRequestException(`User with id ${userId} not found`)
         }
-        return user.blockedUsers;
+        return user.blockedUsers
     }
 
     async getBlockedUsersForUser(userId: number): Promise<any> {
@@ -375,10 +375,10 @@ export class UserService {
             .where('user.id = :id', { id: userId })
             .leftJoin('user.blockedUsers', 'blockedUsers')
             .addSelect('blockedUsers.id')
-            .getOne();
+            .getOne()
         if (!user) {
-            return null;
+            return null
         }
-        return user.blockedUsers;
+        return user.blockedUsers
     }
 }

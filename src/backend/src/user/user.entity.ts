@@ -6,12 +6,12 @@ import {
     JoinColumn,
     OneToMany,
     OneToOne,
-    PrimaryColumn,
-} from 'typeorm';
-import { Channel } from '../chat/entities/channel.entity';
-import { GroupProfile } from '../chat/entities/groupProfile.entity';
-import { Avatar } from './avatar.entity';
-import { MutedTime } from '../chat/entities/mutedTime.enitity';
+    PrimaryColumn
+} from 'typeorm'
+import { Channel } from '../chat/entities/channel.entity'
+import { GroupProfile } from '../chat/entities/groupProfile.entity'
+import { Avatar } from './avatar.entity'
+import { MutedTime } from '../chat/entities/mutedTime.enitity'
 // import { Post } from './Post';
 // import { Profile } from './Profile';
 
@@ -54,7 +54,7 @@ export class User {
 
     @JoinTable()
     @ManyToMany(() => MutedTime, (mt) => mt.user)
-    mutedTime: MutedTime[];
+    mutedTime: MutedTime[]
 
     @OneToOne(() => Avatar, (avatar) => avatar.user)
     @JoinColumn()
