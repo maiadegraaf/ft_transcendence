@@ -26,7 +26,7 @@ export class LeaderboardService {
             },
         });
     }
-      
+
     async findAll(): Promise<Leaderboard[]> {
         return this.leaderboardRepository.find({
             relations: {

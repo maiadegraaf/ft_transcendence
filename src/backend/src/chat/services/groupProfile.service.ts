@@ -457,4 +457,18 @@ export class GroupProfileService {
         }
         return true;
     }
+
+    async checkValidGroupName(name: string): Promise<any> {
+        const groupCheck = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .addSelect(['group.name'])
+            .where('group.name = :name', { name })
+            .getOne();
+        if (groupCheck) {
+            throw new HttpException(
+                'group name already exists',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+    }
 }
