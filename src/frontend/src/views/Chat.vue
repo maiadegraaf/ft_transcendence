@@ -43,8 +43,9 @@ export default defineComponent({
         }
     },
     mounted() {
-        if (this.chatStore.channelInView > -1) {}
-        this.currentComponent = MessageList
+        if (this.chatStore.channelInView > -1) {
+            this.currentComponent = MessageList
+        }
     },
     setup() {
         const chatStore = useChatStore()
