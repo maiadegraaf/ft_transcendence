@@ -10,7 +10,6 @@
 * [x] adding time for muted user
 * [x] owner of group can add or delete admin
 * [x] admin can kick ban or mute users
-* [ ] search list for groupProfile
 * [x] leave group
 * [x] pass the owner role to next admin or user
 * [x] frontend for admin page and user page for groupProfile
@@ -28,12 +27,7 @@
 * [ ] add error handling for all endpoints
 
 ## Chat Bugs
-* [ ] user added to group that is not connected to the 
-server gives a double join room and error on the backend
-* [ ] change the correct view of the channel when new channel is made for the user
 * [ ] if you are in group settings, and you want to access a different
 group setting then the old group setting is still active
-* [ ] userById not safe
 * [ ] socket with emitGroupChannelToUser is not found
-* [ ] same name for channels or dms is not allowed
 * [ ] user socket not connected directly when added to group
