@@ -262,30 +262,24 @@ export class UserService {
     }
 
     async removeFriend(userID: number, friendID: number) {
-        if (userID === friendID) {
-            throw new BadRequestException(`You can't remove yourself as a friend`)
-        }
         const user = await this.userRepository
             .findOne({
                 where: { id: userID },
-                relations: ['friends']
+                relations: ['friends'],
             })
             .catch((err) => {
-                throw new BadRequestException(err.message)
-            })
+                throw new BadRequestException(err.message);
+            });
         if (!user) {
             throw new BadRequestException(`User with id ${userID} not found`)
         }
         const friend = await this.userRepository
             .findOne({
-                where: { id: friendID }
+                where: { id: friendID },
             })
             .catch((err) => {
-                throw new BadRequestException(err.message)
-            })
-        if (!friend) {
-            throw new BadRequestException(`User with id ${friendID} not found`)
-        }
+                throw new BadRequestException(err.message);
+            });
         if (!user.friends.map((user) => user.id).includes(friendID)) {
             throw new BadRequestException(`Cannot remove ${friend.login}. You are not friends yet.`)
         }
@@ -358,5 +352,33 @@ export class UserService {
         user.blockedUsers = user.blockedUsers.filter((user) => user.id !== blockedUserId)
         await this.userRepository.save(user)
         return user
+    }
+
+    async getBlockedUsers(userId: number): Promise<User[]> {
+        const user = await this.userRepository
+            .findOne({
+                where: { id: userId },
+                relations: ['blockedUsers'],
+            })
+            .catch((err) => {
+                throw new BadRequestException(err.message);
+            });
+        if (!user) {
+            throw new BadRequestException(`User with id ${userId} not found`);
+        }
+        return user.blockedUsers;
+    }
+
+    async getBlockedUsersForUser(userId: number): Promise<any> {
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id = :id', { id: userId })
+            .leftJoin('user.blockedUsers', 'blockedUsers')
+            .addSelect('blockedUsers.id')
+            .getOne();
+        if (!user) {
+            return null;
+        }
+        return user.blockedUsers;
     }
 }

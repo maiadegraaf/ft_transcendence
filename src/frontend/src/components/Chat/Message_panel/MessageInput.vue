@@ -1,7 +1,6 @@
 <template>
     <footer class="bg-dark-purple w-full min-h-10">
         <div class="p-3 flex">
-            <button @click="sendInvite" class="text-buff">Invite</button>
             <div class="flex-1 p-1 bg-white rounded-md">
                 <input
                     v-model="text"
@@ -10,7 +9,13 @@
                     @keyup.enter="sendMessage"
                 />
             </div>
-            <button @click="sendMessage" class="ml-3">
+            <button
+                @click="sendInvite"
+                class="ml-3 text-buff hover:opacity-60 transition-all font-semibold"
+            >
+                Invite
+            </button>
+            <button @click="sendMessage" class="ml-3 hover:opacity-60 transition-all">
                 <PaperAirplaneIcon class="h-8 w-8 text-buff" />
             </button>
         </div>
@@ -35,6 +40,7 @@ export default defineComponent({
     },
     data(): any {
         return {
+            matchId: 0,
             id: 0,
             text: '',
             sender: {

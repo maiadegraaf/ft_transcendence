@@ -39,6 +39,7 @@
         <WinLosses />
         <MatchHistory />
         <Friends :is-profile-session="isProfileSession" />
+        <Blocked v-if="isProfileSession" :is-profile-session="isProfileSession"/>
     </main>
     <main v-else class="flex h-screen justify-center items-center">
         <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>
@@ -54,6 +55,7 @@ import { useChatStore } from '@/store/channel.store'
 import { defineComponent } from 'vue'
 import MatchHistory from '@/components/profile/MatchHistory.vue'
 import { useUserStore } from '@/store/user.store'
+import Blocked from '@/components/profile/blocked.vue'
 
 export default defineComponent({
     setup() {
@@ -74,6 +76,7 @@ export default defineComponent({
         }
     },
     components: {
+        Blocked,
         MatchHistory,
         WinLosses,
         NavBar,

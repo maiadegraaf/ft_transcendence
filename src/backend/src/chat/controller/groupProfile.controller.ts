@@ -212,6 +212,7 @@ export class GroupProfileController {
         }
     }
 
+    // Delete /api/chat/group
     @Delete()
     async deleteGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
         try {
@@ -234,6 +235,61 @@ export class GroupProfileController {
         } catch (error) {
             this.logger.error(error)
             return false
+        }
+    }
+
+    // Delete /api/chat/group/leave
+    @Delete('leave')
+    async deleteLeaveGroup(
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto,
+    ) {
+        try {
+            let group = await this.groupProfileService.getGroupProfileById(
+                param.groupId,
+            );
+            const user = group.channel.users.find(
+                (user) => user.id === param.userId,
+            );
+            if (!user) {
+                throw new HttpException(
+                    'Could not find user to remove from channel',
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+            let channel = group.channel;
+            if (group.owner.id == param.userId) {
+                if (
+                    !(await this.groupProfileService.reassignOwner(
+                        group,
+                        param.userId,
+                    ))
+                ) {
+                    group = await this.groupProfileService.nullifyChannel(
+                        group,
+                    );
+                    channel = await this.channelService.nullifyProfile(channel);
+                    await this.groupProfileService.deleteGroup(group);
+                    await this.chatGateway.emitDeleteChannelFromUser(
+                        channel,
+                        user,
+                    );
+                    await this.channelService.deleteChannel(channel);
+                    return true;
+                }
+            }
+            group = await this.groupProfileService.removeRoles(
+                group,
+                param.userId,
+            );
+            channel = await this.channelService.removeUserFromChannel(
+                group.channel.id,
+                user,
+            );
+            await this.chatGateway.emitDeleteChannelFromUser(channel, user);
+            return true;
+        } catch (error) {
+            this.logger.error(error);
+            return false;
         }
     }
 }

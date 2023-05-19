@@ -5,7 +5,13 @@
                 <ChevronLeftIcon class="h-8 w-8 text-buff" />
             </button>
             <h2 class="text-buff text-2xl font-semibold uppercase">settings</h2>
-            <span class="w-8"></span>
+            <button
+                @click="deleteGroup"
+                class="hover:opacity-60 transition-opacity text-buff font-semibold"
+                alt="Delete Group"
+            >
+                <TrashIcon class="h-8 w-8 text-buff" />
+            </button>
         </div>
         <GroupSettingUserList />
         <!-- <div class="flex-1 w-full overflow-hidden">
@@ -63,7 +69,7 @@ import axios from 'axios'
 import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
-import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
+import { ChevronLeftIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import GroupSettingUserList from '@/components/Chat/Group_panel/GroupSettingUserList.vue'
 
 interface User {
@@ -73,7 +79,7 @@ interface User {
 
 export default defineComponent({
     name: 'GroupSettings',
-    components: { GroupSettingUserList, ChevronLeftIcon },
+    components: { GroupSettingUserList, ChevronLeftIcon, TrashIcon },
     setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()

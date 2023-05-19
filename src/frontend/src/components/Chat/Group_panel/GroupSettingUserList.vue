@@ -24,7 +24,13 @@
                         <a :href="'/profile/' + user.id">{{ user.login }}</a>
                         <p class="pl-2 text-xs opacity-50">{{ getRoleStr(user) }}</p>
                     </div>
-                    <div v-if="(userStore.owner || userStore.admin) && userStore.id != user.id" class="space-x-4">
+                    <div
+                        v-if="
+                            (userStore.owner || userStore.admin) &&
+                            userStore.id != user.id
+                        "
+                        class="space-x-4"
+                    >
                         <button
                             v-if="user.admin"
                             class="button_role"

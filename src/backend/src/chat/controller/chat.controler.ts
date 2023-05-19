@@ -94,7 +94,7 @@ export class ChatController {
         @Body(new ValidationPipe()) param: CreateGroupChannelDto,
     ): Promise<any> {
         try {
-            // not safe user by id
+            await this.groupProfileService.checkValidGroupName(param.groupName);
             const owner = await this.userService.getUserById(param.userId);
             if (!owner) {
                 throw new HttpException(
@@ -115,7 +115,6 @@ export class ChatController {
                 );
             }
             channel = await this.channelService.getChannelById(channel.id);
-            console.log(channel);
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
             return;
         } catch (error) {

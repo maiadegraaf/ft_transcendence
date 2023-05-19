@@ -3,23 +3,29 @@ import {
     HttpStatus,
     Injectable,
     InternalServerErrorException,
-    NotFoundException
-} from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { Channel } from '../entities/channel.entity'
-import { UserService } from '../../user/services/user/user.service'
-import { GroupProfile } from '../entities/groupProfile.entity'
-import { User } from '../../user/user.entity'
-import { EGroupChannelType, GroupUserProfileUpdateDto } from '../dtos/chat.dtos'
-import * as bcrypt from 'bcryptjs'
+    NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Channel } from '../entities/channel.entity';
+import { UserService } from '../../user/services/user/user.service';
+import { GroupProfile } from '../entities/groupProfile.entity';
+import { User } from '../../user/user.entity';
+import {
+    EGroupChannelType,
+    GroupUserProfileUpdateDto,
+} from '../dtos/chat.dtos';
+import * as bcrypt from 'bcryptjs';
+import { promises } from 'dns';
+import { MutedTime } from '../entities/mutedTime.enitity';
 
 @Injectable()
 export class GroupProfileService {
     constructor(
         @InjectRepository(GroupProfile)
         private readonly groupProfileRepository: Repository<GroupProfile>,
-        private readonly userService: UserService
+        @InjectRepository(MutedTime)
+        private readonly mutedTimeRepository: Repository<MutedTime>,
     ) {}
 
     async createGroupProfile(): Promise<any> {
@@ -51,6 +57,25 @@ export class GroupProfileService {
         groupProfile.owner = owner
         groupProfile.type = type
         return await this.groupProfileRepository.save(groupProfile)
+    }
+
+    async getGroupProfileById(groupId: number): Promise<any> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .where('group.id = :id', { id: groupId })
+            .leftJoin('group.owner', 'owner')
+            .addSelect('owner.id')
+            .leftJoinAndSelect('group.channel', 'channel')
+            .leftJoinAndSelect('group.admin', 'admin')
+            .leftJoinAndSelect('group.blocked', 'blocked')
+            .leftJoinAndSelect('group.muted', 'muted')
+            .leftJoinAndSelect('channel.users', 'users')
+            .getOne();
+        console.log('test');
+        if (!group) {
+            throw new NotFoundException('group profile not found');
+        }
+        return group;
     }
 
     async addAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
@@ -87,11 +112,14 @@ export class GroupProfileService {
             channelId: group.channel.id,
             user: {
                 id: user.id,
-                login: user.login
-            }
-        }
-        await this.groupProfileRepository.save(group)
-        return info
+                login: user.login,
+            },
+        };
+        const mt = await this.addMutedTime(user, group);
+        group.mutedTime = [];
+        group.mutedTime.push(mt);
+        await this.groupProfileRepository.save(group);
+        return info;
     }
 
     async deleteAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
@@ -125,9 +153,22 @@ export class GroupProfileService {
     }
 
     async deleteMute(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.adminCheck(param, 'muted')
-        const user = await this.userGroupProfileCheck(group, param)
-        const idx = group.muted.findIndex((muted) => muted.id === user.id)
+        const group = await this.adminCheck(param, 'muted');
+        const user = await this.userGroupProfileCheck(group, param);
+        await this.removeMute(group, user);
+        const info = {
+            channelId: group.channel.id,
+            user: {
+                id: user.id,
+                login: user.login,
+            },
+        };
+        return info;
+    }
+
+    async removeMute(group: GroupProfile, user: User) {
+        await this.removeMutedTime(user, group);
+        const idx = group.muted.findIndex((muted) => muted.id === user.id);
         if (idx === -1) {
             throw new HttpException('admin not in group to delete', HttpStatus.FORBIDDEN)
         }
@@ -141,6 +182,8 @@ export class GroupProfileService {
         }
         await this.groupProfileRepository.save(group)
         return info
+        group.muted.splice(idx, 1);
+        await this.groupProfileRepository.save(group);
     }
 
     async ownerCheck(param: GroupUserProfileUpdateDto): Promise<any> {
@@ -281,5 +324,111 @@ export class GroupProfileService {
             throw new HttpException('wrong password', HttpStatus.FORBIDDEN)
         }
         return group
+    }
+
+    async reassignOwner(group: GroupProfile, userId: number): Promise<boolean> {
+        let newOwner = group.admin.find((admin) => admin.id !== userId);
+        if (!newOwner) {
+            newOwner = group.channel.users.find((user) => user.id !== userId);
+            if (!newOwner) {
+                return false;
+            }
+            group.admin.push(newOwner);
+        }
+        console.log('newOwner: ', newOwner);
+        group.owner = newOwner;
+        await this.groupProfileRepository.save(group);
+        return true;
+    }
+
+    async removeRoles(group: GroupProfile, userId: number): Promise<any> {
+        group.admin.filter((admin) => admin.id !== userId);
+        // group.blocked.filter((blocked) => blocked.id !== userId);
+        // group.muted.filter((muted) => muted.id !== userId);
+        return await this.groupProfileRepository.save(group);
+    }
+
+    async addMutedTime(user: User, group: GroupProfile): Promise<any> {
+        const mutedTime = new MutedTime();
+        mutedTime.time = new Date();
+        mutedTime.time.setMinutes(mutedTime.time.getMinutes() + 1);
+        mutedTime.user = [];
+        mutedTime.groupProfile = [];
+        mutedTime.user.push(user);
+        mutedTime.groupProfile.push(group);
+        return await this.mutedTimeRepository.save(mutedTime);
+    }
+
+    async removeMutedTime(user: User, group: GroupProfile): Promise<any> {
+        const mutedTime = await this.mutedTimeRepository
+            .createQueryBuilder('mutedTime')
+            .leftJoinAndSelect('mutedTime.user', 'user')
+            .leftJoinAndSelect('mutedTime.groupProfile', 'groupProfile')
+            .where('user.id = :userId', { userId: user.id })
+            .andWhere('groupProfile.id = :groupId', {
+                groupId: group.id,
+            })
+            .getOne();
+        if (!mutedTime) {
+            throw new HttpException(
+                'could not find mutedTime in removeMutedTime',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        return await this.mutedTimeRepository.remove(mutedTime);
+    }
+
+    async checkMuted(userId: number, channelId: number): Promise<boolean> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .leftJoinAndSelect('group.channel', 'channel')
+            .leftJoinAndSelect('group.muted', 'muted')
+            .where('channel.id = :channelId', { channelId })
+            .getOne();
+        if (!group) {
+            return false;
+        }
+        const muted = group.muted.find((muted) => muted.id === userId);
+        if (!muted) {
+            return false;
+        }
+        const mutedTime = await this.checkMutedTime(muted, group);
+        if (!mutedTime) {
+            return false;
+        }
+        return true;
+    }
+
+    async checkMutedTime(user: User, group: GroupProfile): Promise<boolean> {
+        const mutedTime = await this.mutedTimeRepository
+            .createQueryBuilder('mutedTime')
+            .leftJoinAndSelect('mutedTime.user', 'user')
+            .leftJoinAndSelect('mutedTime.groupProfile', 'groupProfile')
+            .where('user.id = :userId', { userId: user.id })
+            .andWhere('groupProfile.id = :groupId', { groupId: group.id })
+            .addSelect('mutedTime.time')
+            .getOne();
+        if (!mutedTime) {
+            return false;
+        }
+        if (mutedTime.time < new Date()) {
+            await this.removeMute(group, user);
+            return false;
+        }
+        return true;
+    }
+
+    async checkValidGroupName(name: string): Promise<any> {
+        const groupCheck = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .addSelect(['group.name'])
+            .where('group.name = :name', { name })
+            .getOne();
+        if (groupCheck) {
+            throw new HttpException(
+                'group name already exists',
+                HttpStatus.FORBIDDEN,
+            );
+        }
     }
 }

@@ -170,6 +170,24 @@ export class UserController {
         }
     }
 
+    @Get('block/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async getBlockedUsers(
+        @Param('id', ParseIntPipe) userID: number,
+        @Req() req: any,
+    ) {
+        const userId = req.session.user.id;
+        try {
+            return await this.userService.getBlockedUsers(userId);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
+        }
+    }
+
     @Post('block/:id')
     @UseGuards(FortyTwoAuthGuard)
     async blockUser(@Param('id', ParseIntPipe) friendID: number, @Req() req: any) {
