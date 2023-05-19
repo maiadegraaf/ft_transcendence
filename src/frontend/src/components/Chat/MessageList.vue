@@ -53,7 +53,9 @@
                                 message.sender.login
                             }}</span>
                         </div>
-                        <div v-if="message.text == 'Invite'" class="text-buff"><button @click="acceptInvite(message.sender)">Invite</button></div>
+                        <div v-if="message.text == 'Invite'">
+                          <button class="text-buff px-2 py-1 hover:opacity-70 transition-all my-2 border border-buff rounded-md border-double border-4" @click="acceptInvite(message.sender)">Join the game!</button>
+                        </div>
                         <div v-else
                             :class="
                                 'inline break-all box-border text-sm p-1 px-4 rounded-xl text-l ' +
