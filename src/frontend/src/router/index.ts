@@ -51,10 +51,9 @@ const router = createRouter({
             component: viewfour
         },
         {
-            path: '/Pong/:matchid',
+            path: '/Pong',
             name: 'Pong',
-            component: PongGame,
-            props: true
+            component: PongGame
         },
         {
             path: '/Leaderboard',
