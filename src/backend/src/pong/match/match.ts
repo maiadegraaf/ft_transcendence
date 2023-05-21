@@ -1,4 +1,5 @@
 import { User } from 'src/user/user.entity';
+import { MatchService } from './match.service';
 
 export class Match {
     static idCounter = 0;
@@ -7,8 +8,9 @@ export class Match {
     private readonly _player2: User;
     private _score1: number;
     private _score2: number;
-    constructor(player1: User, player2: User) {
-        this._id = Match.idCounter++;
+    constructor(player1: User, player2: User, matchId: number) {
+        this._id = matchId;
+        console.log('creating match', this._id);
         this._player1 = player1;
         this._player2 = player2;
         this._score1 = 0;

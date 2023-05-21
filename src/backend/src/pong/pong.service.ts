@@ -126,11 +126,16 @@ export class PongService {
         if (!player1 || !player2) {
             return;
         }
-        this.createMatch(client, player1, player2);
+        await this.createMatch(client, player1, player2);
     }
 
-    createMatch(client: Socket, player1: User, player2: User): Match {
-        const match = new Match(player1, player2);
+    async createMatch(
+        client: Socket,
+        player1: User,
+        player2: User,
+    ): Promise<Match> {
+        const matchId = await this.matchService.getNextMatchId();
+        const match = new Match(player1, player2, matchId);
         this.instances[match.id] = new MatchInstance(match);
         this.instances[match.id].start();
         if (client.id == player1.socketId) {

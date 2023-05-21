@@ -48,7 +48,10 @@ export class MatchService {
                 player1: true,
                 player2: true,
             },
-            where: [{ player1: {id: player.id} }, { player2: {id: player.id} }],
+            where: [
+                { player1: { id: player.id } },
+                { player2: { id: player.id } },
+            ],
         });
     }
 
@@ -67,5 +70,19 @@ export class MatchService {
                 { player1: opponent, player2: player },
             ],
         });
+    }
+
+    async getNextMatchId(): Promise<number> {
+        const match = await this.MatchRepository.findOne({
+            where: {},
+            order: {
+                id: 'DESC',
+            },
+        });
+        if (match) {
+            return match.id + 1;
+        } else {
+            return 0;
+        }
     }
 }
