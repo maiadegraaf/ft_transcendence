@@ -211,27 +211,6 @@ export class ChannelService {
         channel.users.push(owner);
         return await this.channelRepository.save(channel);
     }
-    //
-    // async deleteChannel(channelId: number): Promise<any> {
-    //     try {
-    //         const channel = await this.channelRepository.findOne({
-    //             where: { id: channelId },
-    //         });
-    //         if (!channel) {
-    //             throw new HttpException(
-    //                 'Channel with ID ${id} not found to delete channel',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         await this.channelRepository.remove(channel);
-    //         return;
-    //     } catch (error) {
-    //         throw new HttpException(
-    //             error.message,
-    //             HttpStatus.INTERNAL_SERVER_ERROR,
-    //         );
-    //     }
-    // }
 
     async deleteChannel(channel: Channel): Promise<any> {
         await this.channelRepository.remove(channel);
@@ -320,21 +299,22 @@ export class ChannelService {
             .leftJoinAndSelect('channel.users', 'users')
             .leftJoin('users.blockedUsers', 'blockedUsers')
             .addSelect('blockedUsers.id')
-            .getOne()
+            .getOne();
         if (!channel) {
             throw new HttpException(
                 'getBlockedList: Channel not found to get blocked list',
-                HttpStatus.FORBIDDEN
-            )
+                HttpStatus.FORBIDDEN,
+            );
         }
         if (!channel.users) {
-            return []
+            return [];
         }
         const users = channel.users.filter((user) => {
             return (
-                !user.blockedUsers || !user.blockedUsers.map((u) => u.id).includes(param.sender.id)
-            )
-        })
-        return users
+                !user.blockedUsers ||
+                !user.blockedUsers.map((u) => u.id).includes(param.sender.id)
+            );
+        });
+        return users;
     }
 }
