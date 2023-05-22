@@ -2,7 +2,7 @@ import { Controller, Get, Req } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { Matches } from './match.entity';
 import { UserService } from '../../user/services/user/user.service';
-import {User} from "../../user/user.entity";
+import { User } from '../../user/user.entity';
 
 @Controller('match')
 export class MatchController {

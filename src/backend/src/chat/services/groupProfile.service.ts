@@ -263,8 +263,6 @@ export class GroupProfileService {
             .where('group.id = :id', { id: groupId })
             .leftJoinAndSelect('group.blocked', 'blocked')
             .getOne();
-        console.log('userId: ', userId);
-        console.log('groupId: ', groupId);
         if (!group) {
             throw new HttpException(
                 'could not find group in isBlocked',
@@ -458,5 +456,19 @@ export class GroupProfileService {
             return false;
         }
         return true;
+    }
+
+    async checkValidGroupName(name: string): Promise<any> {
+        const groupCheck = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .addSelect(['group.name'])
+            .where('group.name = :name', { name })
+            .getOne();
+        if (groupCheck) {
+            throw new HttpException(
+                'group name already exists',
+                HttpStatus.FORBIDDEN,
+            );
+        }
     }
 }

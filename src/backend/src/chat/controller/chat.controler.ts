@@ -63,7 +63,6 @@ export class ChatController {
         @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
         try {
-            console.log('param: ' + JSON.stringify(param));
             const user1 = await this.userService.getUserById(param.userId);
             if (!user1) {
                 throw new HttpException(
@@ -71,19 +70,6 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            // console.log('user1: ' + JSON.stringify(user1));
-            // if (
-            //     !(await this.channelService.allowedNewDmChannel(
-            //         user1,
-            //         param.invitee,
-            //     ))
-            // ) {
-            //     throw new HttpException(
-            //         'invitee not allowed to create new dm channel',
-            //         HttpStatus.FORBIDDEN,
-            //     );
-            // }
-            console.log('invitee allowed to create new dm channel');
             const user2 = await this.userService.getUserByLogin(param.invitee);
             if (!user2) {
                 throw new HttpException(
@@ -91,11 +77,8 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            const channel = await this.channelService.newDmChannel(
-                user1,
-                user2,
-            );
-            console.log('channel: ' + JSON.stringify(channel));
+            let channel = await this.channelService.newDmChannel(user1, user2);
+            channel = await this.channelService.getChannelById(channel.id);
             await this.chatGateway.emitNewDmChannel(user1, user2, channel);
             return;
         } catch (error) {
@@ -109,7 +92,7 @@ export class ChatController {
         @Body(new ValidationPipe()) param: CreateGroupChannelDto,
     ): Promise<any> {
         try {
-            // not safe user by id
+            await this.groupProfileService.checkValidGroupName(param.groupName);
             const owner = await this.userService.getUserById(param.userId);
             if (!owner) {
                 throw new HttpException(
@@ -117,7 +100,7 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
-            const channel = await this.channelService.newGroupChannel(
+            let channel = await this.channelService.newGroupChannel(
                 owner,
                 param.groupName,
                 param.type,
@@ -129,6 +112,7 @@ export class ChatController {
                     HttpStatus.FORBIDDEN,
                 );
             }
+            channel = await this.channelService.getChannelById(channel.id);
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
             return;
         } catch (error) {

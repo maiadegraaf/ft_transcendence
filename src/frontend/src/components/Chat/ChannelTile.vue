@@ -1,21 +1,36 @@
 <template>
-    <div class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }">
-        <div class="flex w-full" @click="toView(ch.id)">
-            <div class="h-full">
-                <img class="rounded-full w-16" :src="`api/user/${avatarId}/avatar`" alt="avatar" />
-            </div>
-            <div class="flex flex-col w-full pl-3">
-                <div class="font-bold">{{ ch.name }} | {{ ch.id }}</div>
-                <div class="text-xs">{{ lastMessage }}</div>
+    <div v-if="ch.profile" class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }">
+        <div class="flex w-full" @click="toView(ch.id, null, ch.name)">
+            <img
+                class="rounded-full w-14 object-cover aspect-square"
+                :src="`api/user/${avatarId}/avatar`"
+                alt="avatar"
+            />
+            <div class="flex flex-col pl-3 truncate">
+                <div class="font-bold truncate">{{ ch.name }} | {{ ch.id }}</div>
+                <div class="text-xs truncate">{{ lastMessage }}</div>
             </div>
         </div>
-        <div v-if="ch.profile">
+        <div>
             <button
-                @click="groupSettings(ch.id, ch.profile.id, ch.profile.name)"
+                @click="groupSettings(ch.id)"
                 class="rounded-full hover:shadow-md"
             >
                 <Cog6ToothIcon class="h-6 w-6 text-buff" />
             </button>
+        </div>
+    </div>
+    <div v-else class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }">
+        <div class="flex w-full" @click="toView(ch.id, ch.users, ch.name)">
+            <img
+                class="rounded-full w-14 object-cover aspect-square"
+                :src="`api/user/${avatarId}/avatar`"
+                alt="avatar"
+            />
+            <div class="flex flex-col pl-3 truncate">
+                <div class="font-bold truncate">{{ ch.name }} | {{ ch.id }}</div>
+                <div class="text-xs truncate">{{ lastMessage }}</div>
+            </div>
         </div>
     </div>
 </template>
@@ -54,7 +69,7 @@ export default defineComponent({
     },
     computed: {
         lastMessage(): string {
-            if (this.ch.messages.length > 0) {
+            if (this.ch.messages?.length > 0) {
                 return this.ch.messages[this.ch.messages.length - 1].text
             }
             return 'No messages'
@@ -64,14 +79,22 @@ export default defineComponent({
         }
     },
     methods: {
-        toView(id: number): void {
+        toView(id: number, users: any, dmName: string): void {
+            if (users)
+                for (const user of users) {
+                    if (user.login == dmName) {
+                        this.chatStore.setDmId(user.id)
+                    }
+                }
+            else this.chatStore.setDmId(-1)
+            this.chatStore.setDmName(dmName)
             this.chatStore.setChannelInView(id)
             this.$emit('switch-chat-right-component', MessageList)
         },
-        groupSettings(channelId: number, groupId: number, groupName: string): void {
+        groupSettings(channelId: number): void {
             this.chatStore.setChannelInView(channelId)
-            this.chatStore.setGroupId(groupId)
-            this.chatStore.setGroupName(groupName)
+            // this.chatStore.setGroupId(groupId)
+            // this.chatStore.setGroupName(groupName)
             this.$emit('switch-chat-right-component', GroupSettings)
         }
     }

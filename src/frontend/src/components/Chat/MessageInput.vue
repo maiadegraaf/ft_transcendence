@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-dark-purple border-buff border w-full min-h-10">
+    <footer class="bg-dark-purple w-full min-h-10">
         <div class="p-3 flex">
             <div class="flex-1 p-1 bg-white rounded-md">
                 <input
@@ -9,7 +9,13 @@
                     @keyup.enter="sendMessage"
                 />
             </div>
-            <button @click="sendMessage" class="ml-3">
+            <button
+                @click="sendInvite"
+                class="ml-3 text-buff hover:opacity-60 transition-all font-semibold"
+            >
+                Invite
+            </button>
+            <button @click="sendMessage" class="ml-3 hover:opacity-60 transition-all">
                 <PaperAirplaneIcon class="h-8 w-8 text-buff" />
             </button>
         </div>
@@ -34,6 +40,7 @@ export default defineComponent({
     },
     data(): any {
         return {
+            matchId: 0,
             id: 0,
             text: '',
             sender: {
@@ -57,6 +64,23 @@ export default defineComponent({
                 // Resets the input field.
                 this.text = ''
             }
+        },
+        sendInvite(): void {
+            console.log('Sending invite')
+            this.userStore.socket.emit('bind', this.userStore.id)
+            this.text = 'Invite'
+            this.channel = this.chatStore.channelInView
+            this.userStore.socket.emit('msgToServer', this.$data)
+            this.userStore.socket.on('opponentFound', (matchId: number) => {
+                console.log('Opponent found')
+                console.log(matchId)
+                this.$router.push({
+                  name: 'Pong',
+                  params: {
+                    matchid: matchId
+                  }
+                })
+            })
         }
     }
 })

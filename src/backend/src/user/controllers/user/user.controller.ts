@@ -9,7 +9,8 @@ import {
     ParseIntPipe,
     Post,
     Put,
-    Query, Req,
+    Query,
+    Req,
     Res,
     StreamableFile,
     UploadedFile,
@@ -33,36 +34,32 @@ export class UserController {
     constructor(
         private readonly userService: UserService,
         private readonly avatarService: AvatarService,
-        ) {}
+    ) {}
 
     @Get()
     async findAllUsers(): Promise<User[]> {
         const users = await this.userService.findAllUsers();
         return users;
     }
-    
+
     @Get('/friends')
     @UseGuards(FortyTwoAuthGuard)
-    async getFriends(
-        @Req() req: any,
-    ) {
+    async getFriends(@Req() req: any) {
         const userID = req.session.user.id;
         const Friends = await this.userService.findFriends(userID);
-        Friends.forEach(user => console.log(user.login));
+        Friends.forEach((user) => console.log(user.login));
         return Friends;
     }
 
     @Get('/friends/:id')
     @UseGuards(FortyTwoAuthGuard)
-    async getFriendsById(
-        @Param('id', ParseIntPipe) userID: number,
-    ) {
+    async getFriendsById(@Param('id', ParseIntPipe) userID: number) {
         // const userID = req.session.user.id;
         const Friends = await this.userService.findFriends(userID);
-        Friends.forEach(user => console.log(user.login));
+        Friends.forEach((user) => console.log(user.login));
         return Friends;
     }
-    
+
     @Get(':id')
     @UseGuards(FortyTwoAuthGuard)
     async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
@@ -101,9 +98,9 @@ export class UserController {
     @UseGuards(FortyTwoAuthGuard)
     @UseInterceptors(FileInterceptor('file'))
     async updateAvatar(
-        @UploadedFile() file: Express.Multer.File, 
+        @UploadedFile() file: Express.Multer.File,
         @Param('id', ParseIntPipe) id: number,
-        ): Promise<any> {
+    ): Promise<any> {
         await this.userService.setAvatar(id, file);
         return { status: 'success', message: 'Avatar updated successfully' };
     }
@@ -113,7 +110,7 @@ export class UserController {
     async updateUsername(
         @Param('id', ParseIntPipe) id: number,
         @Body('username') username: string,
-        ): Promise<User> {
+    ): Promise<User> {
         try {
             return await this.userService.updateUsername(id, username);
         } catch (err) {
@@ -140,7 +137,7 @@ export class UserController {
     @Get('search/:username')
     @UseGuards(FortyTwoAuthGuard)
     async findUserByUsername(@Param('username') username: string) {
-        const user = await this.userService.findUserByUsername(username);    
+        const user = await this.userService.findUserByUsername(username);
         if (!user) {
             throw new HttpException('User not found', 404);
         }
@@ -166,7 +163,6 @@ export class UserController {
         }
     }
 
-
     @Post('unfriend/:id')
     @UseGuards(FortyTwoAuthGuard)
     async removeFriend(
@@ -177,6 +173,62 @@ export class UserController {
         try {
             await this.userService.removeFriend(userID, friendID);
             return await this.userService.removeFriend(friendID, userID);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
+        }
+    }
+
+    @Get('block/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async getBlockedUsers(
+        @Param('id', ParseIntPipe) userID: number,
+        @Req() req: any,
+    ) {
+        const userId = req.session.user.id;
+        try {
+            return await this.userService.getBlockedUsers(userId);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
+        }
+    }
+
+    @Post('block/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async blockUser(
+        @Param('id', ParseIntPipe) friendID: number,
+        @Req() req: any,
+    ) {
+        const userID = req.session.user.id;
+        try {
+            return await this.userService.blockUser(userID, friendID);
+            // return await this.userService.blockUser(friendID, userID);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus());
+            }
+            throw error;
+        }
+    }
+
+    @Post('unblock/:id')
+    @UseGuards(FortyTwoAuthGuard)
+    async unblockUser(
+        @Param('id', ParseIntPipe) friendID: number,
+        @Req() req: any,
+    ) {
+        const userID = req.session.user.id;
+        try {
+            return await this.userService.unblockUser(userID, friendID);
+            // return await this.userService.unblockUser(friendID, userID);
         } catch (error) {
             console.log(error);
             if (error instanceof HttpException) {

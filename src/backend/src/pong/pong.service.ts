@@ -70,6 +70,7 @@ export class PongService {
         matchId: number,
     ): void {
         client.emit('opponentFound', matchId);
+
         client.to(opponentSocketId).emit('opponentFound', matchId);
     }
 
@@ -81,12 +82,10 @@ export class PongService {
         }
         console.log('user found' + user);
         if (this.getMatchmakingByUserId(user.id)) {
-            console.log('already in list');
             client.emit('MultipleConnections', 'waiting to join a match');
             return null;
         }
         if (this.getPracticeInstanceByUserId(user.id)) {
-            console.log('already in practice match');
             client.emit('MultipleConnections', 'in a practice match');
             return null;
         }
@@ -122,6 +121,8 @@ export class PongService {
     ) {
         const player1 = await this.userService.findUserByID(player1Id);
         const player2 = await this.userService.findUserByID(player2Id);
+        console.log('player1' + player1.socketId);
+        console.log('player2' + player2.socketId);
         if (!player1 || !player2) {
             return;
         }

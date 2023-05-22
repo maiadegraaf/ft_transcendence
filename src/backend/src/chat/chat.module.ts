@@ -12,7 +12,7 @@ import { UserService } from '../user/services/user/user.service';
 import { User } from 'src/user/user.entity';
 import { Avatar } from 'src/user/avatar.entity';
 import { AvatarService } from 'src/user/services/user/avatar.service';
-import { GroupProfileController } from 'src/chat/controller/GroupProfile.controller';
+import { GroupProfileController } from './controller/groupProfile.controller';
 import { GroupProfileGateway } from './gateway/group-profile.gateway';
 import { MutedTime } from './entities/mutedTime.enitity';
 

@@ -16,7 +16,13 @@ import { Avatar } from 'src/user/avatar.entity';
         TypeOrmModule.forFeature([User]),
         TypeOrmModule.forFeature([Avatar]),
     ],
-    providers: [LeaderboardService, Match, PracticeMatch, UserService, AvatarService],
+    providers: [
+        LeaderboardService,
+        Match,
+        PracticeMatch,
+        UserService,
+        AvatarService,
+    ],
     controllers: [LeaderboardController],
 })
 export class LeaderboardModule {}

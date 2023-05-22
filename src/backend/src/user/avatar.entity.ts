@@ -1,5 +1,11 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./user.entity";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class Avatar {
@@ -9,7 +15,7 @@ export class Avatar {
     @Column({ nullable: true })
     filename: string;
 
-    @Column({ type: "bytea", nullable: true })
+    @Column({ type: 'bytea', nullable: true })
     data: Buffer;
 
     @OneToOne(() => User, (user) => user.avatar, { onDelete: 'CASCADE' })
