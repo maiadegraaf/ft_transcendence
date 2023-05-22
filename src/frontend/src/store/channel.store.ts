@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type {IChannels, IMessage, IProfile, IUser} from '@/types/types'
+import type { IChannels, IMessage, IProfile, IUser } from '@/types/types'
 import { useUserStore } from '@/store/user.store'
 
 export const useChatStore = defineStore('userChannel', {
@@ -7,18 +7,22 @@ export const useChatStore = defineStore('userChannel', {
         channels: [] as IChannels[] | null,
         channelInView: 0 as number,
         dmId: -1 as number,
-        dmName: '' as string,
+        dmName: '' as string
     }),
 
     getters: {
         getChannelInView(state): IChannels | null {
             const channelIV = state.channels?.find((channel) => channel.id === state.channelInView)
-            if (!channelIV) { return null }
+            if (!channelIV) {
+                return null
+            }
             return channelIV
         },
         getCurrentMessages(): IMessage[] {
             const channelIV = this.getChannelInView
-            if (channelIV == null) { return [] }
+            if (channelIV == null) {
+                return []
+            }
             return channelIV.messages
         },
         getCurrentUsers(): IUser[] | null {
@@ -37,10 +41,10 @@ export const useChatStore = defineStore('userChannel', {
             if (chnl == null || chnl.profile == null) {
                 return null
             }
-            console.log('profile changed');
-            const profile = chnl.profile;
+            console.log('profile changed')
+            const profile = chnl.profile
             return profile
-        },
+        }
     },
 
     actions: {
@@ -61,12 +65,14 @@ export const useChatStore = defineStore('userChannel', {
         setChannelName(channel: IChannels) {
             const userStore = useUserStore()
             // console.log(channel)
-            if (channel == null) { return '' }
+            if (channel == null) {
+                return ''
+            }
             if (channel.profile == null) {
                 if (channel.users[0].id == userStore.id) {
-                    channel.name =  channel.users[1].login
+                    channel.name = channel.users[1].login
                 } else {
-                    channel.name =  channel.users[0].login
+                    channel.name = channel.users[0].login
                 }
             } else {
                 channel.name = channel.profile.name
@@ -107,7 +113,14 @@ export const useChatStore = defineStore('userChannel', {
             this.channels?.find((channel) => channel.id === channelId)?.users.push(user)
         },
         async removeUserFromChannel(channelId: number, user: IUser) {
-            this.channels?.find((channel) => channel.id === channelId)?.users?.splice(this.channels?.find((channel) => channel.id === channelId)?.users?.findIndex((u) => u.id === user.id) as number, 1)
+            this.channels
+                ?.find((channel) => channel.id === channelId)
+                ?.users?.splice(
+                    this.channels
+                        ?.find((channel) => channel.id === channelId)
+                        ?.users?.findIndex((u) => u.id === user.id) as number,
+                    1
+                )
         },
         async addAdminToChannel(channelId: number, user: IUser) {
             this.channels?.find((channel) => channel.id === channelId)?.profile?.admin.push(user)

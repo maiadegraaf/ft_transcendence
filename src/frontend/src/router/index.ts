@@ -11,6 +11,7 @@ import TwoFACreate from '../views/2fa.create.vue'
 import axios from 'axios'
 import LeaderboardView from '@/views/LeaderboardView.vue'
 import Username from '@/views/Username.vue'
+import WaitingOpponent from '@/views/WaitingOpponent.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -29,6 +30,12 @@ const router = createRouter({
             path: '/',
             name: 'Login',
             component: Login
+        },
+        {
+            path: '/wait/:senderId/:opponentId',
+            name: 'wait',
+            component: WaitingOpponent,
+            props: true
         },
         {
             path: '/Chat',
@@ -73,22 +80,5 @@ const router = createRouter({
         }
     ]
 })
-
-// router.beforeEach((to, from, next) => {
-//   // axios.get('/api/auth/profile')
-//   //     .then((response) => {
-//   //           if (response.status == 200 && to.path == '/')
-//   //             next('/Home')
-//   //           if (response.status == 200)
-//   //             next()
-//   //     })
-//   //     .catch((error) => {
-//   //       console.log(error)
-//   //       if (to.path != '/' && to.path != '/2fa/create')
-//   //         next('/')
-//   //       else
-//   //         next()
-//   //     })
-// });
 
 export default router

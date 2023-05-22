@@ -55,7 +55,6 @@ export const useUserStore = defineStore('user', {
             this.socket.on('removeAdminFromChannel', (payload: any) => {
                 chatStore.removeAdminFromChannel(payload.channelId, payload.user)
                 console.log('Admin removed from channel!')
-
             })
             this.socket.on('addMutedToChannel', (payload: any) => {
                 chatStore.addMutedToChannel(payload.channelId, payload.user)

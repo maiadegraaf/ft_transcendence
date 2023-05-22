@@ -25,10 +25,7 @@
                         <p class="pl-2 text-xs opacity-50">{{ getRoleStr(user) }}</p>
                     </div>
                     <div
-                        v-if="
-                            (userStore.owner || userStore.admin) &&
-                            userStore.id != user.id
-                        "
+                        v-if="(userStore.owner || userStore.admin) && userStore.id != user.id"
                         class="space-x-4"
                     >
                         <button
@@ -41,15 +38,23 @@
                         <button v-else class="button_role" @click="addAdmin(user.login)">
                             admin
                         </button>
-                      <button class="button_role" v-if="user.muted" @click="deleteMuted(user.login)">unmute</button>
-                      <button class="button_role" v-else @click="addMuted(user.login)">mute</button>
-                      <button class="button_role" @click="addBanned(user.login)">ban</button>
-                      <button
-                          @click="deleteUser(user.login)"
-                          class=" text-sm border-blush border-2 border-double text-blush font-bold py-1 px-2 rounded hover:opacity-60 transition-opacity"
-                      >
-                        REMOVE
-                      </button>
+                        <button
+                            class="button_role"
+                            v-if="user.muted"
+                            @click="deleteMuted(user.login)"
+                        >
+                            unmute
+                        </button>
+                        <button class="button_role" v-else @click="addMuted(user.login)">
+                            mute
+                        </button>
+                        <button class="button_role" @click="addBanned(user.login)">ban</button>
+                        <button
+                            @click="deleteUser(user.login)"
+                            class="text-sm border-blush border-2 border-double text-blush font-bold py-1 px-2 rounded hover:opacity-60 transition-opacity"
+                        >
+                            REMOVE
+                        </button>
                     </div>
                 </li>
             </ul>
@@ -62,8 +67,8 @@ import { defineComponent } from 'vue'
 import { useChatStore } from '@/store/channel.store'
 import { useUserStore } from '@/store/user.store'
 import axios from 'axios'
-import type {IUser} from "@/types/types";
-import type {IProfile} from "@/types/types";
+import type { IUser } from '@/types/types'
+import type { IProfile } from '@/types/types'
 
 export default defineComponent({
     name: 'GroupSettingUserList',
@@ -79,139 +84,138 @@ export default defineComponent({
                 userName: '',
                 groupId: 0,
                 channelId: 0
-            },
+            }
         }
     },
     async mounted() {
         this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.getChannelGroupId    },
+        this.params.groupId = this.chatStore.getChannelGroupId
+    },
     computed: {
-      getUsersWithRoles(): IUser[] | null {
-          const users = this.chatStore.getCurrentUsers
-          const profile = this.chatStore.getCurrentProfile
-          if (users == null || profile == null) {
-              return null
-          } else {
-              users.forEach((user: IUser, index: number) => {
-                  user.owner = this.checkOwner(user, profile);
-                  user.admin = this.checkAdmin(user, profile);
-                  user.muted = this.checkMuted(user, profile);
-                  if (user.id == this.userStore.id) {
-                    this.userStore.owner = user.owner;
-                    this.userStore.admin = user.admin;
-                    users.unshift(users.splice(index, 1)[0])
-                  }
-              })
-          }
-          return users
-      },
+        getUsersWithRoles(): IUser[] | null {
+            const users = this.chatStore.getCurrentUsers
+            const profile = this.chatStore.getCurrentProfile
+            if (users == null || profile == null) {
+                return null
+            } else {
+                users.forEach((user: IUser, index: number) => {
+                    user.owner = this.checkOwner(user, profile)
+                    user.admin = this.checkAdmin(user, profile)
+                    user.muted = this.checkMuted(user, profile)
+                    if (user.id == this.userStore.id) {
+                        this.userStore.owner = user.owner
+                        this.userStore.admin = user.admin
+                        users.unshift(users.splice(index, 1)[0])
+                    }
+                })
+            }
+            return users
+        }
     },
     methods: {
-      addAdmin(login: string): void {
-        this.params.userName = login
-        axios
-            .post('/api/chat/group/admin', this.params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      deleteAdmin(login: string): void {
-        this.params.userName = login
-        axios
-            .delete('/api/chat/group/admin', { data: this.params })
-            .then((response) => {
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
+        addAdmin(login: string): void {
+            this.params.userName = login
+            axios
+                .post('/api/chat/group/admin', this.params)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
+        deleteAdmin(login: string): void {
+            this.params.userName = login
+            axios
+                .delete('/api/chat/group/admin', { data: this.params })
+                .then((response) => {})
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
 
-      addMuted(login: string): void {
-        this.params.userName = login
-        axios
-            .post('/api/chat/group/muted', this.params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      deleteMuted(login: string): void {
-        this.params.userName = login
-        axios
-            .delete('/api/chat/group/muted', { data: this.params })
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      addBanned(login: string): void {
-        this.params.userName = login
-        axios
-            .post('/api/chat/group/banned', this.params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      deleteUser(login: string): void {
-
-        this.params.userName = login
-        axios
-            .delete('/api/chat/group/user', { data: this.params})
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
-      },
-      checkOwner(user: IUser, profile: IProfile) {
-        if (profile.owner.id === user.id) {
-          return true
+        addMuted(login: string): void {
+            this.params.userName = login
+            axios
+                .post('/api/chat/group/muted', this.params)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
+        deleteMuted(login: string): void {
+            this.params.userName = login
+            axios
+                .delete('/api/chat/group/muted', { data: this.params })
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
+        addBanned(login: string): void {
+            this.params.userName = login
+            axios
+                .post('/api/chat/group/banned', this.params)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
+        deleteUser(login: string): void {
+            this.params.userName = login
+            axios
+                .delete('/api/chat/group/user', { data: this.params })
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return
+                })
+        },
+        checkOwner(user: IUser, profile: IProfile) {
+            if (profile.owner.id === user.id) {
+                return true
+            }
+            return false
+        },
+        checkAdmin(user: IUser, profile: IProfile) {
+            if (profile.admin.find((adm) => adm.id === user.id)) {
+                return true
+            }
+            return false
+        },
+        checkMuted(user: IUser, profile: IProfile) {
+            if (profile.muted.find((mtd) => mtd.id === user.id)) {
+                return true
+            }
+            return false
+        },
+        getRoleStr(user: IUser) {
+            let str = ''
+            if (user.owner) {
+                str += ' Owner'
+            }
+            if (user.admin) {
+                str += ' Admin'
+            }
+            if (user.muted) {
+                str += ' Muted'
+            }
+            return str
         }
-        return false
-      },
-      checkAdmin(user: IUser, profile: IProfile) {
-        if (profile.admin.find((adm) => adm.id === user.id)) {
-          return true
-        }
-        return false
-      },
-      checkMuted(user: IUser, profile: IProfile) {
-        if (profile.muted.find((mtd) => mtd.id === user.id)) {
-          return true
-        }
-        return false
-      },
-      getRoleStr(user: IUser) {
-        let str = ''
-        if (user.owner) {
-          str += ' Owner'
-        }
-        if (user.admin) {
-          str += ' Admin'
-        }
-        if (user.muted) {
-          str += ' Muted'
-        }
-        return str
-      },
     }
 })
 </script>

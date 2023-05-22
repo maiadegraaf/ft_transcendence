@@ -39,7 +39,7 @@
         <WinLosses />
         <MatchHistory />
         <Friends :is-profile-session="isProfileSession" />
-        <Blocked v-if="isProfileSession" :is-profile-session="isProfileSession"/>
+        <Blocked v-if="isProfileSession" :is-profile-session="isProfileSession" />
     </main>
     <main v-else class="flex h-screen justify-center items-center">
         <h1 class="text-5xl text-blush font-bold">Profile doesn't exist</h1>

@@ -12,10 +12,7 @@
             </div>
         </div>
         <div>
-            <button
-                @click="groupSettings(ch.id)"
-                class="rounded-full hover:shadow-md"
-            >
+            <button @click="groupSettings(ch.id)" class="rounded-full hover:shadow-md">
                 <Cog6ToothIcon class="h-6 w-6 text-buff" />
             </button>
         </div>

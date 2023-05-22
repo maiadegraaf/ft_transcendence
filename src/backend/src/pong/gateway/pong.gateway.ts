@@ -1,4 +1,4 @@
- import {
+import {
     ConnectedSocket,
     MessageBody,
     OnGatewayConnection,
@@ -32,11 +32,34 @@ export class PongGateway implements OnGatewayDisconnect {
         @ConnectedSocket() client: Socket,
         @MessageBody() userId: number,
     ): void {
+        console.log('joinMatchmaking');
+        console.log(userId);
         this.pongService.handleJoinMatchmaking(client, userId);
+    }
+
+    @SubscribeMessage('joinMatchmakingOneVOne')
+    handleJoinMatchmakingOneVOne(
+        @ConnectedSocket() client: Socket,
+        @MessageBody()
+        data: { userId: number; senderId: number; opponentId: number },
+    ): void {
+        console.log('joinMatchmakingOneVOne');
+        console.log(data.userId);
+        this.pongService.handleJoinMatchmakingOneVOne(
+            client,
+            data.userId,
+            data.senderId,
+            data.opponentId,
+        );
     }
 
     @SubscribeMessage('leaveMatchmaking')
     handleLeaveMatchmaking(@ConnectedSocket() client: Socket): void {
+        this.pongService.handleLeaveMatchmaking(client);
+    }
+
+    @SubscribeMessage('leaveMatchmakingOneVOne')
+    handleLeaveMatchmakingOneVOne(@ConnectedSocket() client: Socket): void {
         this.pongService.handleLeaveMatchmaking(client);
     }
 

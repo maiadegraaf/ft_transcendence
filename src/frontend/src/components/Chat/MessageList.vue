@@ -54,7 +54,7 @@
                         <div v-if="message.text == 'Invite'">
                             <button
                                 class="text-buff px-2 py-1 hover:opacity-70 transition-all my-2 border border-buff rounded-md border-double border-4"
-                                @click="acceptInvite(message.sender)"
+                                @click="acceptInvite()"
                             >
                                 Join the game!
                             </button>
@@ -126,21 +126,15 @@ export default defineComponent({
             }
         },
         // Testing invite
-        acceptInvite(sender: any) {
-            this.userStore.socket.emit('bind', this.userStore.id)
-            this.userStore.socket.emit('createMatch', {
-                player1: this.userStore.id,
-                player2: sender.id
-            })
-            this.userStore.socket.on('opponentFound', (matchId: number) => {
-                console.log('Opponent found')
-                console.log(matchId)
-                this.$router.push({
-                    name: 'Pong',
-                    params: {
-                        matchid: matchId
-                    }
-                })
+        acceptInvite() {
+            console.log('Accepting invite')
+            console.log(this.userStore.id, this.chatStore.dmId)
+            this.$router.push({
+                name: 'wait',
+                params: {
+                    senderId: this.userStore.id,
+                    opponentId: this.chatStore.dmId
+                }
             })
         }
     }

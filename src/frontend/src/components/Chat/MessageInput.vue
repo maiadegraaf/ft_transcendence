@@ -74,7 +74,7 @@ export default defineComponent({
                 console.log('Opponent found')
                 console.log(matchId)
                 this.$router.push({
-                  name: 'Pong'
+                    name: 'Pong'
                 })
             })
         }

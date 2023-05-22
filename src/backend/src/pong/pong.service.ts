@@ -14,6 +14,7 @@ import { MatchService } from './match/match.service';
 export class PongService {
     private logger: Logger = new Logger('PongGateway');
     private matchmakingList: User[] = [];
+    private matchmakingOneVOneList: User[] = [];
     private instances: { [key: number]: MatchInstance } = {};
     private practiceInstance: { [key: number]: PracticeMatchInstance } = {};
 
@@ -75,6 +76,8 @@ export class PongService {
     }
 
     async addSocketIdToUser(userId: number, client: Socket): Promise<User> {
+        console.log('adding socket id to user');
+        console.log(userId);
         const user = await this.userService.findUserByID(userId);
         if (!user) {
             this.logger.error('User not found');
@@ -106,11 +109,35 @@ export class PongService {
         }
         this.matchmakingList.push(newPlayer);
         if (this.matchmakingList.length > 1) {
-            this.createMatch(
+            await this.createMatch(
                 client,
                 this.matchmakingList.pop(),
                 this.matchmakingList.pop(),
             );
+        }
+    }
+
+    async handleJoinMatchmakingOneVOne(
+        client: Socket,
+        userId: number,
+        opponentId: number,
+        senderId: number,
+    ): Promise<void> {
+        if (userId === opponentId || userId === senderId) {
+            this.logger.log(client.id + ' joined the waitlist');
+            const newPlayer = await this.addSocketIdToUser(userId, client);
+            if (!newPlayer) {
+                return;
+            }
+            console.log('new player' + newPlayer);
+            this.matchmakingOneVOneList.push(newPlayer);
+            if (this.matchmakingOneVOneList.length > 1) {
+                await this.createMatch(
+                    client,
+                    this.matchmakingOneVOneList.pop(),
+                    this.matchmakingOneVOneList.pop(),
+                );
+            }
         }
     }
 
@@ -150,6 +177,16 @@ export class PongService {
         this.logger.log(client.id + ' left the waitlist');
         this.matchmakingList.splice(
             this.matchmakingList.indexOf(
+                this.getMatchmakingBySocket(client.id),
+            ),
+            1,
+        );
+    }
+
+    async handleLeaveMatchmakingOneVOne(client: Socket): Promise<void> {
+        this.logger.log(client.id + ' left the waitlist');
+        this.matchmakingOneVOneList.splice(
+            this.matchmakingOneVOneList.indexOf(
                 this.getMatchmakingBySocket(client.id),
             ),
             1,
