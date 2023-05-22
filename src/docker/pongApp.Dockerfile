@@ -10,15 +10,15 @@ RUN apt-get update && apt-get install -y npm
 WORKDIR /usr/src/app
 
 COPY backend ./backend
-#RUN rm -rf backend/node_modules backend/dist backend/secrets backend/test
+RUN npm install --prefix backend
+RUN npm run build --prefix backend
 
 COPY frontend ./frontend
-
-COPY docker/startContainers.sh .
-#RUN rm -rf frontend/node_modules frontend/dist
+RUN npm install --prefix frontend
+RUN npm run build --prefix frontend
 
 # Expose the port that the server will listen on
 EXPOSE 8080
 
 # Start the server
-ENTRYPOINT ["sh", "startContainers.sh"]
+ENTRYPOINT ["npm", "run", "start:prod", "--prefix", "backend"]
