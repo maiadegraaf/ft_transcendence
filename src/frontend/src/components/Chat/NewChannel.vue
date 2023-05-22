@@ -236,7 +236,6 @@ export default defineComponent({
                     return
                 })
             this.groupText = ''
-            // setchannel in view
             this.$emit('switch-chat-right-component', MessageList)
         },
         newProtectedGroupChannel(): void {
@@ -244,7 +243,6 @@ export default defineComponent({
                 this.groupText = ''
                 return
             }
-            this.chatStore.setGroupName(this.groupText)
             this.$emit('switch-chat-right-component', SetPassword)
             this.groupText = ''
         },
