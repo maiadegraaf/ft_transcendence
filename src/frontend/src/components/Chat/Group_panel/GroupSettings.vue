@@ -89,7 +89,6 @@ export default defineComponent({
         return {
             userText: '',
             params: {
-                userId: 0,
                 userName: '',
                 groupId: 0,
                 channelId: 0
@@ -102,7 +101,6 @@ export default defineComponent({
     async mounted() {
         this.userName = this.userStore.name
         this.groupName = this.chatStore.getChannelName
-        this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
         this.params.groupId = this.chatStore.getChannelGroupId
         // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)

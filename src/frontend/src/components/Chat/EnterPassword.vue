@@ -55,7 +55,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 userName: this.user.name,
                 groupId: this.chatStore.getChannelGroupId,
                 password: this.passwordText

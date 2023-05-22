@@ -5,25 +5,32 @@ import {
     OnGatewayInit,
     OnGatewayConnection,
     OnGatewayDisconnect,
-    ConnectedSocket
-} from '@nestjs/websockets'
-import { Body, UseGuards, HttpException, HttpStatus, Logger, ValidationPipe } from '@nestjs/common'
-import { Socket, Server } from 'socket.io'
-import { MessageService } from '../services/message.service'
-import { UserService } from '../../user/services/user/user.service'
-import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos'
-import { websocketGuard } from '../../auth/auth.guard'
-import { Channel } from '../entities/channel.entity'
-import { User } from '../../user/user.entity'
-import { ChannelService } from '../services/channel.service'
-import { GroupProfileService } from '../services/groupProfile.service'
+    ConnectedSocket,
+} from '@nestjs/websockets';
+import {
+    Body,
+    UseGuards,
+    HttpException,
+    HttpStatus,
+    Logger,
+    ValidationPipe,
+} from '@nestjs/common';
+import { Socket, Server } from 'socket.io';
+import { MessageService } from '../services/message.service';
+import { UserService } from '../../user/services/user/user.service';
+import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
+import { WebSocketGuard } from '../../auth/auth.guard';
+import { Channel } from '../entities/channel.entity';
+import { User } from '../../user/user.entity';
+import { ChannelService } from '../services/channel.service';
+import { GroupProfileService } from '../services/groupProfile.service';
 
 @WebSocketGateway({
     cors: {
         origin: '*',
     },
 })
-@UseGuards(websocketGuard)
+@UseGuards(WebSocketGuard)
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -120,14 +127,14 @@ export class ChatGateway
 
     @SubscribeMessage('joinRooms')
     async handleJoinRooms(@ConnectedSocket() client: Socket): Promise<any> {
-        const id = client.request.session.user.id
-        const channels = await this.channelService.getUserChannels(id)
+        const id = client.request.session.user.id;
+        const channels = await this.channelService.getUserChannels(id);
         channels.forEach((channel) => {
-            client.join('room' + channel.id)
+            client.join('room' + channel.id);
             this.logger.log(
-                `handleJoinRoomById: ${client.id} joined the room with id: ${channel.id}`
-            )
-        })
+                `handleJoinRoomById: ${client.id} joined the room with id: ${channel.id}`,
+            );
+        });
     }
 
     @SubscribeMessage('leaveRoomById')

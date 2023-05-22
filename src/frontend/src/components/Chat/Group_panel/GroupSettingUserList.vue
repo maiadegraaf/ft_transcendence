@@ -75,7 +75,6 @@ export default defineComponent({
     data(): any {
         return {
             params: {
-                userId: 0,
                 userName: '',
                 groupId: 0,
                 channelId: 0
@@ -83,7 +82,6 @@ export default defineComponent({
         }
     },
     async mounted() {
-        this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
         this.params.groupId = this.chatStore.getChannelGroupId    },
     computed: {
