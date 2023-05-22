@@ -27,7 +27,7 @@ import { MutedTime } from './chat/entities/mutedTime.enitity';
         PassportModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
-            host: 'localhost',
+            host: 'postgres',
             port: 5432,
             username: 'pongmaster',
             password: 'ping_pong42',

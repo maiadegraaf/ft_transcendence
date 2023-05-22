@@ -5,6 +5,7 @@
 * [ ] add error handling for all endpoints
 * [ ] security for all endpoints
 * [ ] remove the console logs everywhere
+* [ ] Docker everything
 
 ## Chat
 * [x] testing endpoints for user, admin, banned and muted in groupProfile
@@ -31,5 +32,4 @@
 ## Chat Bugs
 * [ ] if you are in group settings, and you want to access a different
 group setting then the old group setting is still active
-* [ ] socket with emitGroupChannelToUser is not found
 * [x] blocking the sockets not correctly
