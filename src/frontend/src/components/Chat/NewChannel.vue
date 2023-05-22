@@ -128,7 +128,9 @@ export default defineComponent({
             // passwordText: '',
         }
     },
-    async mounted() {},
+    mounted() {
+      this.chatStore.setChannelInView(-1)
+    },
     methods: {
         createGroup(): void {
             console.log(this.checkedBox)
@@ -172,6 +174,7 @@ export default defineComponent({
                         this.$emit('switch-chat-right-component', MessageList)
                     }
                     console.log('groupId: ', response.data.groupId)
+                    this.chatStore.setGroupId(response.data.groupId)
                     if (response.data.type == EGroupChannelType.PROTECTED) {
                         console.log('kamaan')
                         this.$emit('switch-chat-right-component', EnterPassword)
@@ -243,6 +246,7 @@ export default defineComponent({
                 this.groupText = ''
                 return
             }
+            this.chatStore.setGroupName(this.groupText)
             this.$emit('switch-chat-right-component', SetPassword)
             this.groupText = ''
         },

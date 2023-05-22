@@ -32,6 +32,7 @@ import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { EGroupChannelType } from '@/types/types'
 import { defineComponent } from 'vue'
+import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
 
 export default defineComponent({
     name: 'EnterPassword',
@@ -67,7 +68,7 @@ export default defineComponent({
                 .then((res) => {
                     console.log(res)
                     if (res.data === true) {
-                        this.$emit('switch-chat-right-component', MessageList)
+                        this.$emit('switch-chat-right-component', NoChannelSelected)
                     } else {
                         alert('wrong password')
                     }
@@ -76,11 +77,11 @@ export default defineComponent({
                     console.log(err)
                 })
             this.passwordText = ''
-            this.$emit('switch-chat-right-component', MessageList)
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         },
         goBack(): void {
             // leave chat reuqest
-            this.$emit('switch-chat-right-component', MessageList)
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         }
     }
 })

@@ -33,6 +33,7 @@ import { useUserStore } from '@/store/user.store'
 import { EGroupChannelType } from '@/types/types'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import { defineComponent } from 'vue'
+import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
 
 export default defineComponent({
     name: 'SetPassword',
@@ -77,11 +78,11 @@ export default defineComponent({
                 })
             this.passwordText = ''
             this.chatStore.setGroupName('')
-            this.$emit('switch-chat-right-component', MessageList)
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         },
         goBack(): void {
-            // leave chat reuqest
-            this.$emit('switch-chat-right-component', MessageList)
+            // leave chat request
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         }
     }
 })
