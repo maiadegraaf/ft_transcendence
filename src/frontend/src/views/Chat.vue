@@ -19,8 +19,6 @@ import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import ChannelList from '@/components/Chat/Channel_panel/ChannelList.vue'
 import GroupSettings from '@/components/Chat/Group_panel/GroupSettings.vue'
 import { useChatStore } from '@/store/channel.store'
-import type { IMessage, IChannels } from '@/types/types'
-import MessageInput from '@/components/Chat/Message_panel/MessageInput.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import ChannelHeader from '@/components/Chat/Channel_panel/ChannelHeader.vue'
@@ -40,11 +38,6 @@ export default defineComponent({
     data(): any {
         return {
             currentComponent: NoChannelSelected
-        }
-    },
-    mounted() {
-        if (this.chatStore.channelInView > -1) {
-            this.currentComponent = MessageList
         }
     },
     setup() {

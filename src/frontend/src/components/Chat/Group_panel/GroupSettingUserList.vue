@@ -64,10 +64,12 @@ import { useUserStore } from '@/store/user.store'
 import axios from 'axios'
 import type {IUser} from "@/types/types";
 import type {IProfile} from "@/types/types";
+import SetPassword from "@/components/Chat/SetPassword.vue";
 
 export default defineComponent({
     name: 'GroupSettingUserList',
-    setup() {
+  components: {SetPassword},
+  setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()
         return { chatStore, userStore }
@@ -77,7 +79,7 @@ export default defineComponent({
             params: {
                 userName: '',
                 groupId: 0,
-                channelId: 0
+                channelId: 0,
             },
         }
     },

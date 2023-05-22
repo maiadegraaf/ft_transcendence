@@ -8,6 +8,8 @@ export const useChatStore = defineStore('userChannel', {
         channelInView: -1 as number,
         dmId: -1 as number,
         dmName: '' as string,
+        groupName: '' as string,
+        groupId: -1 as number,
     }),
 
     getters: {
@@ -30,7 +32,7 @@ export const useChatStore = defineStore('userChannel', {
         },
         getChannelGroupId(): number {
             const channelIV = this.getChannelInView
-            return channelIV?.profile?.id ?? 0
+            return channelIV?.profile?.id ?? this.groupId
         },
         getCurrentProfile(): IProfile | null {
             const channelIV = this.getChannelInView
@@ -76,6 +78,14 @@ export const useChatStore = defineStore('userChannel', {
 
         setDmName(dmName: string) {
             this.dmName = dmName
+        },
+
+        setGroupName(groupName: string) {
+            this.groupName = groupName
+        },
+
+        setGroupId(groupId: number) {
+            this.groupId = groupId
         },
 
         async setChannelInView(channelId: number) {
