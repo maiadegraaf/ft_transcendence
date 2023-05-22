@@ -93,7 +93,7 @@
 <script lang="ts">
 import { useChatStore } from '../../store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/MessageList.vue'
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { EGroupChannelType } from '@/types/types'
 import { defineComponent } from 'vue'
@@ -236,7 +236,6 @@ export default defineComponent({
                     return
                 })
             this.groupText = ''
-            // setchannel in view
             this.$emit('switch-chat-right-component', MessageList)
         },
         newProtectedGroupChannel(): void {
@@ -244,7 +243,6 @@ export default defineComponent({
                 this.groupText = ''
                 return
             }
-            this.chatStore.setGroupName(this.groupText)
             this.$emit('switch-chat-right-component', SetPassword)
             this.groupText = ''
         },

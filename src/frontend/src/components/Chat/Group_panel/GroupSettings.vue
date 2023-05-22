@@ -64,13 +64,13 @@
 </template>
 
 <script lang="ts">
-import { useChatStore } from '../../store/channel.store'
+import { useChatStore } from '../../../store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/MessageList.vue'
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import { ChevronLeftIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import GroupSettingUserList from '@/components/Chat/GroupSettingUserList.vue'
+import GroupSettingUserList from '@/components/Chat/Group_panel/GroupSettingUserList.vue'
 
 interface User {
     id: number
@@ -80,7 +80,6 @@ interface User {
 export default defineComponent({
     name: 'GroupSettings',
     components: { GroupSettingUserList, ChevronLeftIcon, TrashIcon },
-    // props: ['chatStore']
     setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()
@@ -127,7 +126,6 @@ export default defineComponent({
                 .post('/api/chat/group/user', this.params)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)

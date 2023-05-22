@@ -1,7 +1,7 @@
-import { MatchInstance } from './match-instance';
+import { MatchInstance } from './match-instance'
 
 describe('MatchInstance', () => {
     it('should be defined', () => {
-        expect(new MatchInstance()).toBeDefined();
-    });
-});
+        expect(new MatchInstance()).toBeDefined()
+    })
+})

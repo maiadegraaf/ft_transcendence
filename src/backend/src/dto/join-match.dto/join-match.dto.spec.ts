@@ -1,7 +1,7 @@
-import { JoinMatchDto } from './join-match.dto';
+import { JoinMatchDto } from './join-match.dto'
 
 describe('JoinMatchDto', () => {
     it('should be defined', () => {
-        expect(new JoinMatchDto()).toBeDefined();
-    });
-});
+        expect(new JoinMatchDto()).toBeDefined()
+    })
+})

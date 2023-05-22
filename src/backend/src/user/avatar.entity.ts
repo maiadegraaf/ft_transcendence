@@ -1,24 +1,18 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    OneToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from './user.entity';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { User } from './user.entity'
 
 @Entity()
 export class Avatar {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number
 
     @Column({ nullable: true })
-    filename: string;
+    filename: string
 
     @Column({ type: 'bytea', nullable: true })
-    data: Buffer;
+    data: Buffer
 
     @OneToOne(() => User, (user) => user.avatar, { onDelete: 'CASCADE' })
     @JoinColumn()
-    user: User;
+    user: User
 }
