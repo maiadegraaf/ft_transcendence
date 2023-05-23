@@ -32,6 +32,7 @@ export class MatchInstance {
     }
 
     handlePlayerDisconnect(client: Socket): void {
+        console.log('handlePlayerDisconnect');
         if (client.id == this.player1.user.socketId) {
             this.player2.score = 10
             this.end('Player 2', client)

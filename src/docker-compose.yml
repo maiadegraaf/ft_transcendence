@@ -1,18 +1,5 @@
 version: "3.9"
 services:
-  # backend:
-    # container_name: backend
-    # build:
-    #   context: ./docker
-    #   dockerfile: ./backend.Dockerfile
-    # ports:
-    #   - "3000:3000"
-    # volumes:
-    #   - ./backend:/app
-    # networks:
-    #   - backend
-    # depends_on:
-    #   - db
   postgres:
     image: postgres:latest
     env_file:
@@ -31,19 +18,16 @@ services:
       - 5050:80
     depends_on:
       - postgres
-  # web:
-  #   image: node:lts
-  #   build: .
-  #   # working_dir: $(SG_PATH):/app/
-
-# volumes:
-#   db_data:
-#     name: db_data
-#     driver_opts:
-#       type: none
-#       device: ${SG_PATH}
-#       o: bind
-
-
-# networks:
-#   backend:
+# DO NOT REMOVE!!!
+#  pongapp:
+#    container_name: pongapp
+#    build:
+#        context: .
+#        dockerfile: ./docker/pongApp.Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres
+#      - pgadmin
+#    volumes:
+#      - /app

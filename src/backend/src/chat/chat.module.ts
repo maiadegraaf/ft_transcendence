@@ -13,11 +13,19 @@ import { User } from 'src/user/user.entity'
 import { Avatar } from 'src/user/avatar.entity'
 import { AvatarService } from 'src/user/services/user/avatar.service'
 import { GroupProfileController } from 'src/chat/controller/GroupProfile.controller'
-import { GroupProfileGateway } from './gateway/group-profile.gateway'
 import { MutedTime } from './entities/mutedTime.enitity'
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Message, Channel, GroupProfile, User, Avatar, MutedTime])],
+    imports: [
+        TypeOrmModule.forFeature([
+            Message,
+            Channel,
+            GroupProfile,
+            User,
+            Avatar,
+            MutedTime,
+        ]),
+    ],
     controllers: [ChatController, GroupProfileController],
     providers: [
         MessageService,
@@ -26,7 +34,6 @@ import { MutedTime } from './entities/mutedTime.enitity'
         UserService,
         ChatGateway,
         AvatarService,
-        GroupProfileGateway
-    ]
+    ],
 })
 export class ChatModule {}

@@ -6,7 +6,9 @@ import {
     HttpStatus,
     Logger,
     Post,
-    ValidationPipe
+    ValidationPipe,
+    UseGuards,
+    Req
 } from '@nestjs/common'
 import { ChannelService } from '../services/channel.service'
 import { UserService } from '../../user/services/user/user.service'
@@ -18,6 +20,7 @@ import {
     JoinGroupProtectedDto
 } from '../dtos/chat.dtos'
 import { GroupProfileService } from '../services/groupProfile.service'
+import { FortyTwoAuthGuard } from '../../auth/auth.guard'
 
 @Controller('chat/group')
 export class GroupProfileController {
@@ -30,10 +33,13 @@ export class GroupProfileController {
 
     private logger = new Logger('GroupProfileController')
 
+    // Post /api/chat/group/join
+    @UseGuards(FortyTwoAuthGuard)
     @Post('join')
-    async postJoinGroup(@Body(new ValidationPipe()) param: JoinGroupDto): Promise<any> {
+    async postJoinGroup(@Req() req, @Body(new ValidationPipe()) param: JoinGroupDto): Promise<any> {
         try {
-            const user = await this.userService.getUserById(param.userId)
+            const id = req.session.user.id
+            const user = await this.userService.getUserById(id)
             if (!user) {
                 throw new HttpException(
                     'Could not find user to add to group channel',
@@ -60,12 +66,15 @@ export class GroupProfileController {
     }
 
     // Post /api/chat/group/user/password
+    @UseGuards(FortyTwoAuthGuard)
     @Post('user/password')
     async postUserWithPassword(
+        @Req() req,
         @Body(new ValidationPipe()) param: JoinGroupProtectedDto
     ): Promise<any> {
         try {
-            const user = await this.userService.getUserById(param.userId)
+            const id = req.session.user.id
+            const user = await this.userService.getUserById(id)
             if (!user) {
                 throw new HttpException(
                     'Could not find user to add to group channel',
@@ -90,12 +99,12 @@ export class GroupProfileController {
     }
 
     // Post /api/chat/group/user
+    @UseGuards(FortyTwoAuthGuard)
     @Post('user')
     async postNewUserToChannel(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
     ): Promise<any> {
         try {
-            console.log('postNewUserToChannel' + JSON.stringify(param))
             const user = await this.userService.getUserByLogin(param.userName)
             if (!user) {
                 throw new HttpException(
@@ -114,6 +123,7 @@ export class GroupProfileController {
     }
 
     // Delete /api/chat/group/user
+    @UseGuards(FortyTwoAuthGuard)
     @Delete('user')
     async deleteUserFromChannel(
         @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
@@ -135,10 +145,15 @@ export class GroupProfileController {
     }
 
     // Post /api/chat/group/admin
+    @UseGuards(FortyTwoAuthGuard)
     @Post('admin')
-    async postAdminToGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async postAdminToGroup(
+        @Req() req,
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
+    ) {
         try {
-            const info = await this.groupProfileService.addAdmin(param)
+            const id = req.session.user.id
+            const info = await this.groupProfileService.addAdmin(param, id)
             await this.chatGateway.emitAddAdminToChannel(info)
             this.logger.log('postAdminToGroup: ' + param.userName)
         } catch (error) {
@@ -148,10 +163,15 @@ export class GroupProfileController {
     }
 
     // Delete /api/chat/group/admin
+    @UseGuards(FortyTwoAuthGuard)
     @Delete('admin')
-    async deleteAdminFromGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async deleteAdminFromGroup(
+        @Req() req,
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
+    ) {
         try {
-            const info = await this.groupProfileService.deleteAdmin(param)
+            const id = req.session.user.id
+            const info = await this.groupProfileService.deleteAdmin(param, id)
             await this.chatGateway.emitRemoveAdminFromChannel(info)
             this.logger.log('deleteAdminFromGroup: ' + param.userName)
         } catch (error) {
@@ -161,10 +181,15 @@ export class GroupProfileController {
     }
 
     // Post /api/chat/group/muted
+    @UseGuards(FortyTwoAuthGuard)
     @Post('muted')
-    async postMutedToGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async postMutedToGroup(
+        @Req() req,
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
+    ) {
         try {
-            const info = await this.groupProfileService.addMute(param)
+            const id = req.session.user.id
+            const info = await this.groupProfileService.addMute(param, id)
             await this.chatGateway.emitAddMutedToChannelToUser(info)
             this.logger.log('postMutedToGroup: ' + param.userName)
         } catch (error) {
@@ -174,10 +199,15 @@ export class GroupProfileController {
     }
 
     // Delete /api/chat/group/muted
+    @UseGuards(FortyTwoAuthGuard)
     @Delete('muted')
-    async deleteMutedFromGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async deleteMutedFromGroup(
+        @Req() req,
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
+    ) {
         try {
-            const info = await this.groupProfileService.deleteMute(param)
+            const id = req.session.user.id
+            const info = await this.groupProfileService.deleteMute(param, id)
             await this.chatGateway.emitRemoveMutedFromChannelToUser(info)
             this.logger.log('deleteMutedFromGroup: ' + param.userName)
         } catch (error) {
@@ -187,10 +217,15 @@ export class GroupProfileController {
     }
 
     // Post /api/chat/group/banned
+    @UseGuards(FortyTwoAuthGuard)
     @Post('banned')
-    async postBlockedToGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async postBlockedToGroup(
+        @Req() req,
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
+    ) {
         try {
-            const user = await this.groupProfileService.addBlocked(param)
+            const id = req.session.user.id
+            const user = await this.groupProfileService.addBlocked(param, id)
             const channel = await this.channelService.removeUserFromChannel(param.channelId, user)
             await this.chatGateway.emitDeleteChannelFromUser(channel, user)
             this.logger.log('postBlockedToGroup: ' + param.userName)
@@ -201,10 +236,15 @@ export class GroupProfileController {
     }
 
     // Post /api/chat/group/banned
+    @UseGuards(FortyTwoAuthGuard)
     @Delete('banned')
-    async deleteBlockedFromGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async deleteBlockedFromGroup(
+        @Req() req,
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
+    ) {
         try {
-            await this.groupProfileService.deleteBlocked(param)
+            const id = req.session.user.id
+            await this.groupProfileService.deleteBlocked(param, id)
             this.logger.log('deleteBlockedFromGroup: ' + param.userName)
         } catch (error) {
             this.logger.error(error)
@@ -213,12 +253,13 @@ export class GroupProfileController {
     }
 
     // Delete /api/chat/group
+    @UseGuards(FortyTwoAuthGuard)
     @Delete()
-    async deleteGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async deleteGroup(@Req() req, @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
         try {
-            let group = await this.groupProfileService.ownerCheck(param)
+            const id = req.session.user.id
+            let group = await this.groupProfileService.ownerCheck(param, id)
             if (!group.channel) {
-                await this.groupProfileService.deleteGroup(group)
                 throw new HttpException('Could not find channel to delete', HttpStatus.FORBIDDEN)
             }
             let channel = group.channel
@@ -226,7 +267,11 @@ export class GroupProfileController {
             channel = await this.channelService.nullifyProfile(channel)
             const users = channel.users
             for (const user of users) {
-                await this.chatGateway.emitDeleteChannelFromUser(channel, user)
+                try {
+                    await this.chatGateway.emitDeleteChannelFromUser(channel, user)
+                } catch (error) {
+                    this.logger.error(error)
+                }
             }
             await this.groupProfileService.deleteGroup(group)
             await this.channelService.deleteChannel(channel)
@@ -239,11 +284,16 @@ export class GroupProfileController {
     }
 
     // Delete /api/chat/group/leave
+    @UseGuards(FortyTwoAuthGuard)
     @Delete('leave')
-    async deleteLeaveGroup(@Body(new ValidationPipe()) param: GroupUserProfileUpdateDto) {
+    async deleteLeaveGroup(
+        @Req() req,
+        @Body(new ValidationPipe()) param: GroupUserProfileUpdateDto
+    ) {
         try {
+            const id = req.session.user.id
             let group = await this.groupProfileService.getGroupProfileById(param.groupId)
-            const user = group.channel.users.find((user) => user.id === param.userId)
+            const user = group.channel.users.find((user) => user.id === id)
             if (!user) {
                 throw new HttpException(
                     'Could not find user to remove from channel',
@@ -251,8 +301,8 @@ export class GroupProfileController {
                 )
             }
             let channel = group.channel
-            if (group.owner.id == param.userId) {
-                if (!(await this.groupProfileService.reassignOwner(group, param.userId))) {
+            if (group.owner.id == id) {
+                if (!(await this.groupProfileService.reassignOwner(group, id))) {
                     group = await this.groupProfileService.nullifyChannel(group)
                     channel = await this.channelService.nullifyProfile(channel)
                     await this.groupProfileService.deleteGroup(group)
@@ -261,7 +311,7 @@ export class GroupProfileController {
                     return true
                 }
             }
-            group = await this.groupProfileService.removeRoles(group, param.userId)
+            group = await this.groupProfileService.removeRoles(group, id)
             channel = await this.channelService.removeUserFromChannel(group.channel.id, user)
             await this.chatGateway.emitDeleteChannelFromUser(channel, user)
             return true

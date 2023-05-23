@@ -58,7 +58,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.chatStore.groupName,
                 type: EGroupChannelType.PROTECTED,
                 password: this.passwordText

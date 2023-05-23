@@ -10,6 +10,7 @@
                 />
             </div>
             <button
+                v-if="chatStore.dmId != -1"
                 @click="sendInvite"
                 class="ml-3 text-buff hover:opacity-60 transition-all font-semibold"
             >
@@ -71,12 +72,7 @@ export default defineComponent({
             this.userStore.socket.on('opponentFound', (matchId: number) => {
                 console.log('Opponent found')
                 console.log(matchId)
-                this.$router.push({
-                  name: 'Pong',
-                  params: {
-                    matchid: matchId
-                  }
-                })
+                this.$router.push({ name: 'Pong'})
             })
         }
     }

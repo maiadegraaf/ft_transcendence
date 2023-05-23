@@ -1,10 +1,14 @@
 # To Do List
 
+## General
+* [ ] return values for all endpoints
+* [ ] add error handling for all endpoints
+* [ ] security for all endpoints
+* [ ] remove the console logs everywhere
+* [ ] Docker everything
+
 ## Chat
-
 * [x] testing endpoints for user, admin, banned and muted in groupProfile
-
-[//]: # (* [ ] accessibility for groupProfile by admin owner and user &#40;frontend&#41;)
 * [x] accessibility for groupProfile by admin owner and user (backend)
 * [x] adding logic to admin, muted and banned in groupProfile
 * [x] adding time for muted user
@@ -23,11 +27,9 @@
 * [x] frontend for channel list
 * [x] frontend for input for new channels
 * [ ] make frontend pretty for everything
-* [ ] return values for all endpoints
-* [ ] add error handling for all endpoints
+
 
 ## Chat Bugs
 * [ ] if you are in group settings, and you want to access a different
 group setting then the old group setting is still active
-* [ ] socket with emitGroupChannelToUser is not found
-* [ ] user socket not connected directly when added to group
+* [x] blocking the sockets not correctly

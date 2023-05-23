@@ -149,7 +149,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.joinGroupText
             }
             axios
@@ -181,7 +180,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.groupText,
                 type: EGroupChannelType.PRIVATE,
                 password: null
@@ -206,7 +204,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.groupText,
                 type: EGroupChannelType.PUBLIC,
                 password: null

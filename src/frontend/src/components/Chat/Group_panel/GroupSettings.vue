@@ -78,7 +78,6 @@ export default defineComponent({
         return {
             userText: '',
             params: {
-                userId: 0,
                 userName: '',
                 groupId: 0,
                 channelId: 0
@@ -90,7 +89,6 @@ export default defineComponent({
     },
     async mounted() {
         this.groupName = this.chatStore.getChannelName
-        this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
         this.params.groupId = this.chatStore.getCurrentGroupId
     },
@@ -118,7 +116,7 @@ export default defineComponent({
                     return
                 })
             this.userText = ''
-          this.searchResult = null
+            this.searchResult = null
         },
         deleteGroup(): void {
             this.params.userName = this.userStore.name

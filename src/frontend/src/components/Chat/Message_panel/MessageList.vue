@@ -1,7 +1,13 @@
 <template>
-    <div
-        class="border-buff border-double border-t-4 flex flex-col justify-end items-end h-full"
-    >
+    <!--    <div-->
+    <!--        v-if="chatStore.dmId == -1 && chatStore.dmName.length == 0"-->
+    <!--        class="text-center border-buff flex-col h-full border-double border-t-4 flex justify-center items-center"-->
+    <!--    >-->
+    <!--        <ChatBubbleLeftRightIcon class="h-40 w-40 text-buff mx-auto" />-->
+    <!--        <h2 class="p-3 text-buff font-semibold text-5xl">Welcome to the chat</h2>-->
+    <!--        <p class="text-buff opacity-70">Start by adding a user/group or select one!</p>-->
+    <!--    </div>-->
+    <div class="border-buff border-double border-t-4 flex flex-col justify-end items-end h-full">
         <div
             class="flex max-h-full h-full flex-col w-full justify-between overflow-auto scrollbar-hide"
         >
@@ -45,7 +51,9 @@
                                 message.sender.login
                             }}</span>
                         </div>
-                        <div v-if="message.text == 'Invite'" class="text-buff"><button @click="acceptInvite(message.sender)">Invite</button></div>
+                        <div v-if="message.text == 'Invite'">
+                          <button class="text-buff px-2 py-1 hover:opacity-70 transition-all my-2 border border-buff rounded-md border-double border-4" @click="acceptInvite">Join the game!</button>
+                        </div>
                         <div v-else
                             :class="
                                 'inline break-all box-border text-sm p-1 px-4 rounded-xl text-l ' +
@@ -67,10 +75,12 @@ import { useChatStore } from '../../../store/channel.store'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import MessageInput from '@/components/Chat/Message_panel/MessageInput.vue'
+import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/solid'
 
 export default defineComponent({
     components: {
         MessageInput,
+        ChatBubbleLeftRightIcon
     },
     name: 'MessageList',
     data() {
@@ -109,20 +119,18 @@ export default defineComponent({
                 return 'bg-gray-700'
             }
         },
-      // Testing invite
-        acceptInvite(sender: any) {
-          this.userStore.socket.emit('createMatch', { player1: this.userStore.id, player2: sender.id })
-          this.userStore.socket.on('opponentFound', ( matchId: number ) => {
-            console.log('Opponent found')
-            console.log(matchId)
+        // Testing invite
+        acceptInvite() {
+            console.log('Accepting invite')
+            console.log(this.userStore.id, this.chatStore.dmId)
             this.$router.push({
-              name: 'Pong',
-              params: {
-                matchid: matchId
-              }
+                name: 'wait',
+                params: {
+                    senderId: this.userStore.id,
+                    opponentId: this.chatStore.dmId
+                }
             })
-          })
-        }
+        },
     }
 })
 </script>
