@@ -1,5 +1,5 @@
 <template>
-    <Nav />
+    <NavBar />
     <div
         class="mx-auto flex flex-col items-center justify-center w-10/12 aspect-video bg-dark-purple-800"
     >
@@ -25,23 +25,23 @@
 
 <script lang="ts">
 import ErrorPopUp from '../components/ErrorPopUp.vue'
-import Nav from '../components/Nav.vue'
+import NavBar from '../components/NavBar.vue'
 import Match from '../components/pong/Match.vue'
 import WaitingRoomOneVOne from '../components/pong/WaitingRoomOneVOne.vue'
 import { defineComponent } from 'vue'
 import { useUserStore } from '@/store/user.store'
 
 export default defineComponent({
-    setup() {
-        const userStore = useUserStore()
-        return { userStore }
-    },
     name: 'WaitingOpponent',
     components: {
-        Nav,
+        NavBar,
         Match,
         ErrorPopUp,
         WaitingRoomOneVOne
+    },
+    setup() {
+        const userStore = useUserStore()
+        return { userStore }
     },
     data(): any {
         return {

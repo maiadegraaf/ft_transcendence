@@ -73,9 +73,7 @@ export default defineComponent({
             this.userStore.socket.on('opponentFound', (matchId: number) => {
                 console.log('Opponent found')
                 console.log(matchId)
-                this.$router.push({
-                    name: 'Pong'
-                })
+                this.$router.push({ name: 'Pong'})
             })
         }
     }

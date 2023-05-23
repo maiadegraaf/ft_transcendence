@@ -52,7 +52,7 @@
                             }}</span>
                         </div>
                         <div v-if="message.text == 'Invite'">
-                          <button class="text-buff px-2 py-1 hover:opacity-70 transition-all my-2 border border-buff rounded-md border-double border-4" @click="acceptInvite(message.sender)">Join the game!</button>
+                          <button class="text-buff px-2 py-1 hover:opacity-70 transition-all my-2 border border-buff rounded-md border-double border-4" @click="acceptInvite">Join the game!</button>
                         </div>
                         <div v-else
                             :class="
@@ -74,7 +74,7 @@
 import { useChatStore } from '../../../store/channel.store'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
-import MessageInput from '@/components/Chat/MessageInput.vue'
+import MessageInput from '@/components/Chat/Message_panel/MessageInput.vue'
 import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/solid'
 
 export default defineComponent({
@@ -130,8 +130,7 @@ export default defineComponent({
                     opponentId: this.chatStore.dmId
                 }
             })
-          })
-        }
+        },
     }
 })
 </script>

@@ -18,15 +18,16 @@ services:
       - 5050:80
     depends_on:
       - postgres
-  pongapp:
-    container_name: pongapp
-    build:
-        context: .
-        dockerfile: ./docker/pongApp.Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-      - pgadmin
-    volumes:
-      - /app
+# DO NOT REMOVE!!!
+#  pongapp:
+#    container_name: pongapp
+#    build:
+#        context: .
+#        dockerfile: ./docker/pongApp.Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres
+#      - pgadmin
+#    volumes:
+#      - /app
