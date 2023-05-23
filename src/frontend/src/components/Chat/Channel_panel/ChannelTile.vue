@@ -1,11 +1,16 @@
 <template>
     <div v-if="ch.profile" class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }">
         <div class="flex w-full" @click="toView(ch.id, null, ch.name)">
-            <img
+            <div v-if='avatarId == 0'>
+                <UserGroupIcon class="h-14 w-14 text-buff object-cover aspect-square" />
+            </div>
+            <div v-else>
+                <img
                 class="rounded-full w-14 object-cover aspect-square"
                 :src="`api/user/${avatarId}/avatar`"
                 alt="avatar"
-            />
+                />
+            </div>
             <div class="flex flex-col pl-3 truncate">
                 <div class="font-bold truncate">{{ ch.name }} | {{ ch.id }}</div>
                 <div class="text-xs truncate">{{ lastMessage }}</div>
@@ -34,18 +39,20 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import MessageList from '@/components/Chat/MessageList.vue'
-import GroupSettings from '@/components/Chat/GroupSettings.vue'
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
+import GroupSettings from '@/components/Chat/Group_panel/GroupSettings.vue'
 import { useChatStore } from '@/store/channel.store'
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useUserStore } from '@/store/user.store'
 import type { IUser } from '@/types/types'
+import { UserGroupIcon } from '@heroicons/vue/20/solid'
 
 export default defineComponent({
     name: 'ChannelTile',
     props: ['ch'],
     components: {
-        Cog6ToothIcon
+        Cog6ToothIcon,
+        UserGroupIcon
     },
     setup() {
         const chatStore = useChatStore()
@@ -58,11 +65,13 @@ export default defineComponent({
         }
     },
     mounted() {
-        this.ch.users.forEach((user: IUser) => {
-            if (user.id !== this.userId) {
-                this.avatarId = user.id
-            }
-        })
+        if (this.ch.profile == null){
+            this.ch.users.forEach((user: IUser) => {
+                if (user.id !== this.userId) {
+                    this.avatarId = user.id
+                }
+            })
+        }
     },
     computed: {
         lastMessage(): string {

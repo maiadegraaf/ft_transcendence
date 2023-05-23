@@ -1,18 +1,18 @@
 <template>
     <div>
-        <Nav />
+        <NavBar />
         <h1>404 error</h1>
     </div>
 </template>
 
 <script lang="ts">
-import Nav from '../components/Nav.vue'
+import NavBar from '../components/NavBar.vue'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: '404',
     components: {
-        Nav
+        NavBar
     }
 })
 </script>

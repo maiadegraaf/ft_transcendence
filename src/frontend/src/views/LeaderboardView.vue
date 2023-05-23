@@ -1,17 +1,17 @@
 <template>
     <body>
-        <Nav />
+        <NavBar />
         <Leaderboard />
     </body>
 </template>
 
 <script lang="ts">
-import Nav from '@/components/Nav.vue'
+import NavBar from '@/components/NavBar.vue'
 import Leaderboard from '@/components/leaderboard/Leaderboard.vue'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: 'LeaderboardView',
-    components: { Nav, Leaderboard }
+    components: { NavBar, Leaderboard }
 })
 </script>

@@ -21,8 +21,6 @@ class ExpressSessionAdapter extends IoAdapter {
 }
 
 async function bootstrap() {
-    console.log('Starting backend');
-    console.log(process.env.FORTYTWO_APP_ID);
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix('api'); // New
     app.use(sessionMiddleware);

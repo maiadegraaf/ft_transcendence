@@ -8,21 +8,17 @@ import {
     ValidationPipe,
     HttpException,
     HttpStatus,
-    Delete,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import { Channel } from '../entities/channel.entity';
 import { MessageService } from '../services/message.service';
 import { ChannelService } from '../services/channel.service';
 import { UserService } from '../../user/services/user/user.service';
-import {
-    addUserToChanelDto,
-    CreateDmChannelDto,
-    CreateGroupChannelDto,
-    GroupUserProfileUpdateDto,
-} from '../dtos/chat.dtos';
+import { CreateDmChannelDto, CreateGroupChannelDto } from '../dtos/chat.dtos';
 import { ChatGateway } from '../gateway/chat.gateway';
-import { validatePath } from '@nestjs/serve-static/dist/utils/validate-path.util';
 import { GroupProfileService } from '../services/groupProfile.service';
+import { FortyTwoAuthGuard } from '../../auth/auth.guard';
 
 @Controller('chat')
 export class ChatController {
@@ -36,34 +32,42 @@ export class ChatController {
 
     private logger = new Logger('ChatController');
 
-    // Get /api/chat/${id}
-    @Get('/:id')
-    async getUserChannels(@Param('id') id: number): Promise<Channel[]> {
+    // Get /api/chat/
+    @UseGuards(FortyTwoAuthGuard)
+    @Get('/')
+    async getUserChannels(@Req() req): Promise<Channel[]> {
+        const id = req.session.user.id;
         this.logger.log('getChannelMessages: messages found for user: ' + id);
-        return this.channelService.getUserChannels(id);
+        const channels = await this.channelService.getUserChannels(id);
+        return channels;
     }
 
     // Get /api/chat/${id}/channel
+    @UseGuards(FortyTwoAuthGuard)
     @Get('/:id/channel')
-    async getUserChannel(@Param('id') userId: number): Promise<any> {
-        const channels = await this.userService.getChannelsByUserId(userId);
+    async getUserChannel(@Req() req): Promise<any> {
+        const id = req.session.user.id;
+        const channels = await this.userService.getChannelsByUserId(id);
         if (!channels) {
             this.logger.error(
-                'getUserChannels: No channels found from user: ' + userId,
+                'getUserChannels: No channels found from user: ' + id,
             );
             return;
         }
-        this.logger.log('getUserChannels: channels found from user: ' + userId);
+        this.logger.log('getUserChannels: channels found from user: ' + id);
         return channels;
     }
 
     // Post /api/chat/dm
+    @UseGuards(FortyTwoAuthGuard)
     @Post('dm')
     async postNewDMChannel(
+        @Req() req,
         @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
         try {
-            const user1 = await this.userService.getUserById(param.userId);
+            const id = req.session.user.id;
+            const user1 = await this.userService.getUserById(id);
             if (!user1) {
                 throw new HttpException(
                     'Could not find user1 by id to create new dm channel',
@@ -87,13 +91,16 @@ export class ChatController {
     }
 
     // Post /api/chat/group
+    @UseGuards(FortyTwoAuthGuard)
     @Post('group')
     async postNewGroupChannel(
+        @Req() req,
         @Body(new ValidationPipe()) param: CreateGroupChannelDto,
     ): Promise<any> {
         try {
-            // not safe user by id
-            const owner = await this.userService.getUserById(param.userId);
+            const id = req.session.user.id;
+            await this.groupProfileService.checkValidGroupName(param.groupName);
+            const owner = await this.userService.getUserById(id);
             if (!owner) {
                 throw new HttpException(
                     'Could not find user to create new group channel',
@@ -113,7 +120,6 @@ export class ChatController {
                 );
             }
             channel = await this.channelService.getChannelById(channel.id);
-            console.log(channel);
             await this.chatGateway.emitGroupChannelToUser(channel, owner);
             return;
         } catch (error) {

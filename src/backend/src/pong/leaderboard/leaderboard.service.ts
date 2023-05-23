@@ -1,137 +1,123 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '../../user/user.entity';
-import { Leaderboard } from './leaderboard.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PracticeMatch, Difficulty } from '../practice-match/practice-match';
-import { Match } from '../match/match';
-import { PracticeMatchInstance } from '../practice-match/practice-match-instance';
+import { Injectable } from '@nestjs/common'
+import { User } from '../../user/user.entity'
+import { Leaderboard } from './leaderboard.entity'
+import { Repository } from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
+import { PracticeMatch, Difficulty } from '../practice-match/practice-match'
+import { Match } from '../match/match'
+import { PracticeMatchInstance } from '../practice-match/practice-match-instance'
 
 @Injectable()
 export class LeaderboardService {
     constructor(
         @InjectRepository(Leaderboard)
         private leaderboardRepository: Repository<Leaderboard>,
-        private readonly practiceMatchService: PracticeMatch,
+        private readonly practiceMatchService: PracticeMatch
     ) {}
 
     async findMatchResults(): Promise<Leaderboard[]> {
         return this.leaderboardRepository.find({
             select: ['rating', 'wins', 'losses', 'winStreak'],
             relations: {
-                user: true,
+                user: true
             },
             order: {
-                rating: 'DESC',
-            },
-        });
+                rating: 'DESC'
+            }
+        })
     }
-      
+
     async findAll(): Promise<Leaderboard[]> {
         return this.leaderboardRepository.find({
             relations: {
-                user: true,
-            },
-        });
+                user: true
+            }
+        })
     }
 
     async createNewLeaderboardEntry(player: User) {
-        const leaderboardEntry = new Leaderboard();
-        leaderboardEntry.user = player;
-        return await this.leaderboardRepository.save(leaderboardEntry);
+        const leaderboardEntry = new Leaderboard()
+        leaderboardEntry.user = player
+        return await this.leaderboardRepository.save(leaderboardEntry)
     }
 
     async findLeaderboardEntry(player: User) {
-        let entry;
+        let entry
         for (const e of await this.findAll()) {
             if (e.user?.id === player.id) {
-                entry = e;
-                break;
+                entry = e
+                break
             }
         }
         if (!entry) {
-            return await this.createNewLeaderboardEntry(player);
+            return await this.createNewLeaderboardEntry(player)
         }
-        return entry;
+        return entry
     }
 
     async addWinToLeaderboardEntry(entry: Leaderboard, newRating: number) {
-        entry.rating = Math.round(newRating);
-        entry.wins++;
-        entry.winStreak++;
-        return await this.leaderboardRepository.save(entry);
+        entry.rating = Math.round(newRating)
+        entry.wins++
+        entry.winStreak++
+        return await this.leaderboardRepository.save(entry)
     }
 
     async addLossToLeaderboardEntry(entry: Leaderboard, newRating: number) {
-        entry.rating = Math.round(newRating);
-        entry.losses++;
-        entry.winStreak = 0;
-        return await this.leaderboardRepository.save(entry);
+        entry.rating = Math.round(newRating)
+        entry.losses++
+        entry.winStreak = 0
+        return await this.leaderboardRepository.save(entry)
     }
 
     async assignWinnerAndLoser(winner: Leaderboard, loser: Leaderboard) {
-        const winnerRating = winner.rating;
-        const loserRating = loser.rating;
-        const expectedWinnerScore =
-            1 / (1 + 10 ** ((loserRating - winnerRating) / 400));
-        const expectedLoserScore =
-            1 / (1 + 10 ** ((winnerRating - loserRating) / 400));
-        const winnerNewRating = winnerRating + 32 * (1 - expectedWinnerScore);
-        const loserNewRating = loserRating + 32 * (0 - expectedLoserScore);
-        await this.addWinToLeaderboardEntry(winner, winnerNewRating);
-        await this.addLossToLeaderboardEntry(loser, loserNewRating);
+        const winnerRating = winner.rating
+        const loserRating = loser.rating
+        const expectedWinnerScore = 1 / (1 + 10 ** ((loserRating - winnerRating) / 400))
+        const expectedLoserScore = 1 / (1 + 10 ** ((winnerRating - loserRating) / 400))
+        const winnerNewRating = winnerRating + 32 * (1 - expectedWinnerScore)
+        const loserNewRating = loserRating + 32 * (0 - expectedLoserScore)
+        await this.addWinToLeaderboardEntry(winner, winnerNewRating)
+        await this.addLossToLeaderboardEntry(loser, loserNewRating)
     }
 
     async addMatchToLeaderboard(match: Match) {
-        const player1 = await this.findLeaderboardEntry(match.player1);
-        const player2 = await this.findLeaderboardEntry(match.player2);
+        const player1 = await this.findLeaderboardEntry(match.player1)
+        const player2 = await this.findLeaderboardEntry(match.player2)
         if (match.score1 == 10) {
-            await this.assignWinnerAndLoser(player1, player2);
+            await this.assignWinnerAndLoser(player1, player2)
         } else {
-            await this.assignWinnerAndLoser(player2, player1);
+            await this.assignWinnerAndLoser(player2, player1)
         }
     }
 
-    async assignPracticeMatchType(
-        type: Difficulty,
-        player: Leaderboard,
-        addScore: number,
-    ) {
+    async assignPracticeMatchType(type: Difficulty, player: Leaderboard, addScore: number) {
         switch (type) {
             case Difficulty.EASY:
-                player.practiceEasyWins += addScore;
-                player.practiceEasyPlayed++;
-                break;
+                player.practiceEasyWins += addScore
+                player.practiceEasyPlayed++
+                break
             case Difficulty.NORMAL:
-                player.practiceNormalWins += addScore;
-                player.practiceNormalPlayed++;
-                break;
+                player.practiceNormalWins += addScore
+                player.practiceNormalPlayed++
+                break
             case Difficulty.HARD:
-                player.practiceHardWins += addScore;
-                player.practiceHardPlayed++;
-                break;
+                player.practiceHardWins += addScore
+                player.practiceHardPlayed++
+                break
             case Difficulty.EXPERT:
-                player.practiceExpertWins += addScore;
-                player.practiceExpertPlayed++;
-                break;
+                player.practiceExpertWins += addScore
+                player.practiceExpertPlayed++
+                break
         }
-        return await this.leaderboardRepository.save(player);
+        return await this.leaderboardRepository.save(player)
     }
 
     async addPracticeMatchToLeaderboard(practiceMatch: PracticeMatch) {
-        const player = await this.findLeaderboardEntry(practiceMatch.player);
+        const player = await this.findLeaderboardEntry(practiceMatch.player)
         if (practiceMatch.score1 == practiceMatch.winningCondition) {
-            await this.assignPracticeMatchType(
-                practiceMatch.difficulty,
-                player,
-                1,
-            );
+            await this.assignPracticeMatchType(practiceMatch.difficulty, player, 1)
         } else {
-            await this.assignPracticeMatchType(
-                practiceMatch.difficulty,
-                player,
-                0,
-            );
+            await this.assignPracticeMatchType(practiceMatch.difficulty, player, 0)
         }
     }
 }

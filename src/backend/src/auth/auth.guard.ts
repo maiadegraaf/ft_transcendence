@@ -20,7 +20,7 @@ export class FortyTwoAuthGuard extends AuthGuard('42') {
 }
 
 @Injectable()
-export class websocketGuard implements CanActivate {
+export class WebSocketGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToWs().getClient().request;
         if (request.session) {

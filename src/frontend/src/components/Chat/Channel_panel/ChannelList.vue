@@ -14,7 +14,7 @@
 <script lang="ts">
 import { useChatStore } from '@/store/channel.store'
 import { defineComponent } from 'vue'
-import ChannelTile from '@/components/Chat/ChannelTile.vue'
+import ChannelTile from '@/components/Chat/Channel_panel/ChannelTile.vue'
 
 export default defineComponent({
     name: 'ChannelList',

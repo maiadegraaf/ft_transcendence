@@ -154,14 +154,6 @@ export class UserService {
     async addSocketIdToUser(user: User, socketId: string): Promise<any> {
         if (user.socketId) {
             // add logic here if user is in a match or waitlist.
-            console.log(
-                'Replacing socketId ' +
-                    user.socketId +
-                    ' with ' +
-                    socketId +
-                    ' for user ' +
-                    user.login,
-            );
         }
         user.socketId = socketId;
         return this.userRepository.save(user);
@@ -391,6 +383,19 @@ export class UserService {
             });
         if (!user) {
             throw new BadRequestException(`User with id ${userId} not found`);
+        }
+        return user.blockedUsers;
+    }
+
+    async getBlockedUsersForUser(userId: number): Promise<any> {
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id = :id', { id: userId })
+            .leftJoin('user.blockedUsers', 'blockedUsers')
+            .addSelect('blockedUsers.id')
+            .getOne();
+        if (!user) {
+            return null;
         }
         return user.blockedUsers;
     }

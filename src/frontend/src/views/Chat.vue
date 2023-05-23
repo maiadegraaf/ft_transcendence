@@ -1,5 +1,5 @@
 <template>
-    <Nav />
+    <NavBar />
     <div class="w-full box-border h-[calc(100vh-4rem)] flex">
         <div
             class="w-1/4 min-w-[300px] flex flex-col border-t-4 border-r-4 border-double border-buff"
@@ -14,22 +14,20 @@
 </template>
 
 <script lang="ts">
-import Nav from '@/components/Nav.vue'
-import MessageList from '@/components/Chat/MessageList.vue'
-import ChannelList from '@/components/Chat/ChannelList.vue'
-import GroupSettings from '@/components/Chat/GroupSettings.vue'
+import NavBar from '@/components/NavBar.vue'
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
+import ChannelList from '@/components/Chat/Channel_panel/ChannelList.vue'
+import GroupSettings from '@/components/Chat/Group_panel/GroupSettings.vue'
 import { useChatStore } from '@/store/channel.store'
-import type { IMessage, IChannels } from '@/types/types'
-import MessageInput from '@/components/Chat/MessageInput.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
-import ChannelHeader from '@/components/Chat/ChannelHeader.vue'
-import NoChannelSelected from '@/components/Chat/NoChannelSelected.vue'
+import ChannelHeader from '@/components/Chat/Channel_panel/ChannelHeader.vue'
+import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
 
 export default defineComponent({
     components: {
         ChannelHeader,
-        Nav,
+        NavBar,
         MessageList,
         ChannelList,
         GroupSettings
@@ -47,29 +45,9 @@ export default defineComponent({
         const userStore = useUserStore()
         return { chatStore, userStore }
     },
-
-    mounted() {
-        // this.userStore.socket.on('msgToClient', (message: IMessage) => {
-        //   console.log("Message recieved!")
-        //   this.chatStore.receivedMessage(message)
-        // })
-        // this.userStore.socket.on('addChannelToClient', (channel: IChannels) => {
-        //   console.log("Channel recieved!")
-        //   this.chatStore.receivedNewChannel(channel)
-        // })
-        // this.userStore.socket.on('removeChannelFromClient', (channelId: number) => {
-        //   console.log("Channel removed request!")
-        //   this.chatStore.removeChannel(channelId)
-        // })
-    },
-    watch: {},
-    // The methods of the Vue instance.
     methods: {
         changeComponent(component: any): void {
             this.currentComponent = component
-            // if (groupName) {
-            //
-            // }
         }
     },
     // The created hook of the Vue instance.
