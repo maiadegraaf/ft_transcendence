@@ -74,9 +74,9 @@ export default defineComponent({
             }
         })
     },
-    beforeRouteLeave(next: any) {
+    beforeRouteLeave(to, from, next: any) {
         console.log('Leaving pong game...')
-        this.userStore.socket.emit('disconnect')
+        // this.userStore.socket.emit('disconnect')
         next()
     },
     methods: {

@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 // import { Avatar } from 'src/user/entities/avatar.entity';
 import { Message } from './chat/entities/message.entity';
@@ -24,6 +25,7 @@ import { MutedTime } from './chat/entities/mutedTime.enitity';
 
 @Module({
     imports: [
+        ConfigModule.forRoot(),
         PassportModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
