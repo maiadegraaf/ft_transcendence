@@ -190,8 +190,7 @@ export class UserController {
     async blockUser(@Param('id', ParseIntPipe) friendID: number, @Req() req: any) {
         const userID = req.session.user.id
         try {
-            await this.userService.blockUser(userID, friendID)
-            return await this.userService.blockUser(friendID, userID)
+            return await this.userService.blockUser(userID, friendID)
         } catch (error) {
             console.log(error)
             if (error instanceof HttpException) {
@@ -206,8 +205,7 @@ export class UserController {
     async unblockUser(@Param('id', ParseIntPipe) friendID: number, @Req() req: any) {
         const userID = req.session.user.id
         try {
-            await this.userService.unblockUser(userID, friendID)
-            return await this.userService.unblockUser(friendID, userID)
+            return await this.userService.unblockUser(userID, friendID)
         } catch (error) {
             console.log(error)
             if (error instanceof HttpException) {
