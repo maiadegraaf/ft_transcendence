@@ -33,3 +33,6 @@
 * [ ] if you are in group settings, and you want to access a different
 group setting then the old group setting is still active
 * [x] blocking the sockets not correctly
+* [ ] leave group is not working with multiple people
+* [ ] delete group is not working with multiple people
+* [x] add a user to a group with same name should not work
