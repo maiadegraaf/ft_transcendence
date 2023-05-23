@@ -131,7 +131,7 @@ export default defineComponent({
                     return
                 })
             this.userText = ''
-          this.searchResult = null
+            this.searchResult = null
         },
         deleteGroup(): void {
             this.params.userName = this.userStore.name

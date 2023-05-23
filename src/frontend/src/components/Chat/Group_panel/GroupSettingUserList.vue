@@ -62,14 +62,12 @@ import { defineComponent } from 'vue'
 import { useChatStore } from '@/store/channel.store'
 import { useUserStore } from '@/store/user.store'
 import axios from 'axios'
-import type {IUser} from "@/types/types";
-import type {IProfile} from "@/types/types";
-import SetPassword from "@/components/Chat/SetPassword.vue";
+import type { IUser } from '@/types/types'
+import type { IProfile } from '@/types/types'
 
 export default defineComponent({
     name: 'GroupSettingUserList',
-  components: {SetPassword},
-  setup() {
+    setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()
         return { chatStore, userStore }
@@ -79,11 +77,12 @@ export default defineComponent({
             params: {
                 userName: '',
                 groupId: 0,
-                channelId: 0,
+                channelId: 0
             },
         }
     },
     async mounted() {
+        this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
         this.params.groupId = this.chatStore.getChannelGroupId    },
     computed: {

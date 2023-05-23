@@ -1,5 +1,5 @@
 <template>
-    <div class="text-buff flex h-16 justify-between items-center mb-4">
+    <div class="text-buff flex h-20 justify-between items-center pb-4 bg-dark-purple">
         <div @click="$router.push('/profile/' + user.id)" class="flex items-center cursor-pointer">
             <img
                 :src="`/api/user/${user.id}/avatar`"

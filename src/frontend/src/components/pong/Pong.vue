@@ -28,7 +28,7 @@
             Join Match
         </button>
         <div v-if="waiting">
-            <waiting-room
+            <WaitingRoom
                 :socket="user.socket"
                 :userId="user.id"
                 @leave-matchmaking="leaveMatchmaking"

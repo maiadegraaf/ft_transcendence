@@ -83,16 +83,16 @@ export default defineComponent({
             }
         },
         async blockUser(friendId: number) {
-          try {
-            await axios.post(`/api/user/block/${friendId}`)
-            window.location.reload()
-          } catch (error: any) {
-            if (error.response) {
-              this.searchError = error.response.data.message
-            } else {
-              this.searchError = `An error occured. Please try again later.`
+            try {
+                await axios.post(`/api/user/block/${friendId}`)
+                window.location.reload()
+            } catch (error: any) {
+                if (error.response) {
+                    this.searchError = error.response.data.message
+                } else {
+                    this.searchError = `An error occured. Please try again later.`
+                }
             }
-          }
         }
     }
 })
