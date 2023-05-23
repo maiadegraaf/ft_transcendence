@@ -14,12 +14,12 @@
                 @opponent-found="opponentFound"
             />
         </div>
-        <div v-if="startMatch">
+        <div v-else>
             <Match :socket="userStore.socket" :match-id="matchId" @reset="reset" />
         </div>
     </div>
     <div>
-        <ErrorPopUp ref="errorPopUp" />
+      <ErrorPopUp v-if="error" :message="msg" @hide-popup="hidePopup"/>
     </div>
 </template>
 
@@ -45,6 +45,8 @@ export default defineComponent({
     },
     data(): any {
         return {
+            msg: '',
+            error: false,
             startMatch: false,
             waiting: true,
             matchId: 0,
@@ -63,23 +65,21 @@ export default defineComponent({
     },
     async mounted() {
         this.userStore.socket.on('MultipleConnections', (msg: string) => {
-            this.$refs.errorPopUp.show('You are already ' + msg)
+            // this.$refs.errorPopUp.show('You are already ' + msg)
+            this.msg = 'You are already ' + msg
+            this.error = true
             this.reset()
-        })
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                console.log('Disconnecting...')
-                this.userStore.socket.emit('disconnect')
-            }
         })
     },
     beforeRouteLeave(to, from, next: any) {
         console.log('Leaving pong game...')
-        // this.userStore.socket.emit('disconnect')
+        this.userStore.socket.emit('disconnectUser')
         next()
     },
     methods: {
+        hidePopup() {
+            this.error = false
+        },
         reset() {
             this.startedBy = ''
             this.startMatch = false
@@ -90,15 +90,11 @@ export default defineComponent({
                 name: 'Chat'
             })
         },
-        matchmakingError() {
-            this.$refs.errorPopUp.show('You cannot join a match in multiple tabs or windows.')
-            this.reset()
-        },
         opponentFound(matchId: number) {
-            this.matchId = matchId
-            this.startedBy = this.userStore.id
-            this.startMatch = true
-            console.log('Opponent found' + this.startMatch)
+          console.log('Opponent found ' + this.startMatch)
+          this.matchId = matchId
+          this.startedBy = this.userStore.id
+          this.startMatch = true
         }
     }
 })

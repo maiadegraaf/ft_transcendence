@@ -10,6 +10,7 @@
                 />
             </div>
             <button
+                v-if="chatStore.dmId != -1"
                 @click="sendInvite"
                 class="ml-3 text-buff hover:opacity-60 transition-all font-semibold"
             >

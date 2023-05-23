@@ -1,6 +1,6 @@
 <template>
     <transition name="ErrorPopUp">
-        <div v-if="showPopup" class="fixed inset-0 flex items-center justify-center">
+        <div class="fixed inset-0 flex items-center justify-center">
             <div class="fixed inset-0 bg-dark-purple opacity-50"></div>
             <div
                 class="relative w-1/3 bg-blush rounded-lg border-4 border-amaranth-purple border-solid shadow-lg text-white flex flex-col items-center justify-center p-8"
@@ -27,19 +27,10 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    data() {
-        return {
-            showPopup: false,
-            message: ''
-        }
-    },
+    props: ['message'],
     methods: {
-        show(message: any) {
-            this.message = message
-            this.showPopup = true
-        },
         hidePopup() {
-            this.showPopup = false
+            this.$emit('hide-popup')
         }
     }
 })

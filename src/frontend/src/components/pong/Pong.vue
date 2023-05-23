@@ -40,7 +40,7 @@
         </div>
     </div>
     <div>
-        <ErrorPopUp ref="errorPopUp" />
+      <ErrorPopUp  v-if="error" :message="msg" @hide-popup="hidePopup"/>
     </div>
 </template>
 
@@ -69,6 +69,8 @@ export default defineComponent({
     },
     data(): any {
         return {
+          error: false,
+          msg: '',
             // currentPlayerId: user.id,
             practiceMode: false,
             practiceSettings: {
@@ -101,24 +103,30 @@ export default defineComponent({
         }
     },
     async mounted() {
-        this.user.socket.on('MultipleConnections', (msg: string) => {
-            this.$refs.errorPopUp.show('You are already ' + msg)
-            this.reset()
-        })
+      this.user.socket.on('MultipleConnections', (msg: string) => {
+        // this.$refs.errorPopUp.show('You are already ' + msg)
+        this.msg = 'You are already ' + msg
+        console.log('You are already ' + msg)
+        this.error = true
+        this.reset()
+      })
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                console.log('Disconnecting...')
-                this.user.socket.emit('disconnect')
-            }
-        })
+        // document.addEventListener('visibilitychange', () => {
+        //     if (document.visibilityState === 'hidden') {
+        //         console.log('Disconnecting...')
+        //         this.user.socket.emit('disconnectUser')
+        //     }
+        // })
     },
     beforeRouteLeave(to: any, from: any, next: any) {
         console.log('Leaving pong game...')
-        this.user.socket.emit('disconnect')
+        this.user.socket.emit('disconnectUser')
         next()
     },
     methods: {
+        hidePopup() {
+          this.error = false
+        },
         setPracticeMode() {
             this.practiceMode = true
         },
@@ -141,10 +149,6 @@ export default defineComponent({
         leaveMatchmaking() {
             this.waiting = false
             this.user.socket.emit('leaveMatchmaking')
-        },
-        matchmakingError() {
-            this.$refs.errorPopUp.show('You cannot join a match in multiple tabs or windows.')
-            this.reset()
         },
         opponentFound(matchId: number) {
             console.log(matchId)
