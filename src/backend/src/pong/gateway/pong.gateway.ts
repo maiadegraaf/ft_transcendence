@@ -22,7 +22,7 @@ export class PongGateway implements OnGatewayDisconnect {
 
     @WebSocketServer() server: Server;
 
-    @SubscribeMessage('disconnect')
+    @SubscribeMessage('disconnectUser')
     handleDisconnectMessage(@ConnectedSocket() client: Socket): void {
         this.pongService.handleDisconnect(client);
     }

@@ -109,11 +109,11 @@ export class PongService {
         }
         this.matchmakingList.push(newPlayer);
         if (this.matchmakingList.length > 1) {
-            await this.createMatch(
-                client,
-                this.matchmakingList.pop(),
-                this.matchmakingList.pop(),
-            );
+            const opponent = this.matchmakingList.pop();
+            const sender = this.matchmakingList.pop();
+            await this.createMatch(client, opponent, sender);
+            this.matchmakingList.splice(opponent.id, 1);
+            this.matchmakingList.splice(sender.id, 1);
         }
     }
 
@@ -130,12 +130,46 @@ export class PongService {
                 return;
             }
             console.log('new player' + newPlayer);
-            this.matchmakingOneVOneList.push(newPlayer);
-            if (this.matchmakingOneVOneList.length > 1) {
+            if (
+                !this.matchmakingOneVOneList.find(
+                    (item) => item.id === newPlayer.id,
+                )
+            ) {
+                console.log('pushing new player');
+                console.log(newPlayer);
+                this.matchmakingOneVOneList.push(newPlayer);
+            }
+            if (
+                this.matchmakingOneVOneList.find(
+                    (item) => item.id === opponentId,
+                ) &&
+                this.matchmakingOneVOneList.find((item) => item.id === senderId)
+            ) {
+                console.log('creating match 2 users in');
                 await this.createMatch(
                     client,
-                    this.matchmakingOneVOneList.pop(),
-                    this.matchmakingOneVOneList.pop(),
+                    this.matchmakingOneVOneList.find(
+                        (item) => item.id === opponentId,
+                    ),
+                    this.matchmakingOneVOneList.find(
+                        (item) => item.id === senderId,
+                    ),
+                );
+                this.matchmakingOneVOneList.splice(
+                    this.matchmakingOneVOneList.indexOf(
+                        this.matchmakingOneVOneList.find(
+                            (item) => item.id === opponentId,
+                        ),
+                    ),
+                    1,
+                );
+                this.matchmakingOneVOneList.splice(
+                    this.matchmakingOneVOneList.indexOf(
+                        this.matchmakingOneVOneList.find(
+                            (item) => item.id === senderId,
+                        ),
+                    ),
+                    1,
                 );
             }
         }
