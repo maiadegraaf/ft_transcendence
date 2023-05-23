@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Profile from '../views/Profile.vue'
 import Login from '../views/Login.vue'
-import Chat from '../views/Chat.vue'
+import ChatView from '../views/ChatView.vue'
 import viewfour from '../views/404.vue'
 import PongGame from '../views/PongGame.vue'
 import TwoFA from '../views/2fa.vue'
@@ -26,7 +26,7 @@ const router = createRouter({
         {
             path: '/Chat',
             name: 'Chat',
-            component: Chat
+            component: ChatView
         },
         {
             path: '/2fa',

@@ -30,7 +30,7 @@ export const useChatStore = defineStore('userChannel', {
             }
             return channelIV.users
         },
-        getChannelGroupId(): number {
+        getCurrentGroupId(): number {
             const channelIV = this.getChannelInView
             return channelIV?.profile?.id ?? this.groupId
         },

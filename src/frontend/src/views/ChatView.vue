@@ -25,6 +25,7 @@ import ChannelHeader from '@/components/Chat/Channel_panel/ChannelHeader.vue'
 import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
 
 export default defineComponent({
+    name: 'ChatView',
     components: {
         ChannelHeader,
         NavBar,

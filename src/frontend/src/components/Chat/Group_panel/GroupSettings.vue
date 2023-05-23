@@ -14,17 +14,6 @@
             </button>
         </div>
         <GroupSettingUserList />
-        <!-- <div class="flex-1 w-full overflow-hidden">
-            <h2>Users</h2>
-            <input
-                v-model="userText"
-                placeholder="enter user name"
-                class="w-full focus:outline-none"
-            />
-            <button @click="addUser">add user</button>
-            <div></div>
-            <button @click="deleteUser">delete user</button>
-        </div> -->
         <div class="flex flex-col pt-10 items-center justify-center">
             <label class="text-xl text-buff mb-1 font-semibold uppercase">
                 Add new groupmembers by username:
@@ -100,14 +89,10 @@ export default defineComponent({
         }
     },
     async mounted() {
-        this.userName = this.userStore.name
         this.groupName = this.chatStore.getChannelName
         this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.getChannelGroupId
-        // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-        // console.log(this.channelUsers)
-        // console.log(this.profile)
+        this.params.groupId = this.chatStore.getCurrentGroupId
     },
     methods: {
         doneGroup(): void {
@@ -144,7 +129,6 @@ export default defineComponent({
                     if (response.data == true) {
                         this.doneGroup()
                     }
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)
@@ -169,24 +153,6 @@ export default defineComponent({
                 this.searchError = `No user found with username "${this.userText}"`
             }
         }
-
-        // getRole(user: IUser): string {
-        //   let str = ''
-        //
-        //   const profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-        //   if (profile) {
-        //     if (profile.owner.id === user.id) {
-        //       str += ' | (Owner)'
-        //     }
-        //     if (profile.admin.find((adm) => adm.id === user.id)) {
-        //       str +=  ' | (Admin)'
-        //     }
-        //     if (profile.muted.find((mtd) => mtd.id === user.id)) {
-        //       str +=  ' | (Muted)';
-        //     }
-        //   }
-        //   return str;
-        // },
     },
     created() {}
 })

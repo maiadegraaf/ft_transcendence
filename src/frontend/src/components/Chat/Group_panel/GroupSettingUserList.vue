@@ -27,7 +27,7 @@
                     <div
                         v-if="
                             (userStore.owner || userStore.admin) &&
-                            userStore.id != user.id
+                            userStore.id !== user.id
                         "
                         class="space-x-4"
                     >
@@ -64,11 +64,9 @@ import { useUserStore } from '@/store/user.store'
 import axios from 'axios'
 import type {IUser} from "@/types/types";
 import type {IProfile} from "@/types/types";
-import SetPassword from "@/components/Chat/SetPassword.vue";
 
 export default defineComponent({
-    name: 'GroupSettingUserList',
-  components: {SetPassword},
+  name: 'GroupSettingUserList',
   setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()
@@ -87,7 +85,8 @@ export default defineComponent({
     async mounted() {
         this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.getChannelGroupId    },
+        this.params.groupId = this.chatStore.getCurrentGroupId
+    },
     computed: {
       getUsersWithRoles(): IUser[] | null {
           const users = this.chatStore.getCurrentUsers
@@ -126,7 +125,7 @@ export default defineComponent({
         this.params.userName = login
         axios
             .delete('/api/chat/group/admin', { data: this.params })
-            .then((response) => {
+            .then(() => {
             })
             .catch((error) => {
               console.log(error)
@@ -184,22 +183,16 @@ export default defineComponent({
             })
       },
       checkOwner(user: IUser, profile: IProfile) {
-        if (profile.owner.id === user.id) {
-          return true
-        }
-        return false
+        return profile.owner.id === user.id;
+
       },
       checkAdmin(user: IUser, profile: IProfile) {
-        if (profile.admin.find((adm) => adm.id === user.id)) {
-          return true
-        }
-        return false
+        return !!profile.admin.find((adm) => adm.id === user.id);
+
       },
       checkMuted(user: IUser, profile: IProfile) {
-        if (profile.muted.find((mtd) => mtd.id === user.id)) {
-          return true
-        }
-        return false
+        return !!profile.muted.find((mtd) => mtd.id === user.id);
+
       },
       getRoleStr(user: IUser) {
         let str = ''

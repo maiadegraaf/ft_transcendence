@@ -26,9 +26,8 @@
 </template>
 
 <script lang="ts">
-import { useChatStore } from '../../store/channel.store'
+import { useChatStore } from '@/store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { EGroupChannelType } from '@/types/types'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
@@ -40,11 +39,9 @@ export default defineComponent({
     components: {
         ChevronLeftIcon
     },
-    // props: ['chatStore']
     setup() {
         const chatStore = useChatStore()
         const user = useUserStore()
-        // chatStore.setupChatStore()
         return { chatStore, user }
     },
     data(): any {
@@ -70,7 +67,6 @@ export default defineComponent({
                 .post('/api/chat/group', param)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)

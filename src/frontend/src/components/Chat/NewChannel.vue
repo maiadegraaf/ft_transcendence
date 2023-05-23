@@ -65,16 +65,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!--                <button @click="newPrivateGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-                <!--                    Private-->
-                <!--                </button>-->
-                <!--                <button @click="newPublicGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-                <!--                    Public-->
-                <!--                </button>-->
-                <!--                <button @click="newProtectedGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-                <!--                    Protected-->
-                <!--                </button>-->
             </div>
             <div class="div_input_new_channel">
                 <input v-model="dmText" placeholder="Dm user..." class="input_new_channel" />
@@ -87,11 +77,10 @@
             </div>
         </div>
     </div>
-    <!--  search for existing public group-->
 </template>
 
 <script lang="ts">
-import { useChatStore } from '../../store/channel.store'
+import { useChatStore } from '@/store/channel.store'
 import axios from 'axios'
 import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
@@ -115,7 +104,6 @@ export default defineComponent({
     setup() {
         const chatStore = useChatStore()
         const user = useUserStore()
-        // chatStore.setupChatStore()
         return { chatStore, user }
     },
     data(): any {
@@ -125,7 +113,6 @@ export default defineComponent({
             dmText: '',
             groupText: '',
             joinGroupText: ''
-            // passwordText: '',
         }
     },
     mounted() {
@@ -133,7 +120,6 @@ export default defineComponent({
     },
     methods: {
         createGroup(): void {
-            console.log(this.checkedBox)
             if (this.checkedBox == Form.PRIVATE) {
                 this.newPrivateGroupChannel()
             } else if (this.checkedBox == Form.PUBLIC) {
@@ -154,7 +140,7 @@ export default defineComponent({
             }
             axios.post('/api/chat/dm', param)
             this.dmText = ''
-            // setchannel in view
+            // set channel in view
             this.$emit('switch-chat-right-component', MessageList)
         },
         joinGroup(): void {
@@ -176,12 +162,10 @@ export default defineComponent({
                     console.log('groupId: ', response.data.groupId)
                     this.chatStore.setGroupId(response.data.groupId)
                     if (response.data.type == EGroupChannelType.PROTECTED) {
-                        console.log('kamaan')
                         this.$emit('switch-chat-right-component', EnterPassword)
                         this.joinGroupText = ''
                         return
                     }
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     this.joinGroupText = ''
@@ -206,14 +190,13 @@ export default defineComponent({
                 .post('/api/chat/group', param)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)
                     return
                 })
             this.groupText = ''
-            // setchannel in view
+            // set channel in view
             this.$emit('switch-chat-right-component', MessageList)
         },
         newPublicGroupChannel(): void {
@@ -232,7 +215,6 @@ export default defineComponent({
                 .post('/api/chat/group', param)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)

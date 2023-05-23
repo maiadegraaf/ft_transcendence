@@ -41,7 +41,6 @@ export default defineComponent({
     data(): any {
         return {
             matchId: 0,
-            id: 0,
             text: '',
             sender: {
                 id: 0,
@@ -53,7 +52,6 @@ export default defineComponent({
     mounted() {
         this.sender.id = this.userStore.id
         this.sender.login = this.userStore.name
-        console.log(this.$data)
     },
     methods: {
         sendMessage(): void {
