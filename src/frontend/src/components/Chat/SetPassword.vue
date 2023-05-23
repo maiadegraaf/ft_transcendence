@@ -28,11 +28,12 @@
 <script lang="ts">
 import { useChatStore } from '../../store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/MessageList.vue'
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { EGroupChannelType } from '@/types/types'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import { defineComponent } from 'vue'
+import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
 
 export default defineComponent({
     name: 'SetPassword',
@@ -60,7 +61,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.chatStore.groupName,
                 type: EGroupChannelType.PROTECTED,
                 password: this.passwordText
@@ -77,11 +77,11 @@ export default defineComponent({
                 })
             this.passwordText = ''
             this.chatStore.setGroupName('')
-            this.$emit('switch-chat-right-component', MessageList)
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         },
         goBack(): void {
-            // leave chat reuqest
-            this.$emit('switch-chat-right-component', MessageList)
+            // leave chat request
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         }
     }
 })

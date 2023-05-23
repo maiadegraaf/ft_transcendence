@@ -1,11 +1,11 @@
 <script lang="ts">
-import Nav from '../components/Nav.vue'
+import NavBar from '../components/NavBar.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
     components: {
-        Nav
+        NavBar
     },
     setup() {
         const user = useUserStore()
@@ -16,7 +16,7 @@ export default defineComponent({
 
 <template>
     <div>
-        <Nav />
+        <NavBar />
         <main class="pb-16">
             <div v-if="user" class="mt-10 flex flex-col justify-center items-center">
                 <h1 class="text-buff text-5xl font-semibold">Welcome, {{ user.name }}</h1>

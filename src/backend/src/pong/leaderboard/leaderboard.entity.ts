@@ -1,55 +1,48 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from '../../user/user.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { User } from '../../user/user.entity'
 
 @Entity({ name: 'leaderboard' })
 export class Leaderboard {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number
 
     @JoinColumn()
     @OneToOne(() => User)
-    user: User;
+    user: User
 
     @Column({ default: 1000 })
-    rating: number;
+    rating: number
 
     @Column({ default: 0 })
-    wins: number;
+    wins: number
 
     @Column({ default: 0 })
-    losses: number;
+    losses: number
 
     @Column({ default: 0 })
-    winStreak: number;
+    winStreak: number
 
     @Column({ default: 0 })
-    practiceEasyPlayed: number;
+    practiceEasyPlayed: number
 
     @Column({ default: 0 })
-    practiceEasyWins: number;
+    practiceEasyWins: number
 
     @Column({ default: 0 })
-    practiceNormalPlayed: number;
+    practiceNormalPlayed: number
 
     @Column({ default: 0 })
-    practiceNormalWins: number;
+    practiceNormalWins: number
 
     @Column({ default: 0 })
-    practiceHardPlayed: number;
+    practiceHardPlayed: number
 
     @Column({ default: 0 })
-    practiceHardWins: number;
+    practiceHardWins: number
 
     @Column({ default: 0 })
-    practiceExpertPlayed: number;
+    practiceExpertPlayed: number
 
     @Column({ default: 0 })
-    practiceExpertWins: number;
+    practiceExpertWins: number
 }

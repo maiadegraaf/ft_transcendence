@@ -62,8 +62,8 @@ import { defineComponent } from 'vue'
 import { useChatStore } from '@/store/channel.store'
 import { useUserStore } from '@/store/user.store'
 import axios from 'axios'
-import type {IUser} from "@/types/types";
-import type {IProfile} from "@/types/types";
+import type { IUser } from '@/types/types'
+import type { IProfile } from '@/types/types'
 
 export default defineComponent({
     name: 'GroupSettingUserList',
@@ -75,7 +75,6 @@ export default defineComponent({
     data(): any {
         return {
             params: {
-                userId: 0,
                 userName: '',
                 groupId: 0,
                 channelId: 0

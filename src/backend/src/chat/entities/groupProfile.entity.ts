@@ -7,49 +7,49 @@ import {
     ManyToOne,
     OneToMany,
     OneToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Channel } from './channel.entity';
-import { User } from '../../user/user.entity';
-import { EGroupChannelType } from '../dtos/chat.dtos';
-import { MutedTime } from './mutedTime.enitity';
+    PrimaryGeneratedColumn
+} from 'typeorm'
+import { Channel } from './channel.entity'
+import { User } from '../../user/user.entity'
+import { EGroupChannelType } from '../dtos/chat.dtos'
+import { MutedTime } from './mutedTime.enitity'
 
 // @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 @Entity()
 export class GroupProfile {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number
 
     @JoinColumn()
     @OneToOne(() => Channel, (channel) => channel.profile, { nullable: true })
-    channel: Channel;
+    channel: Channel
 
     @JoinColumn()
     @ManyToOne(() => User, (owner) => owner.groupProfile)
-    owner: User;
+    owner: User
 
     @Column({ nullable: true })
-    name: string;
+    name: string
 
     @JoinTable()
     @ManyToMany(() => User, (admin) => admin.groupProfile)
-    admin: User[];
+    admin: User[]
 
     @JoinTable()
     @ManyToMany(() => User, (usr) => usr.blocked)
-    blocked: User[];
+    blocked: User[]
 
     @JoinTable()
     @ManyToMany(() => User, (usr) => usr.muted)
-    muted: User[];
+    muted: User[]
 
     @JoinTable()
     @ManyToMany(() => MutedTime, (mt) => mt.groupProfile)
-    mutedTime: MutedTime[];
+    mutedTime: MutedTime[]
 
     @Column({ nullable: true })
-    type: EGroupChannelType;
+    type: EGroupChannelType
 
     @Column({ nullable: true })
-    password: string;
+    password: string
 }

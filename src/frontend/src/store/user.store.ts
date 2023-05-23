@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', {
     }),
 
     actions: {
+        //Load user data from server
         async loadUser() {
             await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
                 this.name = response.data.login
@@ -23,8 +24,11 @@ export const useUserStore = defineStore('user', {
             this.socket = socket
             this.socket.emit('bind', this.id)
             await useChatStore().loadChannels()
+            this.socket.emit('joinRooms')
             await this.listen()
         },
+
+        //Listeners for server-sent socket events
         async listen() {
             const chatStore = useChatStore()
             this.socket.on('msgToClient', (message: IMessage) => {
@@ -55,7 +59,6 @@ export const useUserStore = defineStore('user', {
             this.socket.on('removeAdminFromChannel', (payload: any) => {
                 chatStore.removeAdminFromChannel(payload.channelId, payload.user)
                 console.log('Admin removed from channel!')
-
             })
             this.socket.on('addMutedToChannel', (payload: any) => {
                 chatStore.addMutedToChannel(payload.channelId, payload.user)
@@ -67,6 +70,7 @@ export const useUserStore = defineStore('user', {
             })
         },
 
+        //Logout
         logOut() {
             this.socket = null
             this.name = ''

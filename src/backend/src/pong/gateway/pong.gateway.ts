@@ -1,7 +1,6 @@
 import {
     ConnectedSocket,
     MessageBody,
-    OnGatewayConnection,
     OnGatewayDisconnect,
     SubscribeMessage,
     WebSocketGateway,
@@ -11,12 +10,12 @@ import { Server, Socket } from 'socket.io';
 import { PongService } from '../pong.service';
 import { Info } from '../interfaces/info.interface';
 import { UseGuards } from '@nestjs/common';
-import { websocketGuard } from '../../auth/auth.guard';
+import { WebSocketGuard } from '../../auth/auth.guard';
 
 @WebSocketGateway({
     cors: { origin: '*' },
 })
-@UseGuards(websocketGuard)
+@UseGuards(WebSocketGuard)
 export class PongGateway implements OnGatewayDisconnect {
     constructor(private readonly pongService: PongService) {}
 
@@ -32,11 +31,34 @@ export class PongGateway implements OnGatewayDisconnect {
         @ConnectedSocket() client: Socket,
         @MessageBody() userId: number,
     ): void {
+        console.log('joinMatchmaking');
+        console.log(userId);
         this.pongService.handleJoinMatchmaking(client, userId);
+    }
+
+    @SubscribeMessage('joinMatchmakingOneVOne')
+    handleJoinMatchmakingOneVOne(
+        @ConnectedSocket() client: Socket,
+        @MessageBody()
+        data: { userId: number; senderId: number; opponentId: number },
+    ): void {
+        console.log('joinMatchmakingOneVOne');
+        console.log(data.userId);
+        this.pongService.handleJoinMatchmakingOneVOne(
+            client,
+            data.userId,
+            data.senderId,
+            data.opponentId,
+        );
     }
 
     @SubscribeMessage('leaveMatchmaking')
     handleLeaveMatchmaking(@ConnectedSocket() client: Socket): void {
+        this.pongService.handleLeaveMatchmaking(client);
+    }
+
+    @SubscribeMessage('leaveMatchmakingOneVOne')
+    handleLeaveMatchmakingOneVOne(@ConnectedSocket() client: Socket): void {
         this.pongService.handleLeaveMatchmaking(client);
     }
 

@@ -11,11 +11,9 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         private userService: UserService,
     ) {
         super({
-            clientID:
-                'u-s4t2ud-43ce865ead13681d00d684457fd09e030cd0de64b10bdd7ab171af1030c9bfbf',
-            clientSecret:
-                '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',
-            callbackURL: 'http://localhost:8080/api/auth/42/callback',
+            clientID: process.env.FORTYTWO_APP_ID,
+            clientSecret: process.env.FORTYTWO_APP_SECRET,
+            callbackURL: process.env.FORTYTWO_APP_REDIRECT_URL,
             scope: ['public'],
         });
     }

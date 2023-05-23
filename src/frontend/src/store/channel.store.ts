@@ -5,9 +5,11 @@ import { useUserStore } from '@/store/user.store'
 export const useChatStore = defineStore('userChannel', {
     state: () => ({
         channels: [] as IChannels[] | null,
-        channelInView: 0 as number,
+        channelInView: -1 as number,
         dmId: -1 as number,
         dmName: '' as string,
+        groupName: '' as string,
+        groupId: -1 as number,
     }),
 
     getters: {
@@ -22,45 +24,42 @@ export const useChatStore = defineStore('userChannel', {
             return channelIV.messages
         },
         getCurrentUsers(): IUser[] | null {
-            const chnl = this.getChannelInView
-            if (chnl == null || chnl.profile == null) {
+            const channelIV = this.getChannelInView
+            if (channelIV == null || channelIV.profile == null) {
                 return null
             }
-            return chnl.users
+            return channelIV.users
         },
         getChannelGroupId(): number {
             const channelIV = this.getChannelInView
-            return channelIV?.profile?.id ?? 0
+            return channelIV?.profile?.id ?? this.groupId
         },
         getCurrentProfile(): IProfile | null {
-            const chnl = this.getChannelInView
-            if (chnl == null || chnl.profile == null) {
+            const channelIV = this.getChannelInView
+            if (channelIV == null || channelIV.profile == null) {
                 return null
             }
             console.log('profile changed');
-            const profile = chnl.profile;
+            const profile = channelIV.profile;
             return profile
         },
     },
 
     actions: {
+        //Load channels from server
         async loadChannels() {
-            const user = useUserStore()
-            const response = await fetch('http://localhost:8080/api/chat/' + user.id)
-            console.log(response)
+            const response = await fetch('http://localhost:8080/api/chat/')
             this.channels = await response.json()
             if (this.channels == null) {
                 return
             }
-            console.log(this.channels)
             this.channels.forEach((channel) => {
-                user.socket.emit('joinRoomById', { channelId: channel.id })
                 this.setChannelName(channel)
             })
         },
+
         setChannelName(channel: IChannels) {
             const userStore = useUserStore()
-            // console.log(channel)
             if (channel == null) { return '' }
             if (channel.profile == null) {
                 if (channel.users[0].id == userStore.id) {
@@ -72,7 +71,29 @@ export const useChatStore = defineStore('userChannel', {
                 channel.name = channel.profile.name
             }
         },
-        receivedMessage(message: IMessage) {
+
+        setDmId(dmId: number) {
+            this.dmId = dmId
+        },
+
+        setDmName(dmName: string) {
+            this.dmName = dmName
+        },
+
+        setGroupName(groupName: string) {
+            this.groupName = groupName
+        },
+
+        setGroupId(groupId: number) {
+            this.groupId = groupId
+        },
+
+        async setChannelInView(channelId: number) {
+            this.channelInView = channelId
+        },
+
+        //All socket events
+        async receivedMessage(message: IMessage) {
             if (this.channels == null) {
                 return
             }
@@ -86,15 +107,14 @@ export const useChatStore = defineStore('userChannel', {
             this.channels.unshift(channel as IChannels)
             this.channels.splice(channelIndex + 1, 1)
         },
-        async setChannelInView(channelId: number) {
-            this.channelInView = channelId
-        },
+
         async receivedNewChannel(channel: IChannels) {
             const user = useUserStore()
             this.setChannelName(channel)
             this.channels?.push(channel)
             user.socket.emit('joinRoomById', { channelId: channel.id })
         },
+
         async removeChannel(channelID: number) {
             const user = useUserStore()
             const index = this.channels?.findIndex((ch) => ch.id === channelID)
@@ -103,15 +123,19 @@ export const useChatStore = defineStore('userChannel', {
                 user.socket.emit('leaveRoomById', { channelId: channelID })
             }
         },
+
         async addUserToChannel(channelId: number, user: IUser) {
             this.channels?.find((channel) => channel.id === channelId)?.users.push(user)
         },
+
         async removeUserFromChannel(channelId: number, user: IUser) {
             this.channels?.find((channel) => channel.id === channelId)?.users?.splice(this.channels?.find((channel) => channel.id === channelId)?.users?.findIndex((u) => u.id === user.id) as number, 1)
         },
+
         async addAdminToChannel(channelId: number, user: IUser) {
             this.channels?.find((channel) => channel.id === channelId)?.profile?.admin.push(user)
         },
+
         async removeAdminFromChannel(channelId: number, user: IUser) {
             this.channels
                 ?.find((channel) => channel.id === channelId)
@@ -122,10 +146,12 @@ export const useChatStore = defineStore('userChannel', {
                     1
                 )
         },
+
         async addMutedToChannel(channelId: number, user: IUser) {
             this.channels?.find((channel) => channel.id === channelId)?.profile?.muted.push(user)
             console.log(this.channels?.find((channel) => channel.id === channelId)?.profile?.muted)
         },
+
         async removeMutedFromChannel(channelId: number, user: IUser) {
             this.channels
                 ?.find((channel) => channel.id === channelId)
@@ -136,12 +162,8 @@ export const useChatStore = defineStore('userChannel', {
                     1
                 )
         },
-        setDmId(dmId: number) {
-            this.dmId = dmId
-        },
-        setDmName(dmName: string) {
-            this.dmName = dmName
-        },
+
+        //Logout
         logOut() {
             this.channels = []
             this.channelInView = 0

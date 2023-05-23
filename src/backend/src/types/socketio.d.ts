@@ -1,4 +1,4 @@
-import { Session } from 'express-session';
+import { Session } from 'express-session'
 
 // import type { SessionIncomingMessage } from 'express-session';
 // import type { SessionData } from 'express-session';
@@ -30,12 +30,12 @@ declare module 'http' {
     interface IncomingMessage {
         session: Session & {
             user: {
-                id: number;
-                login: string;
-                email: string;
-                isTwoFactorAuthenticationEnabled: any;
-                twoFactorAuthenticationSecret: any;
-            };
-        };
+                id: number
+                login: string
+                email: string
+                isTwoFactorAuthenticationEnabled: any
+                twoFactorAuthenticationSecret: any
+            }
+        }
     }
 }

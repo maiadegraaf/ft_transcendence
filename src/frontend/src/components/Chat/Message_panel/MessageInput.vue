@@ -67,19 +67,13 @@ export default defineComponent({
         },
         sendInvite(): void {
             console.log('Sending invite')
-            this.userStore.socket.emit('bind', this.userStore.id)
             this.text = 'Invite'
             this.channel = this.chatStore.channelInView
             this.userStore.socket.emit('msgToServer', this.$data)
             this.userStore.socket.on('opponentFound', (matchId: number) => {
                 console.log('Opponent found')
                 console.log(matchId)
-                this.$router.push({
-                  name: 'Pong',
-                  params: {
-                    matchid: matchId
-                  }
-                })
+                this.$router.push({ name: 'Pong'})
             })
         }
     }

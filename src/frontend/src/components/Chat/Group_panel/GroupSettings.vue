@@ -64,13 +64,13 @@
 </template>
 
 <script lang="ts">
-import { useChatStore } from '../../store/channel.store'
+import { useChatStore } from '../../../store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/MessageList.vue'
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import { ChevronLeftIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import GroupSettingUserList from '@/components/Chat/GroupSettingUserList.vue'
+import GroupSettingUserList from '@/components/Chat/Group_panel/GroupSettingUserList.vue'
 
 interface User {
     id: number
@@ -80,7 +80,6 @@ interface User {
 export default defineComponent({
     name: 'GroupSettings',
     components: { GroupSettingUserList, ChevronLeftIcon, TrashIcon },
-    // props: ['chatStore']
     setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()
@@ -90,7 +89,6 @@ export default defineComponent({
         return {
             userText: '',
             params: {
-                userId: 0,
                 userName: '',
                 groupId: 0,
                 channelId: 0
@@ -103,7 +101,6 @@ export default defineComponent({
     async mounted() {
         this.userName = this.userStore.name
         this.groupName = this.chatStore.getChannelName
-        this.params.userId = this.userStore.id
         this.params.channelId = this.chatStore.channelInView
         this.params.groupId = this.chatStore.getChannelGroupId
         // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
@@ -127,7 +124,6 @@ export default defineComponent({
                 .post('/api/chat/group/user', this.params)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)
@@ -135,7 +131,7 @@ export default defineComponent({
                     return
                 })
             this.userText = ''
-          this.searchResult = null
+            this.searchResult = null
         },
         deleteGroup(): void {
             this.params.userName = this.userStore.name

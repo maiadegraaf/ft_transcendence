@@ -21,7 +21,6 @@
                     :to="{
                         name: 'Pong',
                         params: {
-                            userId: currentUserId,
                             matchid: matchId
                         }
                     }"

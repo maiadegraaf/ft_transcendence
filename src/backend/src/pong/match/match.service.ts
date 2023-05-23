@@ -71,4 +71,18 @@ export class MatchService {
             ],
         });
     }
+
+    async getNextMatchId(): Promise<number> {
+        const match = await this.MatchRepository.findOne({
+            where: {},
+            order: {
+                id: 'DESC',
+            },
+        });
+        if (match) {
+            return match.id + 1;
+        } else {
+            return 0;
+        }
+    }
 }

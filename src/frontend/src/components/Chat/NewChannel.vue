@@ -93,7 +93,7 @@
 <script lang="ts">
 import { useChatStore } from '../../store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/MessageList.vue'
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useUserStore } from '@/store/user.store'
 import { EGroupChannelType } from '@/types/types'
 import { defineComponent } from 'vue'
@@ -128,7 +128,9 @@ export default defineComponent({
             // passwordText: '',
         }
     },
-    async mounted() {},
+    mounted() {
+      this.chatStore.setChannelInView(-1)
+    },
     methods: {
         createGroup(): void {
             console.log(this.checkedBox)
@@ -161,7 +163,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.joinGroupText
             }
             axios
@@ -172,6 +173,7 @@ export default defineComponent({
                         this.$emit('switch-chat-right-component', MessageList)
                     }
                     console.log('groupId: ', response.data.groupId)
+                    this.chatStore.setGroupId(response.data.groupId)
                     if (response.data.type == EGroupChannelType.PROTECTED) {
                         console.log('kamaan')
                         this.$emit('switch-chat-right-component', EnterPassword)
@@ -194,7 +196,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.groupText,
                 type: EGroupChannelType.PRIVATE,
                 password: null
@@ -220,7 +221,6 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 groupName: this.groupText,
                 type: EGroupChannelType.PUBLIC,
                 password: null
@@ -236,7 +236,6 @@ export default defineComponent({
                     return
                 })
             this.groupText = ''
-            // setchannel in view
             this.$emit('switch-chat-right-component', MessageList)
         },
         newProtectedGroupChannel(): void {
