@@ -6,14 +6,14 @@
             </button>
             <h2 class="text-buff text-2xl font-semibold uppercase">settings</h2>
             <button
-                @click="deleteGroup"
+                @click="deleteGroup(getParams)"
                 class="hover:opacity-60 transition-opacity text-buff font-semibold"
                 alt="Delete Group"
             >
                 <TrashIcon class="h-8 w-8 text-buff" />
             </button>
         </div>
-        <GroupSettingUserList />
+        <GroupSettingUserList/>
         <div class="flex flex-col pt-10 items-center justify-center">
             <label class="text-xl text-buff mb-1 font-semibold uppercase">
                 Add new groupmembers by username:
@@ -32,7 +32,7 @@
                 <button
                     class="text-xs border rounded-md p-0.5 px-2 border-buff cursor-pointer hover:opacity-60 transition-opacity"
                     v-if="searchResult && !searchError"
-                    @click="addUser"
+                    @click="addUser(getParams)"
                 >
                     add
                 </button>
@@ -53,10 +53,9 @@
 </template>
 
 <script lang="ts">
-import { useChatStore } from '../../../store/channel.store'
+import { useChatStore } from '@/store/channel.store'
 import axios from 'axios'
 import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
-import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import { ChevronLeftIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import GroupSettingUserList from '@/components/Chat/Group_panel/GroupSettingUserList.vue'
@@ -71,42 +70,39 @@ export default defineComponent({
     components: { GroupSettingUserList, ChevronLeftIcon, TrashIcon },
     setup() {
         const chatStore = useChatStore()
-        const userStore = useUserStore()
-        return { chatStore, userStore }
+        return { chatStore }
     },
     data(): any {
         return {
             userText: '',
-            params: {
-                userName: '',
-                groupId: 0,
-                channelId: 0
-            },
-            groupName: '',
             searchError: '',
             searchResult: null as User | null
         }
     },
-    async mounted() {
-        this.groupName = this.chatStore.getChannelName
-        this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.getCurrentGroupId
+    computed: {
+      getParams(): any {
+        const params : any = {
+          channelId: this.chatStore.channelInView,
+          groupId: this.chatStore.getCurrentGroupId
+        }
+        return params
+      },
     },
     methods: {
         doneGroup(): void {
             this.$emit('switch-chat-right-component', MessageList)
         },
 
-        addUser(): void {
+        addUser(params: any): void {
             // Validates the input before sending the message.
             if (this.userText.length <= 0) {
                 this.userText = ''
                 return
             }
 
-            this.params.userName = this.userText
+            params.userName = this.userText
             axios
-                .post('/api/chat/group/user', this.params)
+                .post('/api/chat/group/user', params)
                 .then((response) => {
                     console.log(response)
                 })
@@ -118,10 +114,9 @@ export default defineComponent({
             this.userText = ''
             this.searchResult = null
         },
-        deleteGroup(): void {
-            this.params.userName = this.userStore.name
+        deleteGroup(params: any): void {
             axios
-                .delete('/api/chat/group', { data: this.params })
+                .delete('/api/chat/group', { data: params })
                 .then((response) => {
                     console.log(response)
                     if (response.data == true) {

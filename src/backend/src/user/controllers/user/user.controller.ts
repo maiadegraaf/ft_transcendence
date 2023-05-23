@@ -21,7 +21,6 @@ import {
 } from '@nestjs/common'
 import { CreateUserDto } from 'src/user/dtos/CreateUser.dto'
 import { UserService } from 'src/user/services/user/user.service'
-import { AuthGuard } from '@nestjs/passport'
 import { FortyTwoAuthGuard } from '../../../auth/auth.guard'
 import { User } from 'src/user/user.entity'
 import { Response } from 'express'

@@ -50,10 +50,6 @@ export default defineComponent({
             channel: 0
         }
     },
-    mounted() {
-        this.sender.id = this.userStore.id
-        this.sender.login = this.userStore.name
-    },
     methods: {
         sendMessage(): void {
             // Validates the input before sending the message.

@@ -89,6 +89,7 @@ export default defineComponent({
             this.$emit('switch-chat-right-component', MessageList)
         },
         groupSettings(channelId: number): void {
+            console.log('View changing: ', channelId)
             this.chatStore.setChannelInView(channelId)
             this.$emit('switch-chat-right-component', GroupSettings)
         }
