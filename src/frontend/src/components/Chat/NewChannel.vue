@@ -65,16 +65,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!--                <button @click="newPrivateGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-                <!--                    Private-->
-                <!--                </button>-->
-                <!--                <button @click="newPublicGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-                <!--                    Public-->
-                <!--                </button>-->
-                <!--                <button @click="newProtectedGroupChannel" class="rounded-full ml-3 hover:shadow-md">-->
-                <!--                    Protected-->
-                <!--                </button>-->
             </div>
             <div class="div_input_new_channel">
                 <input v-model="dmText" placeholder="Dm user..." class="input_new_channel" />
@@ -87,19 +77,17 @@
             </div>
         </div>
     </div>
-    <!--  search for existing public group-->
 </template>
 
 <script lang="ts">
-import { useChatStore } from '../../store/channel.store'
+import { useChatStore } from '@/store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
-import { useUserStore } from '@/store/user.store'
 import { EGroupChannelType } from '@/types/types'
 import { defineComponent } from 'vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import SetPassword from '@/components/Chat/SetPassword.vue'
 import EnterPassword from '@/components/Chat/EnterPassword.vue'
+import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
 
 const Form = {
     PRIVATE: 0,
@@ -114,9 +102,7 @@ export default defineComponent({
     },
     setup() {
         const chatStore = useChatStore()
-        const user = useUserStore()
-        // chatStore.setupChatStore()
-        return { chatStore, user }
+        return { chatStore }
     },
     data(): any {
         return {
@@ -125,7 +111,6 @@ export default defineComponent({
             dmText: '',
             groupText: '',
             joinGroupText: ''
-            // passwordText: '',
         }
     },
     mounted() {
@@ -133,7 +118,6 @@ export default defineComponent({
     },
     methods: {
         createGroup(): void {
-            console.log(this.checkedBox)
             if (this.checkedBox == Form.PRIVATE) {
                 this.newPrivateGroupChannel()
             } else if (this.checkedBox == Form.PUBLIC) {
@@ -149,13 +133,12 @@ export default defineComponent({
                 return
             }
             const param = {
-                userId: this.user.id,
                 invitee: this.dmText
             }
             axios.post('/api/chat/dm', param)
             this.dmText = ''
-            // setchannel in view
-            this.$emit('switch-chat-right-component', MessageList)
+            // set channel in view
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         },
         joinGroup(): void {
             if (this.joinGroupText.length <= 0) {
@@ -170,22 +153,20 @@ export default defineComponent({
                 .then((response) => {
                     console.log(response)
                     if (!response.data) {
-                        this.$emit('switch-chat-right-component', MessageList)
+                        this.$emit('switch-chat-right-component', NoChannelSelected)
                     }
                     console.log('groupId: ', response.data.groupId)
-                    this.chatStore.setGroupId(response.data.groupId)
+                    this.chatStore.setNewGroupId(response.data.groupId)
                     if (response.data.type == EGroupChannelType.PROTECTED) {
-                        console.log('kamaan')
                         this.$emit('switch-chat-right-component', EnterPassword)
                         this.joinGroupText = ''
                         return
                     }
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     this.joinGroupText = ''
                     console.log(error)
-                    this.$emit('switch-chat-right-component', MessageList)
+                    this.$emit('switch-chat-right-component', NoChannelSelected)
                     return
                 })
         },
@@ -204,15 +185,14 @@ export default defineComponent({
                 .post('/api/chat/group', param)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)
                     return
                 })
             this.groupText = ''
-            // setchannel in view
-            this.$emit('switch-chat-right-component', MessageList)
+            // set channel in view
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         },
         newPublicGroupChannel(): void {
             // Validates the input before sending the message.
@@ -229,26 +209,25 @@ export default defineComponent({
                 .post('/api/chat/group', param)
                 .then((response) => {
                     console.log(response)
-                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)
                     return
                 })
             this.groupText = ''
-            this.$emit('switch-chat-right-component', MessageList)
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         },
         newProtectedGroupChannel(): void {
             if (this.groupText.length <= 0) {
                 this.groupText = ''
                 return
             }
-            this.chatStore.setGroupName(this.groupText)
+            this.chatStore.setNewGroupName(this.groupText)
             this.$emit('switch-chat-right-component', SetPassword)
             this.groupText = ''
         },
         goBack(): void {
-            this.$emit('switch-chat-right-component', MessageList)
+            this.$emit('switch-chat-right-component', NoChannelSelected)
         }
     }
 })

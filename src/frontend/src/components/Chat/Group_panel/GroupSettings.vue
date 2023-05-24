@@ -16,11 +16,11 @@
                 class="hover:opacity-60 transition-opacity text-buff font-semibold"
                 alt="Delete Group"
             >
-              <TrashIcon class="h-8 w-8 text-buff" />
+                <TrashIcon class="h-8 w-8 text-buff" />
             </button>
           </div>
         </div>
-        <GroupSettingUserList />
+        <GroupSettingUserList/>
         <div class="flex flex-col pt-10 items-center justify-center">
             <label class="text-xl text-buff mb-1 font-semibold uppercase">
                 Add new groupmembers by username:
@@ -94,11 +94,14 @@ export default defineComponent({
             searchResult: null as User | null
         }
     },
-    async mounted() {
-        this.userName = this.userStore.name
-        this.groupName = this.chatStore.getChannelName
-        this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.getChannelGroupId
+    computed: {
+      getParams(): any {
+        const params : any = {
+          channelId: this.chatStore.channelInView,
+          groupId: this.chatStore.getCurrentGroupId
+        }
+        return params
+      },
     },
     methods: {
         doneGroup(): void {
@@ -135,6 +138,7 @@ export default defineComponent({
                     if (response.data == true) {
                         this.doneGroup()
                     }
+                    // this.redirectGroupPannel()
                 })
                 .catch((error) => {
                     console.log(error)

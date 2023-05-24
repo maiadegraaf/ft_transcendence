@@ -276,7 +276,7 @@ export class GroupProfileController {
             }
             await this.groupProfileService.deleteGroup(group)
             await this.channelService.deleteChannel(channel)
-            this.logger.log('deleteGroup: ' + param.userName)
+            this.logger.log('deleteGroup: ' + param.groupId)
             return true
         } catch (error) {
             this.logger.error(error)

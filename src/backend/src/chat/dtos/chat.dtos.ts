@@ -1,47 +1,47 @@
 export class MessageDto {
-    id: number;
+    id: number
     sender: {
-        id: number;
-        login: string;
-    };
-    channel: number;
-    text: string;
+        id: number
+        login: string
+    }
+    channel: number
+    text: string
 }
 
 export class JoinRoomDto {
-    userName: string;
-    channelId: number;
-    channelName: string;
+    userName: string
+    channelId: number
+    channelName: string
 }
 
 export class CreateDmChannelDto {
-    invitee: string;
+    invitee: string
 }
 
 export class CreateGroupChannelDto {
-    groupName: string;
-    type: EGroupChannelType;
-    password?: string;
+    groupName: string
+    type: EGroupChannelType
+    password?: string
 }
 
 export class GroupUserProfileUpdateDto {
-    userName: string;
-    groupId: number;
-    channelId: number;
+    userName: string
+    groupId: number
+    channelId: number
 }
 
 export class JoinGroupProtectedDto {
-    userName: string;
-    groupId: number;
-    password: string;
+    userName: string
+    groupId: number
+    password: string
 }
 
 export class JoinGroupDto {
-    groupName: string;
+    groupName: string
 }
 
 export enum EGroupChannelType {
     PRIVATE,
     PUBLIC,
-    PROTECTED,
+    PROTECTED
 }

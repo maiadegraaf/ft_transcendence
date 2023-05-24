@@ -27,7 +27,7 @@
                     <div
                         v-if="
                             (userStore.owner || userStore.admin) &&
-                            userStore.id != user.id
+                            userStore.id !== user.id
                         "
                         class="space-x-4"
                     >
@@ -66,26 +66,24 @@ import type { IUser } from '@/types/types'
 import type { IProfile } from '@/types/types'
 
 export default defineComponent({
-    name: 'GroupSettingUserList',
-    setup() {
+  name: 'GroupSettingUserList',
+  setup() {
         const chatStore = useChatStore()
         const userStore = useUserStore()
         return { chatStore, userStore }
     },
     data(): any {
-        return {
-            params: {
-                userName: '',
-                groupId: 0,
-                channelId: 0
-            },
-        }
+      return {
+      }
     },
-    async mounted() {
-        this.params.userId = this.userStore.id
-        this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.getChannelGroupId    },
     computed: {
+      getParams(): any {
+        const params : any = {
+          channelId: this.chatStore.channelInView,
+          groupId: this.chatStore.getCurrentGroupId
+        }
+        return params
+      },
       getUsersWithRoles(): IUser[] | null {
           const users = this.chatStore.getCurrentUsers
           const profile = this.chatStore.getCurrentProfile
@@ -108,9 +106,11 @@ export default defineComponent({
     },
     methods: {
       addAdmin(login: string): void {
-        this.params.userName = login
+        let params = this.getParams
+        params.userName = login
+        console.log(params)
         axios
-            .post('/api/chat/group/admin', this.params)
+            .post('/api/chat/group/admin', params)
             .then((response) => {
               console.log(response)
             })
@@ -120,10 +120,11 @@ export default defineComponent({
             })
       },
       deleteAdmin(login: string): void {
-        this.params.userName = login
+        let params = this.getParams
+        params.userName = login
         axios
-            .delete('/api/chat/group/admin', { data: this.params })
-            .then((response) => {
+            .delete('/api/chat/group/admin', { data: params })
+            .then(() => {
             })
             .catch((error) => {
               console.log(error)
@@ -132,9 +133,10 @@ export default defineComponent({
       },
 
       addMuted(login: string): void {
-        this.params.userName = login
+        let params = this.getParams
+        params.userName = login
         axios
-            .post('/api/chat/group/muted', this.params)
+            .post('/api/chat/group/muted', params)
             .then((response) => {
               console.log(response)
             })
@@ -144,9 +146,10 @@ export default defineComponent({
             })
       },
       deleteMuted(login: string): void {
-        this.params.userName = login
+        let params = this.getParams
+        params.userName = login
         axios
-            .delete('/api/chat/group/muted', { data: this.params })
+            .delete('/api/chat/group/muted', { data: params })
             .then((response) => {
               console.log(response)
             })
@@ -156,9 +159,10 @@ export default defineComponent({
             })
       },
       addBanned(login: string): void {
-        this.params.userName = login
+        let params = this.getParams
+        params.userName = login
         axios
-            .post('/api/chat/group/banned', this.params)
+            .post('/api/chat/group/banned', params)
             .then((response) => {
               console.log(response)
             })
@@ -168,10 +172,10 @@ export default defineComponent({
             })
       },
       deleteUser(login: string): void {
-
-        this.params.userName = login
+        let params = this.getParams
+        params.userName = login
         axios
-            .delete('/api/chat/group/user', { data: this.params})
+            .delete('/api/chat/group/user', { data: params})
             .then((response) => {
               console.log(response)
             })
@@ -181,22 +185,16 @@ export default defineComponent({
             })
       },
       checkOwner(user: IUser, profile: IProfile) {
-        if (profile.owner.id === user.id) {
-          return true
-        }
-        return false
+        return profile.owner.id === user.id;
+
       },
       checkAdmin(user: IUser, profile: IProfile) {
-        if (profile.admin.find((adm) => adm.id === user.id)) {
-          return true
-        }
-        return false
+        return !!profile.admin.find((adm) => adm.id === user.id);
+
       },
       checkMuted(user: IUser, profile: IProfile) {
-        if (profile.muted.find((mtd) => mtd.id === user.id)) {
-          return true
-        }
-        return false
+        return !!profile.muted.find((mtd) => mtd.id === user.id);
+
       },
       getRoleStr(user: IUser) {
         let str = ''
