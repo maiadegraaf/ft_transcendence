@@ -157,7 +157,7 @@ export default defineComponent({
         let params = this.getParams
         params.userName = login
         axios
-            .delete('/api/chat/group/user', { data: params})
+            .delete('/api/chat/group/user', { data: params })
       },
       checkOwner(user: IUser, profile: IProfile) {
         return profile.owner.id === user.id;

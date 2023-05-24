@@ -39,7 +39,6 @@ export const useChatStore = defineStore('userChannel', {
             if (channelIV == null || channelIV.profile == null) {
                 return null
             }
-            console.log('profile changed');
             const profile = channelIV.profile;
             return profile
         },
@@ -129,7 +128,11 @@ export const useChatStore = defineStore('userChannel', {
         },
 
         async removeUserFromChannel(channelId: number, user: IUser) {
-            this.channels?.find((channel) => channel.id === channelId)?.users?.splice(this.channels?.find((channel) => channel.id === channelId)?.users?.findIndex((u) => u.id === user.id) as number, 1)
+            this.channels?.find((channel) => channel.id === channelId)
+                ?.users
+                ?.splice(this.channels?.find(
+                    (channel) => channel.id === channelId)
+                ?.users?.findIndex((u) => u.id === user.id) as number, 1)
         },
 
         async addAdminToChannel(channelId: number, user: IUser) {
