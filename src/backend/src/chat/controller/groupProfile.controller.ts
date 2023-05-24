@@ -112,6 +112,7 @@ export class GroupProfileController {
                     HttpStatus.FORBIDDEN
                 )
             }
+            await this.groupProfileService.userAlreadyInGroup(user.id, param.groupId)
             if (await this.groupProfileService.isBlocked(user.id, param.groupId)) {
                 throw new HttpException('User is banned from group', HttpStatus.FORBIDDEN)
             }
@@ -311,7 +312,7 @@ export class GroupProfileController {
                     return true
                 }
             }
-            group = await this.groupProfileService.removeRoles(group, id)
+            await this.groupProfileService.removeRoles(group, id)
             channel = await this.channelService.removeUserFromChannel(group.channel.id, user)
             await this.chatGateway.emitDeleteChannelFromUser(channel, user)
             return true
