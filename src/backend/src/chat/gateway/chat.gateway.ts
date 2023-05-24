@@ -17,9 +17,8 @@ import {
 } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { MessageService } from '../services/message.service';
-import { UserService } from '../../user/services/user/user.service';
-import { JoinRoomDto, MessageDto } from '../dtos/chat.dtos';
-import { websocketGuard } from '../../auth/auth.guard';
+import { MessageDto } from '../dtos/chat.dtos';
+import { WebSocketGuard } from '../../auth/auth.guard';
 import { Channel } from '../entities/channel.entity';
 import { User } from '../../user/user.entity';
 import { ChannelService } from '../services/channel.service';
@@ -30,7 +29,7 @@ import { GroupProfileService } from '../services/groupProfile.service';
         origin: '*',
     },
 })
-@UseGuards(websocketGuard)
+@UseGuards(WebSocketGuard)
 export class ChatGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -117,9 +116,6 @@ export class ChatGateway
                     this.server.to(socket.id).emit('msgToClient', payload);
                 }
             });
-            // this.server
-            //     .to('room' + payload.channel)
-            //     .emit('msgToClient', payload);
             this.logger.log(
                 `createMessage: message send by ${payload.sender.login} in channel ${payload.channel} with message ${payload.text}`,
             );
@@ -128,15 +124,16 @@ export class ChatGateway
         }
     }
 
-    @SubscribeMessage('joinRoomById')
-    async handleJoinRoomById(
-        @ConnectedSocket() client: Socket,
-        @Body() payload: { channelId: number },
-    ): Promise<any> {
-        await client.join('room' + payload.channelId);
-        this.logger.log(
-            `handleJoinRoomById: ${client.id} joined the room with id: ${payload.channelId}`,
-        );
+    @SubscribeMessage('joinRooms')
+    async handleJoinRooms(@ConnectedSocket() client: Socket): Promise<any> {
+        const id = client.request.session.user.id;
+        const channels = await this.channelService.getUserChannels(id);
+        channels.forEach((channel) => {
+            client.join('room' + channel.id);
+            this.logger.log(
+                `handleJoinRoomById: ${client.id} joined the room with id: ${channel.id}`,
+            );
+        });
     }
 
     @SubscribeMessage('leaveRoomById')

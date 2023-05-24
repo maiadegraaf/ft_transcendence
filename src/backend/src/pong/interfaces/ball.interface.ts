@@ -1,8 +1,8 @@
-import { Direction } from '../enums';
+import { Direction } from '../enums'
 
 export interface Ball {
-    x: number;
-    y: number;
-    dx: Direction;
-    dy: Direction;
+    x: number
+    y: number
+    dx: Direction
+    dy: Direction
 }

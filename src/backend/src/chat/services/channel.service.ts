@@ -13,6 +13,7 @@ export class ChannelService {
         @InjectRepository(Channel)
         private readonly channelRepository: Repository<Channel>,
         private readonly groupProfileService: GroupProfileService,
+        private readonly userService: UserService,
     ) {}
 
     private logger = new Logger('ChannelService');
@@ -51,6 +52,7 @@ export class ChannelService {
 
     async newDmChannel(user1: User, user2: User): Promise<any> {
         try {
+            await this.checkValidNewDm(user1, user2);
             const channel = await this.createChannel();
             if (!channel) {
                 throw new HttpException(
@@ -71,8 +73,32 @@ export class ChannelService {
         }
     }
 
+    async checkValidNewDm(user1: User, user2: User): Promise<any> {
+        if (user1.id === user2.id) {
+            throw new HttpException(
+                'Cannot create dm with yourself',
+                HttpStatus.FORBIDDEN,
+            );
+        }
+        const channels = await this.channelRepository
+            .createQueryBuilder('channel')
+            .leftJoinAndSelect('channel.users', 'user')
+            .where('channel.profile IS NULL')
+            .getMany();
+        if (channels) {
+            for (const channel of channels) {
+                const userIds = channel.users.map((user) => user.id);
+                if (userIds.includes(user1.id) && userIds.includes(user2.id)) {
+                    throw new HttpException(
+                        'Dm already exists',
+                        HttpStatus.FORBIDDEN,
+                    );
+                }
+            }
+        }
+    }
+
     async getUserChannels(userId: number): Promise<Channel[]> {
-        // const channels = await this.userService.retrieveUserChannelMessages(userId);
         const channels = await this.channelRepository
             .createQueryBuilder('channel')
             .innerJoin('channel.users', 'user')
@@ -96,10 +122,19 @@ export class ChannelService {
         if (!channels) {
             return;
         }
-        // console.log(channels);
-        // for (const ch of channels) {
-        //     ch['name'] = await this.getChannelName(ch.id, userId);
-        // }
+        const blockedUsers = await this.userService.getBlockedUsersForUser(
+            userId,
+        );
+        if (!blockedUsers) {
+            return channels;
+        }
+        for (const channel of channels) {
+            for (const blockedUser of blockedUsers) {
+                channel.messages = channel.messages.filter(
+                    (msg) => msg.sender.id !== blockedUser.id,
+                );
+            }
+        }
         return channels;
     }
 
@@ -176,27 +211,6 @@ export class ChannelService {
         channel.users.push(owner);
         return await this.channelRepository.save(channel);
     }
-    //
-    // async deleteChannel(channelId: number): Promise<any> {
-    //     try {
-    //         const channel = await this.channelRepository.findOne({
-    //             where: { id: channelId },
-    //         });
-    //         if (!channel) {
-    //             throw new HttpException(
-    //                 'Channel with ID ${id} not found to delete channel',
-    //                 HttpStatus.FORBIDDEN,
-    //             );
-    //         }
-    //         await this.channelRepository.remove(channel);
-    //         return;
-    //     } catch (error) {
-    //         throw new HttpException(
-    //             error.message,
-    //             HttpStatus.INTERNAL_SERVER_ERROR,
-    //         );
-    //     }
-    // }
 
     async deleteChannel(channel: Channel): Promise<any> {
         await this.channelRepository.remove(channel);
@@ -284,21 +298,23 @@ export class ChannelService {
             .where('channel.id = :id', { id: param.channel })
             .leftJoinAndSelect('channel.users', 'users')
             .leftJoin('users.blockedUsers', 'blockedUsers')
-            .andWhere((qb) =>
-                qb
-                    .where('blockedUsers.id != :userId', {
-                        userId: param.sender.id,
-                    })
-                    .orWhere('blockedUsers.id IS NULL'),
-            )
+            .addSelect('blockedUsers.id')
             .getOne();
-        console.log(channel);
         if (!channel) {
             throw new HttpException(
                 'getBlockedList: Channel not found to get blocked list',
                 HttpStatus.FORBIDDEN,
             );
         }
-        return channel.users;
+        if (!channel.users) {
+            return [];
+        }
+        const users = channel.users.filter((user) => {
+            return (
+                !user.blockedUsers ||
+                !user.blockedUsers.map((u) => u.id).includes(param.sender.id)
+            );
+        });
+        return users;
     }
 }

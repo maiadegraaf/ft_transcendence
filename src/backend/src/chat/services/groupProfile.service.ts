@@ -2,13 +2,11 @@ import {
     HttpException,
     HttpStatus,
     Injectable,
-    InternalServerErrorException,
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
-import { UserService } from '../../user/services/user/user.service';
 import { GroupProfile } from '../entities/groupProfile.entity';
 import { User } from '../../user/user.entity';
 import {
@@ -16,7 +14,6 @@ import {
     GroupUserProfileUpdateDto,
 } from '../dtos/chat.dtos';
 import * as bcrypt from 'bcryptjs';
-import { promises } from 'dns';
 import { MutedTime } from '../entities/mutedTime.enitity';
 
 @Injectable()
@@ -81,8 +78,11 @@ export class GroupProfileService {
         return group;
     }
 
-    async addAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.ownerCheck(param);
+    async addAdmin(
+        param: GroupUserProfileUpdateDto,
+        userId: number,
+    ): Promise<any> {
+        const group = await this.ownerCheck(param, userId);
         const user = await this.userGroupProfileCheck(group, param);
         if (group.admin.find((admin) => admin.id === user.id)) {
             throw new HttpException('user already admin', HttpStatus.FORBIDDEN);
@@ -99,16 +99,22 @@ export class GroupProfileService {
         return info;
     }
 
-    async addBlocked(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.adminCheck(param, 'blocked');
+    async addBlocked(
+        param: GroupUserProfileUpdateDto,
+        userId: number,
+    ): Promise<any> {
+        const group = await this.adminCheck(param, 'blocked', userId);
         const user = await this.userGroupProfileCheck(group, param);
         group.blocked.push(user);
         await this.groupProfileRepository.save(group);
         return user;
     }
 
-    async addMute(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.adminCheck(param, 'muted');
+    async addMute(
+        param: GroupUserProfileUpdateDto,
+        userId: number,
+    ): Promise<any> {
+        const group = await this.adminCheck(param, 'muted', userId);
         const user = await this.userGroupProfileCheck(group, param);
         group.muted.push(user);
         const info = {
@@ -125,8 +131,11 @@ export class GroupProfileService {
         return info;
     }
 
-    async deleteAdmin(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.ownerCheck(param);
+    async deleteAdmin(
+        param: GroupUserProfileUpdateDto,
+        userId: number,
+    ): Promise<any> {
+        const group = await this.ownerCheck(param, userId);
         const user = await this.userGroupProfileCheck(group, param);
         const idx = group.admin.findIndex((admin) => admin.id === user.id);
         if (idx === -1) {
@@ -147,8 +156,11 @@ export class GroupProfileService {
         return info;
     }
 
-    async deleteBlocked(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.adminCheck(param, 'blocked');
+    async deleteBlocked(
+        param: GroupUserProfileUpdateDto,
+        userId: number,
+    ): Promise<any> {
+        const group = await this.adminCheck(param, 'blocked', userId);
         const user = await this.userGroupProfileCheck(group, param);
         const idx = group.blocked.findIndex(
             (blocked) => blocked.id === user.id,
@@ -163,8 +175,11 @@ export class GroupProfileService {
         return await this.groupProfileRepository.save(group);
     }
 
-    async deleteMute(param: GroupUserProfileUpdateDto): Promise<any> {
-        const group = await this.adminCheck(param, 'muted');
+    async deleteMute(
+        param: GroupUserProfileUpdateDto,
+        userId: number,
+    ): Promise<any> {
+        const group = await this.adminCheck(param, 'muted', userId);
         const user = await this.userGroupProfileCheck(group, param);
         await this.removeMute(group, user);
         const info = {
@@ -187,10 +202,23 @@ export class GroupProfileService {
             );
         }
         group.muted.splice(idx, 1);
+        const info = {
+            channelId: group.channel.id,
+            user: {
+                id: user.id,
+                login: user.login,
+            },
+        };
+        await this.groupProfileRepository.save(group);
+        return info;
+        group.muted.splice(idx, 1);
         await this.groupProfileRepository.save(group);
     }
 
-    async ownerCheck(param: GroupUserProfileUpdateDto): Promise<any> {
+    async ownerCheck(
+        param: GroupUserProfileUpdateDto,
+        userId: number,
+    ): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
             .where('group.id = :id', { id: param.groupId })
@@ -205,7 +233,7 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        if (group.owner.id !== param.userId) {
+        if (group.owner.id !== userId) {
             throw new HttpException(
                 'user is not owner of group',
                 HttpStatus.FORBIDDEN,
@@ -233,6 +261,7 @@ export class GroupProfileService {
     async adminCheck(
         param: GroupUserProfileUpdateDto,
         type: string,
+        userId: number,
     ): Promise<any> {
         const group = await this.groupProfileRepository
             .createQueryBuilder('group')
@@ -248,7 +277,7 @@ export class GroupProfileService {
                 HttpStatus.FORBIDDEN,
             );
         }
-        if (!group.admin.find((admin) => admin.id === param.userId)) {
+        if (!group.admin.find((admin) => admin.id === userId)) {
             throw new HttpException(
                 'user is not an admin in group',
                 HttpStatus.FORBIDDEN,
@@ -456,5 +485,19 @@ export class GroupProfileService {
             return false;
         }
         return true;
+    }
+
+    async checkValidGroupName(name: string): Promise<any> {
+        const groupCheck = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .addSelect(['group.name'])
+            .where('group.name = :name', { name })
+            .getOne();
+        if (groupCheck) {
+            throw new HttpException(
+                'group name already exists',
+                HttpStatus.FORBIDDEN,
+            );
+        }
     }
 }
