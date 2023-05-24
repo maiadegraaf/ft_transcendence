@@ -37,39 +37,71 @@ export class UserController {
 
     @Get()
     async findAllUsers(): Promise<User[]> {
-        const users = await this.userService.findAllUsers()
-        return users
+        try {
+            const users = await this.userService.findAllUsers()
+            return users
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Get('/friends')
     @UseGuards(FortyTwoAuthGuard)
     async getFriends(@Req() req: any) {
-        const userID = req.session.user.id
-        const Friends = await this.userService.findFriends(userID)
-        return Friends
+        try {
+            const userID = req.session.user.id
+            const Friends = await this.userService.findFriends(userID)
+            return Friends
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Get('/friends/:id')
     @UseGuards(FortyTwoAuthGuard)
     async getFriendsById(@Param('id', ParseIntPipe) userID: number) {
         // const userID = req.session.user.id;
-        const Friends = await this.userService.findFriends(userID)
-        Friends.forEach((user) => console.log(user.login))
-        return Friends
+        try {
+            const Friends = await this.userService.findFriends(userID)
+            Friends.forEach((user) => console.log(user.login))
+            return Friends
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Get(':id')
     @UseGuards(FortyTwoAuthGuard)
     async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
-        const user = await this.userService.findUserByID(id)
-        return user
+        try {
+            const user = await this.userService.findUserByID(id)
+            return user
+        } catch (e) {
+            throw new BadRequestException('Invalid ID')
+        }
     }
 
     @Post('username')
     @UseGuards(FortyTwoAuthGuard)
     async changeUsername(@Req() req, @Body('username') username: string): Promise<User> {
-        req.session.user.login = username
-        return await this.userService.changeUsername(req.session.user.id, username)
+        try {
+            req.session.user.login = username
+            return await this.userService.changeUsername(req.session.user.id, username)
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Get(':id/avatar')
@@ -78,12 +110,19 @@ export class UserController {
         @Param('id', ParseIntPipe) id: number,
         @Res({ passthrough: true }) response: Response
     ): Promise<StreamableFile> {
-        const avatar = await this.userService.getAvatar(id)
-        response.set({
-            'Content-Type': 'image/*',
-            'Content-Disposition': 'inline; filename=${avatar.filename}'
-        })
-        return this.avatarService.toStreamableFile(avatar.data)
+        try {
+            const avatar = await this.userService.getAvatar(id)
+            response.set({
+                'Content-Type': 'image/*',
+                'Content-Disposition': 'inline; filename=${avatar.filename}'
+            })
+            return this.avatarService.toStreamableFile(avatar.data)
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Put(':id/avatar')
@@ -93,8 +132,15 @@ export class UserController {
         @UploadedFile() file: Express.Multer.File,
         @Param('id', ParseIntPipe) id: number
     ): Promise<any> {
-        await this.userService.setAvatar(id, file)
-        return { status: 'success', message: 'Avatar updated successfully' }
+        try {
+            await this.userService.setAvatar(id, file)
+            return { status: 'success', message: 'Avatar updated successfully' }
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Put(':id/username')
@@ -116,24 +162,45 @@ export class UserController {
     @Post()
     @UsePipes(new ValidationPipe())
     async findOrCreate(@Body() createUserDto: CreateUserDto) {
-        const { id, email, login } = createUserDto
-        const user = await this.userService.findOrCreateUser(id, email, login)
-        return user
+        try {
+            const { id, email, login } = createUserDto
+            const user = await this.userService.findOrCreateUser(id, email, login)
+            return user
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Delete(':id')
     async deleteUserByID(@Param('id', ParseIntPipe) id: number) {
-        await this.userService.deleteUser(id)
+        try {
+            await this.userService.deleteUser(id)
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
     }
 
     @Get('search/:username')
     @UseGuards(FortyTwoAuthGuard)
     async findUserByUsername(@Param('username') username: string) {
-        const user = await this.userService.findUserByUsername(username)
-        if (!user) {
-            throw new HttpException('User not found', 404)
+        try {
+            const user = await this.userService.findUserByUsername(username)
+            if (!user) {
+                throw new HttpException('User not found', 404)
+            }
+            return user
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
         }
-        return user
     }
 
     @Post('friends/:id')
@@ -154,8 +221,8 @@ export class UserController {
     @Post('unfriend/:id')
     @UseGuards(FortyTwoAuthGuard)
     async removeFriend(@Param('id', ParseIntPipe) friendID: number, @Req() req: any) {
-        const userID = req.session.user.id
         try {
+            const userID = req.session.user.id
             await this.userService.removeFriend(userID, friendID)
             return await this.userService.removeFriend(friendID, userID)
         } catch (error) {
@@ -170,8 +237,8 @@ export class UserController {
     @Get('block/:id')
     @UseGuards(FortyTwoAuthGuard)
     async getBlockedUsers(@Param('id', ParseIntPipe) userID: number, @Req() req: any) {
-        const userId = req.session.user.id
         try {
+            const userId = req.session.user.id
             return await this.userService.getBlockedUsers(userId)
         } catch (error) {
             if (error instanceof HttpException) {
@@ -184,8 +251,8 @@ export class UserController {
     @Post('block/:id')
     @UseGuards(FortyTwoAuthGuard)
     async blockUser(@Param('id', ParseIntPipe) friendID: number, @Req() req: any) {
-        const userID = req.session.user.id
         try {
+            const userID = req.session.user.id
             return await this.userService.blockUser(userID, friendID)
         } catch (error) {
             if (error instanceof HttpException) {
@@ -198,11 +265,10 @@ export class UserController {
     @Post('unblock/:id')
     @UseGuards(FortyTwoAuthGuard)
     async unblockUser(@Param('id', ParseIntPipe) friendID: number, @Req() req: any) {
-        const userID = req.session.user.id
         try {
+            const userID = req.session.user.id
             return await this.userService.unblockUser(userID, friendID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }

@@ -1,4 +1,13 @@
-import { Controller, Get, HttpStatus, Req, Res, UseGuards } from '@nestjs/common'
+import {
+    Controller,
+    Get,
+    HttpStatus,
+    Param,
+    ParseIntPipe,
+    Req,
+    Res,
+    UseGuards
+} from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { FortyTwoAuthGuard } from './auth.guard'
 import { AuthGuard } from '@nestjs/passport'
@@ -34,16 +43,21 @@ export class AuthController {
     }
 
     @Get('profile/:id')
-    async getProfileFake(@Req() req, @Res() res) {
-        const user = await this.userService.findOrCreateUser(
-            req.params.id as number,
-            'user' + req.params.id + '@gmail.com',
-            'user' + req.params.id
-        )
-        req.session.user = user
-        if (req.session.user.isTwoFactorAuthenticationEnabled) res.redirect('/2fa/create')
-        else {
-            res.redirect('/2fa')
+    async getProfileFake(@Param('id', ParseIntPipe) id: number, @Req() req, @Res() res) {
+        try {
+            const user = await this.userService.findOrCreateUser(
+                id,
+                'user' + id + '@gmail.com',
+                'user' + id
+            )
+            console.log('id test : ', id)
+            req.session.user = user
+            if (req.session.user.isTwoFactorAuthenticationEnabled) res.redirect('/2fa/create')
+            else {
+                res.redirect('/2fa')
+            }
+        } catch {
+            return res.status(HttpStatus.BAD_REQUEST).send('Invalid ID')
         }
     }
 
