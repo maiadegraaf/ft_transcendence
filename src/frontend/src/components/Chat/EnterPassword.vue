@@ -29,14 +29,14 @@
 import { useChatStore } from '@/store/channel.store'
 import axios from 'axios'
 import { defineComponent } from 'vue'
-import NoChannelSelected from '@/components/Chat/NoChannelSelected.vue'
-import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
-import NewChannel from '@/components/Chat/NewChannel.vue'
+import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
+import {ChevronLeftIcon} from "@heroicons/vue/24/outline";
+import NewChannel from "@/components/Chat/NewChannel.vue";
 
 export default defineComponent({
     name: 'EnterPassword',
     components: {
-        ChevronLeftIcon
+        ChevronLeftIcon,
     },
     setup() {
         const chatStore = useChatStore()

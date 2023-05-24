@@ -5,24 +5,22 @@
                 <ChevronLeftIcon class="h-8 w-8 text-buff" />
             </button>
             <h2 class="text-buff text-2xl font-semibold uppercase">settings</h2>
-            <div class="flex justify-center items-center">
-                <button
-                    @click="leaveGroup"
-                    class="hover:opacity-60 transition-opacity text-buff font-semibold mr-2"
-                    alt="Delete Group"
-                >
-                    Leave
-                </button>
-                <button
-                    @click="deleteGroup"
-                    class="hover:opacity-60 transition-opacity text-buff font-semibold"
-                    alt="Delete Group"
-                >
-                    <TrashIcon class="h-8 w-8 text-buff" />
-                </button>
-            </div>
+          <div class="flex justify-center items-center">
+            <button
+                @click="leaveGroup"
+                class="hover:opacity-60 transition-opacity text-buff font-semibold mr-2"
+                alt="Delete Group"
+            >Leave</button>
+            <button
+                @click="deleteGroup"
+                class="hover:opacity-60 transition-opacity text-buff font-semibold"
+                alt="Delete Group"
+            >
+                <TrashIcon class="h-8 w-8 text-buff" />
+            </button>
+          </div>
         </div>
-        <GroupSettingUserList />
+        <GroupSettingUserList/>
         <div class="flex flex-col pt-10 items-center justify-center">
             <label class="text-xl text-buff mb-1 font-semibold uppercase">
                 Add new groupmembers by username:
@@ -97,14 +95,14 @@ export default defineComponent({
         }
     },
     computed: {
-        getParams(): any {
-            const params: any = {
-                userName: this.userStore.name,
-                channelId: this.chatStore.channelInView,
-                groupId: this.chatStore.getCurrentGroupId
-            }
-            return params
+      getParams(): any {
+        const params : any = {
+          userName : this.userStore.name,
+          channelId: this.chatStore.channelInView,
+          groupId: this.chatStore.getCurrentGroupId
         }
+        return params
+      },
     },
     methods: {
         doneGroup(): void {
