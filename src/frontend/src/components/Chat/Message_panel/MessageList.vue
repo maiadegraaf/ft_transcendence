@@ -121,8 +121,6 @@ export default defineComponent({
         },
         // Testing invite
         acceptInvite() {
-            console.log('Accepting invite')
-            console.log(this.userStore.id, this.chatStore.dmId)
             this.$router.push({
                 name: 'wait',
                 params: {

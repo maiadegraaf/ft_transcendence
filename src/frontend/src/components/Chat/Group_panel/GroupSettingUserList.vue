@@ -108,14 +108,11 @@ export default defineComponent({
       addAdmin(login: string): void {
         let params = this.getParams
         params.userName = login
-        console.log(params)
         axios
             .post('/api/chat/group/admin', params)
             .then((response) => {
-              console.log(response)
             })
             .catch((error) => {
-              console.log(error)
               return
             })
       },
@@ -137,13 +134,6 @@ export default defineComponent({
         params.userName = login
         axios
             .post('/api/chat/group/muted', params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
       },
       deleteMuted(login: string): void {
         let params = this.getParams
@@ -154,7 +144,6 @@ export default defineComponent({
               console.log(response)
             })
             .catch((error) => {
-              console.log(error)
               return
             })
       },
@@ -163,26 +152,12 @@ export default defineComponent({
         params.userName = login
         axios
             .post('/api/chat/group/banned', params)
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
       },
       deleteUser(login: string): void {
         let params = this.getParams
         params.userName = login
         axios
             .delete('/api/chat/group/user', { data: params})
-            .then((response) => {
-              console.log(response)
-            })
-            .catch((error) => {
-              console.log(error)
-              return
-            })
       },
       checkOwner(user: IUser, profile: IProfile) {
         return profile.owner.id === user.id;
