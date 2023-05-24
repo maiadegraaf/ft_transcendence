@@ -104,6 +104,7 @@ export default defineComponent({
         async handleUploadAvatar() {
             const fileInput = document.createElement('input')
             fileInput.type = 'file'
+            fileInput.accept = 'image/jpeg, image/png, image/gif, image/svg+xml'
 
             fileInput.addEventListener('change', async () => {
                 const file = fileInput.files?.[0]

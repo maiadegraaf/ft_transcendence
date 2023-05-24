@@ -19,6 +19,7 @@ import { CreateDmChannelDto, CreateGroupChannelDto } from '../dtos/chat.dtos';
 import { ChatGateway } from '../gateway/chat.gateway';
 import { GroupProfileService } from '../services/groupProfile.service';
 import { FortyTwoAuthGuard } from '../../auth/auth.guard';
+import {response} from "express";
 
 @Controller('chat')
 export class ChatController {
@@ -65,7 +66,7 @@ export class ChatController {
         @Req() req,
         @Body(new ValidationPipe()) param: CreateDmChannelDto,
     ): Promise<any> {
-        try {
+        // try {
             const id = req.session.user.id;
             const user1 = await this.userService.getUserById(id);
             if (!user1) {
@@ -85,9 +86,9 @@ export class ChatController {
             channel = await this.channelService.getChannelById(channel.id);
             await this.chatGateway.emitNewDmChannel(user1, user2, channel);
             return;
-        } catch (error) {
-            this.logger.error('postNewDMChannel: ' + error);
-        }
+        // } catch (error) {
+        //     this.logger.error('postNewDMChannel: ' + error);
+        // }
     }
 
     // Post /api/chat/group
