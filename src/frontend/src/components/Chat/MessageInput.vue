@@ -71,13 +71,6 @@ export default defineComponent({
             this.text = 'Invite'
             this.channel = this.chatStore.channelInView
             this.userStore.socket.emit('msgToServer', this.$data)
-            this.userStore.socket.on('opponentFound', (matchId: number) => {
-                console.log('Opponent found')
-                console.log(matchId)
-                this.$router.push({
-                    name: 'Pong'
-                })
-            })
         }
     }
 })
