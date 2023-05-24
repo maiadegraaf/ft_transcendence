@@ -10,6 +10,9 @@ export default defineComponent({
     setup() {
         const user = useUserStore()
         return { user }
+    },
+    mounted() {
+      this.user.loadUser()
     }
 })
 </script>

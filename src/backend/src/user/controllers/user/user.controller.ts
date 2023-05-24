@@ -70,6 +70,8 @@ export class UserController {
     @UseGuards(FortyTwoAuthGuard)
     async changeUsername(@Req() req, @Body('username') username: string): Promise<User> {
         req.session.user.login = username
+        req.session.usernameChanged = true
+        await this.userService.usernameChangedTrue(req.session.user.id)
         return await this.userService.changeUsername(req.session.user.id, username)
     }
 

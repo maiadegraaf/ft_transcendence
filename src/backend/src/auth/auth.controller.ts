@@ -17,6 +17,7 @@ export class AuthController {
     async callback42(@Req() req, @Res() res) {
         const twoFactorAuthenticationSecret = req.user.twoFactorAuthenticationSecret
         delete req.user.twoFactorAuthenticationSecret
+        console.log(req.user)
         req.session.user = req.user
         req.session.twoFactorAuthenticationSecret = twoFactorAuthenticationSecret
         if (req.session.user.isTwoFactorAuthenticationEnabled)
