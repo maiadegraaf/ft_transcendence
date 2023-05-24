@@ -69,6 +69,8 @@ export class UserController {
     @UseGuards(FortyTwoAuthGuard)
     async changeUsername(@Req() req, @Body('username') username: string): Promise<User> {
         req.session.user.login = username
+        req.session.usernameChanged = true
+        await this.userService.usernameChangedTrue(req.session.user.id)
         return await this.userService.changeUsername(req.session.user.id, username)
     }
 
@@ -159,7 +161,6 @@ export class UserController {
             await this.userService.removeFriend(userID, friendID)
             return await this.userService.removeFriend(friendID, userID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }
@@ -202,7 +203,6 @@ export class UserController {
         try {
             return await this.userService.unblockUser(userID, friendID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }

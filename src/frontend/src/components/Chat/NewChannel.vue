@@ -87,7 +87,7 @@ import { defineComponent } from 'vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import SetPassword from '@/components/Chat/SetPassword.vue'
 import EnterPassword from '@/components/Chat/EnterPassword.vue'
-import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
+import NoChannelSelected from '@/components/Chat/NoChannelSelected.vue'
 
 const Form = {
     PRIVATE: 0,
@@ -114,7 +114,7 @@ export default defineComponent({
         }
     },
     mounted() {
-      this.chatStore.setChannelInView(-1)
+        this.chatStore.setChannelInView(-1)
     },
     methods: {
         createGroup(): void {
@@ -151,11 +151,9 @@ export default defineComponent({
             axios
                 .post('api/chat/group/join', param)
                 .then((response) => {
-                    console.log(response)
                     if (!response.data) {
                         this.$emit('switch-chat-right-component', NoChannelSelected)
                     }
-                    console.log('groupId: ', response.data.groupId)
                     this.chatStore.setNewGroupId(response.data.groupId)
                     if (response.data.type == EGroupChannelType.PROTECTED) {
                         this.$emit('switch-chat-right-component', EnterPassword)
@@ -165,7 +163,6 @@ export default defineComponent({
                 })
                 .catch((error) => {
                     this.joinGroupText = ''
-                    console.log(error)
                     this.$emit('switch-chat-right-component', NoChannelSelected)
                     return
                 })
@@ -181,15 +178,9 @@ export default defineComponent({
                 type: EGroupChannelType.PRIVATE,
                 password: null
             }
-            axios
-                .post('/api/chat/group', param)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.log(error)
-                    return
-                })
+            axios.post('/api/chat/group', param).catch((error) => {
+                return
+            })
             this.groupText = ''
             // set channel in view
             this.$emit('switch-chat-right-component', NoChannelSelected)
@@ -205,15 +196,9 @@ export default defineComponent({
                 type: EGroupChannelType.PUBLIC,
                 password: null
             }
-            axios
-                .post('/api/chat/group', param)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.log(error)
-                    return
-                })
+            axios.post('/api/chat/group', param).catch((error) => {
+                return
+            })
             this.groupText = ''
             this.$emit('switch-chat-right-component', NoChannelSelected)
         },

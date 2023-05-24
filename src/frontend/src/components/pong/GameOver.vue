@@ -15,10 +15,8 @@ export default defineComponent({
     methods: {
         reset() {
             if (!this.$parent) {
-                console.log('No root')
                 return
             }
-            console.log('Resetting game')
             this.$parent.$emit('reset')
         }
     }

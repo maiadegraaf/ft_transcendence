@@ -59,7 +59,6 @@ export class MatchInstance {
 
     handleMove(client: Socket, data: Info): void {
         if (!client) {
-            console.log('no client')
             return
         }
         if (this.gamestate == GameState.Playing && client.id == this.player1.user.socketId) {

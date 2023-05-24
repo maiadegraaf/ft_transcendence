@@ -94,7 +94,6 @@ export default defineComponent({
             }
         },
         sendToProfileOpponent(matchData: MatchHistoryData): void {
-            console.log(matchData)
             if (matchData.player1.id == Number(this.$route.params.id)) {
                 this.$router.push('/profile/' + matchData.player2.id)
             } else {

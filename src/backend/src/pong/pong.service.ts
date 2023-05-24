@@ -125,7 +125,6 @@ export class PongService {
             if (!newPlayer) {
                 return;
             }
-            console.log('new player' + newPlayer)
             if (!this.matchmakingOneVOneList.find((item) => item.id === newPlayer.id)) {
                 this.matchmakingOneVOneList.push(newPlayer)
             }

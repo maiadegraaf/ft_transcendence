@@ -58,18 +58,13 @@ export default defineComponent({
                 groupId: this.chatStore.newGroupId,
                 password: this.passwordText
             }
-            axios
-                .post('/api/chat/group/user/password', param)
-                .then((res) => {
-                    if (res.data === true) {
-                        this.$emit('switch-chat-right-component', NoChannelSelected)
-                    } else {
-                        alert('wrong password')
-                    }
-                })
-                .catch((err) => {
-                    console.log(err)
-                })
+            axios.post('/api/chat/group/user/password', param).then((res) => {
+                if (res.data === true) {
+                    this.$emit('switch-chat-right-component', NoChannelSelected)
+                } else {
+                    alert('wrong password')
+                }
+            })
             this.passwordText = ''
             this.$emit('switch-chat-right-component', NoChannelSelected)
         },

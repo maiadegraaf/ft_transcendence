@@ -53,7 +53,6 @@ export default defineComponent({
     },
     methods: {
         start() {
-            console.log('Starting game by ' + this.userId)
             let practiceSettings: practiceSettingsInterface = {
                 score: this.winningScore,
                 selectedDifficulty: this.selectedDifficulty,

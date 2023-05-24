@@ -121,9 +121,7 @@ export default defineComponent({
                         )
                         this.user = { ...this.user }
                         window.location.reload()
-                    } catch (error) {
-                        console.log(error)
-                    }
+                    } catch (error) {}
                 }
             })
             fileInput.click()

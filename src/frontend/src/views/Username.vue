@@ -20,7 +20,7 @@
             @click="pushHome"
             class="text-sm font-semibold hover:border-amaranth-purple hover:text-amaranth-purple tracking-wider text-blush drop-shadow-2xl"
         >
-            Keep <i>{{ user.login }}</i> as username
+            Keep <i>{{ user.name }}</i> as username
         </button>
     </div>
 </template>
@@ -28,17 +28,17 @@
 <script>
 import axios from 'axios'
 import { defineComponent } from 'vue'
-import {useUserStore} from "@/store/user.store";
+import { useUserStore } from '@/store/user.store'
 
 export default defineComponent({
-  setup() {
-    const user = useUserStore()
-    return { user }
-  },
-  data() {
+    setup() {
+        const user = useUserStore()
+        return { user }
+    },
+    data() {
         return {
             newUserName: '',
-            error: '',
+            error: ''
         }
     },
     methods: {
@@ -49,18 +49,24 @@ export default defineComponent({
                     .post('/api/user/username', {
                         username: this.newUserName
                     })
-                    .then((response) => {
+                    .then(() => {
                         this.$router.push('/Home')
                     })
-                    .catch((error) => {
+                    .catch(() => {
                         this.error = 'Username already taken ! Or internal error, try again later.'
                     })
             }
         },
-        pushHome() {
-            this.$router.push('/Home')
+        async pushHome() {
+            await axios
+                .post('/api/user/username', {
+                    username: this.user.name
+                })
+                .then(() => {
+                    this.$router.push('/Home')
+                })
         }
-    },
+    }
 })
 </script>
 
