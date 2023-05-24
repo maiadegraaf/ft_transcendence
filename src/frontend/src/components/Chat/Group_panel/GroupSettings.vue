@@ -5,6 +5,12 @@
                 <ChevronLeftIcon class="h-8 w-8 text-buff" />
             </button>
             <h2 class="text-buff text-2xl font-semibold uppercase">settings</h2>
+          <div class="flex justify-center items-center">
+            <button
+                @click="leaveGroup"
+                class="hover:opacity-60 transition-opacity text-buff font-semibold mr-2"
+                alt="Delete Group"
+            >Leave</button>
             <button
                 @click="deleteGroup"
                 class="hover:opacity-60 transition-opacity text-buff font-semibold"
@@ -12,19 +18,9 @@
             >
                 <TrashIcon class="h-8 w-8 text-buff" />
             </button>
+          </div>
         </div>
-        <GroupSettingUserList />
-        <!-- <div class="flex-1 w-full overflow-hidden">
-            <h2>Users</h2>
-            <input
-                v-model="userText"
-                placeholder="enter user name"
-                class="w-full focus:outline-none"
-            />
-            <button @click="addUser">add user</button>
-            <div></div>
-            <button @click="deleteUser">delete user</button>
-        </div> -->
+        <GroupSettingUserList/>
         <div class="flex flex-col pt-10 items-center justify-center">
             <label class="text-xl text-buff mb-1 font-semibold uppercase">
                 Add new groupmembers by username:
@@ -98,14 +94,14 @@ export default defineComponent({
             searchResult: null as User | null
         }
     },
-    async mounted() {
-        this.userName = this.userStore.name
-        this.groupName = this.chatStore.getChannelName
-        this.params.channelId = this.chatStore.channelInView
-        this.params.groupId = this.chatStore.getChannelGroupId
-        // this.profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-        // console.log(this.channelUsers)
-        // console.log(this.profile)
+    computed: {
+      getParams(): any {
+        const params : any = {
+          channelId: this.chatStore.channelInView,
+          groupId: this.chatStore.getCurrentGroupId
+        }
+        return params
+      },
     },
     methods: {
         doneGroup(): void {
@@ -149,7 +145,20 @@ export default defineComponent({
                     return
                 })
         },
-
+        leaveGroup(): void {
+          this.params.userName = this.userStore.name
+          axios.delete('api/chat/group/leave', { data: this.params })
+              .then((response) => {
+                console.log(response)
+                if (response.data == true) {
+                  this.doneGroup()
+                }
+              })
+              .catch((error) => {
+                console.log(error)
+                return
+              })
+        },
         async searchForUser() {
             this.searchError = null
             if (!this.userText) {
@@ -167,24 +176,6 @@ export default defineComponent({
                 this.searchError = `No user found with username "${this.userText}"`
             }
         }
-
-        // getRole(user: IUser): string {
-        //   let str = ''
-        //
-        //   const profile = this.chatStore.getProfileByChannelId(this.chatStore.channelInView)
-        //   if (profile) {
-        //     if (profile.owner.id === user.id) {
-        //       str += ' | (Owner)'
-        //     }
-        //     if (profile.admin.find((adm) => adm.id === user.id)) {
-        //       str +=  ' | (Admin)'
-        //     }
-        //     if (profile.muted.find((mtd) => mtd.id === user.id)) {
-        //       str +=  ' | (Muted)';
-        //     }
-        //   }
-        //   return str;
-        // },
     },
     created() {}
 })

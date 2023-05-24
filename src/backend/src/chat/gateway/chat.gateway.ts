@@ -5,24 +5,17 @@ import {
     OnGatewayInit,
     OnGatewayConnection,
     OnGatewayDisconnect,
-    ConnectedSocket,
-} from '@nestjs/websockets';
-import {
-    Body,
-    UseGuards,
-    HttpException,
-    HttpStatus,
-    Logger,
-    ValidationPipe,
-} from '@nestjs/common';
-import { Socket, Server } from 'socket.io';
-import { MessageService } from '../services/message.service';
-import { MessageDto } from '../dtos/chat.dtos';
-import { WebSocketGuard } from '../../auth/auth.guard';
-import { Channel } from '../entities/channel.entity';
-import { User } from '../../user/user.entity';
-import { ChannelService } from '../services/channel.service';
-import { GroupProfileService } from '../services/groupProfile.service';
+    ConnectedSocket
+} from '@nestjs/websockets'
+import { Body, UseGuards, HttpException, HttpStatus, Logger, ValidationPipe } from '@nestjs/common'
+import { Socket, Server } from 'socket.io'
+import { MessageService } from '../services/message.service'
+import { MessageDto } from '../dtos/chat.dtos'
+import { WebSocketGuard } from '../../auth/auth.guard'
+import { Channel } from '../entities/channel.entity'
+import { User } from '../../user/user.entity'
+import { ChannelService } from '../services/channel.service'
+import { GroupProfileService } from '../services/groupProfile.service'
 
 @WebSocketGateway({
     cors: {
@@ -90,16 +83,9 @@ export class ChatGateway
         @Body(new ValidationPipe()) payload: MessageDto,
     ): Promise<any> {
         try {
-            if (
-                await this.groupProfileService.checkMuted(
-                    payload.sender.id,
-                    payload.channel,
-                )
-            ) {
-                throw new HttpException(
-                    'handleMessage: user is muted',
-                    HttpStatus.FORBIDDEN,
-                );
+            payload.sender = client.request.session.user
+            if (await this.groupProfileService.checkMuted(payload.sender.id, payload.channel)) {
+                throw new HttpException('handleMessage: user is muted', HttpStatus.FORBIDDEN)
             }
             const message = await this.messageService.createMessage(payload);
             if (!message) {
@@ -189,7 +175,11 @@ export class ChatGateway
     }
 
     async emitGroupChannelToUser(channel: Channel, user: User): Promise<any> {
-        const userSocket = this.getClientSocketById(user.id);
+        this.server.to('room' + channel.id).emit('addUserToChannel', {
+            channelId: channel.id,
+            user: { id: user.id, login: user.login }
+        })
+        const userSocket = this.getClientSocketById(user.id)
         if (userSocket) {
             this.logger.log(
                 'emit addChannelToClient to user: ' + userSocket.id,
@@ -221,8 +211,8 @@ export class ChatGateway
                 'emit deleteChannelFromClient form owner: ' +
                     userSocket.id +
                     ' with userId: ' +
-                    user.id,
-            );
+                    user.id
+            )
         } catch (error) {
             this.logger.error(error);
         }

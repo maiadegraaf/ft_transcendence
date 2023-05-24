@@ -8,8 +8,8 @@ export const useChatStore = defineStore('userChannel', {
         channelInView: -1 as number,
         dmId: -1 as number,
         dmName: '' as string,
-        groupName: '' as string,
-        groupId: -1 as number,
+        newGroupName: '' as string,
+        newGroupId: -1 as number,
     }),
 
     getters: {
@@ -30,9 +30,9 @@ export const useChatStore = defineStore('userChannel', {
             }
             return channelIV.users
         },
-        getChannelGroupId(): number {
+        getCurrentGroupId(): number {
             const channelIV = this.getChannelInView
-            return channelIV?.profile?.id ?? this.groupId
+            return channelIV?.profile?.id ?? this.newGroupId
         },
         getCurrentProfile(): IProfile | null {
             const channelIV = this.getChannelInView
@@ -80,12 +80,12 @@ export const useChatStore = defineStore('userChannel', {
             this.dmName = dmName
         },
 
-        setGroupName(groupName: string) {
-            this.groupName = groupName
+        setNewGroupName(newGroupName: string) {
+            this.newGroupName = newGroupName
         },
 
-        setGroupId(groupId: number) {
-            this.groupId = groupId
+        setNewGroupId(newGroupId: number) {
+            this.newGroupId = newGroupId
         },
 
         async setChannelInView(channelId: number) {
@@ -111,14 +111,14 @@ export const useChatStore = defineStore('userChannel', {
         async receivedNewChannel(channel: IChannels) {
             const user = useUserStore()
             this.setChannelName(channel)
-            this.channels?.push(channel)
+            this.channels?.unshift(channel)
             user.socket.emit('joinRoomById', { channelId: channel.id })
         },
 
         async removeChannel(channelID: number) {
             const user = useUserStore()
             const index = this.channels?.findIndex((ch) => ch.id === channelID)
-            if (index && index != -1) {
+            if (index !== undefined && index >= 0) {
                 this.channels?.splice(index, 1)
                 user.socket.emit('leaveRoomById', { channelId: channelID })
             }

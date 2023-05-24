@@ -26,22 +26,21 @@
 </template>
 
 <script lang="ts">
-import { useChatStore } from '../../store/channel.store'
+import { useChatStore } from '@/store/channel.store'
 import axios from 'axios'
-import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
-import { useUserStore } from '@/store/user.store'
-import { EGroupChannelType } from '@/types/types'
 import { defineComponent } from 'vue'
 import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
+import {ChevronLeftIcon} from "@heroicons/vue/24/outline";
+import NewChannel from "@/components/Chat/NewChannel.vue";
 
 export default defineComponent({
     name: 'EnterPassword',
-    // props: ['chatStore']
+    components: {
+        ChevronLeftIcon,
+    },
     setup() {
         const chatStore = useChatStore()
-        const user = useUserStore()
-        // chatStore.setupChatStore()
-        return { chatStore, user }
+        return { chatStore }
     },
     data(): any {
         return {
@@ -56,8 +55,7 @@ export default defineComponent({
                 return
             }
             const param = {
-                userName: this.user.name,
-                groupId: this.chatStore.getChannelGroupId,
+                groupId: this.chatStore.newGroupId,
                 password: this.passwordText
             }
             console.log('test')
@@ -79,8 +77,8 @@ export default defineComponent({
             this.$emit('switch-chat-right-component', NoChannelSelected)
         },
         goBack(): void {
-            // leave chat reuqest
-            this.$emit('switch-chat-right-component', NoChannelSelected)
+            // leave chat request
+            this.$emit('switch-chat-right-component', NewChannel)
         }
     }
 })

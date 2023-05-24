@@ -24,7 +24,8 @@ export default defineComponent({
         return { userStore }
     },
     beforeCreate() {
-        console.log('beforeCreate')
+        // Check if user is logged in with a valid session, if so load user data and redirect to home if no relevant path is given.
+        // If user is not logged in, redirect to login page.
         axios
             .get('/api/auth/profile')
             .then((res) => {

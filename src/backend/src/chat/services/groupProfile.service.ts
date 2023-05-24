@@ -404,14 +404,13 @@ export class GroupProfileService {
             }
             group.admin.push(newOwner);
         }
-        console.log('newOwner: ', newOwner);
         group.owner = newOwner;
         await this.groupProfileRepository.save(group);
         return true;
     }
 
     async removeRoles(group: GroupProfile, userId: number): Promise<any> {
-        group.admin.filter((admin) => admin.id !== userId);
+        group.admin = group.admin.filter((admin) => admin.id !== userId)
         // group.blocked.filter((blocked) => blocked.id !== userId);
         // group.muted.filter((muted) => muted.id !== userId);
         return await this.groupProfileRepository.save(group);
@@ -494,10 +493,27 @@ export class GroupProfileService {
             .where('group.name = :name', { name })
             .getOne();
         if (groupCheck) {
-            throw new HttpException(
-                'group name already exists',
-                HttpStatus.FORBIDDEN,
-            );
+            throw new HttpException('group name already exists', HttpStatus.FORBIDDEN)
         }
+    }
+
+    async userAlreadyInGroup(userId: number, groupId: number): Promise<any> {
+        const group = await this.groupProfileRepository
+            .createQueryBuilder('group')
+            .where('group.id = :id', { id: groupId })
+            .leftJoinAndSelect('group.channel', 'channel')
+            .leftJoin('channel.users', 'users')
+            .addSelect(['users.id'])
+            .getOne()
+        if (!group || !group.channel) {
+            throw new HttpException(
+                'could not find group in userAlreadyInGroup',
+                HttpStatus.FORBIDDEN
+            )
+        }
+        if (group.channel.users.find((user) => user.id === userId)) {
+            throw new HttpException('user already in group', HttpStatus.FORBIDDEN)
+        }
+        return false
     }
 }

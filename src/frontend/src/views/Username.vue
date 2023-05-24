@@ -28,20 +28,17 @@
 <script>
 import axios from 'axios'
 import { defineComponent } from 'vue'
+import {useUserStore} from "@/store/user.store";
 
 export default defineComponent({
-    data() {
+  setup() {
+    const user = useUserStore()
+    return { user }
+  },
+  data() {
         return {
             newUserName: '',
             error: '',
-            user: {
-                id: Number,
-                login: '',
-                email: '',
-                isTwoFactorAuthenticationEnabled: Boolean,
-                accessToken: '',
-                refreshToken: ''
-            }
         }
     },
     methods: {
@@ -64,11 +61,6 @@ export default defineComponent({
             this.$router.push('/Home')
         }
     },
-    created() {
-        axios.get('/api/auth/profile').then((response) => {
-            this.user = response.data
-        })
-    }
 })
 </script>
 
