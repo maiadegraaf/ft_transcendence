@@ -12,7 +12,7 @@ export default defineComponent({
         return { user }
     },
     mounted() {
-      this.user.loadUser()
+        this.user.loadUser()
     }
 })
 </script>

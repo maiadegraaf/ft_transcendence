@@ -83,7 +83,6 @@ export default defineComponent({
             //   this.started = false;
             //   return ;
             // }
-            console.log('Practice match created')
             this.info.practiceMatchId = practiceMatchId
         })
 
@@ -97,7 +96,6 @@ export default defineComponent({
                     break
             }
             if (!this.socket) {
-                console.log('Socket not connected')
                 return
             }
             this.socket.emit('move', this.info)

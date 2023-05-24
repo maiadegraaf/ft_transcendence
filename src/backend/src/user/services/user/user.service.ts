@@ -72,7 +72,6 @@ export class UserService {
     }
 
     async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
-        console.log(userId)
         return this.userRepository.update(userId, {
             twoFactorAuthenticationSecret: secret
         })
@@ -158,7 +157,6 @@ export class UserService {
     async returnUserBySocketId(socketId: string): Promise<User> {
         for (const u of await this.findAllUsers()) {
             if (u.socketId === socketId) {
-                console.log('Found user ' + u.login + ' with socketId ' + socketId)
                 return u
             }
         }

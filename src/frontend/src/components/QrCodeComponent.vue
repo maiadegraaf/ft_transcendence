@@ -73,7 +73,13 @@ export default defineComponent({
                 .then((response) => {
                     if (response.data) {
                         this.userStore.loadUser()
-                        this.$router.push('/ChooseUsername')
+                        axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+                            if (response.data.usernameChanged == false) {
+                                this.$router.push('/ChooseUsername')
+                            } else {
+                                this.$router.push('/Home')
+                            }
+                        })
                     } else this.error = 'Wrong Token !'
                 })
         }

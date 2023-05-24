@@ -32,7 +32,6 @@ export class MatchInstance {
     }
 
     handlePlayerDisconnect(client: Socket): void {
-        console.log('handlePlayerDisconnect');
         if (client.id == this.player1.user.socketId) {
             this.player2.score = 10
             this.end('Player 2', client)
@@ -60,7 +59,6 @@ export class MatchInstance {
 
     handleMove(client: Socket, data: Info): void {
         if (!client) {
-            console.log('no client')
             return
         }
         if (this.gamestate == GameState.Playing && client.id == this.player1.user.socketId) {
@@ -72,7 +70,6 @@ export class MatchInstance {
 
     emitToBothPlayers(event: string, data: any, client: Socket): void {
         if (!this.player1.user || !this.player2.user) {
-            console.log('no socket id')
             return
         }
         client.to(this.player1.user.socketId).emit(event, data)

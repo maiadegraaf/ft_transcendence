@@ -40,7 +40,7 @@
         </div>
     </div>
     <div>
-      <ErrorPopUp  v-if="error" :message="msg" @hide-popup="hidePopup"/>
+        <ErrorPopUp v-if="error" :message="msg" @hide-popup="hidePopup" />
     </div>
 </template>
 
@@ -69,8 +69,8 @@ export default defineComponent({
     },
     data(): any {
         return {
-          error: false,
-          msg: '',
+            error: false,
+            msg: '',
             // currentPlayerId: user.id,
             practiceMode: false,
             practiceSettings: {
@@ -94,22 +94,19 @@ export default defineComponent({
     },
     created() {
         // this.currentPlayerId = this.userId
-        console.log('Current player id: ' + this.user.id)
 
         if (this.matchId != 0) {
-            console.log('Match id: ' + this.matchId)
             this.startedBy = this.user.id
             this.startMatch = true
         }
     },
     async mounted() {
-      this.user.socket.on('MultipleConnections', (msg: string) => {
-        // this.$refs.errorPopUp.show('You are already ' + msg)
-        this.msg = 'You are already ' + msg
-        console.log('You are already ' + msg)
-        this.error = true
-        this.reset()
-      })
+        this.user.socket.on('MultipleConnections', (msg: string) => {
+            // this.$refs.errorPopUp.show('You are already ' + msg)
+            this.msg = 'You are already ' + msg
+            this.error = true
+            this.reset()
+        })
 
         // document.addEventListener('visibilitychange', () => {
         //     if (document.visibilityState === 'hidden') {
@@ -119,13 +116,12 @@ export default defineComponent({
         // })
     },
     beforeRouteLeave(to: any, from: any, next: any) {
-        console.log('Leaving pong game...')
         this.user.socket.emit('disconnectUser')
         next()
     },
     methods: {
         hidePopup() {
-          this.error = false
+            this.error = false
         },
         setPracticeMode() {
             this.practiceMode = true
@@ -143,7 +139,6 @@ export default defineComponent({
             this.waiting = false
         },
         joinMatch() {
-            console.log('Joining match...')
             this.waiting = true
         },
         leaveMatchmaking() {
@@ -151,7 +146,6 @@ export default defineComponent({
             this.user.socket.emit('leaveMatchmaking')
         },
         opponentFound(matchId: number) {
-            console.log(matchId)
             this.matchId = matchId
             this.startedBy = this.user.id
             this.waiting = false

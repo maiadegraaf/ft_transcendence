@@ -1,11 +1,11 @@
 <template>
     <div v-if="ch.profile" class="h-20 px-2 py-3 flex" :class="{ 'bg-amaranth-purple': isActive }">
         <div class="flex w-full" @click="toView(ch.id, null, ch.name)">
-          <UserGroupIcon class="h-14 w-14 text-buff object-cover aspect-square" />
-          <div class="flex flex-col pl-3 truncate">
-            <div class="font-bold truncate">{{ ch.name }}</div>
-            <div class="text-xs truncate">{{ lastMessage }}</div>
-          </div>
+            <UserGroupIcon class="h-14 w-14 text-buff object-cover aspect-square" />
+            <div class="flex flex-col pl-3 truncate">
+                <div class="font-bold truncate">{{ ch.name }}</div>
+                <div class="text-xs truncate">{{ lastMessage }}</div>
+            </div>
         </div>
         <div>
             <button @click="groupSettings(ch.id)" class="rounded-full hover:shadow-md">
@@ -56,7 +56,7 @@ export default defineComponent({
         }
     },
     mounted() {
-        if (this.ch.profile == null){
+        if (this.ch.profile == null) {
             this.ch.users.forEach((user: IUser) => {
                 if (user.id !== this.userId) {
                     this.avatarId = user.id
@@ -89,7 +89,6 @@ export default defineComponent({
             this.$emit('switch-chat-right-component', MessageList)
         },
         groupSettings(channelId: number): void {
-            console.log('View changing: ', channelId)
             this.chatStore.setChannelInView(channelId)
             this.$emit('switch-chat-right-component', GroupSettings)
         }

@@ -31,8 +31,8 @@ import axios from 'axios'
 import { EGroupChannelType } from '@/types/types'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import { defineComponent } from 'vue'
-import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
-import NewChannel from "@/components/Chat/NewChannel.vue";
+import NoChannelSelected from '@/components/Chat/NoChannelSelected.vue'
+import NewChannel from '@/components/Chat/NewChannel.vue'
 
 export default defineComponent({
     name: 'SetPassword',
@@ -61,15 +61,9 @@ export default defineComponent({
                 type: EGroupChannelType.PROTECTED,
                 password: this.passwordText
             }
-            axios
-                .post('/api/chat/group', param)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.log(error)
-                    return
-                })
+            axios.post('/api/chat/group', param).catch((error) => {
+                return
+            })
             this.passwordText = ''
             this.chatStore.setNewGroupName('')
             this.$emit('switch-chat-right-component', NoChannelSelected)

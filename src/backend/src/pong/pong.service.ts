@@ -86,7 +86,6 @@ export class PongService {
             return null
         }
         if (this.getInstanceByUserId(user.id)) {
-            console.log('already in match')
             client.emit('MultipleConnections', 'in a match')
             return null
         }
@@ -122,17 +121,13 @@ export class PongService {
             if (!newPlayer) {
                 return
             }
-            console.log('new player' + newPlayer)
             if (!this.matchmakingOneVOneList.find((item) => item.id === newPlayer.id)) {
-                console.log('pushing new player')
-                console.log(newPlayer)
                 this.matchmakingOneVOneList.push(newPlayer)
             }
             if (
                 this.matchmakingOneVOneList.find((item) => item.id === opponentId) &&
                 this.matchmakingOneVOneList.find((item) => item.id === senderId)
             ) {
-                console.log('creating match 2 users in')
                 await this.createMatch(
                     client,
                     this.matchmakingOneVOneList.find((item) => item.id === opponentId),
@@ -157,8 +152,6 @@ export class PongService {
     async handleCreateMatch(client: Socket, player1Id: number, player2Id: number) {
         const player1 = await this.userService.findUserByID(player1Id)
         const player2 = await this.userService.findUserByID(player2Id)
-        console.log('player1' + player1.socketId)
-        console.log('player2' + player2.socketId)
         if (!player1 || !player2) {
             return
         }

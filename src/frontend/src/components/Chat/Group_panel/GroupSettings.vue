@@ -5,22 +5,24 @@
                 <ChevronLeftIcon class="h-8 w-8 text-buff" />
             </button>
             <h2 class="text-buff text-2xl font-semibold uppercase">settings</h2>
-          <div class="flex justify-center items-center">
-            <button
-                @click="leaveGroup"
-                class="hover:opacity-60 transition-opacity text-buff font-semibold mr-2"
-                alt="Delete Group"
-            >Leave</button>
-            <button
-                @click="deleteGroup"
-                class="hover:opacity-60 transition-opacity text-buff font-semibold"
-                alt="Delete Group"
-            >
-                <TrashIcon class="h-8 w-8 text-buff" />
-            </button>
-          </div>
+            <div class="flex justify-center items-center">
+                <button
+                    @click="leaveGroup"
+                    class="hover:opacity-60 transition-opacity text-buff font-semibold mr-2"
+                    alt="Delete Group"
+                >
+                    Leave
+                </button>
+                <button
+                    @click="deleteGroup"
+                    class="hover:opacity-60 transition-opacity text-buff font-semibold"
+                    alt="Delete Group"
+                >
+                    <TrashIcon class="h-8 w-8 text-buff" />
+                </button>
+            </div>
         </div>
-        <GroupSettingUserList/>
+        <GroupSettingUserList />
         <div class="flex flex-col pt-10 items-center justify-center">
             <label class="text-xl text-buff mb-1 font-semibold uppercase">
                 Add new groupmembers by username:
@@ -95,14 +97,14 @@ export default defineComponent({
         }
     },
     computed: {
-      getParams(): any {
-        const params : any = {
-          userName : this.userStore.name,
-          channelId: this.chatStore.channelInView,
-          groupId: this.chatStore.getCurrentGroupId
+        getParams(): any {
+            const params: any = {
+                userName: this.userStore.name,
+                channelId: this.chatStore.channelInView,
+                groupId: this.chatStore.getCurrentGroupId
+            }
+            return params
         }
-        return params
-      },
     },
     methods: {
         doneGroup(): void {
@@ -117,16 +119,10 @@ export default defineComponent({
             }
             this.params = this.getParams
             this.params.userName = this.userText
-            axios
-                .post('/api/chat/group/user', this.params)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.log(error)
-                    this.userText = ''
-                    return
-                })
+            axios.post('/api/chat/group/user', this.params).catch((error) => {
+                this.userText = ''
+                return
+            })
             this.userText = ''
             this.searchResult = null
         },
@@ -135,30 +131,28 @@ export default defineComponent({
             axios
                 .delete('/api/chat/group', { data: this.params })
                 .then((response) => {
-                    console.log(response)
                     if (response.data == true) {
                         this.doneGroup()
                     }
                     // this.redirectGroupPannel()
                 })
                 .catch((error) => {
-                    console.log(error)
                     return
                 })
         },
         leaveGroup(): void {
-          this.params = this.getParams
-          axios.delete('api/chat/group/leave', { data: this.params })
-              .then((response) => {
-                console.log(response)
-                if (response.data == true) {
-                  this.doneGroup()
-                }
-              })
-              .catch((error) => {
-                console.log(error)
-                return
-              })
+            this.params = this.getParams
+            axios
+                .delete('api/chat/group/leave', { data: this.params })
+                .then((response) => {
+                    console.log(response)
+                    if (response.data == true) {
+                        this.doneGroup()
+                    }
+                })
+                .catch((error) => {
+                    return
+                })
         },
         async searchForUser() {
             this.searchError = null

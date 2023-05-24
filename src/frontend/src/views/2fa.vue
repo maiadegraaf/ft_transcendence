@@ -20,20 +20,20 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import axios from "axios";
+import axios from 'axios'
 
 export default defineComponent({
     name: 'TwoFA',
     created() {},
     methods: {
         async redirectHome() {
-          await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
-            if (response.data.usernameChanged == false) {
-              this.$router.push('/ChooseUsername')
-            } else {
-              this.$router.push('/Home')
-            }
-          })
+            await axios.get('http://localhost:8080/api/auth/profile').then((response) => {
+                if (response.data.usernameChanged == false) {
+                    this.$router.push('/ChooseUsername')
+                } else {
+                    this.$router.push('/Home')
+                }
+            })
         },
         redirectCreate() {
             this.$router.push('/2fa/create')

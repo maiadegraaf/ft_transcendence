@@ -46,7 +46,6 @@ export class UserController {
     async getFriends(@Req() req: any) {
         const userID = req.session.user.id
         const Friends = await this.userService.findFriends(userID)
-        Friends.forEach((user) => console.log(user.login))
         return Friends
     }
 
@@ -147,7 +146,6 @@ export class UserController {
             await this.userService.addFriend(userID, friendID)
             return await this.userService.addFriend(friendID, userID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }
@@ -163,7 +161,6 @@ export class UserController {
             await this.userService.removeFriend(userID, friendID)
             return await this.userService.removeFriend(friendID, userID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }
@@ -178,7 +175,6 @@ export class UserController {
         try {
             return await this.userService.getBlockedUsers(userId)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }
@@ -193,7 +189,6 @@ export class UserController {
         try {
             return await this.userService.blockUser(userID, friendID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }
@@ -208,7 +203,6 @@ export class UserController {
         try {
             return await this.userService.unblockUser(userID, friendID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }

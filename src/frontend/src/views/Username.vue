@@ -28,17 +28,17 @@
 <script>
 import axios from 'axios'
 import { defineComponent } from 'vue'
-import {useUserStore} from "@/store/user.store";
+import { useUserStore } from '@/store/user.store'
 
 export default defineComponent({
-  setup() {
-    const user = useUserStore()
-    return { user }
-  },
-  data() {
+    setup() {
+        const user = useUserStore()
+        return { user }
+    },
+    data() {
         return {
             newUserName: '',
-            error: '',
+            error: ''
         }
     },
     methods: {
@@ -58,15 +58,15 @@ export default defineComponent({
             }
         },
         async pushHome() {
-          await axios
-              .post('/api/user/username', {
-                username: this.user.name
-              })
-              .then(() => {
-                this.$router.push('/Home')
-              })
+            await axios
+                .post('/api/user/username', {
+                    username: this.user.name
+                })
+                .then(() => {
+                    this.$router.push('/Home')
+                })
         }
-    },
+    }
 })
 </script>
 

@@ -10,14 +10,9 @@ export class AuthService {
             }
         }
         let id_to_ckeck
-        await axios
-            .get('https://api.intra.42.fr/v2/me', config)
-            .then((response) => {
-                id_to_ckeck = response.data.id
-            })
-            .catch((error) => {
-                console.error(error)
-            })
+        await axios.get('https://api.intra.42.fr/v2/me', config).then((response) => {
+            id_to_ckeck = response.data.id
+        })
         if (id_to_ckeck == id) return true
         else return false
     }

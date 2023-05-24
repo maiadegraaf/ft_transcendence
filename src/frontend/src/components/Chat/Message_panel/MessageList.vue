@@ -52,9 +52,15 @@
                             }}</span>
                         </div>
                         <div v-if="message.text == 'Invite'">
-                          <button class="text-buff px-2 py-1 hover:opacity-70 transition-all my-2 border border-buff rounded-md border-double border-4" @click="acceptInvite">Join the game!</button>
+                            <button
+                                class="text-buff px-2 py-1 hover:opacity-70 transition-all my-2 border border-buff rounded-md border-double border-4"
+                                @click="acceptInvite"
+                            >
+                                Join the game!
+                            </button>
                         </div>
-                        <div v-else
+                        <div
+                            v-else
                             :class="
                                 'inline break-all box-border text-sm p-1 px-4 rounded-xl text-l ' +
                                 colorMessage(message.sender.id)
@@ -121,8 +127,6 @@ export default defineComponent({
         },
         // Testing invite
         acceptInvite() {
-            console.log('Accepting invite')
-            console.log(this.userStore.id, this.chatStore.dmId)
             this.$router.push({
                 name: 'wait',
                 params: {
@@ -130,7 +134,7 @@ export default defineComponent({
                     opponentId: this.chatStore.dmId
                 }
             })
-        },
+        }
     }
 })
 </script>
