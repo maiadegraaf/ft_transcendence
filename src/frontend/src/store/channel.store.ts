@@ -112,7 +112,6 @@ export const useChatStore = defineStore('userChannel', {
             const user = useUserStore()
             this.setChannelName(channel)
             this.channels?.unshift(channel)
-            user.socket.emit('joinRoomById', { channelId: channel.id })
         },
 
         async removeChannel(channelID: number) {
@@ -120,7 +119,6 @@ export const useChatStore = defineStore('userChannel', {
             const index = this.channels?.findIndex((ch) => ch.id === channelID)
             if (index !== undefined && index >= 0) {
                 this.channels?.splice(index, 1)
-                user.socket.emit('leaveRoomById', { channelId: channelID })
             }
         },
 
