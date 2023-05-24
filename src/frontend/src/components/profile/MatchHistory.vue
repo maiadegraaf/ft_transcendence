@@ -104,7 +104,7 @@ export default defineComponent({
     },
     async mounted() {
         await axios.get('/api/match/' + this.$route.params.id).then((response) => {
-            this.matchHistoryData = Array.from(response.data)
+            this.matchHistoryData = Array.from(response.data).reverse() as MatchHistoryData[]
         })
     },
     name: 'MatchHistory'

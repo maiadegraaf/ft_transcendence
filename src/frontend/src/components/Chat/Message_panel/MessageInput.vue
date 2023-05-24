@@ -61,7 +61,6 @@ export default defineComponent({
             }
         },
         sendInvite(): void {
-            console.log('Sending invite')
             this.text = 'Invite'
             this.channel = this.chatStore.channelInView
             this.userStore.socket.emit('msgToServer', this.$data)

@@ -106,7 +106,6 @@ export default defineComponent({
       this.user.socket.on('MultipleConnections', (msg: string) => {
         // this.$refs.errorPopUp.show('You are already ' + msg)
         this.msg = 'You are already ' + msg
-        console.log('You are already ' + msg)
         this.error = true
         this.reset()
       })

@@ -62,7 +62,6 @@ export default defineComponent({
                         userId: friend.id
                     })
                     this.user.socket.on('userOnline', (userId: number) => {
-                        console.log(userId)
                         if (userId === friend.id) friend.isOnline = true
                     })
                     this.user.socket.on('userOffline', (userId: number) => {

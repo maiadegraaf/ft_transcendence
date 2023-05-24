@@ -118,11 +118,7 @@ export default defineComponent({
             this.params.userName = this.userText
             axios
                 .post('/api/chat/group/user', this.params)
-                .then((response) => {
-                    console.log(response)
-                })
                 .catch((error) => {
-                    console.log(error)
                     this.userText = ''
                     return
                 })
@@ -141,7 +137,6 @@ export default defineComponent({
                     // this.redirectGroupPannel()
                 })
                 .catch((error) => {
-                    console.log(error)
                     return
                 })
         },
@@ -154,8 +149,7 @@ export default defineComponent({
                   this.doneGroup()
                 }
               })
-              .catch((error) => {
-                console.log(error)
+              .catch(() => {
                 return
               })
         },

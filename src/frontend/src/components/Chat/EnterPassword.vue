@@ -58,12 +58,9 @@ export default defineComponent({
                 groupId: this.chatStore.newGroupId,
                 password: this.passwordText
             }
-            console.log('test')
-            console.log(param)
             axios
                 .post('/api/chat/group/user/password', param)
                 .then((res) => {
-                    console.log(res)
                     if (res.data === true) {
                         this.$emit('switch-chat-right-component', NoChannelSelected)
                     } else {
