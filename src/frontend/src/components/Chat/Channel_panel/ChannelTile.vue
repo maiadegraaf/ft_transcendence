@@ -3,7 +3,7 @@
         <div class="flex w-full" @click="toView(ch.id, null, ch.name)">
           <UserGroupIcon class="h-14 w-14 text-buff object-cover aspect-square" />
           <div class="flex flex-col pl-3 truncate">
-            <div class="font-bold truncate">{{ ch.name }} | {{ ch.id }}</div>
+            <div class="font-bold truncate">{{ ch.name }}</div>
             <div class="text-xs truncate">{{ lastMessage }}</div>
           </div>
         </div>
@@ -21,7 +21,7 @@
                 alt="avatar"
             />
             <div class="flex flex-col pl-3 truncate">
-                <div class="font-bold truncate">{{ ch.name }} | {{ ch.id }}</div>
+                <div class="font-bold truncate">{{ ch.name }}</div>
                 <div class="text-xs truncate">{{ lastMessage }}</div>
             </div>
         </div>
