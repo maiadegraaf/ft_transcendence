@@ -97,6 +97,7 @@ export default defineComponent({
     computed: {
       getParams(): any {
         const params : any = {
+          userName : this.userStore.name,
           channelId: this.chatStore.channelInView,
           groupId: this.chatStore.getCurrentGroupId
         }
@@ -114,7 +115,7 @@ export default defineComponent({
                 this.userText = ''
                 return
             }
-
+            this.params = this.getParams
             this.params.userName = this.userText
             axios
                 .post('/api/chat/group/user', this.params)
@@ -130,7 +131,7 @@ export default defineComponent({
             this.searchResult = null
         },
         deleteGroup(): void {
-            this.params.userName = this.userStore.name
+            this.params = this.getParams
             axios
                 .delete('/api/chat/group', { data: this.params })
                 .then((response) => {
@@ -146,7 +147,7 @@ export default defineComponent({
                 })
         },
         leaveGroup(): void {
-          this.params.userName = this.userStore.name
+          this.params = this.getParams
           axios.delete('api/chat/group/leave', { data: this.params })
               .then((response) => {
                 console.log(response)
