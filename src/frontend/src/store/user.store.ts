@@ -27,7 +27,9 @@ export const useUserStore = defineStore('user', {
             this.socket.emit('joinRooms')
             await this.listen()
         },
-
+        setName(name: string) {
+            this.name = name
+        },
         //Listeners for server-sent socket events
         async listen() {
             const chatStore = useChatStore()
