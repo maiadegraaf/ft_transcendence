@@ -120,7 +120,6 @@ export default defineComponent({
             .then(() => {
             })
             .catch((error) => {
-              console.log(error)
               return
             })
       },

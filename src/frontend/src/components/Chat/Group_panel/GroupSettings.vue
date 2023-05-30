@@ -143,7 +143,6 @@ export default defineComponent({
             axios
                 .delete('api/chat/group/leave', { data: this.params })
                 .then((response) => {
-                    console.log(response)
                     if (response.data == true) {
                         this.doneGroup()
                     }
