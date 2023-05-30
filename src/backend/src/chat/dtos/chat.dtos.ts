@@ -1,15 +1,20 @@
+import { IsInt } from 'class-validator'
+
 export class MessageDto {
+    @IsInt()
     id: number
     sender: {
         id: number
         login: string
     }
+    @IsInt()
     channel: number
     text: string
 }
 
 export class JoinRoomDto {
     userName: string
+    @IsInt()
     channelId: number
     channelName: string
 }
@@ -26,12 +31,15 @@ export class CreateGroupChannelDto {
 
 export class GroupUserProfileUpdateDto {
     userName: string
+    @IsInt()
     groupId: number
+    @IsInt()
     channelId: number
 }
 
 export class JoinGroupProtectedDto {
     userName: string
+    @IsInt()
     groupId: number
     password: string
 }

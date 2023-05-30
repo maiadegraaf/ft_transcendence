@@ -19,7 +19,6 @@ import { CreateDmChannelDto, CreateGroupChannelDto } from '../dtos/chat.dtos'
 import { ChatGateway } from '../gateway/chat.gateway'
 import { GroupProfileService } from '../services/groupProfile.service'
 import { FortyTwoAuthGuard } from '../../auth/auth.guard'
-import { response } from 'express'
 
 @Controller('chat')
 export class ChatController {
@@ -37,24 +36,32 @@ export class ChatController {
     @UseGuards(FortyTwoAuthGuard)
     @Get('/')
     async getUserChannels(@Req() req): Promise<Channel[]> {
-        const id = req.session.user.id
-        this.logger.log('getChannelMessages: messages found for user: ' + id)
-        const channels = await this.channelService.getUserChannels(id)
-        return channels
+        try {
+            const id = req.session.user.id
+            this.logger.log('getChannelMessages: messages found for user: ' + id)
+            const channels = await this.channelService.getUserChannels(id)
+            return channels
+        } catch (err) {
+            this.logger.error('getChannelMessages: ' + err)
+        }
     }
 
     // Get /api/chat/${id}/channel
     @UseGuards(FortyTwoAuthGuard)
     @Get('/:id/channel')
     async getUserChannel(@Req() req): Promise<any> {
-        const id = req.session.user.id
-        const channels = await this.userService.getChannelsByUserId(id)
-        if (!channels) {
-            this.logger.error('getUserChannels: No channels found from user: ' + id)
-            return
+        try {
+            const id = req.session.user.id
+            const channels = await this.userService.getChannelsByUserId(id)
+            if (!channels) {
+                this.logger.error('getUserChannels: No channels found from user: ' + id)
+                return
+            }
+            this.logger.log('getUserChannels: channels found from user: ' + id)
+            return channels
+        } catch (err) {
+            this.logger.log('getUserChannels: ' + err)
         }
-        this.logger.log('getUserChannels: channels found from user: ' + id)
-        return channels
     }
 
     // Post /api/chat/dm
@@ -64,29 +71,31 @@ export class ChatController {
         @Req() req,
         @Body(new ValidationPipe()) param: CreateDmChannelDto
     ): Promise<any> {
-        // try {
-        const id = req.session.user.id
-        const user1 = await this.userService.getUserById(id)
-        if (!user1) {
-            throw new HttpException(
-                'Could not find user1 by id to create new dm channel',
-                HttpStatus.FORBIDDEN
-            )
+        try {
+            const id = req.session.user.id
+            const user1 = await this.userService.getUserById(id)
+            if (!user1) {
+                throw new HttpException(
+                    'Could not find user1 by id to create new dm channel',
+                    HttpStatus.FORBIDDEN
+                )
+            }
+            const user2 = await this.userService.getUserByLogin(param.invitee)
+            if (!user2) {
+                throw new HttpException(
+                    'Could not find user2 by invitee to create new dm channel',
+                    HttpStatus.FORBIDDEN
+                )
+            }
+            let channel = await this.channelService.newDmChannel(user1, user2)
+            channel = await this.channelService.getChannelById(channel.id)
+            await this.chatGateway.emitNewDmChannel(user1, user2, channel)
+            return
+        } catch (error) {
+            this.logger.error('postNewDMChannel: ' + error)
+            if (error instanceof HttpException) throw error
+            throw error
         }
-        const user2 = await this.userService.getUserByLogin(param.invitee)
-        if (!user2) {
-            throw new HttpException(
-                'Could not find user2 by invitee to create new dm channel',
-                HttpStatus.FORBIDDEN
-            )
-        }
-        let channel = await this.channelService.newDmChannel(user1, user2)
-        channel = await this.channelService.getChannelById(channel.id)
-        await this.chatGateway.emitNewDmChannel(user1, user2, channel)
-        return
-        // } catch (error) {
-        //     this.logger.error('postNewDMChannel: ' + error)
-        // }
     }
 
     // Post /api/chat/group
