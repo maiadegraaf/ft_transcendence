@@ -18,7 +18,7 @@
                     <div class="flex items-center">
                         <img
                             class="rounded-full w-8 object-cover mr-3 aspect-square"
-                            :src="`api/user/${user.id}/avatar`"
+                            :src="`api/user/${user.id}/avatar?cache=${Math.ceil(Math.random()*1000000)}`"
                             alt="avatar"
                         />
                         <a :href="'/profile/' + user.id">{{ user.login }}</a>
@@ -95,6 +95,7 @@ export default defineComponent({
                   user.admin = this.checkAdmin(user, profile);
                   user.muted = this.checkMuted(user, profile);
                   if (user.id == this.userStore.id) {
+                    user.login = this.userStore.name;
                     this.userStore.owner = user.owner;
                     this.userStore.admin = user.admin;
                     users.unshift(users.splice(index, 1)[0])

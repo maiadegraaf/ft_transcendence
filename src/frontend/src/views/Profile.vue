@@ -4,7 +4,7 @@
         <div class="flex flex-col mt-16 items-center">
             <div class="w-60 h-60 text-right relative">
                 <img
-                    :src="`/api/user/${isProfileSession ? user.id : userData.id}/avatar`"
+                    :src="`/api/user/${isProfileSession ? user.id : userData.id}/avatar?cache=${cacheKey}`"
                     alt="Avatar"
                     class="w-full h-full rounded-full object-cover mb-8"
                 />
@@ -65,8 +65,9 @@ export default defineComponent({
     },
     data() {
         return {
+            cacheKey: 0,
             isOnline: false,
-            doesProfileExist: false,
+            doesProfileExist: true,
             isProfileSession: false,
             userData: {
                 id: 0,
@@ -89,7 +90,7 @@ export default defineComponent({
             if (this.user.id === Number(this.$route.params.id)) {
                 this.isProfileSession = true
             }
-
+            this.cacheKey = Math.ceil(Math.random()*1000000)
         })
         .catch(() => {
             this.doesProfileExist = false
@@ -124,8 +125,8 @@ export default defineComponent({
                             formData,
                             config
                         )
+                        this.cacheKey = Math.ceil(Math.random()*1000000)
                         this.user = { ...this.user }
-                        window.location.reload()
                     } catch (error) {}
                 }
             })
@@ -137,8 +138,14 @@ export default defineComponent({
             else {
                 await axios.post('/api/user/username', {
                     username: newUsername
-                })
-                window.location.reload()
+                }).then(
+                    () => {
+                      if (newUsername != null) {
+                        if (this.isProfileSession) {
+                          this.user.setName(newUsername)
+                        }
+                      }
+                    })
             }
         }
     }
