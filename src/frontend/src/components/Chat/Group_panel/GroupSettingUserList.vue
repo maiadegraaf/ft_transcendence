@@ -18,7 +18,7 @@
                     <div class="flex items-center">
                         <img
                             class="rounded-full w-8 object-cover mr-3 aspect-square"
-                            :src="`api/user/${user.id}/avatar`"
+                            :src="`api/user/${user.id}/avatar?cache=${Math.ceil(Math.random()*1000000)}`"
                             alt="avatar"
                         />
                         <a :href="'/profile/' + user.id">{{ user.login }}</a>
