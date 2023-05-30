@@ -9,7 +9,6 @@ import {
     ParseIntPipe,
     Post,
     Put,
-    Query,
     Req,
     Res,
     StreamableFile,
