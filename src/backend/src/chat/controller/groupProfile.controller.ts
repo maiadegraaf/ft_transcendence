@@ -37,7 +37,7 @@ export class GroupProfileController {
     @UseGuards(FortyTwoAuthGuard)
     @Post('join')
     async postJoinGroup(@Req() req, @Body(new ValidationPipe()) param: JoinGroupDto): Promise<any> {
-        try {
+        // try {
             const id = req.session.user.id
             const user = await this.userService.getUserById(id)
             if (!user) {
@@ -60,9 +60,9 @@ export class GroupProfileController {
             const channel = await this.channelService.addUserToChannel(group.channel.id, user)
             await this.chatGateway.emitGroupChannelToUser(channel, user)
             return null
-        } catch (error) {
-            this.logger.error('postJoinGroup: ' + error)
-        }
+        // } catch (error) {
+        //     this.logger.error('postJoinGroup: ' + error)
+        // }
     }
 
     // Post /api/chat/group/user/password
