@@ -38,17 +38,17 @@
                         <div v-if="chatStore.getCurrentMessages.slice().reverse()[index + 1]">
                             <span
                                 v-if="
-                                    message.sender.id !=
+                                    message.sender.id !==
                                     chatStore.getCurrentMessages.slice().reverse()[index + 1].sender
                                         .id
                                 "
                                 class="text-xs opacity-60 pb-1 pr-1"
-                                >{{ message.sender.login }}</span
+                                >{{ message.sender.id !== userStore.id ? message.sender.login : "You" }}</span
                             >
                         </div>
                         <div v-else>
                             <span class="text-xs opacity-60 pb-1 pr-1">{{
-                                message.sender.login
+                                message.sender.id !== userStore.id ? message.sender.login : "You"
                             }}</span>
                         </div>
                         <div v-if="message.text == 'Invite'">
