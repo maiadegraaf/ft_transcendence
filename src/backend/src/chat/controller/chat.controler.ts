@@ -2,7 +2,6 @@ import {
     Controller,
     Get,
     Post,
-    Param,
     Body,
     Logger,
     ValidationPipe,
@@ -43,24 +42,6 @@ export class ChatController {
             return channels
         } catch (err) {
             this.logger.error('getChannelMessages: ' + err)
-        }
-    }
-
-    // Get /api/chat/${id}/channel
-    @UseGuards(FortyTwoAuthGuard)
-    @Get('/:id/channel')
-    async getUserChannel(@Req() req): Promise<any> {
-        try {
-            const id = req.session.user.id
-            const channels = await this.userService.getChannelsByUserId(id)
-            if (!channels) {
-                this.logger.error('getUserChannels: No channels found from user: ' + id)
-                return
-            }
-            this.logger.log('getUserChannels: channels found from user: ' + id)
-            return channels
-        } catch (err) {
-            this.logger.log('getUserChannels: ' + err)
         }
     }
 
