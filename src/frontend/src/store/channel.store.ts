@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type {IChannels, IMessage, IProfile, IUser} from '@/types/types'
+import type { IChannels, IMessage, IProfile, IUser } from '@/types/types'
 import { useUserStore } from '@/store/user.store'
 
 export const useChatStore = defineStore('userChannel', {
@@ -9,7 +9,7 @@ export const useChatStore = defineStore('userChannel', {
         dmId: -1 as number,
         dmName: '' as string,
         newGroupName: '' as string,
-        newGroupId: -1 as number,
+        newGroupId: -1 as number
     }),
 
     getters: {
@@ -39,9 +39,9 @@ export const useChatStore = defineStore('userChannel', {
             if (channelIV == null || channelIV.profile == null) {
                 return null
             }
-            const profile = channelIV.profile;
+            const profile = channelIV.profile
             return profile
-        },
+        }
     },
 
     actions: {
@@ -128,11 +128,14 @@ export const useChatStore = defineStore('userChannel', {
         },
 
         async removeUserFromChannel(channelId: number, user: IUser) {
-            this.channels?.find((channel) => channel.id === channelId)
-                ?.users
-                ?.splice(this.channels?.find(
-                    (channel) => channel.id === channelId)
-                ?.users?.findIndex((u) => u.id === user.id) as number, 1)
+            this.channels
+                ?.find((channel) => channel.id === channelId)
+                ?.users?.splice(
+                    this.channels
+                        ?.find((channel) => channel.id === channelId)
+                        ?.users?.findIndex((u) => u.id === user.id) as number,
+                    1
+                )
         },
 
         async addAdminToChannel(channelId: number, user: IUser) {

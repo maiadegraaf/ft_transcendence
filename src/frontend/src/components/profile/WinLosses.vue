@@ -62,7 +62,6 @@ export default defineComponent({
         await axios.get('/api/leaderboard/id/' + this.$route.params.id).then((response) => {
             this.scoreData = response.data
         })
-        console.log(this.scoreData)
     }
 })
 </script>

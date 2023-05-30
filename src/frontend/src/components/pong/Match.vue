@@ -72,7 +72,6 @@ export default defineComponent({
         )
 
         window.addEventListener('keydown', (event) => {
-            console.log('Key pressed')
             switch (event.keyCode) {
                 case 38: // up arrow key
                     this.info.d = -1
@@ -82,7 +81,6 @@ export default defineComponent({
                     break
             }
             if (!this.socket) {
-                console.log('Socket not connected')
                 return
             }
             this.socket.emit('move', this.info)

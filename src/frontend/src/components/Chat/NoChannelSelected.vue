@@ -1,23 +1,22 @@
 <script lang="ts">
 import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
 import { defineComponent } from 'vue'
-import MessageList from "@/components/Chat/Message_panel/MessageList.vue";
+import MessageList from '@/components/Chat/Message_panel/MessageList.vue'
 import { useChatStore } from '@/store/channel.store'
 
 export default defineComponent({
     name: 'NoChannelSelected',
     setup() {
-      const chatStore = useChatStore()
-      return { chatStore }
+        const chatStore = useChatStore()
+        return { chatStore }
     },
     components: {
         ChatBubbleLeftRightIcon
     },
     mounted() {
-      if (this.chatStore.channelInView > -1) {
-        this.$emit('switch-chat-right-component', MessageList)
-      }
-
+        if (this.chatStore.channelInView > -1) {
+            this.$emit('switch-chat-right-component', MessageList)
+        }
     }
 })
 </script>

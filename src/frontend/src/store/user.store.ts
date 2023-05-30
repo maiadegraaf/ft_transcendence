@@ -32,41 +32,31 @@ export const useUserStore = defineStore('user', {
         async listen() {
             const chatStore = useChatStore()
             this.socket.on('msgToClient', (message: IMessage) => {
-                console.log('Message received!')
                 chatStore.receivedMessage(message)
             })
             this.socket.on('addChannelToClient', (channel: IChannels) => {
-                console.log('Channel received!')
-                console.log(channel)
                 chatStore.receivedNewChannel(channel)
             })
             this.socket.on('removeChannelFromClient', (channelId: number) => {
-                console.log('Channel removed request! for channel: ' + channelId)
                 chatStore.removeChannel(channelId)
             })
             this.socket.on('addUserToChannel', (payload: any) => {
                 chatStore.addUserToChannel(payload.channelId, payload.user)
-                console.log('User added to channel!')
             })
             this.socket.on('removeUserFromChannel', (payload: any) => {
                 chatStore.removeUserFromChannel(payload.channelId, payload.user)
-                console.log('User removed from channel!')
             })
             this.socket.on('addAdminToChannel', (payload: any) => {
                 chatStore.addAdminToChannel(payload.channelId, payload.user)
-                console.log('Admin added to channel!')
             })
             this.socket.on('removeAdminFromChannel', (payload: any) => {
                 chatStore.removeAdminFromChannel(payload.channelId, payload.user)
-                console.log('Admin removed from channel!')
             })
             this.socket.on('addMutedToChannel', (payload: any) => {
                 chatStore.addMutedToChannel(payload.channelId, payload.user)
-                console.log('Muted added to channel!')
             })
             this.socket.on('removeMutedFromChannel', (payload: any) => {
                 chatStore.removeMutedFromChannel(payload.channelId, payload.user)
-                console.log('Muted removed from channel!')
             })
         },
 

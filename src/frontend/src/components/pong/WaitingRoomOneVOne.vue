@@ -17,7 +17,6 @@ export default defineComponent({
         })
 
         this.socket.on('opponentFound', (matchId: number) => {
-            console.log('function opponentFound in WaitingRoomOneVOne.vue')
             this.$emit('opponent-found', matchId)
         })
     },

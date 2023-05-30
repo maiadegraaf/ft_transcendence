@@ -226,7 +226,6 @@ export class UserController {
             await this.userService.removeFriend(userID, friendID)
             return await this.userService.removeFriend(friendID, userID)
         } catch (error) {
-            console.log(error)
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
             }

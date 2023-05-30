@@ -53,7 +53,9 @@ export default defineComponent({
     },
     methods: {
         start() {
-            console.log('Starting game by ' + this.userId)
+            if (this.winningScore < 1) {
+                this.winningScore = 1
+            }
             let practiceSettings: practiceSettingsInterface = {
                 score: this.winningScore,
                 selectedDifficulty: this.selectedDifficulty,

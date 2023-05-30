@@ -117,12 +117,10 @@ export default defineComponent({
             }
             this.params = this.getParams
             this.params.userName = this.userText
-            axios
-                .post('/api/chat/group/user', this.params)
-                .catch((error) => {
-                    this.userText = ''
-                    return
-                })
+            axios.post('/api/chat/group/user', this.params).catch((error) => {
+                this.userText = ''
+                return
+            })
             this.userText = ''
             this.searchResult = null
         },
@@ -131,7 +129,6 @@ export default defineComponent({
             axios
                 .delete('/api/chat/group', { data: this.params })
                 .then((response) => {
-                    console.log(response)
                     if (response.data == true) {
                         this.doneGroup()
                     }
@@ -142,17 +139,18 @@ export default defineComponent({
                 })
         },
         leaveGroup(): void {
-          this.params = this.getParams
-          axios.delete('api/chat/group/leave', { data: this.params })
-              .then((response) => {
-                console.log(response)
-                if (response.data == true) {
-                  this.doneGroup()
-                }
-              })
-              .catch(() => {
-                return
-              })
+            this.params = this.getParams
+            axios
+                .delete('api/chat/group/leave', { data: this.params })
+                .then((response) => {
+                    console.log(response)
+                    if (response.data == true) {
+                        this.doneGroup()
+                    }
+                })
+                .catch((error) => {
+                    return
+                })
         },
         async searchForUser() {
             this.searchError = null

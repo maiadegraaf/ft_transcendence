@@ -37,7 +37,7 @@ export class GroupProfileController {
     @UseGuards(FortyTwoAuthGuard)
     @Post('join')
     async postJoinGroup(@Req() req, @Body(new ValidationPipe()) param: JoinGroupDto): Promise<any> {
-        try {
+        // try {
             const id = req.session.user.id
             const user = await this.userService.getUserById(id)
             if (!user) {
@@ -60,9 +60,9 @@ export class GroupProfileController {
             const channel = await this.channelService.addUserToChannel(group.channel.id, user)
             await this.chatGateway.emitGroupChannelToUser(channel, user)
             return null
-        } catch (error) {
-            this.logger.error('postJoinGroup: ' + error)
-        }
+        // } catch (error) {
+        //     this.logger.error('postJoinGroup: ' + error)
+        // }
     }
 
     // Post /api/chat/group/user/password
@@ -139,7 +139,7 @@ export class GroupProfileController {
             }
             const channel = await this.channelService.removeUserFromChannel(param.channelId, user)
             await this.chatGateway.emitDeleteChannelFromUser(channel, user)
-            // emit something to user to remove channel from list (maybe update emit)
+            return true
         } catch (error) {
             this.logger.error('deleteUserFromChannel: ' + error)
         }
@@ -175,6 +175,7 @@ export class GroupProfileController {
             const info = await this.groupProfileService.deleteAdmin(param, id)
             await this.chatGateway.emitRemoveAdminFromChannel(info)
             this.logger.log('deleteAdminFromGroup: ' + param.userName)
+            return true
         } catch (error) {
             this.logger.error(error)
             return false
@@ -211,6 +212,7 @@ export class GroupProfileController {
             const info = await this.groupProfileService.deleteMute(param, id)
             await this.chatGateway.emitRemoveMutedFromChannelToUser(info)
             this.logger.log('deleteMutedFromGroup: ' + param.userName)
+            return true
         } catch (error) {
             this.logger.error(error)
             return false
@@ -247,6 +249,7 @@ export class GroupProfileController {
             const id = req.session.user.id
             await this.groupProfileService.deleteBlocked(param, id)
             this.logger.log('deleteBlockedFromGroup: ' + param.userName)
+            return true
         } catch (error) {
             this.logger.error(error)
             return false

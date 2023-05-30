@@ -19,7 +19,7 @@
         </div>
     </div>
     <div>
-      <ErrorPopUp v-if="error" :message="msg" @hide-popup="hidePopup"/>
+        <ErrorPopUp v-if="error" :message="msg" @hide-popup="hidePopup" />
     </div>
 </template>
 
@@ -54,9 +54,6 @@ export default defineComponent({
         }
     },
     created() {
-        // this.currentPlayerId = this.userId
-        console.log('Current player id: ' + this.userStore.id)
-
         if (this.matchId != 0) {
             console.log('Match id: ' + this.matchId)
             this.startedBy = this.userStore.id
@@ -72,7 +69,6 @@ export default defineComponent({
         })
     },
     beforeRouteLeave(to, from, next: any) {
-        console.log('Leaving pong game...')
         this.userStore.socket.emit('disconnectUser')
         next()
     },
@@ -91,10 +87,10 @@ export default defineComponent({
             })
         },
         opponentFound(matchId: number) {
-          console.log('Opponent found ' + this.startMatch)
-          this.matchId = matchId
-          this.startedBy = this.userStore.id
-          this.startMatch = true
+            console.log('Opponent found ' + this.startMatch)
+            this.matchId = matchId
+            this.startedBy = this.userStore.id
+            this.startMatch = true
         }
     }
 })

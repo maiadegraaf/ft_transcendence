@@ -36,6 +36,9 @@ export class User {
     @Column({ default: false })
     isTwoFactorAuthenticationEnabled: boolean
 
+    @Column({ default: false })
+    usernameChanged: boolean
+
     @JoinTable()
     @ManyToMany(() => Channel, (channel) => channel.users)
     channels: Channel[]

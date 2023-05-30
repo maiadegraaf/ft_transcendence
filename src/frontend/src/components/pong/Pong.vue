@@ -103,12 +103,12 @@ export default defineComponent({
         }
     },
     async mounted() {
-      this.user.socket.on('MultipleConnections', (msg: string) => {
-        // this.$refs.errorPopUp.show('You are already ' + msg)
-        this.msg = 'You are already ' + msg
-        this.error = true
-        this.reset()
-      })
+        this.user.socket.on('MultipleConnections', (msg: string) => {
+            // this.$refs.errorPopUp.show('You are already ' + msg)
+            this.msg = 'You are already ' + msg
+            this.error = true
+            this.reset()
+        })
 
         // document.addEventListener('visibilitychange', () => {
         //     if (document.visibilityState === 'hidden') {

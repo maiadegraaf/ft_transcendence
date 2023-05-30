@@ -13,8 +13,6 @@ export default defineComponent({
         this.socket.emit('joinMatchmaking', this.userId)
 
         this.socket.on('opponentFound', (matchId: number) => {
-            console.log('Opponent found')
-            console.log(matchId)
             this.$emit('opponent-found', matchId)
         })
     },

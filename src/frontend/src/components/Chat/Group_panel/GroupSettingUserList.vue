@@ -105,15 +105,11 @@ export default defineComponent({
       },
     },
     methods: {
-      addAdmin(login: string): void {
-        let params = this.getParams
-        params.userName = login
-        axios
-            .post('/api/chat/group/admin', params)
-            .then((response) => {
-            })
-            .catch((error) => {
-              return
+        addAdmin(login: string): void {
+            let params = this.getParams
+            params.userName = login
+            axios.post('/api/chat/group/admin', params).catch((error) => {
+                return
             })
       },
       deleteAdmin(login: string): void {
@@ -129,61 +125,56 @@ export default defineComponent({
             })
       },
 
-      addMuted(login: string): void {
-        let params = this.getParams
-        params.userName = login
-        axios
-            .post('/api/chat/group/muted', params)
-      },
-      deleteMuted(login: string): void {
-        let params = this.getParams
-        params.userName = login
-        axios
-            .delete('/api/chat/group/muted', { data: params })
-            .then((response) => {
-              console.log(response)
+        addMuted(login: string): void {
+            let params = this.getParams
+            params.userName = login
+            axios.post('/api/chat/group/muted', params).catch((error) => {
+                return
             })
-            .catch((error) => {
-              return
+        },
+        deleteMuted(login: string): void {
+            let params = this.getParams
+            params.userName = login
+            axios.delete('/api/chat/group/muted', { data: params }).catch((error) => {
+                return
             })
-      },
-      addBanned(login: string): void {
-        let params = this.getParams
-        params.userName = login
-        axios
-            .post('/api/chat/group/banned', params)
-      },
-      deleteUser(login: string): void {
-        let params = this.getParams
-        params.userName = login
-        axios
-            .delete('/api/chat/group/user', { data: params })
-      },
-      checkOwner(user: IUser, profile: IProfile) {
-        return profile.owner.id === user.id;
-
-      },
-      checkAdmin(user: IUser, profile: IProfile) {
-        return !!profile.admin.find((adm) => adm.id === user.id);
-
-      },
-      checkMuted(user: IUser, profile: IProfile) {
-        return !!profile.muted.find((mtd) => mtd.id === user.id);
-
-      },
-      getRoleStr(user: IUser) {
-        let str = ''
-        if (user.owner) {
-          str += ' Owner'
+        },
+        addBanned(login: string): void {
+            let params = this.getParams
+            params.userName = login
+            axios.post('/api/chat/group/banned', params).catch((error) => {
+                return
+            })
+        },
+        deleteUser(login: string): void {
+            let params = this.getParams
+            params.userName = login
+            axios.delete('/api/chat/group/user', { data: params }).catch((error) => {
+                return
+            })
+        },
+        checkOwner(user: IUser, profile: IProfile) {
+            return profile.owner.id === user.id
+        },
+        checkAdmin(user: IUser, profile: IProfile) {
+            return !!profile.admin.find((adm) => adm.id === user.id)
+        },
+        checkMuted(user: IUser, profile: IProfile) {
+            return !!profile.muted.find((mtd) => mtd.id === user.id)
+        },
+        getRoleStr(user: IUser) {
+            let str = ''
+            if (user.owner) {
+                str += ' Owner'
+            }
+            if (user.admin) {
+                str += ' Admin'
+            }
+            if (user.muted) {
+                str += ' Muted'
+            }
+            return str
         }
-        if (user.admin) {
-          str += ' Admin'
-        }
-        if (user.muted) {
-          str += ' Muted'
-        }
-        return str
-      },
     }
 })
 </script>

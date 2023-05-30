@@ -89,6 +89,10 @@ export default defineComponent({
             if (this.user.id === Number(this.$route.params.id)) {
                 this.isProfileSession = true
             }
+
+        })
+        .catch(() => {
+            this.doesProfileExist = false
         })
         this.user.socket.emit('checkUserOnline', {
             userId: this.$route.params.id
@@ -104,6 +108,7 @@ export default defineComponent({
         async handleUploadAvatar() {
             const fileInput = document.createElement('input')
             fileInput.type = 'file'
+            fileInput.accept = 'image/jpeg, image/png, image/gif, image/svg+xml'
 
             fileInput.addEventListener('change', async () => {
                 const file = fileInput.files?.[0]
@@ -121,9 +126,7 @@ export default defineComponent({
                         )
                         this.user = { ...this.user }
                         window.location.reload()
-                    } catch (error) {
-                        console.log(error)
-                    }
+                    } catch (error) {}
                 }
             })
             fileInput.click()

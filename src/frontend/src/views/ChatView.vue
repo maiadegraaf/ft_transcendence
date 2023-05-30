@@ -22,7 +22,7 @@ import { useChatStore } from '@/store/channel.store'
 import { useUserStore } from '@/store/user.store'
 import { defineComponent } from 'vue'
 import ChannelHeader from '@/components/Chat/Channel_panel/ChannelHeader.vue'
-import NoChannelSelected from "@/components/Chat/NoChannelSelected.vue";
+import NoChannelSelected from '@/components/Chat/NoChannelSelected.vue'
 
 export default defineComponent({
     name: 'ChatView',

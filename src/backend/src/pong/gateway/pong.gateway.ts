@@ -52,7 +52,7 @@ export class PongGateway implements OnGatewayDisconnect {
 
     @SubscribeMessage('leaveMatchmakingOneVOne')
     handleLeaveMatchmakingOneVOne(@ConnectedSocket() client: Socket): void {
-        this.pongService.handleLeaveMatchmaking(client)
+        this.pongService.handleLeaveMatchmakingOneVOne(client)
     }
 
     @SubscribeMessage('move')
@@ -76,6 +76,11 @@ export class PongGateway implements OnGatewayDisconnect {
     @SubscribeMessage('start practice')
     handleStartPractice(@ConnectedSocket() client: Socket, @MessageBody() data: any): void {
         this.pongService.handlePracticeMode(client, data)
+    }
+
+    @SubscribeMessage('leave practice')
+    handleLeavePractice(@ConnectedSocket() client: Socket): void {
+        this.pongService.handleLeavePractice(client)
     }
 
     handleDisconnect(@ConnectedSocket() client: Socket): void {
