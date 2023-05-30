@@ -2,7 +2,7 @@
     <div class="text-buff flex h-20 justify-between items-center pb-4 bg-dark-purple">
         <div @click="$router.push('/profile/' + user.id)" class="flex items-center cursor-pointer">
             <img
-                :src="`/api/user/${user.id}/avatar`"
+                :src="`/api/user/${user.id}/avatar?cache=${Math.ceil(Math.random()*1000000)}`"
                 alt="Avatar"
                 class="w-12 h-12 rounded-full object-cover mx-3"
             />

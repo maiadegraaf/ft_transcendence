@@ -90,7 +90,7 @@ export default defineComponent({
             if (this.user.id === Number(this.$route.params.id)) {
                 this.isProfileSession = true
             }
-
+            this.cacheKey = Math.ceil(Math.random()*1000000)
         })
         .catch(() => {
             this.doesProfileExist = false
@@ -125,8 +125,8 @@ export default defineComponent({
                             formData,
                             config
                         )
+                        this.cacheKey = Math.ceil(Math.random()*1000000)
                         this.user = { ...this.user }
-                        this.cacheKey++
                     } catch (error) {}
                 }
             })
