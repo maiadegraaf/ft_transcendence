@@ -185,7 +185,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             userSocket.join('room' + channel.id)
             return
         }
-        this.logger.error('User is not connected to chat')
+        this.logger.log(user.login + ' is not connected to chat at the moment')
     }
 
     async emitDeleteChannelFromUser(channel: Channel, user: User): Promise<any> {
@@ -196,7 +196,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             })
             const userSocket = this.getClientSocketById(user.id)
             if (!userSocket) {
-                throw new HttpException('User is not connected to chat', HttpStatus.FORBIDDEN)
+                this.logger.log(user.login + ' is not connected to chat at the moment')
+                return
             }
             userSocket.emit('removeChannelFromClient', channel.id)
             userSocket.leave('room' + channel.id)
