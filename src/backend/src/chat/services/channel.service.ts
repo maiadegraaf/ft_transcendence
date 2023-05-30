@@ -68,7 +68,7 @@ export class ChannelService {
         } catch (error) {
             throw new HttpException(
                 error.message,
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.FORBIDDEN,
             );
         }
     }

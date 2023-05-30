@@ -20,6 +20,7 @@
                 >
                     Join
                 </button>
+                <p v-if="searchErrorJOIN" class="font-bold text-blush">{{ searchErrorJOIN}}</p>
             </div>
             <div class="div_input_new_channel">
                 <input v-model="groupText" placeholder="New Group Name" class="input_new_channel" />
@@ -74,6 +75,7 @@
                 >
                     dm user
                 </button>
+                <p v-if="searchErrorDM" class="font-bold text-blush">{{ searchErrorDM}}</p>
             </div>
         </div>
     </div>
@@ -81,7 +83,7 @@
 
 <script lang="ts">
 import { useChatStore } from '@/store/channel.store'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios';
 import { EGroupChannelType } from '@/types/types'
 import { defineComponent } from 'vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
@@ -93,6 +95,9 @@ const Form = {
     PRIVATE: 0,
     PUBLIC: 1,
     PROTECTED: 2
+}
+interface ErrorResponse {
+  message: string;
 }
 
 export default defineComponent({
@@ -110,7 +115,9 @@ export default defineComponent({
             checkedBox: Form.PRIVATE,
             dmText: '',
             groupText: '',
-            joinGroupText: ''
+            joinGroupText: '',
+            searchErrorDM: null as string | null,
+            searchErrorJOIN: null as string | null,
         }
     },
     mounted() {
@@ -126,7 +133,7 @@ export default defineComponent({
                 this.newProtectedGroupChannel()
             }
         },
-        dmNewUser(): void {
+        async dmNewUser() {
             // Validates the input before sending the message.
             if (this.dmText.length <= 0) {
                 this.dmText = ''
@@ -135,12 +142,24 @@ export default defineComponent({
             const param = {
                 invitee: this.dmText
             }
-            axios.post('/api/chat/dm', param)
-            this.dmText = ''
+            try {
+              await axios.post('/api/chat/dm', param)
+              this.searchErrorDM = null
+              this.$emit('switch-chat-right-component', NoChannelSelected)
+              this.dmText = ''
+            } catch (error) {
+              const axiosError = error as AxiosError;
+              if (axiosError.response && axiosError.response.data) {
+                const data = axiosError.response.data as ErrorResponse;
+                this.searchErrorDM = data.message;
+              } else {
+                this.searchErrorDM = `No user found with username "${param.invitee}"`
+              }
+              this.dmText = ''
+            }
             // set channel in view
-            this.$emit('switch-chat-right-component', NoChannelSelected)
         },
-        joinGroup(): void {
+        async joinGroup() {
             if (this.joinGroupText.length <= 0) {
                 this.joinGroupText = ''
                 return
@@ -148,9 +167,10 @@ export default defineComponent({
             const param = {
                 groupName: this.joinGroupText
             }
-            axios
+            await axios
                 .post('api/chat/group/join', param)
                 .then((response) => {
+                    this.searchErrorJOIN = null
                     if (!response.data) {
                         this.$emit('switch-chat-right-component', NoChannelSelected)
                     }
@@ -163,7 +183,14 @@ export default defineComponent({
                 })
                 .catch((error) => {
                     this.joinGroupText = ''
-                    this.$emit('switch-chat-right-component', NoChannelSelected)
+                    const axiosError = error as AxiosError;
+                    if (axiosError.response && axiosError.response.data) {
+                      const data = axiosError.response.data as ErrorResponse;
+                      this.searchErrorJOIN = data.message;
+                    } else {
+                      this.searchErrorJOIN = 'Error Joining group'
+                    }
+                    // this.$emit('switch-chat-right-component', NoChannelSelected)
                     return
                 })
         },
