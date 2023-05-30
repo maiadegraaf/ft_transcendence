@@ -44,14 +44,10 @@
 </template>
 
 <script lang="ts">
+import type { IFriend } from '@/types/types'
 import axios from 'axios'
 import { defineComponent } from 'vue'
-
-interface Friend {
-    id: number
-    login: string
-    isOnline: boolean
-}
+import {useUserStore} from "@/store/user.store";
 
 export default defineComponent({
     props: {
@@ -60,7 +56,7 @@ export default defineComponent({
             required: true
         },
         friendList: {
-            type: Array as () => Friend[],
+            type: Array as () => IFriend[],
             required: true
         }
     },
@@ -69,11 +65,16 @@ export default defineComponent({
             searchError: ''
         }
     },
+    setup() {
+      const user = useUserStore()
+      return { user }
+    },
     methods: {
         async removeFriend(friendId: number) {
             try {
-                await axios.post(`/api/user/unfriend/${friendId}`)
-                window.location.reload()
+                await axios.post(`/api/user/unfriend/${friendId}`).then(response => {
+                  this.user.removeFriend(response.data)
+                })
             } catch (error: any) {
                 if (error.response) {
                     this.searchError = error.response.data.message
@@ -84,8 +85,9 @@ export default defineComponent({
         },
         async blockUser(friendId: number) {
             try {
-                await axios.post(`/api/user/block/${friendId}`)
-                window.location.reload()
+                await axios.post(`/api/user/block/${friendId}`).then(response => {
+                  this.user.addBlockedUser(response.data)
+                })
             } catch (error: any) {
                 if (error.response) {
                     this.searchError = error.response.data.message

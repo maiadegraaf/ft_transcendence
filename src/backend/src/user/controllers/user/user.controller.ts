@@ -47,6 +47,21 @@ export class UserController {
         }
     }
 
+    @Get('/blocked')
+    @UseGuards(FortyTwoAuthGuard)
+    async getBlockedUsers(@Req() req: any) {
+        console.log('getBlockedUsers')
+        try {
+            const userId = req.session.user.id
+            return await this.userService.getBlockedUsers(userId)
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus())
+            }
+            throw error
+        }
+    }
+
     @Get('/friends')
     @UseGuards(FortyTwoAuthGuard)
     async getFriends(@Req() req: any) {
@@ -89,7 +104,7 @@ export class UserController {
         }
     }
 
-    @Post('username')
+    @Post('/username')
     @UseGuards(FortyTwoAuthGuard)
     async changeUsername(@Req() req, @Body('username') username: string): Promise<User> {
         try {
@@ -224,20 +239,6 @@ export class UserController {
             const userID = req.session.user.id
             await this.userService.removeFriend(userID, friendID)
             return await this.userService.removeFriend(friendID, userID)
-        } catch (error) {
-            if (error instanceof HttpException) {
-                throw new HttpException(error.message, error.getStatus())
-            }
-            throw error
-        }
-    }
-
-    @Get('block/:id')
-    @UseGuards(FortyTwoAuthGuard)
-    async getBlockedUsers(@Param('id', ParseIntPipe) userID: number, @Req() req: any) {
-        try {
-            const userId = req.session.user.id
-            return await this.userService.getBlockedUsers(userId)
         } catch (error) {
             if (error instanceof HttpException) {
                 throw new HttpException(error.message, error.getStatus())
