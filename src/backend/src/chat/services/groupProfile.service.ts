@@ -276,20 +276,20 @@ export class GroupProfileService {
         return await bcrypt.compare(password, groupProfile.password)
     }
 
-    async changePassword(userId: number, groupId: number, password: string): Promise<any> {
-        const group = await this.groupProfileRepository
-            .createQueryBuilder('group')
-            .where('group.id = :id', { id: groupId })
-            .leftJoinAndSelect('group.owner', 'owner')
-            .getOne()
-        if (!group) {
-            throw new HttpException('could not find group in changePassword', HttpStatus.FORBIDDEN)
-        }
-        if (group.owner.id !== userId) {
-            throw new HttpException('user is not owner of group', HttpStatus.FORBIDDEN)
-        }
-        return this.newPassword(group, password)
-    }
+    // async changePassword(userId: number, groupId: number, password: string): Promise<any> {
+    //     const group = await this.groupProfileRepository
+    //         .createQueryBuilder('group')
+    //         .where('group.id = :id', { id: groupId })
+    //         .leftJoinAndSelect('group.owner', 'owner')
+    //         .getOne()
+    //     if (!group) {
+    //         throw new HttpException('could not find group in changePassword', HttpStatus.FORBIDDEN)
+    //     }
+    //     if (group.owner.id !== userId) {
+    //         throw new HttpException('user is not owner of group', HttpStatus.FORBIDDEN)
+    //     }
+    //     return this.newPassword(group, password)
+    // }
 
     async getGroupProfileAndCheckPassword(
         user: User,
@@ -330,8 +330,6 @@ export class GroupProfileService {
 
     async removeRoles(group: GroupProfile, userId: number): Promise<any> {
         group.admin = group.admin.filter((admin) => admin.id !== userId)
-        // group.blocked.filter((blocked) => blocked.id !== userId);
-        // group.muted.filter((muted) => muted.id !== userId);
         return await this.groupProfileRepository.save(group)
     }
 

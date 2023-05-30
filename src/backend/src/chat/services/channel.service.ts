@@ -124,44 +124,6 @@ export class ChannelService {
         return channels
     }
 
-    async getChannelName(channel: number, userId: number): Promise<string> {
-        const channelName = await this.channelRepository.findOne({
-            where: { id: channel },
-            relations: ['profile', 'users']
-        })
-        if (!channelName) {
-            return null
-        }
-        if (channelName.profile) {
-            return channelName.profile.name
-        }
-        const channelUsers = channelName.users
-        let name
-        await channelUsers.forEach((usr) => {
-            if (usr.id != userId) {
-                name = usr.login
-            }
-        })
-        return name
-    }
-
-    async allowedNewDmChannel(user: User, invitee: string): Promise<boolean> {
-        if (user.login === invitee) {
-            return false
-        }
-        const channel = await this.channelRepository
-            .createQueryBuilder('channel')
-            .leftJoinAndSelect('channel.users', 'users')
-            .where('users', { users: user })
-            .andWhere('users.login = :login', { login: invitee })
-            .andWhere('channel.profile IS NULL')
-            .getOne()
-        if (channel) {
-            return false
-        }
-        return true
-    }
-
     async newGroupChannel(
         owner: User,
         groupName: string,
