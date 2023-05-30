@@ -41,13 +41,13 @@ export default defineComponent({
     },
     data(): any {
         return {
-            matchId: 0,
-            text: '',
+            id: 0 as number,
             sender: {
-                id: 0,
-                login: ''
+                id: 0 as number,
+                login: '' as string
             },
-            channel: 0
+            channel: 0 as number,
+            text: '' as string,
         }
     },
     methods: {
