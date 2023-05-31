@@ -1,4 +1,4 @@
-# FT_Transcendence - Online Pong Game
+# Ft_transcendence - Online Pong Game
 
 Welcome to ft_transcendence, a unique online platform where you can play the classic game of Pong against players from around the world! 
 This web application was created as a part of our project assignment for 42 Intranet.
@@ -15,13 +15,13 @@ For this project, the following technologies were used:
 - **Docker**: A set of platform as a service products that use OS-level virtualization to deliver software in packages called containers.
 - **Socket.io**: A JavaScript library for realtime web applications. It enables realtime, bi-directional communication between web clients and servers.
 - **Pinia**: A Vue Store (inspired by Vuex) that automatically tracks dependencies and allows you to define stores without the boilerplate.
-- **TypeORM**: An ORM that can run in NodeJS, Browser, Cordova, PhoneGap, Ionic, React Native, NativeScript, Expo, and Electron platforms and can be used with TypeScript and JavaScript.
+- **TypeORM**: An ORM that can run in NodeJS and can be used with TypeScript or JavaScript.
 - **TypeScript**: A programming language developed and maintained by Microsoft. It is a strict syntactical superset of JavaScript and adds optional static typing to the language.
-- **HTML5**: A markup language used for structuring and presenting content on the World Wide Web.
+- **HTML**: A markup language used for structuring and presenting content on the World Wide Web.
 - **TailwindCSS**: A utility-first CSS framework for rapidly building custom user interfaces.
-- **bcrypt**: A password-hashing function designed by Niels Provos and David Mazières, based on the Blowfish cipher.
-- **axios**: A promise-based HTTP client for the browser and Node.js.
-- **passport**: An authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application.
+- **Bcrypt**: A password-hashing function designed by Niels Provos and David Mazières, based on the Blowfish cipher.
+- **Axios**: A promise-based HTTP client for the browser and Node.js.
+- **Passport**: An authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application.
 
 
 ## Features
@@ -43,6 +43,11 @@ Run the following command to launch the website:
 make
 ```
 The website will be available at `http://localhost:8080/`
+
+In order to reset the docker containers and the database, run the following command:
+```angular2html
+make reset
+```
 
 ## Compatibility
 
