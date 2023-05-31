@@ -89,15 +89,6 @@ export class UserService {
         return this.userRepository.save(user)
     }
 
-    // async returnUserBySocketId(socketId: string): Promise<User> {
-    //     for (const u of await this.findAllUsers()) {
-    //         if (u.socketId === socketId) {
-    //             return u
-    //         }
-    //     }
-    //     // return this.userRepository.findOne({ where: { socketId: socketId } });
-    // }
-
     async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
         if (!file) {
             throw new BadRequestException('File required')
