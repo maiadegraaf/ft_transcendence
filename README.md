@@ -1,4 +1,4 @@
-# FT_Transcendence - Online Pong Game
+# Ft_transcendence - Online Pong Game
 
 Welcome to ft_transcendence, a unique online platform where you can play the classic game of Pong against players from around the world! 
 This web application was created as a part of our project assignment for 42 Intranet.
@@ -19,9 +19,9 @@ For this project, the following technologies were used:
 - **TypeScript**: A programming language developed and maintained by Microsoft. It is a strict syntactical superset of JavaScript and adds optional static typing to the language.
 - **HTML**: A markup language used for structuring and presenting content on the World Wide Web.
 - **TailwindCSS**: A utility-first CSS framework for rapidly building custom user interfaces.
-- **bcrypt**: A password-hashing function designed by Niels Provos and David Mazières, based on the Blowfish cipher.
-- **axios**: A promise-based HTTP client for the browser and Node.js.
-- **passport**: An authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application.
+- **Bcrypt**: A password-hashing function designed by Niels Provos and David Mazières, based on the Blowfish cipher.
+- **Axios**: A promise-based HTTP client for the browser and Node.js.
+- **Passport**: An authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application.
 
 
 ## Features
@@ -43,6 +43,11 @@ Run the following command to launch the website:
 make
 ```
 The website will be available at `http://localhost:8080/`
+
+In order to reset the docker containers and the database, run the following command:
+```angular2html
+make reset
+```
 
 ## Compatibility
 
