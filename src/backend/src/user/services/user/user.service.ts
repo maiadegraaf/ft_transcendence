@@ -24,7 +24,6 @@ export class UserService {
 
     async findAllUsers() {
         return await this.userRepository.find()
-        // return this.userRepository.find({ relations: ['profile',  ]}) //will show relation with get request. null if not defined
     }
 
     async findUserByID(id: number, relations = [] as string[]): Promise<User> {
@@ -56,23 +55,7 @@ export class UserService {
         return await this.userRepository.save({ id, login: newUserName })
     }
 
-    async usernameChangedTrue(id: number): Promise<User> {
-        return await this.userRepository.save({ id, usernameChanged: true })
-    }
-
-    async getUserByName(login: string): Promise<any> {
-        const user = await this.userRepository.findOne({
-            where: { login },
-            relations: ['login']
-        })
-        if (!user) {
-            return false
-        }
-        return user
-    }
-
     async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
-        console.log(userId)
         return this.userRepository.update(userId, {
             twoFactorAuthenticationSecret: secret
         })
@@ -82,55 +65,6 @@ export class UserService {
         return this.userRepository.update(userId, {
             isTwoFactorAuthenticationEnabled: true
         })
-    }
-
-    async getChannelsByUserId(userId: number): Promise<any> {
-        const user = await this.userRepository.findOne({
-            where: { id: userId },
-            relations: ['channels']
-        })
-        // console.log('getChannelsByUserId: user' + JSON.stringify(user.channels));
-        return user.channels
-    }
-
-    async getUserNameById(userId: number): Promise<any> {
-        const user = await this.userRepository.findOne({
-            where: { id: userId }
-        })
-        // console.log('getChannelsByUserId: user' + JSON.stringify(user.channels));
-        return user.login
-    }
-
-    async addChannelToUser(channel: Channel, userId: number): Promise<any> {
-        const user = await this.userRepository.findOne({
-            where: { id: userId },
-            relations: ['channels']
-        })
-        user.channels.push(channel)
-        return await this.userRepository.save(user)
-    }
-
-    async retrieveUserChannelMessages(userId: number): Promise<any> {
-        const user = await this.userRepository.findOne({
-            where: { id: userId },
-            relations: ['channels'],
-            select: ['channels']
-        })
-        if (!user) {
-            return null
-        }
-        return user.channels
-    }
-
-    async retrieveUserChannel(userId: number): Promise<any> {
-        const user = await this.userRepository.findOne({
-            where: { id: userId },
-            relations: ['channels']
-        })
-        if (!user) {
-            return null
-        }
-        return user
     }
 
     async getUserByLogin(userLogin: string): Promise<any> {
@@ -155,14 +89,14 @@ export class UserService {
         return this.userRepository.save(user)
     }
 
-    async returnUserBySocketId(socketId: string): Promise<User> {
-        for (const u of await this.findAllUsers()) {
-            if (u.socketId === socketId) {
-                return u
-            }
-        }
-        // return this.userRepository.findOne({ where: { socketId: socketId } });
-    }
+    // async returnUserBySocketId(socketId: string): Promise<User> {
+    //     for (const u of await this.findAllUsers()) {
+    //         if (u.socketId === socketId) {
+    //             return u
+    //         }
+    //     }
+    //     // return this.userRepository.findOne({ where: { socketId: socketId } });
+    // }
 
     async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
         if (!file) {
