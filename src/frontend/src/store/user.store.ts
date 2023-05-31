@@ -2,16 +2,28 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 import { useChatStore } from '@/store/channel.store'
-import type { IChannels, IMessage, IUser } from '@/types/types'
+import type {IChannels, IFriend, IMessage} from '@/types/types'
 
 export const useUserStore = defineStore('user', {
     state: () => ({
         name: '' as string,
         email: '' as string,
         id: 0 as number,
-        socket: null as any | null
+        socket: null as any | null,
+        friends: [] as IFriend[],
+        blocked: [] as IFriend[],
     }),
-
+    getters: {
+        getName(): string {
+            return this.name
+        },
+        getFriends(): IFriend[] {
+            return this.friends
+        },
+        getBlocked(): IFriend[] {
+            return this.blocked
+        }
+    },
     actions: {
         //Load user data from server
         async loadUser() {
@@ -26,9 +38,38 @@ export const useUserStore = defineStore('user', {
             await useChatStore().loadChannels()
             this.socket.emit('joinRooms')
             await this.listen()
+            await this.loadFriends()
+            await this.loadBlocked()
         },
         setName(name: string) {
             this.name = name
+        },
+        addBlockedUser(user: IFriend) {
+            this.blocked.push(user)
+            this.listenFriendOnline(this.blocked[this.blocked.length - 1])
+        },
+        removeBlockedUser(unblock: IFriend) {
+            this.blocked = this.blocked.filter((user) => user.id !== unblock.id)
+        },
+        addFriend(friend: IFriend) {
+            this.friends.push(friend)
+            friend = this.listenFriendOnline(this.friends[this.friends.length - 1])
+        },
+        removeFriend(unfriend: IFriend) {
+            this.friends = this.friends.filter((friend) => friend.id !== unfriend.id)
+        },
+        listenFriendOnline(friend: IFriend) {
+            friend.isOnline = false
+            this.socket.emit('checkUserOnline', {
+                userId: friend.id
+            })
+            this.socket.on('userOnline', (userId: number) => {
+                if (userId === friend.id) friend.isOnline = true
+            })
+            this.socket.on('userOffline', (userId: number) => {
+                if (userId === friend.id) friend.isOnline = false
+            })
+            return friend
         },
         //Listeners for server-sent socket events
         async listen() {
@@ -61,7 +102,25 @@ export const useUserStore = defineStore('user', {
                 chatStore.removeMutedFromChannel(payload.channelId, payload.user)
             })
         },
-
+        async loadFriends() {
+            axios.get(`/api/user/friends`).then((response) => {
+                this.friends = response.data
+                this.friends.forEach((friend) => {
+                    this.listenFriendOnline(friend)
+                })
+            })
+        },
+        async loadBlocked() {
+            axios.get(`/api/user/blocked`).then((response) => {
+                this.blocked = response.data
+                this.blocked.forEach((friend) => {
+                    this.listenFriendOnline(friend)
+                })
+            })
+        },
+        // async setFriend(friend: IFriend) {
+        //
+        // },
         //Logout
         logOut() {
             this.socket = null

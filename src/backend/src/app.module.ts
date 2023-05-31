@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { AppService } from './app.service'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 import { Message } from './chat/entities/message.entity'
@@ -56,7 +54,5 @@ import { ConfigModule } from '@nestjs/config'
         LeaderboardModule,
         TwoFAModule
     ],
-    controllers: [AppController],
-    providers: [AppService]
 })
 export class AppModule {}

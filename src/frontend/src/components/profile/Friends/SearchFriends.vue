@@ -30,26 +30,29 @@
 <script lang="ts">
 import axios from 'axios'
 import { defineComponent } from 'vue'
-
-interface User {
-    id: number
-    login: string
-}
+import {useUserStore} from "@/store/user.store";
+import type {IFriend} from "@/types/types";
 
 export default defineComponent({
+    name: 'SearchFriends',
     data() {
         return {
-            friends: [] as User[],
+            friends: [] as IFriend[],
             searchInput: '',
-            searchResult: null as User | null,
+            searchResult: null as IFriend | null,
             searchError: null as string | null
         }
+    },
+    setup() {
+    const user = useUserStore()
+      return { user }
     },
     methods: {
         async addFriend(friendId: number) {
             try {
-                await axios.post(`http://localhost:8080/api/user/friends/${friendId}`)
-                window.location.reload()
+                await axios.post(`/api/user/friends/${friendId}`).then(response => {
+                  this.user.addFriend(response.data)
+                })
             } catch (error: any) {
                 if (error.response) {
                     this.searchError = error.response.data.message
@@ -66,7 +69,7 @@ export default defineComponent({
             }
             try {
                 const response = await axios.get(
-                    `http://localhost:8080/api/user/search/${this.searchInput}`
+                    `/api/user/search/${this.searchInput}`
                 )
                 this.searchResult = response.data
                 this.searchError = null

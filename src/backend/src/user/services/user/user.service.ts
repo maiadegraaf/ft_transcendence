@@ -89,15 +89,6 @@ export class UserService {
         return this.userRepository.save(user)
     }
 
-    // async returnUserBySocketId(socketId: string): Promise<User> {
-    //     for (const u of await this.findAllUsers()) {
-    //         if (u.socketId === socketId) {
-    //             return u
-    //         }
-    //     }
-    //     // return this.userRepository.findOne({ where: { socketId: socketId } });
-    // }
-
     async setAvatar(userId: number, file: Express.Multer.File): Promise<void> {
         if (!file) {
             throw new BadRequestException('File required')
@@ -144,6 +135,12 @@ export class UserService {
         const user = await this.userRepository
             .findOne({
                 where: { id: userID },
+                select: {
+                    friends: {
+                        id: true,
+                        login: true
+                    }
+                },
                 relations: ['friends']
             })
             .catch((err) => {
@@ -161,7 +158,7 @@ export class UserService {
         if (userID === friendID) {
             throw new BadRequestException(`You can't add yourself as a friend`)
         }
-        const user = await this.userRepository
+        const user: User = await this.userRepository
             .findOne({
                 where: { id: userID },
                 relations: ['friends']
@@ -187,7 +184,7 @@ export class UserService {
         }
         user.friends.push(friend)
         await this.userRepository.save(user)
-        return user
+        return { id: user.id, login: user.login } as User
     }
 
     async removeFriend(userID: number, friendID: number) {
@@ -214,7 +211,7 @@ export class UserService {
         }
         user.friends = user.friends.filter((user) => user.id !== friendID)
         await this.userRepository.save(user)
-        return user
+        return { id: user.id, login: user.login } as User
     }
 
     async blockUser(userId: number, blockedUserId: number): Promise<User> {
@@ -247,7 +244,7 @@ export class UserService {
         }
         user.blockedUsers.push(blockedUser)
         await this.userRepository.save(user)
-        return user
+        return { id: blockedUser.id, login: blockedUser.login } as User
     }
 
     async unblockUser(userId: number, blockedUserId: number): Promise<User> {
@@ -280,7 +277,7 @@ export class UserService {
         }
         user.blockedUsers = user.blockedUsers.filter((user) => user.id !== blockedUserId)
         await this.userRepository.save(user)
-        return user
+        return { id: blockedUser.id, login: blockedUser.login } as User
     }
 
     async getBlockedUsers(userId: number): Promise<User[]> {

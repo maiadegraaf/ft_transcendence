@@ -49,13 +49,13 @@
 <script lang="ts">
 import axios from 'axios'
 import NavBar from '../components/NavBar.vue'
-import Friends from '../components/profile/friends.vue'
+import Friends from '../components/profile/Friends/FriendsContainer.vue'
 import WinLosses from '@/components/profile/WinLosses.vue'
 import { useChatStore } from '@/store/channel.store'
 import { defineComponent } from 'vue'
 import MatchHistory from '@/components/profile/MatchHistory.vue'
 import { useUserStore } from '@/store/user.store'
-import Blocked from '@/components/profile/blocked.vue'
+import Blocked from '@/components/profile/Blocked/BlockedContainer.vue'
 
 export default defineComponent({
     setup() {

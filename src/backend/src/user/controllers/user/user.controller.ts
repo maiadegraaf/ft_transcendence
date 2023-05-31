@@ -47,6 +47,36 @@ export class UserController {
         }
     }
 
+    @Post()
+    @UsePipes(new ValidationPipe())
+    async findOrCreate(@Body() createUserDto: CreateUserDto) {
+        try {
+            const { id, email, login } = createUserDto
+            const user = await this.userService.findOrCreateUser(id, email, login)
+            return user
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
+    }
+
+    @Get('/blocked')
+    @UseGuards(FortyTwoAuthGuard)
+    async getBlockedUsers(@Req() req: any) {
+        console.log('getBlockedUsers')
+        try {
+            const userId = req.session.user.id
+            return await this.userService.getBlockedUsers(userId)
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw new HttpException(error.message, error.getStatus())
+            }
+            throw error
+        }
+    }
+
     @Get('/friends')
     @UseGuards(FortyTwoAuthGuard)
     async getFriends(@Req() req: any) {
@@ -78,18 +108,7 @@ export class UserController {
         }
     }
 
-    @Get(':id')
-    @UseGuards(FortyTwoAuthGuard)
-    async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
-        try {
-            const user = await this.userService.findUserByID(id)
-            return user
-        } catch (e) {
-            throw new BadRequestException('Invalid ID')
-        }
-    }
-
-    @Post('username')
+    @Post('/username')
     @UseGuards(FortyTwoAuthGuard)
     async changeUsername(@Req() req, @Body('username') username: string): Promise<User> {
         try {
@@ -158,33 +177,6 @@ export class UserController {
         }
     }
 
-    @Post()
-    @UsePipes(new ValidationPipe())
-    async findOrCreate(@Body() createUserDto: CreateUserDto) {
-        try {
-            const { id, email, login } = createUserDto
-            const user = await this.userService.findOrCreateUser(id, email, login)
-            return user
-        } catch (err) {
-            if (err instanceof HttpException) {
-                throw new HttpException(err.message, err.getStatus())
-            }
-            throw err
-        }
-    }
-
-    @Delete(':id')
-    async deleteUserByID(@Param('id', ParseIntPipe) id: number) {
-        try {
-            await this.userService.deleteUser(id)
-        } catch (err) {
-            if (err instanceof HttpException) {
-                throw new HttpException(err.message, err.getStatus())
-            }
-            throw err
-        }
-    }
-
     @Get('search/:username')
     @UseGuards(FortyTwoAuthGuard)
     async findUserByUsername(@Param('username') username: string) {
@@ -232,20 +224,6 @@ export class UserController {
         }
     }
 
-    @Get('block/:id')
-    @UseGuards(FortyTwoAuthGuard)
-    async getBlockedUsers(@Param('id', ParseIntPipe) userID: number, @Req() req: any) {
-        try {
-            const userId = req.session.user.id
-            return await this.userService.getBlockedUsers(userId)
-        } catch (error) {
-            if (error instanceof HttpException) {
-                throw new HttpException(error.message, error.getStatus())
-            }
-            throw error
-        }
-    }
-
     @Post('block/:id')
     @UseGuards(FortyTwoAuthGuard)
     async blockUser(@Param('id', ParseIntPipe) friendID: number, @Req() req: any) {
@@ -271,6 +249,29 @@ export class UserController {
                 throw new HttpException(error.message, error.getStatus())
             }
             throw error
+        }
+    }
+
+    @Get(':id')
+    @UseGuards(FortyTwoAuthGuard)
+    async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
+        try {
+            const user = await this.userService.findUserByID(id)
+            return user
+        } catch (e) {
+            throw new BadRequestException('Invalid ID')
+        }
+    }
+
+    @Delete(':id')
+    async deleteUserByID(@Param('id', ParseIntPipe) id: number) {
+        try {
+            await this.userService.deleteUser(id)
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
         }
     }
 }

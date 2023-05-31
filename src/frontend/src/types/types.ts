@@ -30,6 +30,13 @@ export interface IUser {
     muted: false
 }
 
+export interface IFriend {
+    id: number
+    login: string
+    isOnline: boolean
+}
+
+
 export enum EGroupChannelType {
     PRIVATE,
     PUBLIC,

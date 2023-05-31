@@ -39,6 +39,7 @@
 <script lang="ts">
 import axios from 'axios'
 import { defineComponent } from 'vue'
+import {useUserStore} from "@/store/user.store";
 
 interface Friend {
     id: number
@@ -62,16 +63,21 @@ export default defineComponent({
             searchError: ''
         }
     },
+    setup() {
+      const user = useUserStore()
+      return { user }
+    },
     methods: {
         async unblockUser(friendId: number) {
             try {
-                await axios.post(`http://localhost:8080/api/user/unblock/${friendId}`)
-                window.location.reload()
+                await axios.post(`/api/user/unblock/${friendId}`).then(response => {
+                  this.user.removeBlockedUser(response.data)
+                })
             } catch (error: any) {
                 if (error.response) {
                     this.searchError = error.response.data.message
                 } else {
-                    this.searchError = `An error occured. Please try again later.`
+                    this.searchError = `An error occurred. Please try again later.`
                 }
             }
         }
