@@ -47,6 +47,21 @@ export class UserController {
         }
     }
 
+    @Post()
+    @UsePipes(new ValidationPipe())
+    async findOrCreate(@Body() createUserDto: CreateUserDto) {
+        try {
+            const { id, email, login } = createUserDto
+            const user = await this.userService.findOrCreateUser(id, email, login)
+            return user
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
+        }
+    }
+
     @Get('/blocked')
     @UseGuards(FortyTwoAuthGuard)
     async getBlockedUsers(@Req() req: any) {
@@ -90,17 +105,6 @@ export class UserController {
                 throw new HttpException(err.message, err.getStatus())
             }
             throw err
-        }
-    }
-
-    @Get(':id')
-    @UseGuards(FortyTwoAuthGuard)
-    async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
-        try {
-            const user = await this.userService.findUserByID(id)
-            return user
-        } catch (e) {
-            throw new BadRequestException('Invalid ID')
         }
     }
 
@@ -165,33 +169,6 @@ export class UserController {
     ): Promise<User> {
         try {
             return await this.userService.updateUsername(id, username)
-        } catch (err) {
-            if (err instanceof HttpException) {
-                throw new HttpException(err.message, err.getStatus())
-            }
-            throw err
-        }
-    }
-
-    @Post()
-    @UsePipes(new ValidationPipe())
-    async findOrCreate(@Body() createUserDto: CreateUserDto) {
-        try {
-            const { id, email, login } = createUserDto
-            const user = await this.userService.findOrCreateUser(id, email, login)
-            return user
-        } catch (err) {
-            if (err instanceof HttpException) {
-                throw new HttpException(err.message, err.getStatus())
-            }
-            throw err
-        }
-    }
-
-    @Delete(':id')
-    async deleteUserByID(@Param('id', ParseIntPipe) id: number) {
-        try {
-            await this.userService.deleteUser(id)
         } catch (err) {
             if (err instanceof HttpException) {
                 throw new HttpException(err.message, err.getStatus())
@@ -272,6 +249,29 @@ export class UserController {
                 throw new HttpException(error.message, error.getStatus())
             }
             throw error
+        }
+    }
+
+    @Get(':id')
+    @UseGuards(FortyTwoAuthGuard)
+    async findUserByID(@Param('id', ParseIntPipe) id: number): Promise<User> {
+        try {
+            const user = await this.userService.findUserByID(id)
+            return user
+        } catch (e) {
+            throw new BadRequestException('Invalid ID')
+        }
+    }
+
+    @Delete(':id')
+    async deleteUserByID(@Param('id', ParseIntPipe) id: number) {
+        try {
+            await this.userService.deleteUser(id)
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw new HttpException(err.message, err.getStatus())
+            }
+            throw err
         }
     }
 }
