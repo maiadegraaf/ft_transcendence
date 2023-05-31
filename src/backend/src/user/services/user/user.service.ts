@@ -254,9 +254,9 @@ export class UserService {
         if (!friend) {
             throw new BadRequestException(`User with id ${friendID} not found`)
         }
-        // if (user.friends.map((user) => user.id).includes(friendID)) {
-        //     throw new BadRequestException(`${friend.login} is already your friend`)
-        // }
+        if (user.friends.map((user) => user.id).includes(friendID)) {
+            throw new BadRequestException(`${friend.login} is already your friend`)
+        }
         user.friends.push(friend)
         await this.userRepository.save(user)
         return { id: user.id, login: user.login } as User

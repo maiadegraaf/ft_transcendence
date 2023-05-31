@@ -45,18 +45,17 @@ export const useUserStore = defineStore('user', {
             this.name = name
         },
         addBlockedUser(user: IFriend) {
-            this.listenFriendOnline(user)
             this.blocked.push(user)
+            this.listenFriendOnline(this.blocked[this.blocked.length - 1])
         },
         removeBlockedUser(unblock: IFriend) {
             this.blocked = this.blocked.filter((user) => user.id !== unblock.id)
         },
         addFriend(friend: IFriend) {
-            friend = this.listenFriendOnline(friend)
             this.friends.push(friend)
+            friend = this.listenFriendOnline(this.friends[this.friends.length - 1])
         },
         removeFriend(unfriend: IFriend) {
-            console.log('removing friend: ', unfriend)
             this.friends = this.friends.filter((friend) => friend.id !== unfriend.id)
         },
         listenFriendOnline(friend: IFriend) {

@@ -2,7 +2,7 @@
     <div class="search-friends">
         <div class="flex flex-col items-center justify-center">
             <label class="text-xl mb-2 font-semibold uppercase"
-                >Search new friends by username:</label
+                >Search users by username:</label
             >
             <input
                 type="text"
